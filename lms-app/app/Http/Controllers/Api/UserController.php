@@ -28,7 +28,7 @@ class UserController extends Controller
             ]);
             return response()->json([
                 'status' => true,
-                'data' => $this->userRepository->createOrUpdate(null, $data),
+                'data' => $this->userRepository->create($data),
                 'message' => 'user created successfully',
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -78,15 +78,16 @@ class UserController extends Controller
     {
         try {
             $data = $request->validate([
-                'username' => 'required|min:3',
-                'email' => 'required|email|unique:users,email,' . $id,
+                'username' => 'min:3',
                 'password' => 'nullable|min:6',
-                'role' => 'required',
+                'role' => 'nullable|in:student,teacher,admin',
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
+            // $data = $request->all();
+            // dd($data);
             return response()->json([
                 'status' => true,
-                'data' => $this->userRepository->createOrUpdate($id, $data),
+                'data' => $this->userRepository->update($id, $data),
                 'message' => 'user updated successfully',
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
