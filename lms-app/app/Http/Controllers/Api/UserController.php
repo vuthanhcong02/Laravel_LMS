@@ -46,64 +46,13 @@ class UserController extends Controller
             ], 500);
         }
     }
-    public function show($id)
-    {
-        $validator = Validator::make(['id' => $id], [
-            'id' => 'required|exists:users,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()->first(),
-            ], 422);
-        }
-
-        $user = $this->userRepository->findById($id);
-
-        if ($user) {
-            return response()->json([
-                'status' => true,
-                'data' => $user,
-                'message' => 'User found',
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not found',
-            ], 404);
-        }
-    }
     public function update(Request $request, $id)
     {
-        try {
-            $data = $request->validate([
-                'username' => 'min:3',
-                'password' => 'nullable|min:6',
-                'role' => 'nullable|in:student,teacher,admin',
-                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
-            // $data = $request->all();
-            // dd($data);
-            return response()->json([
-                'status' => true,
-                'data' => $this->userRepository->update($id, $data),
-                'message' => 'user updated successfully',
-            ], 200);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Xử lý lỗi validation
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-                'errors' => $e->errors(),
-            ], 422);
-        } catch (\Throwable $e) {
-            // Xử lý các ngoại lệ khác
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'status' => true,
+            'data' => $this->userRepository->update($id, $request->all()),
+            'message' => 'user updated successfully',
+        ], 200);
     }
     public function getAll()
     {
@@ -154,7 +103,7 @@ class UserController extends Controller
         $user = $this->userRepository->findById($id);
 
         if ($user) {
-            $this->userRepository->delete($user);
+            $this->userRepository->delete($id);
             return response()->json([
                 'status' => true,
                 'message' => 'User deleted successfully',

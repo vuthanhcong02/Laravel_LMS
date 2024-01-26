@@ -33,14 +33,10 @@ class UserRepository implements IUserRepository
     }
     public function update($id, $data = [])
     {
-        $user = User::findorFail($id);
-        $user->name = $data['username'] ?? $user->name;
-        $user->avatar = $data['avatar'] ?? "default.png";
-        $user->role = $data['role'] ?? $user->role;
-        if (isset($data['password'])) {
-            $user->password = Hash::make($data['password']);
-        }
-        $user->save();
+        $user = User::findOrFail($id);
+
+        $user->update($data);
+
         return $user;
     }
 }

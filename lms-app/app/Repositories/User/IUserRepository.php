@@ -9,7 +9,6 @@ interface IUserRepository
 
     public function create($collection = []);
     public function update($id, $collection = []);
-    public function findById($id);
     public function delete($id);
     public function getAll();
 }
