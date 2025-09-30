@@ -13,13 +13,20 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    const ROLE_ADMIN = 0;
+
+    const ROLE_TEACHER = 1;
+
+    const ROLE_STUDENT = 2;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'role',
@@ -45,12 +52,23 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
+
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getAllRole()
+    {
+        return [
+            self::ROLE_ADMIN => 'Admin',
+            self::ROLE_TEACHER => 'Teacher',
+            self::ROLE_STUDENT => 'Student',
+        ];
     }
 }

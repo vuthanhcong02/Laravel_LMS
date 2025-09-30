@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\User\UserRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     //
     protected $userRepository;
+
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }
+
     public function create(Request $request)
     {
         try {
@@ -26,6 +27,7 @@ class UserController extends Controller
                 'role' => 'required',
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
+
             return response()->json([
                 'status' => true,
                 'data' => $this->userRepository->create($data),
@@ -46,6 +48,7 @@ class UserController extends Controller
             ], 500);
         }
     }
+
     public function update(Request $request, $id)
     {
         return response()->json([
@@ -54,6 +57,7 @@ class UserController extends Controller
             'message' => 'user updated successfully',
         ], 200);
     }
+
     public function getAll()
     {
         try {
@@ -104,6 +108,7 @@ class UserController extends Controller
 
         if ($user) {
             $this->userRepository->delete($id);
+
             return response()->json([
                 'status' => true,
                 'message' => 'User deleted successfully',

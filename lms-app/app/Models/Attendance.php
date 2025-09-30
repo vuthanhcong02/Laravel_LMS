@@ -8,17 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Attendance extends Model
 {
     use HasFactory;
+
     protected $table = 'attendances';
+
     protected $guarded = [];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function classroom()
     {
         return $this->belongsTo(ClassRoom::class);
     }
+
     public function course()
     {
         return $this->belongsTo(Course::class);

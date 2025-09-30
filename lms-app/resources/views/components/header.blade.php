@@ -41,7 +41,6 @@
                         </span>
                     </a>
                 </div>
-
                 <!-- User Menu -->
                 @auth
                     <div class="relative group ml-2" x-data="{ open: false }">
@@ -50,9 +49,9 @@
                             class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 transition duration-300">
                             <div
                                 class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                                VC
+                                {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
                             </div>
-                            <span class="hidden md:block font-medium">Công</span>
+                            <span class="hidden md:block font-medium">{{ Auth::user()->first_name }}</span>
                             <i class="fas fa-chevron-down text-xs transition-transform duration-300"
                                 :class="{ 'rotate-180': open }"></i>
                         </button>
@@ -69,8 +68,9 @@
 
                             <!-- User Info -->
                             <div class="px-4 py-2 border-b border-gray-100">
-                                <p class="text-sm font-semibold text-gray-800">Vu Thanh Cong</p>
-                                <p class="text-xs text-gray-500">congvtc02@gmail.com</p>
+                                <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }}
+                                    {{ Auth::user()->last_name }}</p>
+                                <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                             </div>
 
                             <!-- Menu Items -->
@@ -95,19 +95,8 @@
                                 Lịch sử đơn hàng
                             </a>
 
-                            <!-- Admin Links (nếu là admin) -->
-                            @if (auth()->user()->is_admin)
-                                <div class="border-t border-gray-100 mt-2 pt-2">
-                                    <a href="{{ route('admin.dashboard') }}"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition duration-300">
-                                        <i class="fas fa-cog mr-2 w-4"></i>
-                                        Quản trị
-                                    </a>
-                                </div>
-                            @endif
-
                             <!-- Logout -->
-                            <form method="POST" action="">
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
                                     class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition duration-300 border-t border-gray-100 mt-2">
