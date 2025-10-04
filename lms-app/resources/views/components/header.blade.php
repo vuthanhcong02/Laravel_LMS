@@ -50,11 +50,17 @@
                             <div class="relative">
                                 <div
                                     class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                                    @if (Auth::user()->avatar)
+                                        <img src="{{ Auth::user()->avatar }}" alt="Avatar"
+                                            class="w-8 h-8 rounded-full object-cover">
+                                    @else
+                                        {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                                    @endif
                                 </div>
                                 <!-- Verification Badge -->
                             </div>
-                            <span class="hidden md:block font-medium">{{ Auth::user()->first_name }}</span>
+                            <span class="hidden md:block font-medium">{{ Auth::user()->first_name }}
+                                {{ Auth::user()->last_name }}</span>
                             <i class="fas fa-chevron-down text-xs transition-transform duration-300"
                                 :class="{ 'rotate-180': open }"></i>
                         </button>
