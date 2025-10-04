@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('password');
             $table->integer('role')->default(0)->comment('0: admin, 1: teacher, 2: student');
             $table->string('avatar')->nullable();
+            $table->string('provider')->nullable();
+            $table->string('provider_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
