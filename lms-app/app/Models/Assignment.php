@@ -10,6 +10,7 @@ class Assignment extends Model
     use HasFactory;
 
     protected $table = 'assignments';
+
     protected $guarded = [];
 
     public function course()

@@ -92,12 +92,12 @@
                     </div>
 
                     <div class="mt-6 grid grid-cols-2 gap-3">
-                        <a href="#"
+                        <a href="{{ route('socialite.redirect', ['provider' => 'google']) }}"
                             class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                             <i class="fab fa-google text-red-500"></i>
                             <span class="ml-2">Google</span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route('socialite.redirect', ['provider' => 'facebook']) }}"
                             class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                             <i class="fab fa-facebook text-blue-600"></i>
                             <span class="ml-2">Facebook</span>
