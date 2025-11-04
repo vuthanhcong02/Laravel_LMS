@@ -113,7 +113,7 @@
                             @if (Auth::user()->hasVerifiedEmail())
                                 <!-- Menu Items -->
                                 <div class="py-2">
-                                    <a href="" @click="open = false"
+                                    <a href="{{ route('student.dashboard') }}" @click="open = false"
                                         class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200">
                                         <i class="fas fa-tachometer-alt mr-3 w-4 text-blue-500"></i>
                                         Dashboard
