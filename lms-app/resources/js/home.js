@@ -211,3 +211,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== MOBILE MENU FUNCTIONALITY =====
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const closeMobileMenu = document.getElementById('close-mobile-menu');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileBackdrop = document.getElementById('mobile-backdrop');
+
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+        mobileMenu.classList.toggle('open');
+        mobileBackdrop.classList.toggle('open');
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    }
+
+    // Event listeners for mobile menu
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+    }
+
+    if (closeMobileMenu) {
+        closeMobileMenu.addEventListener('click', toggleMobileMenu);
+    }
+
+    if (mobileBackdrop) {
+        mobileBackdrop.addEventListener('click', toggleMobileMenu);
+    }
+
+    // Close mobile menu when clicking on links
+    const mobileLinks = document.querySelectorAll('#mobile-menu a');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', toggleMobileMenu);
+    });
+
+    // ===== USER DROPDOWN FUNCTIONALITY =====
+    const userButton = document.getElementById('user-button');
+    const userDropdown = document.getElementById('user-dropdown');
+
+    // Toggle user dropdown
+    function toggleUserDropdown() {
+        userDropdown.classList.toggle('open');
+    }
+
+    // Event listener for user dropdown
+    if (userButton) {
+        userButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleUserDropdown();
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (userDropdown && userDropdown.classList.contains('open')) {
+            if (!e.target.closest('#user-section')) {
+                userDropdown.classList.remove('open');
+            }
+        }
+    });
+
+    // Close dropdown when pressing Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && userDropdown && userDropdown.classList.contains('open')) {
+            userDropdown.classList.remove('open');
+        }
+    });
+
+});

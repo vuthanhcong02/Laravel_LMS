@@ -28,6 +28,10 @@
           @yield('content')
      </main>
 
+     <x-cart-popup />
+     <x-payment-popup />
+     <x-payment-success-popup />
+
      <!-- Footer -->
      <x-footer />
      <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
