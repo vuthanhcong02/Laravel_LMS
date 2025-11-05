@@ -10,10 +10,13 @@
           <nav class="hidden md:flex space-x-8">
                <a href="/" class="text-gray-700 hover:text-indigo-600 font-medium transition duration-300">Trang
                     chủ</a>
-               <a href="" class="text-gray-700 hover:text-indigo-600 font-medium transition duration-300">Khóa học</a>
-               <a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition duration-300">Giới
+               <a href="{{ route('courses') }}"
+                    class="text-gray-700 hover:text-indigo-600 font-medium transition duration-300">Khóa học</a>
+               <a href="{{ route('about') }}"
+                    class="text-gray-700 hover:text-indigo-600 font-medium transition duration-300">Giới
                     thiệu</a>
-               <a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition duration-300">Liên
+               <a href="{{ route('contact') }}"
+                    class="text-gray-700 hover:text-indigo-600 font-medium transition duration-300">Liên
                     hệ</a>
           </nav>
 
