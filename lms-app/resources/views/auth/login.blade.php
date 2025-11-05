@@ -3,108 +3,141 @@
 @section('title', 'Đăng nhập')
 
 @section('content')
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div>
-                <div class="text-center">
-                    <a href="{{ route('home') }}" class="text-3xl font-bold text-blue-600">LMS</a>
-                    <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                        Đăng nhập tài khoản
-                    </h2>
-                    <p class="mt-2 text-sm text-gray-600">
-                        Hoặc
-                        <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500">
-                            đăng ký tài khoản mới
-                        </a>
-                    </p>
-                </div>
-            </div>
+<!-- Main Content -->
+<main class="flex-1 flex items-center justify-center py-12 px-4">
+     <div class="container max-w-6xl mx-auto">
+          <div class="login-container">
+               <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <!-- Left Side - Login Form -->
+                    <div class="p-8 md:p-12 lg:p-16">
+                         <div class="max-w-md mx-auto">
+                              <div class="text-center mb-8">
+                                   <h1 class="text-3xl font-bold text-gray-800 mb-2">Chào mừng trở lại!</h1>
+                                   <p class="text-gray-600">Đăng nhập để tiếp tục học tập</p>
+                              </div>
 
-            <form class="mt-8 space-y-6" action="{{ route('login') }}" method="POST">
-                @csrf
+                              <!-- Social Login Buttons -->
+                              <div class="grid grid-cols-2 gap-4 mb-8">
+                                   <button
+                                        class="social-btn google-btn bg-white py-3 rounded-lg font-semibold flex items-center justify-center">
+                                        <i class="fab fa-google text-red-500 mr-2"></i>
+                                        Google
+                                   </button>
+                                   <button
+                                        class="social-btn facebook-btn bg-white py-3 rounded-lg font-semibold flex items-center justify-center">
+                                        <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                                        Facebook
+                                   </button>
+                              </div>
 
-                <!-- Hiển thị lỗi -->
-                @if ($errors->any())
-                    <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-                        <ul class="list-disc list-inside text-sm">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                              <div class="relative mb-8">
+                                   <div class="absolute inset-0 flex items-center">
+                                        <div class="w-full border-t border-gray-300"></div>
+                                   </div>
+                                   <div class="relative flex justify-center text-sm">
+                                        <span class="px-2 bg-white text-gray-500">hoặc đăng nhập với email</span>
+                                   </div>
+                              </div>
+
+                              <!-- Login Form -->
+                              <form id="login-form" class="space-y-6" method="POST" action="{{ route('login') }}">
+                                   @csrf
+                                   <div>
+                                        <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Tên
+                                             đăng nhập hoặc Email</label>
+                                        <div class="input-group">
+                                             <i class="input-icon fas fa-user"></i>
+                                             <input type="text" id="username" name="username" required
+                                                  class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                  placeholder="Nhập tên đăng nhập hoặc email">
+                                        </div>
+                                   </div>
+
+                                   <div>
+                                        <div class="flex justify-between items-center mb-2">
+                                             <label for="password" class="block text-sm font-medium text-gray-700">Mật
+                                                  khẩu</label>
+                                             <a href="forgot-password.html"
+                                                  class="text-sm text-indigo-600 hover:text-indigo-500 transition duration-200">Quên
+                                                  mật khẩu?</a>
+                                        </div>
+                                        <div class="input-group">
+                                             <i class="input-icon fas fa-lock"></i>
+                                             <input type="password" id="password" name="password" required
+                                                  class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                  placeholder="Nhập mật khẩu">
+                                             <i class="password-toggle fas fa-eye" id="toggle-password"></i>
+                                        </div>
+                                   </div>
+
+                                   <div class="flex items-center">
+                                        <input type="checkbox" id="remember" name="remember"
+                                             class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <label for="remember" class="ml-2 block text-sm text-gray-700">Ghi nhớ đăng
+                                             nhập</label>
+                                   </div>
+
+                                   <button type="submit"
+                                        class="w-full btn-primary text-white py-4 rounded-lg font-semibold text-lg transition duration-300">
+                                        <i class="fas fa-sign-in-alt mr-2"></i>
+                                        Đăng nhập
+                                   </button>
+
+                                   <!-- Error Message -->
+                                   <div id="error-message"
+                                        class="hidden bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-center">
+                                        <i class="fas fa-exclamation-circle text-red-500 text-xl mb-2"></i>
+                                        <p class="font-semibold" id="error-text">Tên đăng nhập hoặc mật khẩu không đúng
+                                        </p>
+                                   </div>
+                              </form>
+
+                              <div class="text-center mt-8">
+                                   <p class="text-gray-600">
+                                        Chưa có tài khoản?
+                                        <a href="{{ route('register') }}"
+                                             class="text-indigo-600 font-semibold hover:text-indigo-500 transition duration-200">Đăng
+                                             ký ngay</a>
+                                   </p>
+                              </div>
+                         </div>
                     </div>
-                @endif
 
-                @if (session('status'))
-                    <div class="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded text-sm">
-                        {{ session('status') }}
+                    <!-- Right Side - Banner -->
+                    <div class="login-sidebar p-8 md:p-12 lg:p-16 flex items-center justify-center">
+                         <div class="text-center relative z-10">
+                              <div class="floating mb-8">
+                                   <i class="fas fa-graduation-cap text-white text-6xl opacity-20"></i>
+                              </div>
+                              <h2 class="text-3xl font-bold mb-6">Bắt đầu hành trình học tập của bạn</h2>
+                              <p class="text-lg opacity-90 mb-8 max-w-md mx-auto">
+                                   Truy cập vào hàng trăm khóa học chất lượng cao với mức giá phải chăng. Học mọi lúc,
+                                   mọi nơi.
+                              </p>
+                              <div class="space-y-4 text-left max-w-xs mx-auto">
+                                   <div class="flex items-center">
+                                        <i class="fas fa-check-circle text-white mr-3 opacity-90"></i>
+                                        <span class="opacity-90">500+ khóa học đa dạng</span>
+                                   </div>
+                                   <div class="flex items-center">
+                                        <i class="fas fa-check-circle text-white mr-3 opacity-90"></i>
+                                        <span class="opacity-90">Học trọn đời không giới hạn</span>
+                                   </div>
+                                   <div class="flex items-center">
+                                        <i class="fas fa-check-circle text-white mr-3 opacity-90"></i>
+                                        <span class="opacity-90">Hỗ trợ 24/7 từ giảng viên</span>
+                                   </div>
+                                   <div class="flex items-center">
+                                        <i class="fas fa-check-circle text-white mr-3 opacity-90"></i>
+                                        <span class="opacity-90">Giá cả chỉ bằng 1/3 thị trường</span>
+                                   </div>
+                              </div>
+                         </div>
                     </div>
-                @endif
-
-                <div class="rounded-md shadow-sm -space-y-px">
-                    <div>
-                        <label for="email" class="sr-only">Email</label>
-                        <input id="email" name="email" type="email" autocomplete="email" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                            placeholder="Địa chỉ email" value="{{ old('email') }}">
-                    </div>
-                    <div>
-                        <label for="password" class="sr-only">Mật khẩu</label>
-                        <input id="password" name="password" type="password" autocomplete="current-password" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                            placeholder="Mật khẩu">
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember_me" name="remember" type="checkbox"
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <label for="remember_me" class="ml-2 block text-sm text-gray-900">
-                            Ghi nhớ đăng nhập
-                        </label>
-                    </div>
-
-                    <div class="text-sm">
-                        <a href="{{ route('password.request') }}" class="font-medium text-blue-600 hover:text-blue-500">
-                            Quên mật khẩu?
-                        </a>
-                    </div>
-                </div>
-
-                <div>
-                    <button type="submit"
-                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300">
-                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                            <i class="fas fa-sign-in-alt text-blue-500 group-hover:text-blue-400"></i>
-                        </span>
-                        Đăng nhập
-                    </button>
-                </div>
-
-                <div class="mt-6">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-gray-50 text-gray-500">Hoặc tiếp tục với</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 grid grid-cols-2 gap-3">
-                        <a href="{{ route('socialite.redirect', ['provider' => 'google']) }}"
-                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <i class="fab fa-google text-red-500"></i>
-                            <span class="ml-2">Google</span>
-                        </a>
-                        <a href="{{ route('socialite.redirect', ['provider' => 'facebook']) }}"
-                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <i class="fab fa-facebook text-blue-600"></i>
-                            <span class="ml-2">Facebook</span>
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+               </div>
+          </div>
+     </div>
+</main>
 @endsection
+
+@vite(['resources/js/login.js'])

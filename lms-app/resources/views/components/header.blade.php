@@ -1,7 +1,7 @@
 <header class="bg-white shadow-md sticky top-0 z-10" data-aos="fade-down">
      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
           <div class="flex items-center">
-               <a href="index.html" class="flex items-center">
+               <a href="/" class="flex items-center">
                     <i class="fas fa-graduation-cap text-indigo-600 text-2xl mr-2"></i>
                     <span class="text-xl font-bold text-indigo-600">Khóa Học Giá Rẻ</span>
                </a>
@@ -27,7 +27,7 @@
                          <span class="cart-count">0</span>
                     </button>
                </div>
-               <a href="#" class="btn-primary text-white px-4 py-2 rounded-md">Đăng nhập</a>
+               <a href="{{ route('login') }}" class="btn-primary text-white px-4 py-2 rounded-md">Đăng nhập</a>
                <button class="md:hidden text-gray-700">
                     <i class="fas fa-bars text-xl"></i>
                </button>
