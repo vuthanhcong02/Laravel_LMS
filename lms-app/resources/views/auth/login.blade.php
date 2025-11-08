@@ -44,7 +44,9 @@
                                    @csrf
                                    <div>
                                         <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Tên
-                                             đăng nhập hoặc Email</label>
+                                             đăng nhập hoặc Email
+                                             <span class="text-red-500">*</span>
+                                        </label>
                                         <div class="input-group">
                                              <i class="input-icon fas fa-user"></i>
                                              <input type="text" id="username" name="username" required
@@ -56,8 +58,10 @@
                                    <div>
                                         <div class="flex justify-between items-center mb-2">
                                              <label for="password" class="block text-sm font-medium text-gray-700">Mật
-                                                  khẩu</label>
-                                             <a href="forgot-password.html"
+                                                  khẩu
+                                                  <span class="text-red-500">*</span>
+                                             </label>
+                                             <a href="{{  route('password.request') }}"
                                                   class="text-sm text-indigo-600 hover:text-indigo-500 transition duration-200">Quên
                                                   mật khẩu?</a>
                                         </div>
@@ -82,7 +86,6 @@
                                         <i class="fas fa-sign-in-alt mr-2"></i>
                                         Đăng nhập
                                    </button>
-                                   <!-- Success Message -->
                                    <!-- Success Message -->
                                    <div id="success-message"
                                         class="hidden bg-green-50 border border-green-200 rounded-lg p-4 text-green-700 text-center">

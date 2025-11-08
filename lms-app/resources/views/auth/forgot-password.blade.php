@@ -3,113 +3,80 @@
 @section('title', 'Quên mật khẩu')
 
 @section('content')
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div>
-                <div class="text-center">
-                    <a href="{{ route('home') }}" class="text-3xl font-bold text-blue-600 flex items-center justify-center">
-                        <i class="fas fa-graduation-cap mr-2"></i>
-                        LMS
-                    </a>
-                    <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                        Quên mật khẩu
-                    </h2>
-                    <p class="mt-2 text-sm text-gray-600">
-                        Nhập email của bạn để nhận liên kết đặt lại mật khẩu
-                    </p>
-                </div>
-            </div>
-
-            <!-- Session Status -->
-            @if (session('status'))
-                <div class="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg text-sm">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        {{ session('status') }}
-                    </div>
-                </div>
-            @endif
-
-            <form class="mt-8 space-y-6" action="{{ route('password.email') }}" method="POST">
-                @csrf
-
-                <!-- Error Messages -->
-                @if ($errors->any())
-                    <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-                        <div class="flex items-center mb-2">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            <span class="font-medium">Có lỗi xảy ra:</span>
-                        </div>
-                        <ul class="list-disc list-inside text-sm">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <div class="space-y-4">
-                    <!-- Email Input -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Địa chỉ email
-                        </label>
-                        <div class="relative">
-                            <input id="email" name="email" type="email" autocomplete="email" required
-                                value="{{ old('email') }}"
-                                class="appearance-none relative block w-full px-4 py-3 pl-11 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
-                                placeholder="Nhập địa chỉ email của bạn">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-envelope text-gray-400"></i>
-                            </div>
-                        </div>
+<!-- Main Content -->
+<main class="flex-1 flex items-center justify-center py-12 px-4">
+     <div class="container max-w-md mx-auto">
+          <div class="auth-container">
+               <div class="p-8 md:p-12">
+                    <div class="text-center mb-8">
+                         <div
+                              class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <i class="fas fa-key text-indigo-600 text-2xl"></i>
+                         </div>
+                         <h1 class="text-3xl font-bold text-gray-800 mb-2">Quên mật khẩu?</h1>
+                         <p class="text-gray-600">Nhập email của bạn để nhận liên kết đặt lại mật khẩu</p>
                     </div>
 
-                    <!-- Submit Button -->
-                    <button type="submit"
-                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300">
-                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                            <i class="fas fa-paper-plane text-blue-500 group-hover:text-blue-400"></i>
-                        </span>
-                        Gửi liên kết đặt lại mật khẩu
-                    </button>
-                </div>
+                    <!-- Forgot Password Form -->
+                    <form class="space-y-6" method="POST" action="{{ route('password.email') }}">
+                         @csrf
+                         <div>
+                              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                   Email đăng ký <span class="text-red-500">*</span>
+                              </label>
 
-                <!-- Additional Links -->
-                <div class="text-center space-y-3">
-                    <p class="text-sm text-gray-600">
-                        Nhớ mật khẩu?
-                        <a href="{{ route('login') }}"
-                            class="font-medium text-blue-600 hover:text-blue-500 transition duration-300">
-                            Quay lại đăng nhập
-                        </a>
-                    </p>
-                    <p class="text-sm text-gray-600">
-                        Chưa có tài khoản?
-                        <a href="{{ route('register') }}"
-                            class="font-medium text-blue-600 hover:text-blue-500 transition duration-300">
-                            Đăng ký ngay
-                        </a>
-                    </p>
-                </div>
-            </form>
+                              <div class="input-group">
+                                   <i class="input-icon fas fa-envelope"></i>
+                                   <input type="email" id="email" name="email" required
+                                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="Nhập email của bạn">
+                              </div>
 
-            <!-- Help Section -->
-            <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div class="flex items-start space-x-3">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                              @error('email')
+                              <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span>
+                              @enderror
+                         </div>
+
+                         <button type="submit"
+                              class="w-full btn-primary text-white py-4 rounded-lg font-semibold text-lg transition duration-300">
+                              <i class="fas fa-paper-plane mr-2"></i>
+                              Gửi liên kết đặt lại
+                         </button>
+
+                         <!-- Success Message -->
+                         @if (session('status'))
+                         <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-green-700 text-center">
+                              <i class="fas fa-check-circle text-green-500 text-xl mb-2"></i>
+                              <p class="font-semibold">Liên kết đặt lại đã được gửi!</p>
+                              <p class="text-sm mt-1">Vui lòng kiểm tra email của bạn</p>
+                         </div>
+                         @endif
+                    </form>
+
+                    <div class="text-center mt-8">
+                         <p class="text-gray-600">
+                              Nhớ mật khẩu?
+                              <a href="{{ route('login') }}"
+                                   class="text-indigo-600 font-semibold hover:text-indigo-500 transition duration-200">Quay
+                                   lại đăng nhập</a>
+                         </p>
                     </div>
-                    <div>
-                        <h4 class="text-sm font-medium text-blue-800 mb-1">Hướng dẫn</h4>
-                        <ul class="text-xs text-blue-700 space-y-1">
-                            <li>• Kiểm tra hộp thư đến và thư rác (spam)</li>
-                            <li>• Liên kết đặt lại mật khẩu có hiệu lực trong 60 phút</li>
-                            <li>• Nếu không nhận được email, vui lòng thử lại sau ít phút</li>
-                        </ul>
+
+                    <!-- Help Section -->
+                    <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                         <div class="flex items-start">
+                              <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+                              <div class="text-sm text-blue-700">
+                                   <p class="font-semibold">Không nhận được email?</p>
+                                   <p class="mt-1">• Kiểm tra thư mục spam</p>
+                                   <p>• Đảm bảo bạn nhập đúng email đăng ký</p>
+                                   <p>• Liên hệ <a href="{{ route('contact') }}" class="underline">hỗ trợ</a> nếu cần
+                                        trợ giúp</p>
+                              </div>
+                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
+               </div>
+          </div>
+     </div>
+</main>
 @endsection

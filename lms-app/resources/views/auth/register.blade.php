@@ -47,7 +47,8 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                              <div>
                                                   <label for="first_name"
-                                                       class="block text-sm font-medium text-gray-700 mb-2">Họ *</label>
+                                                       class="block text-sm font-medium text-gray-700 mb-2">Họ <span
+                                                            class="text-red-500">*</span></label>
                                                   <div class="input-group">
                                                        <i class="input-icon fas fa-user"></i>
                                                        <input type="text" id="first_name" name="first_name" required
@@ -58,7 +59,7 @@
                                              <div>
                                                   <label for="last_name"
                                                        class="block text-sm font-medium text-gray-700 mb-2">Tên
-                                                       *</label>
+                                                       <span class="text-red-500">*</span></label>
                                                   <div class="input-group">
                                                        <i class="input-icon fas fa-user"></i>
                                                        <input type="text" id="last_name" name="last_name" required
@@ -70,7 +71,9 @@
 
                                         <div class="mt-6">
                                              <label for="email"
-                                                  class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                                                  class="block text-sm font-medium text-gray-700 mb-2">Email <span
+                                                       class="text-red-500">*</span>
+                                             </label>
                                              <div class="input-group">
                                                   <i class="input-icon fas fa-envelope"></i>
                                                   <input type="email" id="email" name="email" required
@@ -81,7 +84,7 @@
 
                                         <div class="mt-6 relative">
                                              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                                                  Mật khẩu *
+                                                  Mật khẩu <span class="text-red-500">*</span>
                                              </label>
                                              <div class="relative">
                                                   <i
@@ -137,7 +140,7 @@
                               <div class="text-center mt-8">
                                    <p class="text-gray-600">
                                         Đã có tài khoản?
-                                        <a href="login.html"
+                                        <a href="{{ route('login') }}"
                                              class="text-indigo-600 font-semibold hover:text-indigo-500 transition duration-200">Đăng
                                              nhập ngay</a>
                                    </p>
