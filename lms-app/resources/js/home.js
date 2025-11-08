@@ -152,25 +152,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    document.querySelector('#cart-popup button.bg-indigo-600').addEventListener('click', function() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cart.length === 0) {
-            alert('Giỏ hàng của bạn đang trống!');
-            return;
-        }
+    // document.querySelector('#cart-popup button.bg-indigo-600').addEventListener('click', function() {
+    //     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    //     if (cart.length === 0) {
+    //         alert('Giỏ hàng của bạn đang trống!');
+    //         return;
+    //     }
 
-        // Calculate total
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
+    //     // Calculate total
+    //     const total = cart.reduce((sum, item) => sum + item.price, 0);
 
-        // Update payment info
-        document.getElementById('payment-amount').textContent = formatPrice(total);
-        document.getElementById('payment-content').textContent =
-            `KHOAHOC${Date.now().toString().slice(-6)}`;
+    //     // Update payment info
+    //     document.getElementById('payment-amount').textContent = formatPrice(total);
+    //     document.getElementById('payment-content').textContent =
+    //         `KHOAHOC${Date.now().toString().slice(-6)}`;
 
-        // Close cart and open payment
-        document.getElementById('cart-popup').classList.add('hidden');
-        paymentPopup.classList.remove('hidden');
-    });
+    //     // Close cart and open payment
+    //     document.getElementById('cart-popup').classList.add('hidden');
+    //     paymentPopup.classList.remove('hidden');
+    // });
 
     // Close payment popup
     closePayment.addEventListener('click', function() {

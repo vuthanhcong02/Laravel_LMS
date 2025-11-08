@@ -40,7 +40,7 @@
                               </div>
 
                               <!-- Login Form -->
-                              <form id="login-form" class="space-y-6" method="POST" action="{{ route('login') }}">
+                              <form id="login-form" class="space-y-6" method="POST">
                                    @csrf
                                    <div>
                                         <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Tên
@@ -82,6 +82,14 @@
                                         <i class="fas fa-sign-in-alt mr-2"></i>
                                         Đăng nhập
                                    </button>
+                                   <!-- Success Message -->
+                                   <!-- Success Message -->
+                                   <div id="success-message"
+                                        class="hidden bg-green-50 border border-green-200 rounded-lg p-4 text-green-700 text-center">
+                                        <i class="fas fa-check-circle text-green-500 text-xl mb-2"></i>
+                                        <p class="font-semibold">Đăng nhập thành công!</p>
+                                        <p class="text-sm mt-1">Chào mừng bạn đến với Khóa Học Giá Rẻ</p>
+                                   </div>
 
                                    <!-- Error Message -->
                                    <div id="error-message"

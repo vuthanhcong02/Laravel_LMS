@@ -1,57 +1,63 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('login-form');
+    const successMessage = document.getElementById('success-message');
     const errorMessage = document.getElementById('error-message');
-    const togglePassword = document.getElementById('toggle-password');
-    const passwordInput = document.getElementById('password');
-
-    // Toggle password visibility
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
-    });
 
     // Form submission handling
-    loginForm.addEventListener('submit', function(e) {
+    loginForm.addEventListener('submit', async(e) => {
         e.preventDefault();
 
-        const username = document.getElementById('username').value;
+        const email = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const remember = document.getElementById('remember').checked;
+        const token = document.querySelector('meta[name="csrf-token"]').content;
 
-        // Simple validation
-        if (!username || !password) {
-            showError('Vui lòng điền đầy đủ thông tin đăng nhập');
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Đang xử lý...';
+        submitBtn.disabled = true;
+
+        if (!email || !password) {
+            errorText.textContent = "Vui lòng điền đầy đủ thông tin đăng nhập";
+            errorMessage.classList.remove('hidden');
             return;
         }
 
-        // Simulate login process
-        simulateLogin(username, password, remember);
-    });
+        try {
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ email, password, remember })
+            });
 
-    function simulateLogin(username, password, remember) {
-        // Show loading state
-        const submitBtn = loginForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Đang đăng nhập...';
-        submitBtn.disabled = true;
+            if (res.ok) {
+                successMessage.classList.remove("hidden");
+                errorMessage.classList.add("hidden");
 
-        // Simulate API call
-        setTimeout(() => {
-            // Mock login success for demo
-            // In real app, you would validate against your backend
-            if (username === 'demo' && password === 'demo') {
-                // Login successful
-                window.location.href = 'index.html';
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 2000);
             } else {
-                // Login failed
-                showError('Tên đăng nhập hoặc mật khẩu không đúng');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                const errData = await res.json();
+                const message = errData.message ||
+                    (errData.errors ?
+                        Object.values(errData.errors).flat().join(", ") :
+                        "Sai tài khoản hoặc mật khẩu");
+                showError(message);
             }
-        }, 1500);
-    }
+        } catch (err) {
+            console.error(err);
+            showError("Không thể kết nối đến máy chủ!");
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
 
     function showError(message) {
         document.getElementById('error-text').textContent = message;

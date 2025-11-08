@@ -16,13 +16,6 @@
                                    <p class="text-gray-600">Tạo tài khoản để khám phá thế giới tri thức</p>
                               </div>
 
-                              <!-- Step Indicator -->
-                              <div class="step-indicator">
-                                   <div class="step active" data-step="1"></div>
-                                   <div class="step" data-step="2"></div>
-                                   <div class="step" data-step="3"></div>
-                              </div>
-
                               <!-- Social Register Buttons -->
                               <div class="grid grid-cols-2 gap-4 mb-8">
                                    <button
@@ -47,27 +40,28 @@
                               </div>
 
                               <!-- Register Form -->
-                              <form id="register-form" class="space-y-6">
+                              <form id="register-form" class="space-y-6" method="POST">
+                                   @csrf
                                    <!-- Step 1: Basic Info -->
                                    <div class="form-step active" data-step="1">
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                              <div>
-                                                  <label for="firstName"
+                                                  <label for="first_name"
                                                        class="block text-sm font-medium text-gray-700 mb-2">Họ *</label>
                                                   <div class="input-group">
                                                        <i class="input-icon fas fa-user"></i>
-                                                       <input type="text" id="firstName" name="firstName" required
+                                                       <input type="text" id="first_name" name="first_name" required
                                                             class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                             placeholder="Nhập họ của bạn">
                                                   </div>
                                              </div>
                                              <div>
-                                                  <label for="lastName"
+                                                  <label for="last_name"
                                                        class="block text-sm font-medium text-gray-700 mb-2">Tên
                                                        *</label>
                                                   <div class="input-group">
                                                        <i class="input-icon fas fa-user"></i>
-                                                       <input type="text" id="lastName" name="lastName" required
+                                                       <input type="text" id="last_name" name="last_name" required
                                                             class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                             placeholder="Nhập tên của bạn">
                                                   </div>
@@ -85,123 +79,23 @@
                                              </div>
                                         </div>
 
-                                        <div class="mt-6">
-                                             <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Số
-                                                  điện thoại</label>
-                                             <div class="input-group">
-                                                  <i class="input-icon fas fa-phone"></i>
-                                                  <input type="tel" id="phone" name="phone"
-                                                       class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                                       placeholder="Nhập số điện thoại">
+                                        <div class="mt-6 relative">
+                                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                                  Mật khẩu *
+                                             </label>
+                                             <div class="relative">
+                                                  <i
+                                                       class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                                  <input type="password" id="password" name="password" required
+                                                       class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                       placeholder="Tạo mật khẩu" />
                                              </div>
-                                        </div>
-
-                                        <button type="button"
-                                             class="w-full mt-6 btn-primary text-white py-4 rounded-lg font-semibold text-lg transition duration-300 next-step">
-                                             Tiếp theo
-                                        </button>
-                                   </div>
-
-                                   <!-- Step 2: Account Details -->
-                                   <div class="form-step hidden" data-step="2">
-                                        <div>
-                                             <label for="username"
-                                                  class="block text-sm font-medium text-gray-700 mb-2">Tên đăng nhập
-                                                  *</label>
-                                             <div class="input-group">
-                                                  <i class="input-icon fas fa-user-circle"></i>
-                                                  <input type="text" id="username" name="username" required
-                                                       class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                                       placeholder="Chọn tên đăng nhập">
-                                             </div>
-                                             <p class="text-xs text-gray-500 mt-1">Tên đăng nhập phải có ít nhất 4 ký tự
+                                             <p class="text-xs text-gray-500 mt-1">
+                                                  Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số
                                              </p>
                                         </div>
 
-                                        <div class="mt-6">
-                                             <label for="password"
-                                                  class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu
-                                                  *</label>
-                                             <div class="input-group">
-                                                  <i class="input-icon fas fa-lock"></i>
-                                                  <input type="password" id="password" name="password" required
-                                                       class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                                       placeholder="Tạo mật khẩu">
-                                                  <i class="password-toggle fas fa-eye" id="toggle-password"></i>
-                                             </div>
-                                             <div id="password-strength" class="password-strength strength-weak"></div>
-                                             <p class="text-xs text-gray-500 mt-1">Mật khẩu phải có ít nhất 8 ký tự, bao
-                                                  gồm chữ hoa, chữ thường và số</p>
-                                        </div>
 
-                                        <div class="mt-6">
-                                             <label for="confirmPassword"
-                                                  class="block text-sm font-medium text-gray-700 mb-2">Xác nhận mật khẩu
-                                                  *</label>
-                                             <div class="input-group">
-                                                  <i class="input-icon fas fa-lock"></i>
-                                                  <input type="password" id="confirmPassword" name="confirmPassword"
-                                                       required
-                                                       class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                                       placeholder="Nhập lại mật khẩu">
-                                                  <i class="password-toggle fas fa-eye"
-                                                       id="toggle-confirm-password"></i>
-                                             </div>
-                                        </div>
-
-                                        <div class="flex space-x-4 mt-6">
-                                             <button type="button"
-                                                  class="flex-1 border border-gray-300 text-gray-700 py-4 rounded-lg font-semibold hover:bg-gray-50 transition duration-300 prev-step">
-                                                  Quay lại
-                                             </button>
-                                             <button type="button"
-                                                  class="flex-1 btn-primary text-white py-4 rounded-lg font-semibold text-lg transition duration-300 next-step">
-                                                  Tiếp theo
-                                             </button>
-                                        </div>
-                                   </div>
-
-                                   <!-- Step 3: Preferences & Terms -->
-                                   <div class="form-step hidden" data-step="3">
-                                        <div>
-                                             <label class="block text-sm font-medium text-gray-700 mb-4">Sở thích học
-                                                  tập (tùy chọn)</label>
-                                             <div class="grid grid-cols-2 gap-3">
-                                                  <label
-                                                       class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition duration-200">
-                                                       <input type="checkbox" name="interests" value="technology"
-                                                            class="mr-3 text-indigo-600 focus:ring-indigo-500">
-                                                       <span>Công nghệ</span>
-                                                  </label>
-                                                  <label
-                                                       class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition duration-200">
-                                                       <input type="checkbox" name="interests" value="business"
-                                                            class="mr-3 text-indigo-600 focus:ring-indigo-500">
-                                                       <span>Kinh doanh</span>
-                                                  </label>
-                                                  <label
-                                                       class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition duration-200">
-                                                       <input type="checkbox" name="interests" value="design"
-                                                            class="mr-3 text-indigo-600 focus:ring-indigo-500">
-                                                       <span>Thiết kế</span>
-                                                  </label>
-                                                  <label
-                                                       class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition duration-200">
-                                                       <input type="checkbox" name="interests" value="creative"
-                                                            class="mr-3 text-indigo-600 focus:ring-indigo-500">
-                                                       <span>Sáng tạo</span>
-                                                  </label>
-                                             </div>
-                                        </div>
-
-                                        <div class="mt-6">
-                                             <label class="flex items-start">
-                                                  <input type="checkbox" id="newsletter" name="newsletter"
-                                                       class="mt-1 mr-3 text-indigo-600 focus:ring-indigo-500">
-                                                  <span class="text-sm text-gray-700">Tôi muốn nhận thông tin về khóa
-                                                       học mới và chương trình khuyến mãi qua email</span>
-                                             </label>
-                                        </div>
 
                                         <div class="mt-6">
                                              <label class="flex items-start">
@@ -218,17 +112,10 @@
                                              </label>
                                         </div>
 
-                                        <div class="flex space-x-4 mt-6">
-                                             <button type="button"
-                                                  class="flex-1 border border-gray-300 text-gray-700 py-4 rounded-lg font-semibold hover:bg-gray-50 transition duration-300 prev-step">
-                                                  Quay lại
-                                             </button>
-                                             <button type="submit"
-                                                  class="flex-1 btn-primary text-white py-4 rounded-lg font-semibold text-lg transition duration-300">
-                                                  <i class="fas fa-user-plus mr-2"></i>
-                                                  Đăng ký
-                                             </button>
-                                        </div>
+                                        <button type="submit"
+                                             class="w-full mt-6 btn-primary text-white py-4 rounded-lg font-semibold text-lg transition duration-300 next-step">
+                                             Đăng ký
+                                        </button>
                                    </div>
 
                                    <!-- Success Message -->

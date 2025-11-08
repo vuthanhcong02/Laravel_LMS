@@ -31,19 +31,27 @@
                <!-- User Section -->
                <div class="relative" id="user-section">
                     <!-- Chưa đăng nhập -->
-                    <!-- <div id="guest-menu" class="hidden lg:block">
+                    @guest
+                    <div id="guest-menu" class="hidden lg:block">
                          <a href="{{ route('login') }}" class="btn-primary text-white px-4 py-2 rounded-md">Đăng
                               nhập</a>
-                    </div> -->
-
+                    </div>
+                    @endguest
+                    @auth
                     <!-- Đã đăng nhập -->
-                    <div id="user-menu" class="">
+                    <div id="user-menu" class="hidden lg:block relative">
                          <button id="user-button"
                               class="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 transition duration-300">
                               <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                                   <i class="fas fa-user text-indigo-600"></i>
+                                   @if (Auth::user()->avatar)
+                                   <img src="{{ Auth::user()->avatar }}" alt="Avatar"
+                                        class="w-8 h-8 rounded-full object-cover">
+                                   @else
+                                   {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                                   @endif
                               </div>
-                              <span class="hidden sm:block font-medium">Nguyễn Văn A</span>
+                              <span class="hidden sm:block font-medium">{{ Auth::user()->first_name }}
+                                   {{ Auth::user()->last_name }}</span>
                               <i class="fas fa-chevron-down text-sm"></i>
                          </button>
 
@@ -51,8 +59,10 @@
                          <div id="user-dropdown"
                               class="user-dropdown absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                               <div class="px-4 py-2 border-b border-gray-100">
-                                   <p class="text-sm font-semibold text-gray-800">Nguyễn Văn A</p>
-                                   <p class="text-xs text-gray-500">user@example.com</p>
+                                   <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }}
+                                        {{ Auth::user()->last_name }}
+                                   </p>
+                                   <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                               </div>
                               <a href="profile.html"
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
@@ -70,14 +80,18 @@
                                    Lịch sử mua hàng
                               </a>
                               <div class="border-t border-gray-100 mt-2 pt-2">
-                                   <button id="logout-button"
-                                        class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition duration-200">
-                                        <i class="fas fa-sign-out-alt mr-3 w-4"></i>
-                                        Đăng xuất
-                                   </button>
+                                   <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                             class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                                             <i class="fas fa-sign-out-alt mr-3 w-4"></i>
+                                             Đăng xuất
+                                        </button>
+                                   </form>
                               </div>
                          </div>
                     </div>
+                    @endauth
                </div>
 
                <!-- Mobile Menu Button -->
@@ -117,19 +131,29 @@
 
                     <!-- Mobile User Section -->
                     <div class="border-t border-gray-200 pt-4 mt-4">
-                         <!-- <div id="mobile-guest-menu">
+                         @guest
+                         <div id="mobile-guest-menu">
                               <a href="{{ route('login') }}"
                                    class="block w-full text-center btn-primary text-white px-4 py-2 rounded-md">Đăng
                                    nhập</a>
-                         </div> -->
+                         </div>
+                         @endguest
+                         @auth
                          <div id="mobile-user-menu" class="">
                               <div class="flex items-center space-x-3 mb-4 p-2 bg-gray-50 rounded-lg">
                                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-user text-indigo-600"></i>
+                                        @if (Auth::user()->avatar)
+                                        <img src="{{ Auth::user()->avatar }}" alt="Avatar"
+                                             class="w-8 h-8 rounded-full object-cover">
+                                        @else
+                                        {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                                        @endif
                                    </div>
                                    <div>
-                                        <p class="text-sm font-semibold text-gray-800">Nguyễn Văn A</p>
-                                        <p class="text-xs text-gray-500">user@example.com</p>
+                                        <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }}
+                                             {{ Auth::user()->last_name }}
+                                        </p>
+                                        <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                                    </div>
                               </div>
                               <a href="profile.html"
@@ -147,12 +171,16 @@
                                    <i class="fas fa-history mr-3 w-4"></i>
                                    Lịch sử mua hàng
                               </a>
-                              <button
-                                   class="flex items-center w-full py-2 px-4 text-red-600 hover:bg-red-50 rounded-lg transition duration-200 mt-2">
-                                   <i class="fas fa-sign-out-alt mr-3 w-4"></i>
-                                   Đăng xuất
-                              </button>
+                              <form method="POST" action="{{ route('logout') }}">
+                                   @csrf
+                                   <button type="submit"
+                                        class="flex items-center w-full py-2 px-4 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                                        <i class="fas fa-sign-out-alt mr-3 w-4"></i>
+                                        Đăng xuất
+                                   </button>
+                              </form>
                          </div>
+                         @endauth
                     </div>
                </nav>
           </div>

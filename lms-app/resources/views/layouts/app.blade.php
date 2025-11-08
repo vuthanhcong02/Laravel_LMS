@@ -8,6 +8,7 @@
           content="Khóa học giá rẻ, chất lượng cao. Học mọi lúc, mọi nơi với hàng ngàn khóa học đa dạng.">
      <meta name="keywords" content="khóa học, học online, giá rẻ, kỹ năng, kiến thức">
      <title>@yield('title')</title>
+     <meta name="csrf-token" content="{{ csrf_token() }}">
      @vite(['resources/css/app.css', 'resources/js/app.js'])
      <link rel="stylesheet" href="{{ asset('css/common.css') }}">
 </head>
