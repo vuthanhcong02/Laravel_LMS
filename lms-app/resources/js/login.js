@@ -69,15 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
-    // Social login handlers
-    document.querySelector('.google-btn').addEventListener('click', function() {
-        alert('Chức năng đăng nhập bằng Google đang được phát triển');
-    });
-
-    document.querySelector('.facebook-btn').addEventListener('click', function() {
-        alert('Chức năng đăng nhập bằng Facebook đang được phát triển');
-    });
-
     // Cart functionality
     let cartCount = localStorage.getItem('cartCount') || 0;
     document.querySelector('.cart-count').textContent = cartCount;

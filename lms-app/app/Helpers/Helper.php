@@ -7,6 +7,9 @@ if (! function_exists('splitName')) {
         $firstName = array_shift($nameParts);
         $lastName = implode(' ', $nameParts);
 
-        return [$firstName, $lastName];
+        return [
+            'first_name' => $firstName ?? '',
+            'last_name'  => $lastName ?? '',
+        ];;
     }
 }

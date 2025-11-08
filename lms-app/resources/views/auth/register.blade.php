@@ -18,16 +18,16 @@
 
                               <!-- Social Register Buttons -->
                               <div class="grid grid-cols-2 gap-4 mb-8">
-                                   <button
+                                   <a href="{{ route('socialite.redirect', ['provider' => 'google']) }}"
                                         class="social-btn google-btn bg-white py-3 rounded-lg font-semibold flex items-center justify-center">
                                         <i class="fab fa-google text-red-500 mr-2"></i>
                                         Google
-                                   </button>
-                                   <button
+                                   </a>
+                                   <a href="{{ route('socialite.redirect', ['provider' => 'facebook']) }}"
                                         class="social-btn facebook-btn bg-white py-3 rounded-lg font-semibold flex items-center justify-center">
                                         <i class="fab fa-facebook text-blue-600 mr-2"></i>
                                         Facebook
-                                   </button>
+                                   </a>
                               </div>
 
                               <div class="relative mb-8">

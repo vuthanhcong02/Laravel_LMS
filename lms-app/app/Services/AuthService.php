@@ -67,7 +67,7 @@ class AuthService
 
             return redirect(RouteServiceProvider::HOME);
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->withErrors(['error' => 'Đăng ký thất bại: '.$e->getMessage()]);
+            return redirect()->back()->withInput()->withErrors(['error' => 'Đăng ký thất bại: ' . $e->getMessage()]);
         }
     }
 
@@ -80,18 +80,18 @@ class AuthService
     public function handleCallbackSocial($request, $provider): RedirectResponse
     {
         if ($request->has('error')) {
-            return redirect('/login')->with('error', 'Bạn đã hủy đăng nhập '.ucfirst($provider));
+            return redirect('/login')->with('error', 'Bạn đã hủy đăng nhập ' . ucfirst($provider));
         }
         try {
             $socialUser = Socialite::driver($provider)->user();
 
             if (! $socialUser || ! $socialUser->getId()) {
-                return redirect('/login')->with('error', 'Không lấy được thông tin từ '.ucfirst($provider));
+                return redirect('/login')->with('error', 'Không lấy được thông tin từ ' . ucfirst($provider));
             }
 
             $email = $socialUser->getEmail();
             if (! $email) {
-                return redirect('/login')->with('error', 'Tài khoản '.ucfirst($provider).' không có email.');
+                return redirect('/login')->with('error', 'Tài khoản ' . ucfirst($provider) . ' không có email.');
             }
 
             $user = User::where('email', $email)->first();
@@ -115,7 +115,8 @@ class AuthService
 
             return redirect(RouteServiceProvider::HOME);
         } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Đăng nhập '.ucfirst($provider).' thất bại: '.$e->getMessage());
+            \Log::error('Social login error: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại: ' . $e->getMessage());
         }
     }
 
@@ -142,6 +143,6 @@ class AuthService
         return $status == Password::PASSWORD_RESET
             ? redirect()->route('home')->with('status', __($status))
             : back()->withInput($request->only('email'))
-                ->withErrors(['email' => __($status)]);
+            ->withErrors(['email' => __($status)]);
     }
 }

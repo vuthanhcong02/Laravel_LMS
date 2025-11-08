@@ -66,13 +66,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
-    // Social register handlers
-    document.querySelector('.google-btn').addEventListener('click', function() {
-        alert('Chức năng đăng ký bằng Google đang được phát triển');
-    });
-
-    document.querySelector('.facebook-btn').addEventListener('click', function() {
-        alert('Chức năng đăng ký bằng Facebook đang được phát triển');
-    });
-
 });

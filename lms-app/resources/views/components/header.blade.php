@@ -62,7 +62,10 @@
                                    <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }}
                                         {{ Auth::user()->last_name }}
                                    </p>
-                                   <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
+                                   <p class="text-xs text-gray-500 truncate max-w-[150px] block"
+                                        title="{{ Auth::user()->email }}">
+                                        {{ Auth::user()->email }}
+                                   </p>
                               </div>
                               <a href="profile.html"
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
