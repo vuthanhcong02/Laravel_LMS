@@ -19,6 +19,8 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/', 'getViewHome')->name('home');
     Route::get('/about', 'getViewAbout')->name('about');
     Route::get('/contact', 'getViewContact')->name('contact');
+    Route::get('/courses', 'getViewCourses')->name('courses');
+    Route::get('/course/{id}', 'getViewCourseDetail')->name('course.detail');
 });
 
 Route::get('/dashboard', function () {

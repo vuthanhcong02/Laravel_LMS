@@ -18,4 +18,14 @@ class PageController extends Controller
     {
         return view('contact');
     }
+
+    public function getViewCourses()
+    {
+        return view('course.index');
+    }
+
+    public function getViewCourseDetail($id)
+    {
+        return view('course.show', ['id' => $id]);
+    }
 }
