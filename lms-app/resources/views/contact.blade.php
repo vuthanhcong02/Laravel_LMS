@@ -2,206 +2,158 @@
 
 @section('title', 'Liên hệ')
 
+@section('breadcrumb', 'Liên hệ')
+
 @section('content')
-<x-breadcrumb />
-<!-- Hero Section -->
-<section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-16">
-     <div class="container mx-auto px-4 text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-6">Liên Hệ Với Chúng Tôi</h1>
-          <p class="text-xl md:text-2xl max-w-3xl mx-auto">Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Đừng ngần
-               ngại liên hệ khi cần tư vấn hoặc giải đáp thắc mắc.</p>
-     </div>
-</section>
-
-<!-- Contact Info -->
-<section class="py-16 bg-white">
-     <div class="container mx-auto px-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-               <!-- Contact Card 1 -->
-               <div class="contact-card bg-white rounded-2xl p-8 text-center shadow-md border border-gray-100">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                         <i class="fas fa-map-marker-alt text-indigo-600 text-2xl"></i>
+    <main class="flex-1 max-w-[1200px] mx-auto w-full px-6 py-12 md:py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <!-- Left Column: Info -->
+            <div class="flex flex-col gap-8">
+                <div class="space-y-6">
+                    <h2 class="font-heading text-2xl font-bold text-slate-900 dark:text-white mb-6">Thông tin liên hệ</h2>
+                    <!-- Contact Item -->
+                    <div
+                        class="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
+                        <div class="bg-primary/20 text-primary p-3 rounded-lg">
+                            <span class="material-symbols-outlined text-2xl">location_on</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-900 dark:text-white">Địa chỉ</p>
+                            <p class="text-slate-600 dark:text-slate-400">Số 15, Ngõ 10, Giao thông vận tải, Hà Nội</p>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Địa chỉ</h3>
-                    <p class="text-gray-600 mb-2">123 Đường ABC</p>
-                    <p class="text-gray-600">Quận XYZ, TP. Hồ Chí Minh</p>
-               </div>
-
-               <!-- Contact Card 2 -->
-               <div class="contact-card bg-white rounded-2xl p-8 text-center shadow-md border border-gray-100">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                         <i class="fas fa-phone-alt text-green-600 text-2xl"></i>
+                    <!-- Contact Item -->
+                    <div
+                        class="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
+                        <div class="bg-primary/20 text-primary p-3 rounded-lg">
+                            <span class="material-symbols-outlined text-2xl">call</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-900 dark:text-white">Số điện thoại</p>
+                            <p class="text-slate-600 dark:text-slate-400">+84 123 456 789</p>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Điện thoại</h3>
-                    <p class="text-gray-600 mb-2">Hotline: 1900 1234</p>
-                    <p class="text-gray-600">Support: 028 3456 7890</p>
-               </div>
-
-               <!-- Contact Card 3 -->
-               <div class="contact-card bg-white rounded-2xl p-8 text-center shadow-md border border-gray-100">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                         <i class="fas fa-envelope text-blue-600 text-2xl"></i>
+                    <!-- Contact Item -->
+                    <div
+                        class="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
+                        <div class="bg-primary/20 text-primary p-3 rounded-lg">
+                            <span class="material-symbols-outlined text-2xl">mail</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-900 dark:text-white">Email</p>
+                            <p class="text-slate-600 dark:text-slate-400">info@xiaomu.vn</p>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Email</h3>
-                    <p class="text-gray-600 mb-2">support@khoahocgiare.com</p>
-                    <p class="text-gray-600">info@khoahocgiare.com</p>
-               </div>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-               <!-- Contact Form -->
-               <div>
-                    <h2 class="text-3xl font-bold mb-6">Gửi tin nhắn cho chúng tôi</h2>
-                    <p class="text-gray-600 mb-8">Điền thông tin bên dưới và chúng tôi sẽ phản hồi trong thời gian sớm
-                         nhất.</p>
-
-                    <form id="contact-form" class="space-y-6">
-                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                   <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Họ và tên
-                                        *</label>
-                                   <input type="text" id="name" name="name" required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                              </div>
-                              <div>
-                                   <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email
-                                        *</label>
-                                   <input type="email" id="email" name="email" required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                              </div>
-                         </div>
-
-                         <div>
-                              <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Số điện
-                                   thoại</label>
-                              <input type="tel" id="phone" name="phone"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                         </div>
-
-                         <div>
-                              <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Chủ đề *</label>
-                              <select id="subject" name="subject" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                   <option value="">Chọn chủ đề</option>
-                                   <option value="support">Hỗ trợ kỹ thuật</option>
-                                   <option value="course">Tư vấn khóa học</option>
-                                   <option value="payment">Vấn đề thanh toán</option>
-                                   <option value="partnership">Hợp tác đối tác</option>
-                                   <option value="other">Khác</option>
-                              </select>
-                         </div>
-
-                         <div>
-                              <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Nội dung
-                                   *</label>
-                              <textarea id="message" name="message" rows="6" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                   placeholder="Hãy mô tả chi tiết vấn đề của bạn..."></textarea>
-                         </div>
-
-                         <button type="submit"
-                              class="w-full btn-primary text-white py-4 rounded-lg font-semibold text-lg">
-                              <i class="fas fa-paper-plane mr-2"></i>
-                              Gửi tin nhắn
-                         </button>
-
-                         <!-- Success Message -->
-                         <div id="success-message"
-                              class="success-message bg-green-50 border border-green-200 rounded-lg p-4 text-green-700 text-center">
-                              <i class="fas fa-check-circle text-green-500 text-xl mb-2"></i>
-                              <p class="font-semibold">Cảm ơn bạn! Tin nhắn đã được gửi thành công.</p>
-                              <p class="text-sm mt-1">Chúng tôi sẽ phản hồi trong thời gian sớm nhất.</p>
-                         </div>
-                    </form>
-               </div>
-
-               <!-- Map & Additional Info -->
-               <div>
-                    <!-- Map -->
-                    <div class="map-container mb-8">
-                         <div
-                              class="bg-gradient-to-br from-indigo-100 to-purple-100 h-80 flex items-center justify-center">
-                              <div class="text-center">
-                                   <i class="fas fa-map-marked-alt text-indigo-600 text-4xl mb-4"></i>
-                                   <p class="text-gray-600 font-semibold">Bản đồ vị trí</p>
-                                   <p class="text-gray-500 text-sm mt-2">123 Đường ABC, Quận XYZ, TP.HCM</p>
-                              </div>
-                         </div>
+                    <!-- Contact Item -->
+                    <div
+                        class="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
+                        <div class="bg-primary/20 text-primary p-3 rounded-lg">
+                            <span class="material-symbols-outlined text-2xl">schedule</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-900 dark:text-white">Thời gian làm việc</p>
+                            <p class="text-slate-600 dark:text-slate-400">Thứ 2 - Thứ 7: 8:00 - 21:00</p>
+                        </div>
                     </div>
-
-                    <!-- Business Hours -->
-                    <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 mb-8">
-                         <h3 class="text-xl font-bold mb-4 flex items-center">
-                              <i class="fas fa-clock text-indigo-600 mr-3"></i>
-                              Giờ làm việc
-                         </h3>
-                         <div class="space-y-3">
-                              <div class="flex justify-between">
-                                   <span class="text-gray-600">Thứ 2 - Thứ 6</span>
-                                   <span class="font-semibold">8:00 - 18:00</span>
-                              </div>
-                              <div class="flex justify-between">
-                                   <span class="text-gray-600">Thứ 7</span>
-                                   <span class="font-semibold">8:00 - 12:00</span>
-                              </div>
-                              <div class="flex justify-between">
-                                   <span class="text-gray-600">Chủ nhật</span>
-                                   <span class="font-semibold text-red-500">Nghỉ</span>
-                              </div>
-                         </div>
+                </div>
+                <!-- Social Links -->
+                <div class="flex gap-4">
+                    <a class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary hover:text-white transition-all"
+                        href="#">
+                        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z">
+                            </path>
+                        </svg>
+                    </a>
+                    <a class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary hover:text-white transition-all"
+                        href="#">
+                        <span class="material-symbols-outlined">chat</span>
+                    </a>
+                    <a class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary hover:text-white transition-all"
+                        href="#">
+                        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+                <!-- Map Placeholder -->
+                <div
+                    class="rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 h-64 relative bg-slate-200 dark:bg-slate-800">
+                    <div class="absolute inset-0 bg-cover bg-center"
+                        data-alt="Bản đồ vị trí trung tâm XiaoMu Chinese tại Hà Nội" data-location="Hanoi, Vietnam"
+                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAerVm8IvFEnHlrorc8Fd5FXdV9x_BhouRV9TaD-Yexe0usm7ueKdZ6AxYFWQrjlGwa8yZ3D22FFp1WXSz0nT6vwUjJl_hoPHcTJNpnVJKtjawZJ02Yqw0rEBSjldTQQtiNrCQ5AbGDoAXoRBwlDtbAtYCWOkqBtx6IdZygnK9I4qH81zYf9F6QGGKvrY3v4kVrSZZcTPgcn52jFQqVfBTXE84N9iewzW8-cx3sUOgpWhDPGjBj5o2gKRxCo3fBlxcK34xB7pCKxQ');">
                     </div>
-
-                    <!-- FAQ Quick Links -->
-                    <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-                         <h3 class="text-xl font-bold mb-4 flex items-center">
-                              <i class="fas fa-question-circle text-indigo-600 mr-3"></i>
-                              Câu hỏi thường gặp
-                         </h3>
-                         <div class="space-y-3">
-                              <a href="#"
-                                   class="block p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition duration-200">
-                                   <div class="font-semibold text-gray-800">Làm thế nào để đăng ký khóa học?</div>
-                              </a>
-                              <a href="#"
-                                   class="block p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition duration-200">
-                                   <div class="font-semibold text-gray-800">Phương thức thanh toán nào được chấp nhận?
-                                   </div>
-                              </a>
-                              <a href="#"
-                                   class="block p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition duration-200">
-                                   <div class="font-semibold text-gray-800">Tôi có thể học trên thiết bị di động không?
-                                   </div>
-                              </a>
-                              <a href="#"
-                                   class="block p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition duration-200">
-                                   <div class="font-semibold text-gray-800">Chính sách hoàn tiền như thế nào?</div>
-                              </a>
-                         </div>
+                    <div class="absolute inset-0 bg-primary/10 flex items-center justify-center pointer-events-none">
+                        <div
+                            class="bg-white/90 dark:bg-slate-900/90 px-4 py-2 rounded-full shadow-lg border border-primary/20 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-red-500">location_on</span>
+                            <span class="text-sm font-semibold">Giao thông vận tải, Hà Nội</span>
+                        </div>
                     </div>
-               </div>
-          </div>
-     </div>
-</section>
-
-<!-- CTA Section -->
-<section class="py-16 bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
-     <div class="container mx-auto px-4 text-center">
-          <h2 class="text-3xl md:text-4xl font-bold mb-6">Cần hỗ trợ ngay lập tức?</h2>
-          <p class="text-xl mb-8 max-w-2xl mx-auto">Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc
-               24/7</p>
-          <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-               <a href="tel:19001234"
-                    class="bg-white text-indigo-600 px-8 py-3 rounded-md font-semibold hover:bg-gray-100 transition duration-300">
-                    <i class="fas fa-phone-alt mr-2"></i>
-                    Gọi ngay: 1900 1234
-               </a>
-               <a href="mailto:support@khoahocgiare.com"
-                    class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-md font-semibold hover:bg-white hover:text-indigo-600 transition duration-300">
-                    <i class="fas fa-envelope mr-2"></i>
-                    support@khoahocgiare.com
-               </a>
-          </div>
-     </div>
-</section>
+                </div>
+            </div>
+            <!-- Right Column: Form Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 p-8">
+                <h2 class="font-heading text-2xl font-bold text-slate-900 dark:text-white mb-2">Gửi tin nhắn cho chúng tôi
+                </h2>
+                <p class="text-slate-600 dark:text-slate-400 mb-8">Điền thông tin bên dưới, chuyên viên tư vấn
+                    sẽ liên hệ lại ngay.</p>
+                <form class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Họ và
+                            tên</label>
+                        <input
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            placeholder="Nhập họ tên của bạn" type="text" />
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email</label>
+                            <input
+                                class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="email@example.com" type="email" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Số
+                                điện thoại</label>
+                            <input
+                                class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="09xx xxx xxx" type="tel" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Khóa
+                            học quan tâm</label>
+                        <select
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none cursor-pointer">
+                            <option disabled="" selected="" value="">Chọn trình độ HSK</option>
+                            <option value="hsk1">HSK 1 - Sơ cấp</option>
+                            <option value="hsk2">HSK 2 - Sơ cấp</option>
+                            <option value="hsk3">HSK 3 - Trung cấp</option>
+                            <option value="hsk4">HSK 4 - Trung cấp</option>
+                            <option value="hsk5">HSK 5 - Cao cấp</option>
+                            <option value="hsk6">HSK 6 - Cao cấp</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Lời
+                            nhắn</label>
+                        <textarea
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                            placeholder="Bạn có thắc mắc gì cho chúng tôi không?" rows="4"></textarea>
+                    </div>
+                    <button
+                        class="w-full py-4 bg-primary text-white font-bold rounded-lg text-lg hover:opacity-90 shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2"
+                        type="submit">
+                        <span class="material-symbols-outlined">send</span>
+                        Gửi tin nhắn
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
 @endsection
 @vite(['resources/js/contact.js'])

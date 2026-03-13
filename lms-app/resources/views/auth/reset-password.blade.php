@@ -2,95 +2,72 @@
 
 @section('title', 'Đặt lại mật khẩu')
 
+@section('breadcrumb', 'Đặt lại mật khẩu')
+
 @section('content')
-<!-- Main Content -->
-<main class="flex-1 flex items-center justify-center py-12 px-4">
-     <div class="container max-w-md mx-auto">
-          <div class="auth-container">
-               <div class="p-8 md:p-12">
-                    <div class="text-center mb-8">
-                         <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                              <i class="fas fa-lock text-green-600 text-2xl"></i>
-                         </div>
-                         <h1 class="text-3xl font-bold text-gray-800 mb-2">Đặt lại mật khẩu</h1>
-                         <p class="text-gray-600">Tạo mật khẩu mới cho tài khoản của bạn</p>
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-[480px] bg-white dark:bg-slate-900 rounded-xl shadow-xl shadow-primary/5 border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div class="p-8 pb-4">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-primary/10 p-4 rounded-full">
+                        <span class="material-symbols-outlined text-primary text-4xl">lock_reset</span>
                     </div>
-
-                    <!-- Reset Password Form -->
-                    <form class="space-y-6" action="{{ route('password.store') }}" method="POST">
-                         @csrf
-                         <!-- Password Reset Token -->
-                         <input type="hidden" name="token" value="{{ $request->route('token') }}">
-                         <div>
-                              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                                   Địa chỉ email
-                              </label>
-                              <div class="relative">
-                                   <input id="email" name="email" type="email" autocomplete="email" required readonly
-                                        value="{{ old('email', $request->email) }}"
-                                        class="appearance-none relative block w-full px-4 py-3 pl-11 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
-                                        placeholder="Nhập địa chỉ email của bạn">
-                                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class="fas fa-envelope text-gray-400"></i>
-                                   </div>
-                              </div>
-                              @error('email')
-                              <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span>
-                              @enderror
-                         </div>
-
-                         <div>
-                              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu mới
-                                   <span class="text-red-500">*</span>
-                              </label>
-                              <div class="input-group">
-                                   <i class="input-icon fas fa-lock"></i>
-                                   <input type="password" id="password" name="password" required
-                                        class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        placeholder="Nhập mật khẩu mới">
-                                   <i class="password-toggle fas fa-eye" id="toggle-password"></i>
-                              </div>
-                              <p class="text-xs text-gray-500 mt-1">Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa,
-                                   chữ thường và số</p>
-                              @error('password')
-                              <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span>
-                              @enderror
-                         </div>
-                         <div>
-                              <label for="password_confirmation"
-                                   class="block text-sm font-medium text-gray-700 mb-2">Xác
-                                   nhận
-                                   mật khẩu <span class="text-red-500">*</span>
-                              </label>
-                              <div class="input-group">
-                                   <i class="input-icon fas fa-lock"></i>
-                                   <input type="password" name="password_confirmation" required
-                                        class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        placeholder="Nhập lại mật khẩu mới">
-                                   <i class="password-toggle fas fa-eye" id="toggle-confirm-password"></i>
-                              </div>
-                              @error('password_confirmation')
-                              <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span>
-                              @enderror
-                         </div>
-
-                         <button type="submit"
-                              class="w-full btn-primary text-white py-4 rounded-lg font-semibold text-lg transition duration-300">
-                              <i class="fas fa-save mr-2"></i>
-                              Đặt lại mật khẩu
-                         </button>
-                    </form>
-
-                    <div class="text-center mt-8">
-                         <p class="text-gray-600">
-                              Quay lại
-                              <a href="{{ route('login') }}"
-                                   class="text-indigo-600 font-semibold hover:text-indigo-500 transition duration-200">đăng
-                                   nhập</a>
-                         </p>
+                </div>
+                <div class="text-center">
+                    <h1 class="font-heading text-2xl font-bold text-slate-900 dark:text-white mb-2">Đặt lại mật khẩu</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Vui lòng nhập mật khẩu mới của bạn để bảo mật tài
+                        khoản.</p>
+                </div>
+            </div>
+            <form class="p-8 pt-4 space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mật khẩu mới</label>
+                    <div class="relative">
+                        <input
+                            class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12 text-slate-900 dark:text-white placeholder:text-slate-400"
+                            placeholder="Nhập mật khẩu mới" type="password" />
+                        <button
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center"
+                            type="button">
+                            <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+                        </button>
                     </div>
-               </div>
-          </div>
-     </div>
-</main>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Xác nhận mật khẩu
+                        mới</label>
+                    <div class="relative">
+                        <input
+                            class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12 text-slate-900 dark:text-white placeholder:text-slate-400"
+                            placeholder="Nhập lại mật khẩu mới" type="password" />
+                        <button
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center"
+                            type="button">
+                            <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="space-y-4 pt-2">
+                    <button
+                        class="w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold h-12 rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                        type="submit">
+                        Cập nhật mật khẩu
+                    </button>
+                    <a class="block text-center text-sm font-medium text-slate-500 hover:text-primary transition-colors"
+                        href="#">
+                        Quay lại trang Đăng nhập
+                    </a>
+                </div>
+            </form>
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-100 dark:border-slate-800">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-primary text-xl">info</span>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Mật khẩu nên chứa ít nhất 8 ký tự, bao gồm chữ cái in hoa, chữ thường và ít nhất một chữ số.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
 @endsection

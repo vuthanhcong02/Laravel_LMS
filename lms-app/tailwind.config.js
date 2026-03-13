@@ -7,12 +7,19 @@ export default {
         "./storage/framework/views/*.php",
         "./resources/views/**/*.blade.php",
     ],
-
+    darkMode: "class",
     theme: {
         extend: {
-            fontFamily: {
-                inter: ['Inter', 'sans-serif'],
+            colors: {
+                "primary": "#8fc0e0",
+                "background-light": "#f6f7f8",
+                "background-dark": "#131a1f",
             },
+            fontFamily: {
+                "display": ["Inter", "sans-serif"],
+                "heading": ["Poppins", "sans-serif"]
+            },
+            borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
         },
     },
 
