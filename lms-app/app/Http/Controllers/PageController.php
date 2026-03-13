@@ -19,13 +19,18 @@ class PageController extends Controller
         return view('contact');
     }
 
-    public function getViewCourses()
+    public function getVIewRoadMap()
     {
-        return view('course.index');
+        return view('roadmap');
     }
 
-    public function getViewCourseDetail($id)
+    public function getViewCourses()
     {
-        return view('course.show', ['id' => $id]);
+        return view('course');
+    }
+
+    public function getViewBlog()
+    {
+        return view('blog');
     }
 }

@@ -1,68 +1,62 @@
- <footer class="bg-gray-800 text-white py-12">
-      <div class="container mx-auto px-4">
-           <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                     <h3 class="text-xl font-bold mb-4">Khóa Học Giá Rẻ</h3>
-                     <p class="text-gray-400">Nền tảng học tập trực tuyến với các khóa học chất lượng cao và giá cả phải
-                          chăng.</p>
+<footer class="bg-slate-900 py-16 text-slate-400 mt-36">
+    <div class="mx-auto max-w-7xl px-6">
+        <div class="grid gap-12 lg:grid-cols-4">
+            <div class="flex flex-col gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded bg-primary text-white">
+                        <span class="material-symbols-outlined text-sm">translate</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-white">XiaoMu Chinese</h2>
                 </div>
-
-                <div>
-                     <h4 class="font-bold mb-4">Liên kết nhanh</h4>
-                     <ul class="space-y-2">
-                          <li><a href="index.html" class="text-gray-400 hover:text-white transition duration-300">Trang
-                                    chủ</a></li>
-                          <li><a href="courses.html" class="text-gray-400 hover:text-white transition duration-300">Khóa
-                                    học</a></li>
-                          <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Về chúng
-                                    tôi</a></li>
-                          <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Liên
-                                    hệ</a></li>
-                     </ul>
+                <p class="text-sm leading-relaxed">Đơn vị tiên phong trong việc áp dụng công nghệ vào giảng dạy và học
+                    tập tiếng Trung trực tuyến tại Việt Nam.</p>
+                <div class="flex gap-4">
+                    <a class="hover:text-primary transition-colors" href="#"><span
+                            class="material-symbols-outlined">social_leaderboard</span></a>
+                    <a class="hover:text-primary transition-colors" href="#"><span
+                            class="material-symbols-outlined">youtube_activity</span></a>
+                    <a class="hover:text-primary transition-colors" href="#"><span
+                            class="material-symbols-outlined">chat_bubble</span></a>
                 </div>
-
-                <div>
-                     <h4 class="font-bold mb-4">Danh mục</h4>
-                     <ul class="space-y-2">
-                          <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Công
-                                    nghệ</a></li>
-                          <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Kinh
-                                    doanh</a></li>
-                          <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Thiết
-                                    kế</a></li>
-                          <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Sáng
-                                    tạo</a></li>
-                     </ul>
-                </div>
-
-                <div>
-                     <h4 class="font-bold mb-4">Kết nối với chúng tôi</h4>
-                     <div class="flex space-x-4">
-                          <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                               <i class="fab fa-facebook-f text-xl"></i>
-                          </a>
-                          <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                               <i class="fab fa-twitter text-xl"></i>
-                          </a>
-                          <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                               <i class="fab fa-instagram text-xl"></i>
-                          </a>
-                          <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                               <i class="fab fa-youtube text-xl"></i>
-                          </a>
-                     </div>
-                     <p class="mt-4 text-gray-400">Đăng ký nhận thông báo khóa học mới</p>
-                     <div class="mt-2 flex">
-                          <input type="email" placeholder="Email của bạn"
-                               class="px-3 py-2 bg-gray-700 text-white rounded-l-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                          <button
-                               class="bg-indigo-600 px-4 py-2 rounded-r-md hover:bg-indigo-700 transition duration-300">Gửi</button>
-                     </div>
-                </div>
-           </div>
-
-           <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 Khóa Học Giá Rẻ. Tất cả các quyền được bảo lưu.</p>
-           </div>
-      </div>
- </footer>
+            </div>
+            <div>
+                <h4 class="mb-6 font-bold text-white">Khám phá</h4>
+                <ul class="flex flex-col gap-4 text-sm">
+                    <li><a class="hover:text-primary transition-colors" href="#">Tất cả khóa học</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">HSK Roadmap</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Đội ngũ giáo viên</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Thư viện tài liệu</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="mb-6 font-bold text-white">Chính sách</h4>
+                <ul class="flex flex-col gap-4 text-sm">
+                    <li><a class="hover:text-primary transition-colors" href="#">Chính sách bảo mật</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Điều khoản dịch vụ</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Chính sách hoàn tiền</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="mb-6 font-bold text-white">Liên hệ</h4>
+                <ul class="flex flex-col gap-4 text-sm">
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary text-sm">location_on</span>
+                        123 Đường Cầu Giấy, Hà Nội
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-sm">call</span>
+                        0123 456 789
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-sm">mail</span>
+                        hello@xiaomu.edu.vn
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-16 border-t border-slate-800 pt-8 text-center text-xs">
+            © 2024 XiaoMu Chinese Language Center. All rights reserved.
+        </div>
+    </div>
+</footer>
