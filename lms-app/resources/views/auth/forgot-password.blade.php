@@ -15,16 +15,27 @@
                     Nhập email của bạn để nhận hướng dẫn khôi phục mật khẩu.
                 </p>
             </div>
-            <form class="space-y-6">
+            @if (session('status'))
+                <div class="mb-4 font-medium text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-200 text-center">
+                    {{ session('status') }}
+                </div>
+            @endif
+            <form class="space-y-6" method="POST" action="{{ route('password.email') }}">
+                @csrf
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email</label>
                     <div class="relative">
                         <span
                             class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
                         <input
-                            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
-                            placeholder="Nhập email của bạn" required="" type="email" />
+                            name="email"
+                            value="{{ old('email') }}"
+                            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('email') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
+                            placeholder="Nhập email của bạn" required type="email" autofocus />
                     </div>
+                    @error('email')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
                 <button
                     class="w-full bg-primary hover:bg-[#7eafcf] text-white font-bold py-4 rounded-lg shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98]"

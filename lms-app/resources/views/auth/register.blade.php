@@ -11,15 +11,43 @@
                 <h1 class="text-3xl font-bold font-poppins text-slate-900 dark:text-white mb-2">Tạo tài khoản mới</h1>
                 <p class="text-slate-500 dark:text-slate-400">Tham gia cộng đồng học tiếng Trung cùng XiaoMu</p>
             </div>
-            <form class="space-y-5">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và tên</label>
-                    <div class="relative">
-                        <span
-                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
-                        <input
-                            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
-                            placeholder="Nhập họ và tên của bạn" type="text" />
+            @if ($errors->has('error'))
+                <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 text-center">
+                    {{ $errors->first('error') }}
+                </div>
+            @endif
+            <form class="space-y-5" method="POST" action="{{ route('register') }}">
+                @csrf
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                            <input
+                                name="first_name"
+                                value="{{ old('first_name') }}"
+                                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('first_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
+                                placeholder="Nhập họ" type="text" required />
+                        </div>
+                        @error('first_name')
+                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tên</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                            <input
+                                name="last_name"
+                                value="{{ old('last_name') }}"
+                                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('last_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
+                                placeholder="Nhập tên" type="text" required />
+                        </div>
+                        @error('last_name')
+                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
                 <div>
@@ -28,19 +56,14 @@
                         <span
                             class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
                         <input
-                            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
-                            placeholder="example@email.com" type="email" />
+                            name="email"
+                            value="{{ old('email') }}"
+                            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('email') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
+                            placeholder="example@email.com" type="email" required />
                     </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số điện thoại</label>
-                    <div class="relative">
-                        <span
-                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">call</span>
-                        <input
-                            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
-                            placeholder="0123 456 789" type="tel" />
-                    </div>
+                    @error('email')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Mật khẩu</label>
@@ -48,9 +71,33 @@
                         <span
                             class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
                         <input
-                            class="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
-                            placeholder="••••••••" type="password" />
+                            name="password"
+                            id="password_input"
+                            class="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
+                            placeholder="••••••••" type="password" required />
                         <button
+                            onclick="document.getElementById('password_input').type = document.getElementById('password_input').type === 'password' ? 'text' : 'password'"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                            type="button">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
+                    @error('password')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Xác nhận mật khẩu</label>
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+                        <input
+                            name="password_confirmation"
+                            id="password_confirmation_input"
+                            class="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
+                            placeholder="••••••••" type="password" required />
+                        <button
+                            onclick="document.getElementById('password_confirmation_input').type = document.getElementById('password_confirmation_input').type === 'password' ? 'text' : 'password'"
                             class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                             type="button">
                             <span class="material-symbols-outlined">visibility</span>
@@ -59,6 +106,8 @@
                 </div>
                 <div class="flex items-start gap-3 py-2">
                     <input
+                        name="agree_terms"
+                        required
                         class="mt-1 size-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary"
                         id="terms" type="checkbox" />
                     <label class="text-sm text-slate-600 dark:text-slate-400 leading-tight" for="terms">
@@ -81,7 +130,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <button
+                <a href="{{ route('socialite.redirect', ['provider' => 'google']) }}"
                     class="flex items-center justify-center gap-2 py-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
                     <svg class="size-5" viewbox="0 0 24 24">
                         <path
@@ -98,8 +147,8 @@
                             fill="#EA4335"></path>
                     </svg>
                     <span class="text-sm font-semibold">Google</span>
-                </button>
-                <button
+                </a>
+                <a href="{{ route('socialite.redirect', ['provider' => 'facebook']) }}"
                     class="flex items-center justify-center gap-2 py-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
                     <svg class="size-5 text-[#1877F2]" fill="currentColor" viewbox="0 0 24 24">
                         <path
@@ -107,7 +156,7 @@
                         </path>
                     </svg>
                     <span class="text-sm font-semibold">Facebook</span>
-                </button>
+                </a>
             </div>
             <div class="mt-10 text-center">
                 <p class="text-sm text-slate-600 dark:text-slate-400">
@@ -118,5 +167,3 @@
         </div>
     </main>
 @endsection
-
-@vite(['resources/js/register.js'])

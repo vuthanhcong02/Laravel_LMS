@@ -9,13 +9,13 @@
                     <td style="text-align: center; padding-bottom: 30px;">
                          <div
                               style="background-color: #dbeafe; width: 80px; height: 80px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                              <span style="color: #3b82f6; font-size: 32px;">✓</span>
+                              <span style="color: #8fc0e0; font-size: 32px;">✓</span>
                          </div>
                          <h2 style="color: #1f2937; font-size: 24px; font-weight: bold; margin: 0 0 10px 0;">
                               Xin chào {{ $user->first_name }} {{ $user->last_name }}!
                          </h2>
                          <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0;">
-                              Cảm ơn bạn đã đăng ký tài khoản tại LMS System
+                              Cảm ơn bạn đã đăng ký tài khoản tại XiaoMu
                          </p>
                     </td>
                </tr>
@@ -38,7 +38,7 @@
                <tr>
                     <td align="center" style="padding-bottom: 30px;">
                          <a href="{{ $url }}"
-                              style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; margin: 20px 0;">
+                              style="display: inline-block; background: linear-gradient(135deg, #8fc0e0 0%, #5b9dbf 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; margin: 20px 0;">
                               Xác nhận Email
                          </a>
                     </td>
@@ -58,7 +58,7 @@
                                                    padding: 12px; 
                                                    margin: 15px 0;
                                                    word-break: break-all;">
-                              <p style="color: #3b82f6; font-size: 12px; margin: 0; font-family: monospace;">
+                              <p style="color: #8fc0e0; font-size: 12px; margin: 0; font-family: monospace;">
                                    {{ $url }}
                               </p>
                          </div>

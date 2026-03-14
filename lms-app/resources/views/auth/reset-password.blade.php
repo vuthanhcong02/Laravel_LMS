@@ -20,29 +20,41 @@
                         khoản.</p>
                 </div>
             </div>
-            <form class="p-8 pt-4 space-y-6">
+            <form class="p-8 pt-4 space-y-6" method="POST" action="{{ route('password.store') }}">
+                @csrf
+                <input type="hidden" name="token" value="{{ $request->route('token') }}">
+                <input type="hidden" name="email" value="{{ old('email', $request->email) }}">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mật khẩu mới</label>
                     <div class="relative">
                         <input
-                            class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12 text-slate-900 dark:text-white placeholder:text-slate-400"
-                            placeholder="Nhập mật khẩu mới" type="password" />
+                            name="password"
+                            id="password_input"
+                            class="w-full h-12 px-4 rounded-lg border @error('password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12 text-slate-900 dark:text-white placeholder:text-slate-400"
+                            placeholder="Nhập mật khẩu mới" type="password" required />
                         <button
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center"
+                            onclick="document.getElementById('password_input').type = document.getElementById('password_input').type === 'password' ? 'text' : 'password'"
                             type="button">
                             <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
                         </button>
                     </div>
+                    @error('password')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Xác nhận mật khẩu
                         mới</label>
                     <div class="relative">
                         <input
+                            name="password_confirmation"
+                            id="password_confirmation_input"
                             class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12 text-slate-900 dark:text-white placeholder:text-slate-400"
-                            placeholder="Nhập lại mật khẩu mới" type="password" />
+                            placeholder="Nhập lại mật khẩu mới" type="password" required />
                         <button
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center"
+                            onclick="document.getElementById('password_confirmation_input').type = document.getElementById('password_confirmation_input').type === 'password' ? 'text' : 'password'"
                             type="button">
                             <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
                         </button>
@@ -55,7 +67,7 @@
                         Cập nhật mật khẩu
                     </button>
                     <a class="block text-center text-sm font-medium text-slate-500 hover:text-primary transition-colors"
-                        href="#">
+                        href="{{ route('login') }}">
                         Quay lại trang Đăng nhập
                     </a>
                 </div>

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthService
@@ -67,7 +68,8 @@ class AuthService
 
             return redirect(RouteServiceProvider::HOME);
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->withErrors(['error' => 'Đăng ký thất bại: ' . $e->getMessage()]);
+            Log::error('Registration error: ' . $e->getMessage());
+            return redirect()->back()->withInput()->withErrors(['error' => 'Đăng ký thất bại. Vui lòng thử lại sau.']);
         }
     }
 
@@ -96,7 +98,11 @@ class AuthService
 
             $user = User::where('email', $email)->first();
 
-            if (! $user) {
+            if ($user) {
+                if ($user->provider !== $provider) {
+                    return redirect('/login')->with('error', 'Email này đã được sử dụng. Vui lòng đăng nhập bằng mật khẩu.');
+                }
+            } else {
                 $user = User::create([
                     'first_name' => splitName($socialUser->getName())['first_name'],
                     'last_name' => splitName($socialUser->getName())['last_name'],
@@ -115,8 +121,8 @@ class AuthService
 
             return redirect(RouteServiceProvider::HOME);
         } catch (\Exception $e) {
-            \Log::error('Social login error: ' . $e->getMessage());
-            return redirect('/login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại: ' . $e->getMessage());
+            Log::error('Social login error: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
         }
     }
 
