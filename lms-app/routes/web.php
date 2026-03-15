@@ -40,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Student Dashboard Route
         Route::middleware('role:' . User::ROLE_STUDENT)->group(function () {
             Route::get('/student/dashboard', function () {
-                    return view('student.dashboard');
+                    return view('portal.student.dashboard');
                 }
                 )->name('student.dashboard');
             }
@@ -55,7 +55,7 @@ Route::prefix('portal')->group(function () {
 
     Route::middleware(['auth', 'role:' . User::ROLE_ADMIN])->group(function () {
             Route::get('admin/dashboard', function () {
-                    return view('admin.dashboard');
+                    return view('portal.admin.dashboard');
                 }
                 )->name('admin.dashboard');
             }
@@ -63,7 +63,7 @@ Route::prefix('portal')->group(function () {
 
             Route::middleware(['auth', 'role:' . User::ROLE_TEACHER])->group(function () {
             Route::get('teacher/dashboard', function () {
-                    return view('teacher.dashboard');
+                    return view('portal.teacher.dashboard');
                 }
                 )->name('teacher.dashboard');
             }
