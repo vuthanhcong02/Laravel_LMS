@@ -27,6 +27,12 @@ class AuthService
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+
+        if ($user->role === User::ROLE_STUDENT) {
+            return redirect()->route('student.dashboard');
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
@@ -60,7 +66,7 @@ class AuthService
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
             ]);
-            $user->role = User::ROLE_STUDENT;
+            $user->role = User::ROLE_GUEST;
             $user->save();
 
             event(new Registered($user));
@@ -113,13 +119,17 @@ class AuthService
                     'provider_id' => $socialUser->getId(),
                 ]);
                 $user->email_verified_at = now();
-                $user->role = User::ROLE_STUDENT;
+                $user->role = User::ROLE_GUEST;
                 $user->save();
             }
 
             Auth::login($user);
 
-            return redirect(RouteServiceProvider::HOME);
+            if ($user->role === User::ROLE_STUDENT) {
+                return redirect()->route('student.dashboard');
+            }
+
+            return redirect()->intended(RouteServiceProvider::HOME);
         } catch (\Exception $e) {
             Log::error('Social login error: ' . $e->getMessage());
             return redirect('/login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
