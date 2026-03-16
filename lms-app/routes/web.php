@@ -49,7 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Admin & Teacher Portal
 Route::prefix('portal')->group(function () {
-    Route::get('login', [AdminAuthController::class , 'showLoginForm'])->name('admin.login');
+    Route::get('login', [AdminAuthController::class , 'showLoginForm'])->name('admin.login')->middleware('guest');
     Route::post('login', [AdminAuthController::class , 'login']);
     Route::post('logout', [AdminAuthController::class , 'logout'])->name('admin.logout');
 

@@ -12,6 +12,17 @@ class AdminAuthController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === User::ROLE_ADMIN) {
+                return redirect()->route('admin.dashboard');
+            }
+            if ($user->role === User::ROLE_TEACHER) {
+                return redirect()->route('teacher.dashboard');
+            }
+            return redirect()->route('home');
+        }
+
         return view('portal.admin.auth.login');
     }
 
@@ -24,16 +35,18 @@ class AdminAuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::user();
-            
+
             if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_TEACHER])) {
                 $request->session()->regenerate();
-                
+
                 if ($user->role === User::ROLE_ADMIN) {
                     return redirect()->route('admin.dashboard');
-                } else {
+                }
+                else {
                     return redirect()->route('teacher.dashboard');
                 }
-            } else {
+            }
+            else {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
