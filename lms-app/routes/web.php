@@ -3,6 +3,9 @@
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Admin\AdminAuthController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -15,14 +18,56 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/blog', 'getViewBlog')->name('blog');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Shared user profile
     Route::get('/profile', [ProfileController::class , 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class , 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class , 'destroy'])->name('profile.destroy');
-});
+
+    // Redirect /dashboard based on role, or use individual routes.
+    Route::get('/dashboard', function () {
+            $user = Auth::user();
+            if ($user->role === User::ROLE_ADMIN)
+                return redirect()->route('admin.dashboard');
+            if ($user->role === User::ROLE_TEACHER)
+                return redirect()->route('teacher.dashboard');
+            if ($user->role === User::ROLE_STUDENT)
+                return redirect()->route('student.dashboard');
+            return redirect()->route('home'); // Guest
+        }
+        )->name('dashboard');
+
+        // Student Dashboard Route
+        Route::middleware('role:' . User::ROLE_STUDENT)->group(function () {
+            Route::get('/student/dashboard', function () {
+                    return view('portal.student.dashboard');
+                }
+                )->name('student.dashboard');
+            }
+            );
+        });
+
+// Admin & Teacher Portal
+Route::prefix('portal')->group(function () {
+    Route::get('login', [AdminAuthController::class , 'showLoginForm'])->name('admin.login')->middleware('guest');
+    Route::post('login', [AdminAuthController::class , 'login']);
+    Route::post('logout', [AdminAuthController::class , 'logout'])->name('admin.logout');
+
+    Route::middleware(['auth', 'role:' . User::ROLE_ADMIN])->group(function () {
+            Route::get('admin/dashboard', function () {
+                    return view('portal.admin.dashboard');
+                }
+                )->name('admin.dashboard');
+            }
+            );
+
+            Route::middleware(['auth', 'role:' . User::ROLE_TEACHER])->group(function () {
+            Route::get('teacher/dashboard', function () {
+                    return view('portal.teacher.dashboard');
+                }
+                )->name('teacher.dashboard');
+            }
+            );
+        });
 
 require __DIR__ . '/auth.php';

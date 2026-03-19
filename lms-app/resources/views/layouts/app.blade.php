@@ -28,7 +28,8 @@
     @endif
     <!-- Main Content -->
     @yield('content')
-
+    <!-- Footer -->
+    <x-footer />
 </body>
 
 </html>

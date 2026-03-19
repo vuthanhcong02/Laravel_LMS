@@ -16,12 +16,28 @@
                 <h1 class="text-3xl font-poppins font-bold text-slate-900 tracking-tight">Chào mừng quay trở lại!</h1>
                 <p class="text-slate-500 mt-2">Vui lòng đăng nhập để tiếp tục học tập.</p>
             </div>
-            <form class="space-y-5">
+            @if (session('status'))
+                <div class="mb-4 font-medium text-sm text-green-600">
+                    {{ session('status') }}
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="mb-4 font-medium text-sm text-red-600">
+                    {{ session('error') }}
+                </div>
+            @endif
+            <form class="space-y-5" method="POST" action="{{ route('login') }}">
+                @csrf
                 <div class="flex flex-col gap-2">
                     <label class="text-slate-700 text-sm font-semibold px-1">Email</label>
                     <input
-                        class="w-full h-12 px-4 rounded-lg border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                        placeholder="example@gmail.com" type="email" />
+                        name="email"
+                        value="{{ old('email') }}"
+                        class="w-full h-12 px-4 rounded-lg border @error('email') border-red-500 @else border-slate-200 @enderror focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 placeholder:text-slate-400"
+                        placeholder="example@gmail.com" type="email" required autofocus />
+                    @error('email')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-center px-1">
@@ -32,13 +48,26 @@
                     </div>
                     <div class="relative group">
                         <input
-                            class="w-full h-12 px-4 pr-12 rounded-lg border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                            placeholder="••••••••" type="password" />
+                            name="password"
+                            id="password_input"
+                            class="w-full h-12 px-4 pr-12 rounded-lg border @error('password') border-red-500 @else border-slate-200 @enderror focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 placeholder:text-slate-400"
+                            placeholder="••••••••" type="password" required />
                         <button class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                            onclick="document.getElementById('password_input').type = document.getElementById('password_input').type === 'password' ? 'text' : 'password'"
                             type="button">
                             <span class="material-symbols-outlined text-[20px]">visibility</span>
                         </button>
                     </div>
+                    @error('password')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="flex items-center px-1 py-1">
+                    <input id="remember_me" name="remember" type="checkbox"
+                        class="h-4 w-4 text-primary focus:ring-primary border-slate-300 rounded">
+                    <label for="remember_me" class="ml-2 block text-sm text-slate-700 font-medium">
+                        Ghi nhớ đăng nhập
+                    </label>
                 </div>
                 <button
                     class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 mt-2"
@@ -55,7 +84,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <button
+                <a href="{{ route('socialite.redirect', ['provider' => 'google']) }}"
                     class="flex items-center justify-center gap-2 h-11 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                     <svg class="size-5" viewbox="0 0 24 24">
                         <path
@@ -72,8 +101,8 @@
                             fill="#EA4335"></path>
                     </svg>
                     <span class="text-slate-700 text-sm font-semibold">Google</span>
-                </button>
-                <button
+                </a>
+                <a href="{{ route('socialite.redirect', ['provider' => 'facebook']) }}"
                     class="flex items-center justify-center gap-2 h-11 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                     <svg class="size-5 text-[#1877F2]" fill="currentColor" viewbox="0 0 24 24">
                         <path
@@ -81,7 +110,7 @@
                         </path>
                     </svg>
                     <span class="text-slate-700 text-sm font-semibold">Facebook</span>
-                </button>
+                </a>
             </div>
             <div class="mt-8 text-center text-sm text-slate-500">
                 Bạn chưa có tài khoản?
@@ -90,5 +119,3 @@
         </div>
     </main>
 @endsection
-
-@vite(['resources/js/login.js'])

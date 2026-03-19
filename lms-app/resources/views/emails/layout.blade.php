@@ -3,7 +3,7 @@
 
 <head>
      <meta charset="UTF-8">
-     <title>Xác nhận email - LMS System</title>
+     <title>Xác nhận email - XiaoMu</title>
 </head>
 
 <body
@@ -19,18 +19,18 @@
 
                          <!-- Header -->
                          <tr>
-                              <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:
+                              <td style="background: linear-gradient(135deg, #8fc0e0 0%, #5b9dbf 100%); color:
                                    white; padding: 30px 20px; text-align: center;">
                                    <table width="100%">
                                         <tr>
                                              <td align="center">
                                                   <h1
                                                        style="color: #ffffff; font-size: 32px; font-weight: bold; margin: 0 0 10px 0;">
-                                                       <span style="color: #ffffff;">LMS</span>
+                                                       <span style="color: #ffffff;">XiaoMu</span>
                                                   </h1>
                                                   <p
                                                        style="color: #e2e8f0; font-size: 18px; margin: 0; font-weight: 500;">
-                                                       Khóa học trực tuyến dành cho bạn
+                                                       Học Tiếng Trung hiệu quả cùng XiaoMu
                                                   </p>
                                              </td>
                                         </tr>
@@ -50,9 +50,9 @@
                                                   <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0;">
                                                        Cần hỗ trợ? Chúng tôi luôn sẵn sàng giúp đỡ!
                                                   </p>
-                                                  <a href="mailto:support@lms.edu.vn"
-                                                       style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-                                                       support@lms.edu.vn
+                                                  <a href="mailto:support@xiaomu.edu.vn"
+                                                       style="color: #8fc0e0; text-decoration: none; font-weight: 500;">
+                                                       support@xiaomu.edu.vn
                                                   </a>
                                              </td>
                                         </tr>
@@ -67,7 +67,7 @@
                                         <tr>
                                              <td>
                                                   <p style="color: #9ca3af; font-size: 12px; margin: 0 0 10px 0;">
-                                                       &copy; 2024 LMS System. All rights reserved.
+                                                       &copy; 2024 XiaoMu. All rights reserved.
                                                   </p>
                                                   <p
                                                        style="color: #6b7280; font-size: 11px; margin: 0; line-height: 1.4;">

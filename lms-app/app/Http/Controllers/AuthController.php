@@ -21,12 +21,12 @@ class AuthController extends Controller
             'password' => 'required|min:6|max:255',
         ]);
         $credentials = request(['email', 'password']);
-        if (! $token = auth()->attempt($credentials)) {
+        if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $data = [
             'sub' => auth()->user()->id,
-            'random' => rand().time(),
+            'random' => rand() . time(),
             'exp' => time() + config('jwt.refresh_ttl'),
         ];
         $refeshToken = $this->createRefreshToken();
@@ -44,7 +44,8 @@ class AuthController extends Controller
                 'message' => 'Success',
                 'data' => $user,
             ], 200);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'message' => 'Invalid token',
             ], 500);
@@ -59,7 +60,8 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Successfully logged out',
             ], 200);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'message' => 'Invalid refresh token',
             ], 500);
@@ -68,27 +70,17 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        $refeshToken = request()->refresh_token;
         try {
-            $decoded = JWTAuth::getJWTProvider()->decode($refeshToken);
-            // Xử lí lấy lại token mới
-            // Lấy thông tin user
-            $user = User::find($decoded['user_id']);
-            if (! $user) {
-                return response()->json([
-                    'message' => 'User not found',
-                ], 404);
-            }
-            // Khoi phuc token
-            $token = auth()->login($user);
-            // Tao token thay đổi
-            $refeshToken = $this->createRefreshToken();
+            $token = auth('api')->refresh();
+
+            $refeshToken = \Illuminate\Support\Str::random(60);
 
             return $this->respondWithToken($token, $refeshToken);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
-                'message' => 'Invalid refresh token',
-            ], 500);
+                'message' => 'Token không hợp lệ hoặc đã hết hạn',
+            ], 401);
         }
     }
 
@@ -106,7 +98,7 @@ class AuthController extends Controller
     {
         $data = [
             'user_id' => auth()->user()->id,
-            'random' => rand().time(),
+            'random' => rand() . time(),
             'exp' => time() + config('jwt.refresh_ttl'),
         ];
         $refeshToken = JWTAuth::getJWTProvider()->encode($data);

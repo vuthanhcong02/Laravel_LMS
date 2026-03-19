@@ -1,0 +1,48 @@
+<aside
+    class="gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 hidden md:flex flex-col justify-between p-4 min-h-[calc(100vh-65px)]">
+    <div class="flex flex-col gap-6">
+        <div class="flex items-center gap-3 px-2">
+            <div class="bg-primary/20 p-2 rounded-lg">
+                <span class="material-symbols-outlined text-primary">admin_panel_settings</span>
+            </div>
+            <div class="flex flex-col">
+                <h1 class="text-slate-900 dark:text-white text-sm font-bold">XiaoMu Admin</h1>
+                <p class="text-slate-500 text-xs">System Control</p>
+            </div>
+        </div>
+        <nav class="flex flex-col gap-1">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-md shadow-primary/30"
+                href="#">
+                <span class="material-symbols-outlined">dashboard</span>
+                <p class="text-sm font-semibold">Dashboard</p>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">group</span>
+                <p class="text-sm font-medium">User Management</p>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">menu_book</span>
+                <p class="text-sm font-medium">Course Management</p>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">payments</span>
+                <p class="text-sm font-medium">Revenue</p>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">bar_chart</span>
+                <p class="text-sm font-medium">Reports</p>
+            </a>
+        </nav>
+    </div>
+    <div class="p-3 bg-primary/5 rounded-lg border border-primary/20">
+        <p class="text-[10px] uppercase font-bold text-slate-400 mb-2 tracking-widest">Support Plan</p>
+        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Enterprise Pro</p>
+        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+            <div class="bg-primary h-1.5 rounded-full" style="width: 85%"></div>
+        </div>
+    </div>
+</aside>

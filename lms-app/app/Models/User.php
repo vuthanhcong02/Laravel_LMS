@@ -17,11 +17,13 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    const ROLE_ADMIN = 0;
+    const ROLE_ADMIN = 1;
 
-    const ROLE_TEACHER = 1;
+    const ROLE_TEACHER = 2;
 
-    const ROLE_STUDENT = 2;
+    const ROLE_STUDENT = 3;
+
+    const ROLE_GUEST = 4;
 
     /**
      * The attributes that are mass assignable.
@@ -90,6 +92,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             self::ROLE_ADMIN => 'Admin',
             self::ROLE_TEACHER => 'Teacher',
             self::ROLE_STUDENT => 'Student',
+            self::ROLE_GUEST => 'Guest',
         ];
     }
 }

@@ -106,7 +106,8 @@
                     <p class="mt-2 text-slate-600 dark:text-slate-400">Tìm kiếm lộ trình phù hợp nhất với trình độ
                         của bạn</p>
                 </div>
-                <button class="text-sm font-bold text-primary hover:underline">Xem tất cả khóa học</button>
+                <a href="{{ route('courses') }}" class="text-sm font-bold text-primary hover:underline">Xem tất cả khóa
+                    học</a>
             </div>
             <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 <!-- Course Card 1 -->
