@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AssignmentSubmit extends Model
+class AssignmentSubmission extends Model
 {
     use HasFactory;
 
-    protected $table = 'assignment_submit';
-
-    protected $guarded = [];
+    protected $fillable = [
+        'assignment_id', 'user_id', 'file_url', 'score', 'teacher_feedback', 'status'
+    ];
 
     public function assignment()
     {
