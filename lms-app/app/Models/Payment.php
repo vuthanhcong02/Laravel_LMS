@@ -5,22 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Attendance extends Model
+class Payment extends Model
 {
     use HasFactory;
 
-    protected $table = 'attendances';
-
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id', 'course_id', 'amount', 'payment_method', 'status', 'transaction_id'
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function classroom()
-    {
-        return $this->belongsTo(ClassRoom::class);
     }
 
     public function course()

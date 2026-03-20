@@ -9,9 +9,9 @@ class Enrollment extends Model
 {
     use HasFactory;
 
-    protected $table = 'enrollments';
-
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id', 'course_id', 'status', 'completed_at'
+    ];
 
     public function user()
     {
@@ -21,10 +21,5 @@ class Enrollment extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
-    }
-
-    public function classroom()
-    {
-        return $this->belongsTo(ClassRoom::class);
     }
 }
