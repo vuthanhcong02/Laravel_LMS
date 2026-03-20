@@ -1,5 +1,6 @@
 <aside
-    class="gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 hidden md:flex flex-col justify-start p-4 min-h-[calc(100vh-65px)]">
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 md:flex flex-col justify-start p-4 min-h-[calc(100vh-65px)]">
     <div class="flex gap-3 items-center pb-4 border-b border-slate-200 dark:border-slate-800">
         <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
             data-alt="Portrait of a female teacher smiling"
