@@ -24,17 +24,8 @@
                 </a>
             </div>
 
-            @if (session('success'))
-                <div class="p-4 bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-lg shadow-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="p-4 bg-red-100 border border-red-200 text-red-800 rounded-lg shadow-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
+            <x-admin.flash-message type="success" />
+            <x-admin.flash-message type="error" />
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm p-4">
                 <form method="GET" action="{{ route('admin.users.index') }}"
