@@ -34,7 +34,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'first_name',
         'last_name',
         'email',
+        'email_verified_at',
         'password',
+        'role',
         'avatar',
         'provider',
         'provider_id',
@@ -86,10 +88,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return [];
     }
 
-    public function getAllRole()
+    public static function getAllRole()
     {
         return [
-            self::ROLE_ADMIN => 'Admin',
             self::ROLE_TEACHER => 'Teacher',
             self::ROLE_STUDENT => 'Student',
             self::ROLE_GUEST => 'Guest',
