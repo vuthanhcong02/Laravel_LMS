@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->integer('role')->default(0)->comment('0: admin, 1: teacher, 2: student');
+            $table->integer('role')->default(4)->comment('1: Admin, 2: Teacher, 3: Student, 4: Guest');
             $table->string('avatar')->nullable();
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();

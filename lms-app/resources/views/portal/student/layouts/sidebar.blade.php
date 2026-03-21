@@ -1,5 +1,6 @@
 <aside
-    class="gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 hidden md:flex flex-col justify-between p-4 min-h-[calc(100vh-65px)]">
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 md:flex flex-col justify-between p-4 min-h-[calc(100vh-65px)]">
     <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white font-semibold" href="#">
         <span class="material-symbols-outlined">dashboard</span>
         <span class="text-sm">Dashboard</span>

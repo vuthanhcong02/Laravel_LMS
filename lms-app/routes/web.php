@@ -58,6 +58,8 @@ Route::prefix('portal')->group(function () {
                     return view('portal.admin.dashboard');
                 }
                 )->name('admin.dashboard');
+                
+            Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
             }
             );
 

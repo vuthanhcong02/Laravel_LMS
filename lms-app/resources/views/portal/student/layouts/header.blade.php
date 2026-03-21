@@ -2,6 +2,9 @@
     class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-primary/20 bg-white dark:bg-slate-900 px-6 py-3 lg:px-10">
     <div class="flex items-center gap-8">
         <div class="flex items-center gap-3 text-primary">
+            <button @click="sidebarOpen = !sidebarOpen" class="md:hidden flex items-center justify-center p-2 -ml-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
             <div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
                 <span class="material-symbols-outlined">school</span>
             </div>
