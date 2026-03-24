@@ -1,5 +1,4 @@
-<aside
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 md:flex flex-col justify-between p-4 min-h-[calc(100vh-65px)]">
     <div class="flex flex-col gap-6">
         <div class="flex items-center gap-3 px-2">
@@ -26,6 +25,11 @@
                 href="#">
                 <span class="material-symbols-outlined">menu_book</span>
                 <p class="text-sm font-medium">Course Management</p>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.blogs.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
+                href="{{ route('admin.blogs.index') }}">
+                <span class="material-symbols-outlined">group</span>
+                <p class="text-sm font-medium">Blog Management</p>
             </a>
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 href="#">

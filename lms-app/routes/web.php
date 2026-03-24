@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\BlogController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -59,12 +61,16 @@ Route::prefix('portal')->group(function () {
                     return view('portal.admin.dashboard');
                 }
                 )->name('admin.dashboard');
-                
-            Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
 
-            Route::get('admin/profile', [AdminProfileController::class, 'edit'])->name('admin.profile.edit');
-            Route::put('admin/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
-            Route::put('admin/profile/password', [AdminProfileController::class, 'updatePassword'])->name('admin.profile.updatePassword');
+                Route::resource('admin/users', UserController::class)->names('admin.users');
+
+                Route::get('admin/profile', [AdminProfileController::class , 'edit'])->name('admin.profile.edit');
+                Route::put('admin/profile', [AdminProfileController::class , 'update'])->name('admin.profile.update');
+                Route::put('admin/profile/password', [AdminProfileController::class , 'updatePassword'])->name('admin.profile.updatePassword');
+
+                Route::post('admin/blogs/preview', [BlogController::class, 'preview'])->name('admin.blogs.preview');
+                Route::post('admin/blogs/upload', [BlogController::class, 'upload'])->name('admin.blogs.upload');
+                Route::resource('admin/blogs', BlogController::class)->names('admin.blogs');
             }
             );
 
