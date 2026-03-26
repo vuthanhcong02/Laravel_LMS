@@ -14,6 +14,16 @@ class Course extends Model
         'description', 'thumbnail', 'price', 'is_published'
     ];
 
+    public function scopePublished($query)
+    {
+        return $query->where('is_published', true);
+    }
+
+    public function getThumbnailUrlAttribute()
+    {
+        return $this->thumbnail ? asset('storage/' . $this->thumbnail) : null;
+    }
+
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');

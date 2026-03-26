@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\LessonController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -71,6 +73,13 @@ Route::prefix('portal')->group(function () {
                 Route::post('admin/blogs/preview', [BlogController::class, 'preview'])->name('admin.blogs.preview');
                 Route::post('admin/blogs/upload', [BlogController::class, 'upload'])->name('admin.blogs.upload');
                 Route::resource('admin/blogs', BlogController::class)->names('admin.blogs');
+
+                Route::resource('admin/courses', CourseController::class)->names('admin.courses');
+                Route::post('admin/lessons/{lesson}/move-up', [LessonController::class, 'moveUp'])->name('admin.lessons.moveUp');
+                Route::post('admin/lessons/{lesson}/move-down', [LessonController::class, 'moveDown'])->name('admin.lessons.moveDown');
+                Route::post('admin/courses/{course}/lessons', [LessonController::class, 'store'])->name('admin.lessons.store');
+                Route::put('admin/lessons/{lesson}', [LessonController::class, 'update'])->name('admin.lessons.update');
+                Route::delete('admin/lessons/{lesson}', [LessonController::class, 'destroy'])->name('admin.lessons.destroy');
             }
             );
 
