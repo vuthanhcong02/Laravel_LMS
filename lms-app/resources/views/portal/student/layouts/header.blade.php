@@ -18,8 +18,6 @@
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
                 href="#">Home</a>
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="#">Settings</a>
-            <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
                 href="#">Support</a>
         </nav>
         <div class="flex gap-3">

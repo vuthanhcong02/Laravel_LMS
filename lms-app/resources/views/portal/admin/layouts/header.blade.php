@@ -18,8 +18,6 @@
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
                 href="{{ route('home') }}">Home</a>
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="#">Settings</a>
-            <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
                 href="#">Support</a>
         </nav>
         <div class="flex gap-3">
@@ -155,7 +153,7 @@
                             class="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <span class="material-symbols-outlined text-base">manage_accounts</span> Profile
                         </a>
-                        <a href="#"
+                        <a href="{{ route('settings.index') }}"
                             class="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <span class="material-symbols-outlined text-base">settings</span> Settings
                         </a>

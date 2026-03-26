@@ -29,6 +29,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class , 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class , 'destroy'])->name('profile.destroy');
 
+    // User Settings
+    Route::prefix('portal')->group(function () {
+        Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
+    });
     // Redirect /dashboard based on role, or use individual routes.
     Route::get('/dashboard', function () {
             $user = Auth::user();
