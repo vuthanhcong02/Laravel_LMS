@@ -43,11 +43,4 @@
             </a>
         </nav>
     </div>
-    <div class="p-3 bg-primary/5 rounded-lg border border-primary/20">
-        <p class="text-[10px] uppercase font-bold text-slate-400 mb-2 tracking-widest">Support Plan</p>
-        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Enterprise Pro</p>
-        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
-            <div class="bg-primary h-1.5 rounded-full" style="width: 85%"></div>
-        </div>
-    </div>
 </aside>
