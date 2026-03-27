@@ -29,10 +29,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class , 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class , 'destroy'])->name('profile.destroy');
 
-    // User Settings
+    // User Settings & Support
     Route::prefix('portal')->group(function () {
         Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
+
+        // Support Portal Routes
+        Route::get('/support', [\App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
+        Route::get('/support/create', [\App\Http\Controllers\SupportController::class, 'create'])->name('support.create');
+        Route::post('/support', [\App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
+        Route::get('/support/{ticket}', [\App\Http\Controllers\SupportController::class, 'show'])->name('support.show');
+        Route::post('/support/{ticket}/reply', [\App\Http\Controllers\SupportController::class, 'reply'])->name('support.reply');
     });
     // Redirect /dashboard based on role, or use individual routes.
     Route::get('/dashboard', function () {
@@ -85,6 +92,12 @@ Route::prefix('portal')->group(function () {
                 Route::post('admin/courses/{course}/lessons', [LessonController::class, 'store'])->name('admin.lessons.store');
                 Route::put('admin/lessons/{lesson}', [LessonController::class, 'update'])->name('admin.lessons.update');
                 Route::delete('admin/lessons/{lesson}', [LessonController::class, 'destroy'])->name('admin.lessons.destroy');
+
+                // Support Admin Routes
+                Route::get('admin/support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('admin.support.index');
+                Route::get('admin/support/{ticket}', [\App\Http\Controllers\Admin\SupportController::class, 'show'])->name('admin.support.show');
+                Route::post('admin/support/{ticket}/reply', [\App\Http\Controllers\Admin\SupportController::class, 'reply'])->name('admin.support.reply');
+                Route::put('admin/support/{ticket}/status', [\App\Http\Controllers\Admin\SupportController::class, 'updateStatus'])->name('admin.support.updateStatus');
             }
             );
 

@@ -24,6 +24,11 @@
         <span class="material-symbols-outlined">workspace_premium</span>
         <span class="text-sm">Chứng chỉ</span>
     </a>
+    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('support.*') ? 'bg-primary/20 text-primary dark:text-primary' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100' }}"
+        href="{{ route('support.index') }}">
+        <span class="material-symbols-outlined">support_agent</span>
+        <span class="text-sm">Hỗ trợ</span>
+    </a>
     <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('settings.index') ? 'bg-primary/20 text-primary dark:text-primary' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100' }}"
         href="{{ route('settings.index') }}">
         <span class="material-symbols-outlined">settings</span>

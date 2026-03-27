@@ -18,7 +18,7 @@
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
                 href="{{ route('home') }}">Home</a>
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="#">Support</a>
+                href="{{ route('admin.support.index') }}">Support</a>
         </nav>
         <div class="flex gap-3">
             {{-- Notifications Dropdown --}}

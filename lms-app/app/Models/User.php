@@ -96,4 +96,17 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             self::ROLE_GUEST => 'Guest',
         ];
     }
+
+    public function getAvatarUrlAttribute()
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+
+        if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+            return $this->avatar;
+        }
+
+        return asset('storage/' . $this->avatar);
+    }
 }

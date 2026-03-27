@@ -18,7 +18,7 @@
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
                 href="#">Home</a>
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="#">Support</a>
+                href="{{ route('support.create') }}">Support</a>
         </nav>
         <div class="flex gap-3">
             {{-- Notifications Dropdown --}}
