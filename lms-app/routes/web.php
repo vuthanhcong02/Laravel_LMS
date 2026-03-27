@@ -11,6 +11,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\LessonController;
+use App\Http\Controllers\Admin\SupportController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\Admin\RevenueController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -31,18 +34,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // User Settings & Support
     Route::prefix('portal')->group(function () {
-        Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
+            Route::get('/settings', [SettingController::class , 'index'])->name('settings.index');
+            Route::post('/settings', [SettingController::class , 'update'])->name('settings.update');
 
-        // Support Portal Routes
-        Route::get('/support', [\App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
-        Route::get('/support/create', [\App\Http\Controllers\SupportController::class, 'create'])->name('support.create');
-        Route::post('/support', [\App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
-        Route::get('/support/{ticket}', [\App\Http\Controllers\SupportController::class, 'show'])->name('support.show');
-        Route::post('/support/{ticket}/reply', [\App\Http\Controllers\SupportController::class, 'reply'])->name('support.reply');
-    });
-    // Redirect /dashboard based on role, or use individual routes.
-    Route::get('/dashboard', function () {
+            // Support Portal Routes
+            Route::get('/support', [SupportController::class , 'index'])->name('support.index');
+            Route::get('/support/create', [SupportController::class , 'create'])->name('support.create');
+            Route::post('/support', [SupportController::class , 'store'])->name('support.store');
+            Route::get('/support/{ticket}', [SupportController::class , 'show'])->name('support.show');
+            Route::post('/support/{ticket}/reply', [SupportController::class , 'reply'])->name('support.reply');
+        }
+        );
+        // Redirect /dashboard based on role, or use individual routes.
+        Route::get('/dashboard', function () {
             $user = Auth::user();
             if ($user->role === User::ROLE_ADMIN)
                 return redirect()->route('admin.dashboard');
@@ -82,22 +86,26 @@ Route::prefix('portal')->group(function () {
                 Route::put('admin/profile', [AdminProfileController::class , 'update'])->name('admin.profile.update');
                 Route::put('admin/profile/password', [AdminProfileController::class , 'updatePassword'])->name('admin.profile.updatePassword');
 
-                Route::post('admin/blogs/preview', [BlogController::class, 'preview'])->name('admin.blogs.preview');
-                Route::post('admin/blogs/upload', [BlogController::class, 'upload'])->name('admin.blogs.upload');
+                Route::post('admin/blogs/preview', [BlogController::class , 'preview'])->name('admin.blogs.preview');
+                Route::post('admin/blogs/upload', [BlogController::class , 'upload'])->name('admin.blogs.upload');
                 Route::resource('admin/blogs', BlogController::class)->names('admin.blogs');
 
                 Route::resource('admin/courses', CourseController::class)->names('admin.courses');
-                Route::post('admin/lessons/{lesson}/move-up', [LessonController::class, 'moveUp'])->name('admin.lessons.moveUp');
-                Route::post('admin/lessons/{lesson}/move-down', [LessonController::class, 'moveDown'])->name('admin.lessons.moveDown');
-                Route::post('admin/courses/{course}/lessons', [LessonController::class, 'store'])->name('admin.lessons.store');
-                Route::put('admin/lessons/{lesson}', [LessonController::class, 'update'])->name('admin.lessons.update');
-                Route::delete('admin/lessons/{lesson}', [LessonController::class, 'destroy'])->name('admin.lessons.destroy');
+                Route::post('admin/lessons/{lesson}/move-up', [LessonController::class , 'moveUp'])->name('admin.lessons.moveUp');
+                Route::post('admin/lessons/{lesson}/move-down', [LessonController::class , 'moveDown'])->name('admin.lessons.moveDown');
+                Route::post('admin/courses/{course}/lessons', [LessonController::class , 'store'])->name('admin.lessons.store');
+                Route::put('admin/lessons/{lesson}', [LessonController::class , 'update'])->name('admin.lessons.update');
+                Route::delete('admin/lessons/{lesson}', [LessonController::class , 'destroy'])->name('admin.lessons.destroy');
 
                 // Support Admin Routes
-                Route::get('admin/support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('admin.support.index');
-                Route::get('admin/support/{ticket}', [\App\Http\Controllers\Admin\SupportController::class, 'show'])->name('admin.support.show');
-                Route::post('admin/support/{ticket}/reply', [\App\Http\Controllers\Admin\SupportController::class, 'reply'])->name('admin.support.reply');
-                Route::put('admin/support/{ticket}/status', [\App\Http\Controllers\Admin\SupportController::class, 'updateStatus'])->name('admin.support.updateStatus');
+                Route::get('admin/support', [SupportController::class , 'index'])->name('admin.support.index');
+                Route::get('admin/support/{ticket}', [SupportController::class , 'show'])->name('admin.support.show');
+                Route::post('admin/support/{ticket}/reply', [SupportController::class , 'reply'])->name('admin.support.reply');
+                Route::put('admin/support/{ticket}/status', [SupportController::class , 'updateStatus'])->name('admin.support.updateStatus');
+
+                // Revenue Admin Routes
+                Route::get('admin/revenue', [RevenueController::class , 'index'])->name('admin.revenue.index');
+                Route::get('admin/revenue/transactions', [RevenueController::class , 'transactions'])->name('admin.revenue.transactions');
             }
             );
 

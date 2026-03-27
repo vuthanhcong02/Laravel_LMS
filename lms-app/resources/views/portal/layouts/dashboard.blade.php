@@ -53,6 +53,7 @@
         <!-- Global Delete Modal -->
         @include('portal.layouts.components.delete-modal')
     </div>
+    @stack('scripts')
 </body>
 
 </html>
