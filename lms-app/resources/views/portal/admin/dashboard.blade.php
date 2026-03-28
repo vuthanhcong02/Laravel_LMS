@@ -21,10 +21,11 @@
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tổng học viên</p>
                         <span class="material-symbols-outlined text-primary">groups</span>
                     </div>
-                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">12,840</p>
+                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">
+                        {{ number_format($stats['total_students']) }}</p>
                     <div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
                         <span class="material-symbols-outlined text-xs">trending_up</span>
-                        <span>+12% so với tháng trước</span>
+                        <span>Dữ liệu thực tế</span>
                     </div>
                 </div>
                 <div
@@ -33,22 +34,27 @@
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tổng doanh thu</p>
                         <span class="material-symbols-outlined text-primary">currency_exchange</span>
                     </div>
-                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">₫2.4B</p>
-                    <div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
-                        <span class="material-symbols-outlined text-xs">trending_up</span>
-                        <span>+8.5% so với tháng trước</span>
+                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">
+                        ₫{{ number_format($stats['total_revenue'] / 1000000, 1) }}M</p>
+                    <div
+                        class="flex items-center gap-1 {{ $stats['revenue_growth'] >= 0 ? 'text-emerald-600' : 'text-rose-600' }} text-xs font-bold">
+                        <span
+                            class="material-symbols-outlined text-xs">{{ $stats['revenue_growth'] >= 0 ? 'trending_up' : 'trending_down' }}</span>
+                        <span>{{ $stats['revenue_growth'] >= 0 ? '+' : '' }}{{ $stats['revenue_growth'] }}% so với tháng
+                            trước</span>
                     </div>
                 </div>
                 <div
                     class="flex flex-col gap-2 rounded-lg p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="flex justify-between items-start">
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Khóa học hoạt động</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Khóa học hiện có</p>
                         <span class="material-symbols-outlined text-primary">local_library</span>
                     </div>
-                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">156</p>
+                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">
+                        {{ $stats['active_courses'] }}</p>
                     <div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
-                        <span class="material-symbols-outlined text-xs">trending_up</span>
-                        <span>+4% mới đăng ký</span>
+                        <span class="material-symbols-outlined text-xs">check_circle</span>
+                        <span>Đã xuất bản</span>
                     </div>
                 </div>
                 <div
@@ -57,10 +63,13 @@
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Yêu cầu hỗ trợ</p>
                         <span class="material-symbols-outlined text-primary">support_agent</span>
                     </div>
-                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">42</p>
-                    <div class="flex items-center gap-1 text-orange-600 dark:text-orange-400 text-xs font-bold">
-                        <span class="material-symbols-outlined text-xs">error</span>
-                        <span>12 yêu cầu chưa xử lý</span>
+                    <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">
+                        {{ $stats['pending_tickets'] }}</p>
+                    <div
+                        class="flex items-center gap-1 {{ $stats['pending_tickets'] > 0 ? 'text-orange-600' : 'text-emerald-600' }} text-xs font-bold">
+                        <span
+                            class="material-symbols-outlined text-xs">{{ $stats['pending_tickets'] > 0 ? 'warning' : 'check_circle' }}</span>
+                        <span>{{ $stats['pending_tickets'] }} yêu cầu đang xử lý</span>
                     </div>
                 </div>
             </div>
@@ -81,36 +90,18 @@
                         </select>
                     </div>
                     <div class="space-y-2">
-                        <p class="text-slate-900 dark:text-white text-4xl font-bold tracking-tight">₫2,400,000,000</p>
-                        <p class="text-emerald-600 font-semibold text-sm flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">north_east</span> +15.2% vs Last Period
+                        <p class="text-slate-900 dark:text-white text-4xl font-bold tracking-tight">
+                            ₫{{ number_format($stats['total_revenue']) }}</p>
+                        <p
+                            class="{{ $stats['revenue_growth'] >= 0 ? 'text-emerald-600' : 'text-rose-600' }} font-semibold text-sm flex items-center gap-1">
+                            <span
+                                class="material-symbols-outlined text-sm">{{ $stats['revenue_growth'] >= 0 ? 'north_east' : 'south_east' }}</span>
+                            {{ $stats['revenue_growth'] >= 0 ? '+' : '' }}{{ $stats['revenue_growth'] }}% so với tháng
+                            trước
                         </p>
                     </div>
                     <div class="h-64 w-full relative pt-4">
-                        <!-- Abstract SVG Chart Representation -->
-                        <svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 500 150">
-                            <defs>
-                                <lineargradient id="chartGradient" x1="0" x2="0" y1="0"
-                                    y2="1">
-                                    <stop offset="0%" stop-color="#8fc0e0" stop-opacity="0.5"></stop>
-                                    <stop offset="100%" stop-color="#8fc0e0" stop-opacity="0"></stop>
-                                </lineargradient>
-                            </defs>
-                            <path
-                                d="M0,130 C50,120 80,40 120,60 S180,10 240,50 S320,100 380,40 S450,20 500,10 L500,150 L0,150 Z"
-                                fill="url(#chartGradient)"></path>
-                            <path d="M0,130 C50,120 80,40 120,60 S180,10 240,50 S320,100 380,40 S450,20 500,10"
-                                fill="none" stroke="#8fc0e0" stroke-linecap="round" stroke-width="3"></path>
-                        </svg>
-                        <div class="flex justify-between mt-4 px-2">
-                            <span class="text-slate-400 text-xs font-bold uppercase">Jan</span>
-                            <span class="text-slate-400 text-xs font-bold uppercase">Feb</span>
-                            <span class="text-slate-400 text-xs font-bold uppercase">Mar</span>
-                            <span class="text-slate-400 text-xs font-bold uppercase">Apr</span>
-                            <span class="text-slate-400 text-xs font-bold uppercase">May</span>
-                            <span class="text-slate-400 text-xs font-bold uppercase">Jun</span>
-                            <span class="text-slate-400 text-xs font-bold uppercase">Jul</span>
-                        </div>
+                        <canvas id="dashboardRevenueChart"></canvas>
                     </div>
                 </div>
                 <!-- Recent Activity -->
@@ -118,71 +109,30 @@
                     class="flex flex-col gap-6 p-6 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <h2 class="text-slate-900 dark:text-white text-lg font-bold">Hoạt động gần đây</h2>
                     <div class="flex flex-col gap-6">
-                        <!-- Activity Item 1 -->
-                        <div class="flex gap-4">
-                            <div
-                                class="size-10 shrink-0 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                                <span class="material-symbols-outlined text-sm">person_add</span>
+                        @foreach ($activities as $activity)
+                            <div class="flex gap-4">
+                                <div
+                                    class="size-10 shrink-0 rounded-full bg-{{ $activity['color'] }}-100 flex items-center justify-center text-{{ $activity['color'] }}-600">
+                                    <span class="material-symbols-outlined text-sm">{{ $activity['icon'] }}</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                        {{ $activity['title'] }}</p>
+                                    <p class="text-xs text-slate-500">{{ $activity['date']->diffForHumans() }}</p>
+                                </div>
                             </div>
-                            <div class="flex flex-col gap-1">
-                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Nguyễn Văn A vừa đăng ký
-                                    khóa học HSK 1</p>
-                                <p class="text-xs text-slate-500">2 phút trước</p>
+                        @endforeach
+
+                        @if ($activities->isEmpty())
+                            <div class="text-center py-8">
+                                <p class="text-slate-500 text-sm">Chưa có hoạt động nào.</p>
                             </div>
-                        </div>
-                        <!-- Activity Item 2 -->
-                        <div class="flex gap-4">
-                            <div
-                                class="size-10 shrink-0 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-                                <span class="material-symbols-outlined text-sm">draw</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Giáo viên Trần Thị B vừa
-                                    cập nhật bài giảng</p>
-                                <p class="text-xs text-slate-500">15 phút trước</p>
-                            </div>
-                        </div>
-                        <!-- Activity Item 3 -->
-                        <div class="flex gap-4">
-                            <div
-                                class="size-10 shrink-0 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-                                <span class="material-symbols-outlined text-sm">payments</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Thanh toán thành công:
-                                    ₫500.000 từ Lê C</p>
-                                <p class="text-xs text-slate-500">1 giờ trước</p>
-                            </div>
-                        </div>
-                        <!-- Activity Item 4 -->
-                        <div class="flex gap-4">
-                            <div
-                                class="size-10 shrink-0 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                                <span class="material-symbols-outlined text-sm">emergency</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Yêu cầu hỗ trợ mới từ
-                                    học viên HSK 4</p>
-                                <p class="text-xs text-slate-500">3 giờ trước</p>
-                            </div>
-                        </div>
-                        <!-- Activity Item 5 -->
-                        <div class="flex gap-4">
-                            <div
-                                class="size-10 shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-                                <span class="material-symbols-outlined text-sm">person_add</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Đặng Văn D đăng ký làm
-                                    giáo viên mới</p>
-                                <p class="text-xs text-slate-500">5 giờ trước</p>
-                            </div>
-                        </div>
+                        @endif
                     </div>
-                    <button
-                        class="w-full py-2.5 rounded-lg border border-primary text-primary text-sm font-bold hover:bg-primary hover:text-white transition-all">
-                        Xem tất cả hoạt động
-                    </button>
+                    <a href="{{ route('admin.revenue.transactions') }}"
+                        class="w-full py-2.5 rounded-lg border border-primary text-primary text-sm font-bold hover:bg-primary hover:text-white transition-all text-center">
+                        Xem tất cả lịch sử GD
+                    </a>
                 </div>
             </div>
             <!-- Featured Statistics Section -->
@@ -190,8 +140,10 @@
                 <div class="bg-primary/10 rounded-lg p-6 flex items-center justify-between border border-primary/20">
                     <div class="space-y-2">
                         <h3 class="text-primary font-bold">Khóa học phổ biến nhất</h3>
-                        <p class="text-2xl font-bold text-slate-800 dark:text-slate-100">HSK 3 - Giao tiếp</p>
-                        <p class="text-sm text-slate-500">Với hơn 1,200 học viên đang theo học</p>
+                        <p class="text-2xl font-bold text-slate-800 dark:text-slate-100 truncate max-w-[250px]">
+                            {{ $featured['top_course'] }}</p>
+                        <p class="text-sm text-slate-500">Với {{ number_format($featured['top_course_students']) }} học
+                            viên đang theo học</p>
                     </div>
                     <div
                         class="size-16 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center shadow-lg text-primary">
@@ -201,8 +153,9 @@
                 <div class="bg-slate-900 rounded-lg p-6 flex items-center justify-between border border-slate-700">
                     <div class="space-y-2">
                         <h3 class="text-primary font-bold">Tỷ lệ hài lòng</h3>
-                        <p class="text-2xl font-bold text-white">4.8 / 5.0</p>
-                        <p class="text-sm text-slate-400">Dựa trên 850 đánh giá tháng này</p>
+                        <p class="text-2xl font-bold text-white">{{ number_format($featured['satisfaction_rate'], 1) }} /
+                            5.0</p>
+                        <p class="text-sm text-slate-400">Dữ liệu từ đánh giá hệ thống</p>
                     </div>
                     <div class="flex -space-x-3">
                         <div class="size-10 rounded-full border-2 border-slate-900 bg-cover bg-center"
@@ -226,3 +179,11 @@
         </div>
     </main>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        window.chartData = {!! json_encode($chartData) !!};
+    </script>
+    @vite('resources/js/dashboard.js')
+@endpush

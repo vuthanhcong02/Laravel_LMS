@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Admin\RevenueController;
+use App\Http\Controllers\Admin\DashboardController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -75,10 +76,7 @@ Route::prefix('portal')->group(function () {
     Route::post('logout', [AdminAuthController::class , 'logout'])->name('admin.logout');
 
     Route::middleware(['auth', 'role:' . User::ROLE_ADMIN])->group(function () {
-            Route::get('admin/dashboard', function () {
-                    return view('portal.admin.dashboard');
-                }
-                )->name('admin.dashboard');
+            Route::get('admin/dashboard', [DashboardController::class , 'index'])->name('admin.dashboard');
 
                 Route::resource('admin/users', UserController::class)->names('admin.users');
 
