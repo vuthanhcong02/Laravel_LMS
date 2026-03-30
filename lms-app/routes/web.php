@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NotificationController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -104,6 +105,10 @@ Route::prefix('portal')->group(function () {
                 // Revenue Admin Routes
                 Route::get('admin/revenue', [RevenueController::class , 'index'])->name('admin.revenue.index');
                 Route::get('admin/revenue/transactions', [RevenueController::class , 'transactions'])->name('admin.revenue.transactions');
+                // Admin Notifications Routes
+                Route::get('admin/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+                Route::post('admin/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
+                Route::post('admin/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('admin.notifications.markAllAsRead');
             }
             );
 

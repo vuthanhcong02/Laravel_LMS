@@ -22,12 +22,54 @@
         </nav>
         <div class="flex gap-3">
             {{-- Notifications Dropdown --}}
-            <div class="relative" x-data="{ notifOpen: false }">
+            @php
+                $unreadNotificationsCount = Auth::user()->unreadNotifications->count();
+                $latestNotifications = Auth::user()->unreadNotifications()->take(5)->get();
+            @endphp
+            <div class="relative" x-data="{ 
+                notifOpen: false, 
+                unreadCount: {{ $unreadNotificationsCount }},
+                markAsRead(id, url, event) {
+                    if (event) event.preventDefault();
+                    
+                    let self = this;
+                    axios.post('/portal/admin/notifications/' + id + '/mark-as-read')
+                        .then(response => {
+                            if(response.data.success) {
+                                let item = document.getElementById('notif-' + id);
+                                if(item) item.classList.remove('bg-blue-50', 'dark:bg-slate-800/80');
+                                let dot = document.getElementById('notif-dot-' + id);
+                                if(dot) dot.style.display = 'none';
+                                
+                                self.unreadCount = Math.max(0, self.unreadCount - 1);
+                            }
+                        })
+                        .finally(() => {
+                            if (url && url !== '#' && url !== '') {
+                                window.location.href = url;
+                            }
+                        });
+                },
+                markAllAsRead() {
+                    axios.post('{{ route('admin.notifications.markAllAsRead') }}')
+                        .then(response => {
+                            if(response.data.success) {
+                                this.unreadCount = 0;
+                                document.querySelectorAll('.notif-item').forEach(el => {
+                                    el.classList.remove('bg-blue-50', 'dark:bg-slate-800/80');
+                                });
+                                document.querySelectorAll('.notif-dot').forEach(el => {
+                                    el.style.display = 'none';
+                                });
+                            }
+                        });
+                }
+            }">
                 <button @click="notifOpen = !notifOpen"
                     class="relative flex items-center justify-center rounded-lg size-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/20 transition-colors">
                     <span class="material-symbols-outlined">notifications</span>
-                    <span
-                        class="absolute top-2.5 right-2.5 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                    <span x-cloak x-show="unreadCount > 0" x-text="unreadCount"
+                        class="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white border-2 border-white dark:border-slate-800"></span>
                 </button>
 
                 {{-- Notification Popup --}}
@@ -40,56 +82,46 @@
                     <div
                         class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
                         <p class="text-sm font-semibold text-slate-800 dark:text-white">Thông báo</p>
-                        <a href="#" class="text-xs text-primary font-medium hover:underline">Đánh dấu đã đọc</a>
+                        <button type="button" x-cloak x-show="unreadCount > 0" @click="markAllAsRead()" class="text-xs text-primary font-medium hover:underline">Đánh dấu tất cả đã đọc</button>
                     </div>
                     <div class="max-h-[320px] overflow-y-auto">
-                        {{-- Dummy Notification Item 1 --}}
-                        <a href="#"
-                            class="flex gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 relative">
-                            <div class="size-2 bg-primary rounded-full absolute left-1.5 top-4"></div>
-                            <div
-                                class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-xl">campaign</span>
+                        @forelse($latestNotifications as $notification)
+                            @php
+                                $data = $notification->data;
+                                $isUnread = $notification->unread();
+                                $iconColor = $data['icon_color'] ?? 'primary';
+                                $iconBgClass = match($iconColor) {
+                                    'emerald', 'emerald-500' => 'bg-emerald-500/10 text-emerald-500',
+                                    'amber', 'amber-500' => 'bg-amber-500/10 text-amber-500',
+                                    'red', 'red-500' => 'bg-red-500/10 text-red-500',
+                                    'blue', 'blue-500' => 'bg-blue-500/10 text-blue-500',
+                                    default => 'bg-primary/10 text-primary',
+                                };
+                            @endphp
+                            <a href="{{ $data['link'] ?? '#' }}" id="notif-{{ $notification->id }}"
+                                @click="markAsRead('{{ $notification->id }}', '{{ $data['link'] ?? '#' }}', $event)"
+                                class="notif-item flex gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 relative bg-blue-50 dark:bg-slate-800/80">
+                                
+                                <div id="notif-dot-{{ $notification->id }}" class="notif-dot size-2 bg-primary rounded-full absolute left-1.5 top-4"></div>
+                                
+                                <div
+                                    class="size-10 rounded-full {{ $iconBgClass }} flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-xl">{{ $data['icon'] ?? 'campaign' }}</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ $data['title'] ?? 'Thông báo' }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{{ $data['message'] ?? '' }}</p>
+                                    <p class="text-[10px] text-slate-400 mt-1.5 font-medium">{{ $notification->created_at->diffForHumans() }}</p>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="py-10 flex flex-col items-center justify-center text-slate-400">
+                                <span class="material-symbols-outlined text-4xl mb-2">notifications_paused</span>
+                                <p class="text-sm">Không có thông báo mới.</p>
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-slate-800 dark:text-slate-200">Chào mừng đến với
-                                    XiaoMu!</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">Khám phá các
-                                    khóa học và bắt đầu hành trình chinh phục tiếng Trung của bạn.</p>
-                                <p class="text-[10px] text-slate-400 mt-1.5 font-medium">Vừa xong</p>
-                            </div>
-                        </a>
-                        {{-- Dummy Notification Item 2 --}}
-                        <a href="#"
-                            class="flex gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50">
-                            <div
-                                class="size-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-xl">check_circle</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-slate-800 dark:text-slate-200">Học sinh hoàn thành
-                                    bài học</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">Học sinh
-                                    Nguyễn Văn A đã hoàn thành bài học "Phát âm cơ bản".</p>
-                                <p class="text-[10px] text-slate-400 mt-1.5 font-medium">2 giờ trước</p>
-                            </div>
-                        </a>
-                        {{-- Dummy Notification Item 3 --}}
-                        <a href="#"
-                            class="flex gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50">
-                            <div
-                                class="size-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-xl">support_agent</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-slate-800 dark:text-slate-200">Yêu cầu hỗ trợ</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">Có 1 yêu cầu
-                                    hỗ trợ mới cần được xử lý sớm.</p>
-                                <p class="text-[10px] text-slate-400 mt-1.5 font-medium">1 ngày trước</p>
-                            </div>
-                        </a>
+                        @endforelse
                     </div>
-                    <a href="#"
+                    <a href="{{ route('admin.notifications.index') }}"
                         class="block px-4 py-2.5 bg-slate-50 dark:bg-slate-800 text-center text-sm text-primary font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border-t border-slate-100 dark:border-slate-800">Xem
                         tất cả thông báo</a>
                 </div>
