@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\SupportController;
+use App\Http\Controllers\SupportController as PortalSupportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -40,11 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/settings', [SettingController::class , 'update'])->name('settings.update');
 
             // Support Portal Routes
-            Route::get('/support', [SupportController::class , 'index'])->name('support.index');
-            Route::get('/support/create', [SupportController::class , 'create'])->name('support.create');
-            Route::post('/support', [SupportController::class , 'store'])->name('support.store');
-            Route::get('/support/{ticket}', [SupportController::class , 'show'])->name('support.show');
-            Route::post('/support/{ticket}/reply', [SupportController::class , 'reply'])->name('support.reply');
+            Route::get('/support', [PortalSupportController::class , 'index'])->name('support.index');
+            Route::get('/support/create', [PortalSupportController::class , 'create'])->name('support.create');
+            Route::post('/support', [PortalSupportController::class , 'store'])->name('support.store');
+            Route::get('/support/{ticket}', [PortalSupportController::class , 'show'])->name('support.show');
+            Route::post('/support/{ticket}/reply', [PortalSupportController::class , 'reply'])->name('support.reply');
         }
         );
         // Redirect /dashboard based on role, or use individual routes.
@@ -113,12 +114,14 @@ Route::prefix('portal')->group(function () {
             );
 
             Route::middleware(['auth', 'role:' . User::ROLE_TEACHER])->group(function () {
-            Route::get('teacher/dashboard', function () {
+                Route::get('teacher/dashboard', function () {
                     return view('portal.teacher.dashboard');
-                }
-                )->name('teacher.dashboard');
-            }
-            );
+                })->name('teacher.dashboard');
+
+                Route::get('teacher/profile', [\App\Http\Controllers\Teacher\TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
+                Route::put('teacher/profile', [\App\Http\Controllers\Teacher\TeacherProfileController::class, 'update'])->name('teacher.profile.update');
+                Route::put('teacher/profile/password', [\App\Http\Controllers\Teacher\TeacherProfileController::class, 'updatePassword'])->name('teacher.profile.updatePassword');
+            });
         });
 
 require __DIR__ . '/auth.php';
