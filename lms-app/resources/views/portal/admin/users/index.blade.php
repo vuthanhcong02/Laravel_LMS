@@ -24,17 +24,8 @@
                 </a>
             </div>
 
-            @if (session('success'))
-                <div class="p-4 bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-lg shadow-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="p-4 bg-red-100 border border-red-200 text-red-800 rounded-lg shadow-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
+            <x-admin.flash-message type="success" />
+            <x-admin.flash-message type="error" />
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm p-4">
                 <form method="GET" action="{{ route('admin.users.index') }}"
@@ -97,8 +88,8 @@
                             <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
                                 <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Name</th>
                                 <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Email</th>
-                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Role</th>
-                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Joined</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Role</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Joined</th>
                                 <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Actions</th>
                             </tr>
                         </thead>
@@ -112,7 +103,7 @@
                                     <td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm">
                                         {{ $user->email }}
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-4 text-center">
                                         @if ($user->role == \App\Models\User::ROLE_ADMIN)
                                             <span
                                                 class="px-2 py-1 bg-red-100 text-red-700 rounded-md text-xs font-bold">Admin</span>
@@ -127,7 +118,7 @@
                                                 class="px-2 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-bold">Guest</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm">
+                                    <td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm text-center">
                                         {{ $user->created_at->format('M d, Y') }}
                                     </td>
                                     <td class="px-6 py-4 text-right">

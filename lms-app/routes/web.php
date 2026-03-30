@@ -6,6 +6,16 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\LessonController;
+use App\Http\Controllers\Admin\SupportController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\Admin\RevenueController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NotificationController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -24,8 +34,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class , 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class , 'destroy'])->name('profile.destroy');
 
-    // Redirect /dashboard based on role, or use individual routes.
-    Route::get('/dashboard', function () {
+    // User Settings & Support
+    Route::prefix('portal')->group(function () {
+            Route::get('/settings', [SettingController::class , 'index'])->name('settings.index');
+            Route::post('/settings', [SettingController::class , 'update'])->name('settings.update');
+
+            // Support Portal Routes
+            Route::get('/support', [SupportController::class , 'index'])->name('support.index');
+            Route::get('/support/create', [SupportController::class , 'create'])->name('support.create');
+            Route::post('/support', [SupportController::class , 'store'])->name('support.store');
+            Route::get('/support/{ticket}', [SupportController::class , 'show'])->name('support.show');
+            Route::post('/support/{ticket}/reply', [SupportController::class , 'reply'])->name('support.reply');
+        }
+        );
+        // Redirect /dashboard based on role, or use individual routes.
+        Route::get('/dashboard', function () {
             $user = Auth::user();
             if ($user->role === User::ROLE_ADMIN)
                 return redirect()->route('admin.dashboard');
@@ -54,12 +77,38 @@ Route::prefix('portal')->group(function () {
     Route::post('logout', [AdminAuthController::class , 'logout'])->name('admin.logout');
 
     Route::middleware(['auth', 'role:' . User::ROLE_ADMIN])->group(function () {
-            Route::get('admin/dashboard', function () {
-                    return view('portal.admin.dashboard');
-                }
-                )->name('admin.dashboard');
-                
-            Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
+            Route::get('admin/dashboard', [DashboardController::class , 'index'])->name('admin.dashboard');
+
+                Route::resource('admin/users', UserController::class)->names('admin.users');
+
+                Route::get('admin/profile', [AdminProfileController::class , 'edit'])->name('admin.profile.edit');
+                Route::put('admin/profile', [AdminProfileController::class , 'update'])->name('admin.profile.update');
+                Route::put('admin/profile/password', [AdminProfileController::class , 'updatePassword'])->name('admin.profile.updatePassword');
+
+                Route::post('admin/blogs/preview', [BlogController::class , 'preview'])->name('admin.blogs.preview');
+                Route::post('admin/blogs/upload', [BlogController::class , 'upload'])->name('admin.blogs.upload');
+                Route::resource('admin/blogs', BlogController::class)->names('admin.blogs');
+
+                Route::resource('admin/courses', CourseController::class)->names('admin.courses');
+                Route::post('admin/lessons/{lesson}/move-up', [LessonController::class , 'moveUp'])->name('admin.lessons.moveUp');
+                Route::post('admin/lessons/{lesson}/move-down', [LessonController::class , 'moveDown'])->name('admin.lessons.moveDown');
+                Route::post('admin/courses/{course}/lessons', [LessonController::class , 'store'])->name('admin.lessons.store');
+                Route::put('admin/lessons/{lesson}', [LessonController::class , 'update'])->name('admin.lessons.update');
+                Route::delete('admin/lessons/{lesson}', [LessonController::class , 'destroy'])->name('admin.lessons.destroy');
+
+                // Support Admin Routes
+                Route::get('admin/support', [SupportController::class , 'index'])->name('admin.support.index');
+                Route::get('admin/support/{ticket}', [SupportController::class , 'show'])->name('admin.support.show');
+                Route::post('admin/support/{ticket}/reply', [SupportController::class , 'reply'])->name('admin.support.reply');
+                Route::put('admin/support/{ticket}/status', [SupportController::class , 'updateStatus'])->name('admin.support.updateStatus');
+
+                // Revenue Admin Routes
+                Route::get('admin/revenue', [RevenueController::class , 'index'])->name('admin.revenue.index');
+                Route::get('admin/revenue/transactions', [RevenueController::class , 'transactions'])->name('admin.revenue.transactions');
+                // Admin Notifications Routes
+                Route::get('admin/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+                Route::post('admin/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
+                Route::post('admin/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('admin.notifications.markAllAsRead');
             }
             );
 

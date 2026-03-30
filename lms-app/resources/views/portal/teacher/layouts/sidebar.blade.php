@@ -37,5 +37,15 @@
             <span class="material-symbols-outlined text-[24px]">bar_chart</span>
             <p class="text-sm font-medium leading-normal">Student Reports</p>
         </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('support.*') ? 'bg-primary/20 text-primary dark:text-primary' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100' }}"
+            href="{{ route('support.index') }}">
+            <span class="material-symbols-outlined text-[24px]">support_agent</span>
+            <p class="text-sm font-medium leading-normal">Hỗ trợ</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('settings.index') ? 'bg-primary/20 text-primary dark:text-primary' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100' }}"
+            href="{{ route('settings.index') }}">
+            <span class="material-symbols-outlined text-[24px]">settings</span>
+            <p class="text-sm font-medium leading-normal">Cài đặt</p>
+        </a>
     </nav>
 </aside>

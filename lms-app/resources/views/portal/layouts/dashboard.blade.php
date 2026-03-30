@@ -1,6 +1,14 @@
+@php
+    $theme = 'light';
+    if (Auth::check()) {
+        $setting = \App\Models\Setting::where('user_id', Auth::id())->where('key', 'theme')->first();
+        if ($setting) {
+            $theme = $setting->value;
+        }
+    }
+@endphp
 <!DOCTYPE html>
-
-<html lang="vi">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $theme === 'dark' ? 'dark' : '' }}">
 
 <head>
     <meta charset="utf-8" />
@@ -19,15 +27,17 @@
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display" x-data="{ sidebarOpen: false }">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display"
+    x-data="{ sidebarOpen: false }">
     <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
         <!-- Top Header -->
         @yield('header')
 
         <div class="flex flex-1 relative">
             <!-- Mobile Overlay -->
-            <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden" style="display: none;"></div>
-            
+            <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity
+                class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden" style="display: none;"></div>
+
             <!-- Sidebar -->
             @yield('sidebar')
 
@@ -43,6 +53,7 @@
         <!-- Global Delete Modal -->
         @include('portal.layouts.components.delete-modal')
     </div>
+    @stack('scripts')
 </body>
 
 </html>
