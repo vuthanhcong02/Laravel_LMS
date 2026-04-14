@@ -114,7 +114,7 @@
 
                 {{-- Pagination --}}
                 <div class="mt-12">
-                    {{ $classes->links() }}
+                    {{ $classes->links('components.pagination') }}
                 </div>
             @endif
         </div>

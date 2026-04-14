@@ -229,7 +229,7 @@
                     {{-- Pagination --}}
                     @if($enrollments->hasPages())
                         <div class="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20">
-                            {{ $enrollments->appends(['search' => $search, 'tab' => 'students'])->links() }}
+                            {{ $enrollments->appends(['search' => $search, 'tab' => 'students'])->links('components.pagination') }}
                         </div>
                     @endif
                 </div>
