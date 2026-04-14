@@ -24,7 +24,7 @@
                 <p class="text-sm font-semibold">Dashboard</p>
             </a>
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('teacher.classes.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
-                href="#">
+                href="{{ route('teacher.classes.index') }}">
                 <span class="material-symbols-outlined">groups</span>
                 <p class="text-sm font-medium">My Classes</p>
             </a>

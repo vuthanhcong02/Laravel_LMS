@@ -17,6 +17,8 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Teacher\ClassController;
+use App\Http\Controllers\Teacher\TeacherProfileController;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider and all of them will | be assigned to the "web" middleware group. Make something great! | */
 
@@ -118,9 +120,11 @@ Route::prefix('portal')->group(function () {
                     return view('portal.teacher.dashboard');
                 })->name('teacher.dashboard');
 
-                Route::get('teacher/profile', [\App\Http\Controllers\Teacher\TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
-                Route::put('teacher/profile', [\App\Http\Controllers\Teacher\TeacherProfileController::class, 'update'])->name('teacher.profile.update');
-                Route::put('teacher/profile/password', [\App\Http\Controllers\Teacher\TeacherProfileController::class, 'updatePassword'])->name('teacher.profile.updatePassword');
+                Route::resource('teacher/classes',  ClassController::class)->names('teacher.classes')->only(['index', 'show'])->parameters(['classes' => 'course']);
+
+                Route::get('teacher/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
+                Route::put('teacher/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');
+                Route::put('teacher/profile/password', [TeacherProfileController::class, 'updatePassword'])->name('teacher.profile.updatePassword');
             });
         });
 
