@@ -24,8 +24,8 @@
                 </a>
             </div>
 
-            <x-admin.flash-message type="success" />
-            <x-admin.flash-message type="error" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm p-4">
                 <form method="GET" action="{{ route('admin.users.index') }}"

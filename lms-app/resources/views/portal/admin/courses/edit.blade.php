@@ -27,8 +27,8 @@
             </div>
 
             {{-- Flash Messages --}}
-            <x-admin.flash-message type="success" />
-            <x-admin.flash-message type="error" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             {{-- Edit Form --}}
             <form action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data"

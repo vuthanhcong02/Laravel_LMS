@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            <x-admin.flash-message type="success" />
+            <x-flash-message type="success" />
 
             <!-- Datatable -->
             <div

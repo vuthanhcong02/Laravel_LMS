@@ -58,8 +58,8 @@
                 </div>
             </div>
 
-            <x-admin.flash-message type="success" />
-            <x-admin.flash-message type="error" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             <!-- Chat Area -->
             <div class="flex-1 p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 space-y-6" id="chat-container">

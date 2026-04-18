@@ -22,8 +22,8 @@
             </div>
 
             {{-- Flash Messages --}}
-            <x-admin.flash-message type="success" />
-            <x-admin.flash-message type="error" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             {{-- Tabs --}}
             <div class="flex border-b border-slate-200 dark:border-slate-700">

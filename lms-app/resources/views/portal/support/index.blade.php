@@ -40,7 +40,8 @@
                 </a>
             </div>
 
-            <x-admin.flash-message type="success" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
