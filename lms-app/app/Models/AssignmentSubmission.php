@@ -9,8 +9,16 @@ class AssignmentSubmission extends Model
 {
     use HasFactory;
 
+    const STATUS_PENDING = 0;
+    const STATUS_SUBMITTED = 1;
+    const STATUS_GRADED = 2;
+
     protected $fillable = [
-        'assignment_id', 'user_id', 'file_url', 'score', 'teacher_feedback', 'status'
+        'assignment_id', 'user_id', 'attachments', 'score', 'teacher_feedback', 'teacher_audio_path', 'status'
+    ];
+
+    protected $casts = [
+        'attachments' => 'array',
     ];
 
     public function assignment()
