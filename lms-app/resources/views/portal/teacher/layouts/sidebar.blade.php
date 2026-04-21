@@ -33,10 +33,10 @@
                 <span class="material-symbols-outlined">assignment</span>
                 <p class="text-sm font-medium">Assignments</p>
             </a>
-            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('teacher.exams.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
-                href="#">
-                <span class="material-symbols-outlined">content_copy</span>
-                <p class="text-sm font-medium">Exams Management</p>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('teacher.quizzes.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
+                href="{{ route('teacher.quizzes.index') }}">
+                <span class="material-symbols-outlined">quiz</span>
+                <p class="text-sm font-medium">{{ __('Bài kiểm tra') }}</p>
             </a>
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('teacher.reports.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
                 href="#">

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
+use App\Http\Controllers\Teacher\QuizController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -123,6 +124,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'teacher/assignments/{assignment}/grade/{submission}',
                 [TeacherAssignmentController::class, 'grade']
             )->name('teacher.assignments.grade');
+
+            // Quizzes Management
+            Route::get('teacher/quizzes/export-template', [QuizController::class, 'exportTemplate'])
+                ->name('teacher.quizzes.export-template');
+
+            Route::resource('teacher/quizzes', QuizController::class)
+                ->names('teacher.quizzes')
+                ->except(['show']);
+
+            Route::get('teacher/quizzes/{quiz}/questions', [QuizController::class, 'questions'])
+                ->name('teacher.quizzes.questions');
+            Route::put('teacher/quizzes/{quiz}/questions', [QuizController::class, 'updateQuestions'])
+                ->name('teacher.quizzes.questions.update');
+            Route::post('teacher/quizzes/{quiz}/import', [QuizController::class, 'import'])
+                ->name('teacher.quizzes.import');
 
             Route::get('teacher/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
             Route::put('teacher/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');
