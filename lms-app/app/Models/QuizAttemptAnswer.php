@@ -10,7 +10,7 @@ class QuizAttemptAnswer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'attempt_id', 'question_id', 'option_id'
+        'attempt_id', 'question_id', 'option_id', 'text_answer'
     ];
 
     public function attempt()
