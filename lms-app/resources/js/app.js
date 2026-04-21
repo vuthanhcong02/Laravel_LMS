@@ -8,3 +8,5 @@ AOS.init();
 window.Alpine = Alpine;
 
 Alpine.start();
+
+import './quiz-builder.js';

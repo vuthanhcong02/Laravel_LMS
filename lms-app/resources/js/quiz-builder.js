@@ -1,11 +1,4 @@
-/**
- * Question Builder — Alpine.js component
- *
- * Được đăng ký global để blade khởi tạo qua x-data="questionBuilder({...})"
- * Các chuỗi dịch được truyền từ blade qua window.QuizBuilderConfig
- */
-
-function questionBuilder(data) {
+window.questionBuilder = function (data) {
     const config = window.QuizBuilderConfig || {};
 
     return {
@@ -30,7 +23,6 @@ function questionBuilder(data) {
 
             this.activeQuestion = newIndex;
 
-            // Cuộn xuống câu hỏi vừa thêm
             this.$nextTick(() => {
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             });
@@ -42,7 +34,6 @@ function questionBuilder(data) {
             const el = document.getElementById('question-' + index);
             if (!el) return;
 
-            // Đo chiều cao sticky header động
             const stickyHeader = document.querySelector('main > div.sticky, [data-sticky-header]');
             const headerHeight = stickyHeader ? stickyHeader.offsetHeight + 16 : 120;
 
@@ -75,7 +66,6 @@ function questionBuilder(data) {
             if (confirm(msg)) {
                 this.questions = [];
                 this.activeQuestion = 0;
-                // Tự động submit để lưu trạng thái rỗng
                 this.$nextTick(() => this.submitForm());
             }
         },
@@ -92,7 +82,6 @@ function questionBuilder(data) {
         },
 
         toggleCorrect(qIndex, oIndex) {
-            // Chế độ chọn 1 đáp án đúng duy nhất
             this.questions[qIndex].options.forEach((opt, i) => {
                 opt.is_correct = i === oIndex;
             });

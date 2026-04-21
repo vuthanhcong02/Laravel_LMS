@@ -304,6 +304,5 @@
                 confirmClearAll: '{{ __('Bạn có chắc chắn muốn xóa TẤT CẢ câu hỏi? Hành động này không thể hoàn tác!') }}'
             };
         </script>
-        @vite('resources/js/quiz-builder.js')
     @endpush
 @endsection
