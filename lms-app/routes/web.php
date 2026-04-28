@@ -19,6 +19,7 @@ use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentContro
 use App\Http\Controllers\Teacher\ClassController;
 use App\Http\Controllers\Teacher\QuizController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
+use App\Http\Controllers\Teacher\TeacherReportController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -139,6 +140,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('teacher.quizzes.questions.update');
             Route::post('teacher/quizzes/{quiz}/import', [QuizController::class, 'import'])
                 ->name('teacher.quizzes.import');
+
+            // Reports Management
+            Route::resource('teacher/reports', TeacherReportController::class)
+                ->names('teacher.reports')
+                ->only(['index', 'show']);
+
+            Route::get('teacher/reports/{report}/export-pdf', [TeacherReportController::class, 'exportPdf'])
+                ->name('teacher.reports.export-pdf')
+                ->middleware('throttle:10,1');
 
             Route::get('teacher/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
             Route::put('teacher/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');

@@ -109,4 +109,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
         return asset('storage/' . $this->avatar);
     }
+
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
 }

@@ -16,11 +16,11 @@
     <div class="flex flex-1 justify-end gap-6 items-center">
         <nav class="hidden lg:flex items-center gap-8">
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="{{ route('home') }}">Home</a>
+                href="{{ route('home') }}">{{ __('Trang chủ') }}</a>
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="{{ route('support.create') }}">Support</a>
+                href="{{ route('support.create') }}">{{ __('Hỗ trợ') }}</a>
         </nav>
-        <div class="flex gap-3">
+        <div class="flex gap-3 items-center">
             {{-- Notifications Dropdown --}}
             <div class="relative" x-data="{ notifOpen: false }">
                 <button @click="notifOpen = !notifOpen"
