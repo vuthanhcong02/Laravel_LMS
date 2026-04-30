@@ -25,6 +25,7 @@
             font-family: 'Inter', sans-serif;
         }
     </style>
+    @stack('styles')
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display"

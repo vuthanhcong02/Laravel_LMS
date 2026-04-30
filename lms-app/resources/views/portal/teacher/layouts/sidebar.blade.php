@@ -43,6 +43,11 @@
                 <span class="material-symbols-outlined">bar_chart</span>
                 <p class="text-sm font-medium">{{ __('Báo cáo') }}</p>
             </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('teacher.schedules.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
+                href="{{ route('teacher.schedules.index') }}">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <p class="text-sm font-medium">{{ __('Lịch giảng dạy') }}</p>
+            </a>
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('support.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
                 href="{{ route('support.index') }}">
                 <span class="material-symbols-outlined">support_agent</span>

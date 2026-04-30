@@ -11,7 +11,14 @@ class Course extends Model
 
     protected $fillable = [
         'teacher_id', 'category_id', 'title', 'slug', 
-        'description', 'thumbnail', 'price', 'is_published'
+        'description', 'thumbnail', 'price', 'is_published',
+        'start_date', 'end_date'
+    ];
+
+    protected $casts = [
+        'is_published' => 'boolean',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     public function scopePublished($query)
@@ -47,5 +54,10 @@ class Course extends Model
     public function quizzes()
     {
         return $this->hasMany(Quiz::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(CourseSchedule::class);
     }
 }

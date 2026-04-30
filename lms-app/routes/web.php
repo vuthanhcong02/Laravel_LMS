@@ -18,6 +18,7 @@ use App\Http\Controllers\Student\AssignmentController as StudentAssignmentContro
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
 use App\Http\Controllers\Teacher\QuizController;
+use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
 use App\Http\Controllers\Teacher\TeacherReportController;
 use App\Models\User;
@@ -149,6 +150,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('teacher/reports/{report}/export-pdf', [TeacherReportController::class, 'exportPdf'])
                 ->name('teacher.reports.export-pdf')
                 ->middleware('throttle:10,1');
+
+            // Schedules Management
+            Route::get('teacher/schedules', [ScheduleController::class, 'index'])->name('teacher.schedules.index');
 
             Route::get('teacher/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
             Route::put('teacher/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');

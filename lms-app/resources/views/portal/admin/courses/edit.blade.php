@@ -62,6 +62,85 @@
                             </div>
                         </div>
 
+                        {{-- Schedule Settings --}}
+                        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">{{ __('Thời khóa biểu') }}</h3>
+                            
+                            @php
+                                $firstSchedule = $course->schedules->first();
+                                $defaultStartTime = $firstSchedule ? \Carbon\Carbon::parse($firstSchedule->start_time)->format('H:i') : '';
+                                $defaultEndTime = $firstSchedule ? \Carbon\Carbon::parse($firstSchedule->end_time)->format('H:i') : '';
+                                $dbDays = $course->schedules->pluck('day_of_week')->toArray();
+                                $defaultStartDate = $course->start_date ? $course->start_date->format('Y-m-d') : '';
+                                $defaultEndDate = $course->end_date ? $course->end_date->format('Y-m-d') : '';
+                            @endphp
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Ngày khai giảng') }}</label>
+                                    <input type="date" name="start_date" value="{{ old('start_date', $defaultStartDate) }}"
+                                        class="mt-1 w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('start_date') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm">
+                                    @error('start_date')
+                                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Ngày bế giảng') }}</label>
+                                    <input type="date" name="end_date" value="{{ old('end_date', $defaultEndDate) }}"
+                                        class="mt-1 w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('end_date') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm">
+                                    @error('end_date')
+                                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Giờ bắt đầu') }}</label>
+                                    <input type="time" name="start_time" value="{{ old('start_time', $defaultStartTime) }}"
+                                        class="mt-1 w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('start_time') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm">
+                                    @error('start_time')
+                                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Giờ kết thúc') }}</label>
+                                    <input type="time" name="end_time" value="{{ old('end_time', $defaultEndTime) }}"
+                                        class="mt-1 w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('end_time') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm">
+                                    @error('end_time')
+                                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">{{ __('Ngày trong tuần') }}</label>
+                                <div class="flex flex-wrap gap-3">
+                                    @php
+                                        $days = [
+                                            1 => __('Thứ 2'), 
+                                            2 => __('Thứ 3'), 
+                                            3 => __('Thứ 4'), 
+                                            4 => __('Thứ 5'), 
+                                            5 => __('Thứ 6'), 
+                                            6 => __('Thứ 7'), 
+                                            0 => __('Chủ nhật')
+                                        ];
+                                        $oldDays = old('days_of_week', $dbDays);
+                                    @endphp
+                                    @foreach($days as $val => $label)
+                                        <label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+                                            <input type="checkbox" name="days_of_week[]" value="{{ $val }}" {{ in_array($val, $oldDays) ? 'checked' : '' }} class="rounded text-primary focus:ring-primary">
+                                            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $label }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('days_of_week')
+                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
                         {{-- Description --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-2">
                             <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Description</label>
@@ -359,7 +438,47 @@
         'editorId' => 'course-description-editor',
         'uploadUrl' => route('admin.blogs.upload', ['_token' => csrf_token()])
     ])
+
+    <!-- Thêm thư viện Flatpickr để ép định dạng giờ 24h -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        /* Tùy chỉnh CSS Flatpickr cho hợp với giao diện UI (Bo góc, đổi màu) */
+        .flatpickr-calendar {
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            padding: 0.5rem;
+        }
+        .flatpickr-time { border-top: none !important; }
+        .flatpickr-time input:hover, .flatpickr-time .flatpickr-am-pm:hover, .flatpickr-time input:focus, .flatpickr-time .flatpickr-am-pm:focus {
+            background: #f8fafc;
+        }
+        .flatpickr-time input { font-weight: 700; color: #1e293b; }
+        
+        /* Dark mode */
+        .dark .flatpickr-calendar {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+        }
+        .dark .flatpickr-time input { color: #f8fafc; }
+        .dark .flatpickr-time input:hover, .dark .flatpickr-time input:focus { background: #1e293b; }
+        .dark .flatpickr-time .numInputWrapper span.arrowUp:after { border-bottom-color: #cbd5e1; }
+        .dark .flatpickr-time .numInputWrapper span.arrowDown:after { border-top-color: #cbd5e1; }
+    </style>
+
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("input[type=time]", {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                time_24hr: true
+            });
+        });
+
         function courseForm(initialSlug) {
             return {
                 slug: initialSlug,

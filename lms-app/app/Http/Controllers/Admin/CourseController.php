@@ -40,16 +40,16 @@ class CourseController extends Controller
             );
 
             return redirect()->route('admin.courses.index')
-                ->with('success', 'Khoá học đã được tạo thành công.');
+                ->with('success', __('Khoá học đã được tạo thành công.'));
         } catch (\Exception $e) {
             Log::error('Error creating course: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Có lỗi xảy ra khi tạo khoá học.');
+            return redirect()->back()->withInput()->with('error', __('Có lỗi xảy ra khi tạo khoá học.'));
         }
     }
 
     public function edit(Course $course)
     {
-        $course->load(['lessons' => fn ($q) => $q->orderBy('order')]);
+        $course->load(['lessons' => fn ($q) => $q->orderBy('order'), 'schedules']);
         $categories = $this->service->getCategories();
         $teachers   = $this->service->getTeachers();
 
@@ -66,10 +66,10 @@ class CourseController extends Controller
             );
 
             return redirect()->route('admin.courses.edit', $course)
-                ->with('success', 'Khoá học đã được cập nhật.');
+                ->with('success', __('Khoá học đã được cập nhật.'));
         } catch (\Exception $e) {
             Log::error('Error updating course: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Có lỗi xảy ra khi cập nhật khoá học.');
+            return redirect()->back()->withInput()->with('error', __('Có lỗi xảy ra khi cập nhật khoá học.'));
         }
     }
 
@@ -79,10 +79,10 @@ class CourseController extends Controller
             $this->service->destroy($course);
 
             return redirect()->route('admin.courses.index')
-                ->with('success', 'Khoá học đã được xoá.');
+                ->with('success', __('Khoá học đã được xoá.'));
         } catch (\Exception $e) {
             Log::error('Error deleting course: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Có lỗi xảy ra khi xoá khoá học.');
+            return redirect()->back()->with('error', __('Có lỗi xảy ra khi xoá khoá học.'));
         }
     }
 }
