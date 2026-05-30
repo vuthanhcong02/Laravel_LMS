@@ -23,12 +23,15 @@
 @endsection
 
 @section('content')
-    <div class="p-6">
-        <div class="max-w-[1200px] mx-auto space-y-6">
-            <div class="flex items-center justify-between mb-6 mt-5">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Trung tâm Hỗ trợ</h1>
-                    <p class="text-sm text-slate-500">Xem và quản lý các yêu cầu hỗ trợ của bạn.</p>
+    <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
+        <div class="max-w-[1400px] mx-auto space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 mt-5">
+                <div class="space-y-2">
+                    <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-4xl">support_agent</span>
+                        Trung tâm Hỗ trợ
+                    </h1>
+                    <p class="text-slate-500 dark:text-slate-400 font-bold">Xem và quản lý các yêu cầu hỗ trợ của bạn.</p>
                 </div>
                 <a href="{{ route('support.create') }}"
                     class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2">
@@ -37,7 +40,8 @@
                 </a>
             </div>
 
-            <x-admin.flash-message type="success" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
@@ -120,5 +124,5 @@
                 @endif
             </div>
         </div>
-    </div>
+    </main>
 @endsection

@@ -54,7 +54,12 @@ class CourseService
             $data['thumbnail'] = $thumbnailFile->store('courses/thumbnails', 'public');
         }
 
-        return Course::create($data);
+        $course = Course::create($data);
+
+        // Handle schedules
+        $this->syncSchedules($course, $data);
+
+        return $course;
     }
 
     /**
@@ -78,7 +83,28 @@ class CourseService
 
         $course->update($data);
 
+        // Handle schedules
+        $this->syncSchedules($course, $data);
+
         return $course;
+    }
+
+    /**
+     * Sync course schedules
+     */
+    protected function syncSchedules(Course $course, array $data): void
+    {
+        $course->schedules()->delete();
+
+        if (!empty($data['start_time']) && !empty($data['end_time']) && !empty($data['days_of_week'])) {
+            foreach ($data['days_of_week'] as $day) {
+                $course->schedules()->create([
+                    'day_of_week' => $day,
+                    'start_time' => $data['start_time'] . ':00',
+                    'end_time' => $data['end_time'] . ':00',
+                ]);
+            }
+        }
     }
 
     /**

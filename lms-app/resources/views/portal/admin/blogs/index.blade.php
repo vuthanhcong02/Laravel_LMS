@@ -27,8 +27,8 @@
             </div>
 
             {{-- Flash Messages --}}
-            <x-admin.flash-message type="success" />
-            <x-admin.flash-message type="error" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             {{-- Stats Cards --}}
             <div class="flex items-center gap-4">

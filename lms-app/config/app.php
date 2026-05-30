@@ -189,4 +189,6 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
     ])->toArray(),
 
+    'paginate_limit' => env('PAGING_LIMIT', 10),
+
 ];

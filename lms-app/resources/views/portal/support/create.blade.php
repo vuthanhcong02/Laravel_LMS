@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <x-admin.flash-message type="error" />
+            <x-flash-message type="error" />
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
                 <form action="{{ route('support.store') }}" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6">

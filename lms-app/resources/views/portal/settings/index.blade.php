@@ -24,16 +24,19 @@
 
 @section('content')
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
-        <div class="max-w-[1200px] mx-auto space-y-6">
-            <div class="flex items-center justify-between mt-5">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Cài đặt</h1>
-                    <p class="text-sm text-slate-500">Quản lý tùy chọn ngôn ngữ, thông báo và hiển thị.</p>
+        <div class="max-w-[1400px] mx-auto space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 mt-5">
+                <div class="space-y-2">
+                    <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-4xl">settings</span>
+                        Cài đặt
+                    </h1>
+                    <p class="text-slate-500 dark:text-slate-400 font-bold">Quản lý tùy chọn ngôn ngữ, thông báo và hiển thị.</p>
                 </div>
             </div>
 
-            <x-admin.flash-message type="success" />
-            <x-admin.flash-message type="error" />
+            <x-flash-message type="success" />
+            <x-flash-message type="error" />
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm"
                 x-data="{ activeTab: 'general', selectedTheme: '{{ $settings['theme'] ?? 'light' }}' }">
