@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\CourseSchedule;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\User;
@@ -90,9 +91,51 @@ class TeacherPortalSeeder extends Seeder
                 ]);
             }
         }
+
+        // Seeding CourseSchedules for today and other days to populate the timeline
+        $courses = Course::where('teacher_id', $teacher->id)->get();
+        $todayNum = \Carbon\Carbon::now()->dayOfWeek; // 0: Sunday, 1: Monday, ..., 6: Saturday
+        $tomorrowNum = ($todayNum + 1) % 7;
+
+        if ($courses->count() >= 3) {
+            // Course 1: Today at 08:00 - 09:30
+            CourseSchedule::create([
+                'course_id' => $courses[0]->id,
+                'day_of_week' => $todayNum,
+                'start_time' => '08:00:00',
+                'end_time' => '09:30:00',
+            ]);
+
+            // Course 2: Today at 14:00 - 15:30
+            CourseSchedule::create([
+                'course_id' => $courses[1]->id,
+                'day_of_week' => $todayNum,
+                'start_time' => '14:00:00',
+                'end_time' => '15:30:00',
+            ]);
+
+            // Course 3: Today at 19:00 - 20:30
+            CourseSchedule::create([
+                'course_id' => $courses[2]->id,
+                'day_of_week' => $todayNum,
+                'start_time' => '19:00:00',
+                'end_time' => '20:30:00',
+            ]);
+
+            // Course 4: Tomorrow at 10:00 - 11:30 (for other day verification)
+            if ($courses->count() >= 4) {
+                CourseSchedule::create([
+                    'course_id' => $courses[3]->id,
+                    'day_of_week' => $tomorrowNum,
+                    'start_time' => '10:00:00',
+                    'end_time' => '11:30:00',
+                ]);
+            }
+        }
     }
 
-    private function getLessonTitle($index) {
+    private function getLessonTitle($index)
+    {
         $titles = [
             'Làm quen và Chào hỏi',
             'Số đếm và Thời gian',

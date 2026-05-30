@@ -19,7 +19,7 @@
         </div>
         <nav class="flex flex-col gap-3">
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('teacher.dashboard') || request()->is('portal/teacher/dashboard') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
-                href="#">
+                href="{{ route('teacher.dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p class="text-sm font-semibold">{{ __('Bảng điều khiển') }}</p>
             </a>

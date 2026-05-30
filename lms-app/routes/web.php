@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
+use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
 use App\Http\Controllers\Teacher\QuizController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
@@ -112,7 +113,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // ─── Teacher routes ───────────────────────────────────────────────────
         Route::middleware(['role:' . User::ROLE_TEACHER])->group(function () {
-            Route::get('teacher/dashboard', fn() => view('portal.teacher.dashboard'))->name('teacher.dashboard');
+            Route::get('teacher/dashboard', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
 
             Route::resource('teacher/classes', ClassController::class)
                 ->names('teacher.classes')
