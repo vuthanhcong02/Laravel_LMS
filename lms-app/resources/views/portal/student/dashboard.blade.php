@@ -12,10 +12,28 @@
 
 @section('content')
     <main class="flex-1 p-6 lg:p-10 space-y-8">
-        <div class="flex flex-col gap-2">
-            <h1 class="text-3xl font-black text-slate-900 dark:text-white">Chào mừng, Nguyễn Văn A!</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-lg">Hôm nay là một ngày tuyệt vời để học Hán Ngữ. Bạn đã sẵn
-                sàng chưa?</p>
+        <!-- Welcome Banner giống teacher -->
+        <div class="bg-gradient-to-r from-primary to-blue-500 rounded-3xl py-6 px-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+            <div class="relative z-10 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-extrabold mb-1.5 tracking-tight">
+                        {{ Auth::user()->name ? __('Chào mừng quay trở lại, :name!', ['name' => Auth::user()->name]) : __('Chào mừng quay trở lại!') }}
+                    </h1>
+                    <p class="text-white/90 text-sm font-medium">
+                        {{ __('Hôm nay là một ngày tuyệt vời để tiếp thu thêm kiến thức Hán Ngữ mới. Hãy cùng cố gắng nhé!') }}
+                    </p>
+                </div>
+                <div class="hidden lg:flex items-center gap-3 bg-white/20 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/30">
+                    <span class="material-symbols-outlined text-2xl">calendar_month</span>
+                    <div class="text-right">
+                        <p class="text-xs font-semibold text-white/80 uppercase tracking-wider">{{ __('Hôm nay') }}</p>
+                        <p class="text-lg font-extrabold">{{ \Carbon\Carbon::now()->translatedFormat('d \T\h\á\n\g m, Y') }}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Decor -->
+            <div class="absolute -right-20 -top-20 w-80 h-80 bg-white/20 rounded-full blur-3xl mix-blend-overlay"></div>
+            <div class="absolute right-40 -bottom-20 w-60 h-60 bg-blue-300/30 rounded-full blur-3xl mix-blend-overlay"></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div
