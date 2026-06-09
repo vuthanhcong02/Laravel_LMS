@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
+use App\Http\Controllers\Student\StudentDashboardController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
@@ -72,7 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // ─── Student routes ───────────────────────────────────────────────────
         Route::middleware('role:' . User::ROLE_STUDENT)->group(function () {
-            Route::get('student/dashboard', fn() => view('portal.student.dashboard'))->name('student.dashboard');
+            Route::get('student/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
             Route::get('student/assignments', [StudentAssignmentController::class, 'index'])->name('student.assignments.index');
             Route::post('student/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('student.assignments.submit');
         });
