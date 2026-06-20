@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
+use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\Student\StudentDashboardController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
@@ -74,7 +75,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // ─── Student routes ───────────────────────────────────────────────────
         Route::middleware('role:' . User::ROLE_STUDENT)->group(function () {
             Route::get('student/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
+            
+            Route::get('student/courses', [StudentCourseController::class, 'index'])->name('student.courses.index');
+            Route::get('student/courses/{course}', [StudentCourseController::class, 'show'])->name('student.courses.show');
+            Route::get('student/courses/{course}/learn/{lesson?}', [StudentCourseController::class, 'learn'])->name('student.courses.learn');
+
             Route::get('student/assignments', [StudentAssignmentController::class, 'index'])->name('student.assignments.index');
+            Route::get('student/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('student.assignments.show');
             Route::post('student/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('student.assignments.submit');
         });
 
