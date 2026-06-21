@@ -60,4 +60,9 @@ class Course extends Model
     {
         return $this->hasMany(CourseSchedule::class);
     }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
 }

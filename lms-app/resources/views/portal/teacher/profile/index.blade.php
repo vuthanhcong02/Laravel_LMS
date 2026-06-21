@@ -11,7 +11,10 @@
 @endsection
 
 @section('content')
-    <main class="flex-1 p-6 lg:p-8 overflow-y-auto" x-data="{ tab: 'profile' }">
+    @php
+        $initialTab = $errors->hasAny(['current_password', 'password']) ? 'security' : 'profile';
+    @endphp
+    <main class="flex-1 p-6 lg:p-8 overflow-y-auto" x-data="{ tab: '{{ $initialTab }}' }">
         <div class="max-w-[1200px] mx-auto space-y-6">
 
             {{-- Page Title --}}
@@ -54,12 +57,7 @@
                         {{-- Avatar Display --}}
                         <div class="relative shrink-0">
                             @php
-                                $avatar = Auth::user()->avatar;
-                                $avatarUrl = $avatar
-                                    ? (str_starts_with($avatar, 'http')
-                                        ? $avatar
-                                        : asset('storage/' . $avatar))
-                                    : null;
+                                $avatarUrl = Auth::user()->avatar_url;
                             @endphp
                             <template x-if="preview">
                                 <img :src="preview"

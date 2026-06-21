@@ -25,7 +25,7 @@
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" @click.away="open = false"
                         class="flex items-center gap-2 focus:outline-none">
-                        <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) . '&color=FFFFFF&background=8fc0e0' }}"
+                        <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) . '&color=FFFFFF&background=8fc0e0' }}"
                             alt="Avatar" class="h-10 w-10 rounded-full object-cover border-2 border-primary/20">
                         <span
                             class="text-sm font-bold text-slate-700 dark:text-slate-200 hidden md:block">{{ auth()->user()->first_name }}
@@ -66,7 +66,7 @@
 
                         <div class="h-[1px] bg-slate-100 dark:bg-slate-800 my-2"></div>
 
-                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        <form method="POST" action="{{ route('logout') }}" class="w-full" @click.stop>
                             @csrf
                             <button type="submit"
                                 class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all text-left">

@@ -19,6 +19,12 @@ class AssignmentController extends Controller
         return view('portal.student.assignments.index', compact('assignments'));
     }
 
+    public function show(Assignment $assignment)
+    {
+        abort_unless($this->service->isEnrolled(auth()->id(), $assignment), 403, 'Bạn chưa đăng ký khoá học này.');
+        return view('portal.student.assignments.show', compact('assignment'));
+    }
+
     public function submit(SubmitAssignmentRequest $request, Assignment $assignment)
     {
         // Chỉ cho nộp bài khi assignment đã được publish
