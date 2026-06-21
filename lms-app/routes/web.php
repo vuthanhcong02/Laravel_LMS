@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\Student\StudentDashboardController;
+use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
@@ -75,7 +76,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // ─── Student routes ───────────────────────────────────────────────────
         Route::middleware('role:' . User::ROLE_STUDENT)->group(function () {
             Route::get('student/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
-            
+
             Route::get('student/courses', [StudentCourseController::class, 'index'])->name('student.courses.index');
             Route::get('student/courses/{course}', [StudentCourseController::class, 'show'])->name('student.courses.show');
             Route::get('student/courses/{course}/learn/{lesson?}', [StudentCourseController::class, 'learn'])->name('student.courses.learn');
@@ -83,6 +84,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('student/assignments', [StudentAssignmentController::class, 'index'])->name('student.assignments.index');
             Route::get('student/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('student.assignments.show');
             Route::post('student/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('student.assignments.submit');
+
+            Route::get('student/profile', [StudentProfileController::class, 'edit'])->name('student.profile.edit');
+            Route::put('student/profile', [StudentProfileController::class, 'update'])->name('student.profile.update');
+            Route::put('student/profile/password', [StudentProfileController::class, 'updatePassword'])->name('student.profile.updatePassword');
         });
 
         // ─── Admin routes ─────────────────────────────────────────────────────

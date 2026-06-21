@@ -1,13 +1,13 @@
 @extends('portal.layouts.dashboard')
 
-@section('title', 'My Profile')
+@section('title', 'Hồ sơ cá nhân')
 
 @section('header')
-    @include('portal.admin.layouts.header')
+    @include('portal.student.layouts.header')
 @endsection
 
 @section('sidebar')
-    @include('portal.admin.layouts.sidebar')
+    @include('portal.student.layouts.sidebar')
 @endsection
 
 @section('content')
@@ -19,8 +19,8 @@
 
             {{-- Page Title --}}
             <div>
-                <h1 class="text-2xl font-bold text-slate-900 dark:text-white">My Profile</h1>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Manage your personal information and security settings.
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Hồ sơ cá nhân</h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Quản lý các thông tin cá nhân và bảo mật tài khoản.
                 </p>
             </div>
 
@@ -34,19 +34,19 @@
                     :class="tab === 'profile' ? 'border-primary text-primary' :
                         'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
                     class="px-5 py-3 text-sm font-semibold border-b-2 -mb-px transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-base">manage_accounts</span> Profile Info
+                    <span class="material-symbols-outlined text-base">manage_accounts</span> Thông tin chung
                 </button>
                 <button @click="tab = 'security'"
                     :class="tab === 'security' ? 'border-primary text-primary' :
                         'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
                     class="px-5 py-3 text-sm font-semibold border-b-2 -mb-px transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-base">lock</span> Security
+                    <span class="material-symbols-outlined text-base">lock</span> Đổi mật khẩu
                 </button>
             </div>
 
             {{-- TAB: Profile Info --}}
             <div x-show="tab === 'profile'" x-transition>
-                <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data"
+                <form action="{{ route('student.profile.update') }}" method="POST" enctype="multipart/form-data"
                     class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                     @csrf
                     @method('PUT')
@@ -85,8 +85,8 @@
                             </label>
                         </div>
                         <div class="space-y-1 text-center sm:text-left">
-                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Profile Photo</p>
-                            <p class="text-xs text-slate-400">JPG, PNG, WebP. Max 2MB.</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Ảnh đại diện</p>
+                            <p class="text-xs text-slate-400">Định dạng: JPG, PNG, WebP. Max 2MB.</p>
                             <input id="avatar-input" type="file" name="avatar" accept="image/*" class="hidden"
                                 @change="onFileChange">
                             @error('avatar')
@@ -99,7 +99,7 @@
                     <div class="p-6 space-y-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="space-y-2">
-                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">First Name</label>
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Tên (First Name)</label>
                                 <input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}"
                                     class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('first_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm">
                                 @error('first_name')
@@ -107,7 +107,7 @@
                                 @enderror
                             </div>
                             <div class="space-y-2">
-                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Last Name</label>
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Họ (Last Name)</label>
                                 <input type="text" name="last_name" value="{{ old('last_name', $user->last_name) }}"
                                     class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('last_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm">
                                 @error('last_name')
@@ -117,7 +117,7 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Email Address</label>
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Địa chỉ Email</label>
                             <input type="email" name="email" value="{{ old('email', $user->email) }}"
                                 class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('email') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm">
                             @error('email')
@@ -128,7 +128,7 @@
                         <div class="pt-2 flex justify-end">
                             <button type="submit"
                                 class="px-6 py-2 rounded-lg font-bold bg-primary text-white hover:bg-primary/90 transition-colors text-sm">
-                                Save Changes
+                                Lưu thay đổi
                             </button>
                         </div>
                     </div>
@@ -137,42 +137,42 @@
 
             {{-- TAB: Security --}}
             <div x-show="tab === 'security'" x-transition style="display:none">
-                <form action="{{ route('admin.profile.updatePassword') }}" method="POST"
+                <form action="{{ route('student.profile.updatePassword') }}" method="POST"
                     class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-5">
                     @csrf
                     @method('PUT')
 
                     <div class="space-y-2">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Current Password</label>
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Mật khẩu hiện tại</label>
                         <input type="password" name="current_password"
                             class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('current_password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm"
-                            placeholder="Enter your current password">
+                            placeholder="Nhập mật khẩu hiện tại của bạn">
                         @error('current_password')
                             <p class="text-xs text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">New Password</label>
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Mật khẩu mới</label>
                         <input type="password" name="password"
                             class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border @error('password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-sm"
-                            placeholder="At least 8 characters">
+                            placeholder="Tối thiểu 8 ký tự">
                         @error('password')
                             <p class="text-xs text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Confirm New Password</label>
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Nhập lại mật khẩu mới</label>
                         <input type="password" name="password_confirmation"
                             class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm"
-                            placeholder="Repeat new password">
+                            placeholder="Khớp với mật khẩu vừa nhập">
                     </div>
 
                     <div class="pt-2 flex justify-end">
                         <button type="submit"
                             class="px-6 py-2 rounded-lg font-bold bg-primary text-white hover:bg-primary/90 transition-colors text-sm">
-                            Change Password
+                            Đổi mật khẩu
                         </button>
                     </div>
                 </form>
