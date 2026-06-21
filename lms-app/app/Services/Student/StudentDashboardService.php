@@ -50,7 +50,7 @@ class StudentDashboardService
     {
         $enrollments = Enrollment::where('user_id', $userId)
             ->where('status', EnrollmentStatus::ACTIVE)
-            ->with(['course.lessons', 'course.category'])
+            ->with(['course.lessons', 'course.category', 'course.teacher'])
             ->latest()
             ->get();
 
@@ -81,16 +81,26 @@ class StudentDashboardService
             $nextLesson = $lessons->get($nextLessonIndex);
             $nextLessonTitle = $nextLesson ? $nextLesson->title : __('Bài giảng tiếp theo');
 
+            $teacher = $course->teacher;
+            $teacherName = $teacher ? ($teacher->first_name . ' ' . $teacher->last_name) : __('Chưa phân công');
+            $teacherAvatar = $teacher && $teacher->avatar
+                ? (str_starts_with($teacher->avatar, 'http')
+                    ? $teacher->avatar
+                    : asset('storage/' . $teacher->avatar))
+                : null;
+
             $continuingCourses[] = [
                 'id' => $course->id,
                 'title' => $course->title,
-                'thumbnail' => $course->thumbnail ?? 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=640',
+                'thumbnail' => $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=640',
                 'category_name' => $course->category ? $course->category->name : __('Tổng hợp'),
                 'lessons_count' => $lessonsCount,
                 'completed_lessons' => $completedCount,
                 'progress_percentage' => $progressPercentage,
                 'next_lesson_title' => $nextLessonTitle,
-                'next_lesson_id' => $nextLesson ? $nextLesson->id : null
+                'next_lesson_id' => $nextLesson ? $nextLesson->id : null,
+                'teacher_name' => $teacherName,
+                'teacher_avatar' => $teacherAvatar,
             ];
         }
 

@@ -42,14 +42,8 @@
                         @endphp
                         <div class="group bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 overflow-hidden flex flex-col h-full border-b-4 border-b-transparent hover:border-b-primary relative">
                             {{-- Thumbnail --}}
-                            <div class="relative h-48 overflow-hidden">
-                                @if($course->thumbnail)
-                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                                @else
-                                    <div class="w-full h-full bg-gradient-to-br from-primary/20 to-blue-500/10 flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-6xl text-primary/30">school</span>
-                                    </div>
-                                @endif
+                            <div class="relative h-48 overflow-hidden rounded-t-[2rem]">
+                                <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=640' }}" alt="{{ $course->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 <div class="absolute top-4 left-4">
                                     <span class="px-4 py-1.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider text-primary shadow-sm cursor-default">
                                         {{ $course->category?->name ?? 'Chưa phân loại' }}
@@ -70,25 +64,25 @@
                                 
                                 <div class="flex items-center gap-3 mb-6">
                                     @php
-                                        $teacherName = $course->teacher->name ?? $course->teacher->first_name;
+                                        $teacher = $course->teacher;
+                                        $teacherName = $teacher ? ($teacher->first_name . ' ' . $teacher->last_name) : __('Chưa phân công');
+                                        $teacherAvatar = $teacher && $teacher->avatar
+                                            ? (str_starts_with($teacher->avatar, 'http')
+                                                ? $teacher->avatar
+                                                : asset('storage/' . $teacher->avatar))
+                                            : null;
                                     @endphp
-                                    <img src="{{ $course->teacher->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($teacherName) }}" class="size-8 rounded-full border border-slate-200 dark:border-slate-700">
+                                    @if($teacherAvatar)
+                                        <img src="{{ $teacherAvatar }}" class="size-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" alt="{{ $teacherName }}">
+                                    @else
+                                        <div class="size-8 rounded-full bg-primary/10 text-primary border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold shrink-0">
+                                            {{ $teacher ? strtoupper(substr($teacher->first_name, 0, 1)) : '?' }}
+                                        </div>
+                                    @endif
                                     <span class="text-sm font-semibold text-slate-600 dark:text-slate-400">{{ $teacherName }}</span>
                                 </div>
 
                                 <div class="mt-auto pt-6 border-t border-slate-50 dark:border-slate-800/50">
-                                    <div class="flex justify-between items-end mb-2">
-                                        <div class="flex flex-col">
-                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tiến độ học tập</span>
-                                            <span class="text-sm font-black text-slate-800 dark:text-white">{{ $progressPercent }}%</span>
-                                        </div>
-                                    </div>
-                                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                                        <div class="bg-primary h-full rounded-full transition-all duration-1000" style="width: {{ $progressPercent }}%"></div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-6">
                                     <a href="{{ route('student.courses.show', $course->id) }}" class="flex items-center justify-center gap-2 w-full py-3 bg-slate-50 hover:bg-primary text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-primary dark:hover:text-white rounded-xl font-bold transition-all group/btn">
                                         Chi tiết khóa học
                                         <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">arrow_right_alt</span>

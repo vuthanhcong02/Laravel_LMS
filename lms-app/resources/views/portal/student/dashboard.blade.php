@@ -126,19 +126,18 @@
                                                 <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 line-clamp-1">
                                                     {{ $course['title'] }}
                                                 </h3>
-                                                <p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-2">
-                                                    <span class="material-symbols-outlined text-base text-slate-400">arrow_right_alt</span>
-                                                    {{ __('Tiếp theo:') }} <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $course['next_lesson_title'] }}</span>
-                                                </p>
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    @if($course['teacher_avatar'])
+                                                        <img src="{{ $course['teacher_avatar'] }}" class="size-6 rounded-full border border-slate-200 dark:border-slate-700 object-cover" alt="{{ $course['teacher_name'] }}">
+                                                    @else
+                                                        <div class="size-6 rounded-full bg-primary/10 text-primary border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+                                                            {{ $course['teacher_name'] ? strtoupper(substr($course['teacher_name'], 0, 1)) : '?' }}
+                                                        </div>
+                                                    @endif
+                                                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">{{ $course['teacher_name'] }}</span>
+                                                </div>
                                             </div>
-                                            <div class="mt-4">
-                                                <div class="flex justify-between text-xs font-semibold mb-2">
-                                                    <span class="text-slate-600 dark:text-slate-400">{{ __('Tiến độ:') }} {{ $course['progress_percentage'] }}%</span>
-                                                    <span class="text-primary">{{ $course['completed_lessons'] }}/{{ $course['lessons_count'] }} {{ __('bài học') }}</span>
-                                                </div>
-                                                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mb-4">
-                                                    <div class="bg-primary h-full rounded-full transition-all duration-500" :style="'width: {{ $course['progress_percentage'] }}%'"></div>
-                                                </div>
+                                            <div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800/50">
                                                 <button class="bg-primary hover:bg-primary/95 text-white font-bold py-2 px-6 rounded-lg transition-all w-full md:w-auto shadow-sm shadow-primary/20">
                                                     {{ __('Học tiếp') }}
                                                 </button>
