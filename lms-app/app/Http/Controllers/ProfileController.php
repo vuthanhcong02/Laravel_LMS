@@ -32,13 +32,11 @@ class ProfileController extends Controller
 
         if ($request->hasFile('avatar')) {
             // Delete old avatar if it's stored locally
-            if ($user->avatar && str_starts_with($user->avatar, '/storage/')) {
-                $oldPath = str_replace('/storage/', '', $user->avatar);
-                Storage::disk('public')->delete($oldPath);
+            if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+                Storage::disk('public')->delete($user->avatar);
             }
 
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = '/storage/' . $path;
+            $user->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
         if ($user->isDirty('email')) {

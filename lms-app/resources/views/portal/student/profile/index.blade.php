@@ -57,12 +57,7 @@
                         {{-- Avatar Display --}}
                         <div class="relative shrink-0">
                             @php
-                                $avatar = Auth::user()->avatar;
-                                $avatarUrl = $avatar
-                                    ? (str_starts_with($avatar, 'http')
-                                        ? $avatar
-                                        : asset('storage/' . $avatar))
-                                    : null;
+                                $avatarUrl = Auth::user()->avatar_url;
                             @endphp
                             <template x-if="preview">
                                 <img :src="preview"

@@ -25,7 +25,7 @@
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" @click.away="open = false"
                         class="flex items-center gap-2 focus:outline-none">
-                        <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) . '&color=FFFFFF&background=8fc0e0' }}"
+                        <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) . '&color=FFFFFF&background=8fc0e0' }}"
                             alt="Avatar" class="h-10 w-10 rounded-full object-cover border-2 border-primary/20">
                         <span
                             class="text-sm font-bold text-slate-700 dark:text-slate-200 hidden md:block">{{ auth()->user()->first_name }}

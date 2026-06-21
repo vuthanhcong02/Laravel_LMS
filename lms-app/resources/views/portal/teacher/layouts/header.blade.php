@@ -98,12 +98,7 @@
                     class="flex items-center gap-3 rounded-xl px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     {{-- Avatar --}}
                     @php
-                        $avatar = Auth::user()->avatar;
-                        $avatarUrl = $avatar
-                            ? (str_starts_with($avatar, 'http')
-                                ? $avatar
-                                : asset('storage/' . $avatar))
-                            : null;
+                        $avatarUrl = Auth::user()->avatar_url;
                     @endphp
                     @if ($avatarUrl)
                         <img src="{{ $avatarUrl }}" class="size-9 rounded-full border-2 border-primary object-cover"

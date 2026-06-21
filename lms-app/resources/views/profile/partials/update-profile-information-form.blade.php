@@ -100,7 +100,7 @@
     <script>
         function avatarUpload() {
             return {
-                imageUrl: '{{ $user->avatar ?? "https://ui-avatars.com/api/?name=" . urlencode($user->first_name . " " . $user->last_name) . "&color=FFFFFF&background=8fc0e0" }}',
+                imageUrl: '{{ $user->avatar_url ?? "https://ui-avatars.com/api/?name=" . urlencode($user->first_name . " " . $user->last_name) . "&color=FFFFFF&background=8fc0e0" }}',
                 fileChosen(event) {
                     if (event.target.files.length > 0) {
                         this.imageUrl = URL.createObjectURL(event.target.files[0]);
