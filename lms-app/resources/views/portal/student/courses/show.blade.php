@@ -123,14 +123,40 @@
                                             Bài kiểm tra ({{ $course->quizzes->count() }})
                                         </h3>
                                         @foreach($course->quizzes as $quiz)
+                                            @php
+                                                $completedAttempts = $quiz->attempts->filter(fn($a) => !is_null($a->completed_at));
+                                                $activeAttempt = $quiz->attempts->first(fn($a) => is_null($a->completed_at));
+                                                $highestScore = $completedAttempts->max('score');
+                                                $totalMarks = $quiz->questions->sum('marks');
+                                            @endphp
                                             <div class="py-4 border-b border-slate-200 dark:border-slate-800 last:border-0 group">
-                                                <h4 class="font-bold text-slate-800 dark:text-white line-clamp-1 mb-2 group-hover:text-purple-500 transition-colors">{{ $quiz->title }}</h4>
+                                                <h4 class="font-bold text-slate-800 dark:text-white line-clamp-1 mb-2 group-hover:text-purple-500 transition-colors">
+                                                    @if($activeAttempt)
+                                                        <a href="{{ route('student.quizzes.take', $activeAttempt->id) }}">{{ $quiz->title }}</a>
+                                                    @elseif($completedAttempts->isNotEmpty())
+                                                        <a href="{{ route('student.quizzes.result', $completedAttempts->first()->id) }}">{{ $quiz->title }}</a>
+                                                    @else
+                                                        <a href="{{ route('student.quizzes.show', $quiz->id) }}">{{ $quiz->title }}</a>
+                                                    @endif
+                                                </h4>
                                                 <div class="flex items-center justify-between text-xs">
                                                     <span class="text-slate-500 flex items-center gap-1 font-medium">
                                                         <span class="material-symbols-outlined text-[14px]">timer</span> 
-                                                        Thời gian: {{ $quiz->time_limit ?? 'Không giới hạn' }} phút
+                                                        Thời gian: {{ $quiz->time_limit > 0 ? __(':time phút', ['time' => $quiz->time_limit]) : __('Không giới hạn') }}
                                                     </span>
-                                                    <span class="text-slate-600 dark:text-slate-400 font-bold">Chưa làm</span>
+                                                    
+                                                    @if($activeAttempt)
+                                                        <span class="text-amber-600 dark:text-amber-500 font-bold flex items-center gap-1">
+                                                            <span class="size-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                                            {{ __('Đang làm') }}
+                                                        </span>
+                                                    @elseif($completedAttempts->isNotEmpty())
+                                                        <span class="text-emerald-600 dark:text-emerald-500 font-bold">
+                                                            {{ $highestScore }} / {{ $totalMarks }} {{ __('điểm') }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-slate-500 dark:text-slate-400 font-bold">{{ __('Chưa làm') }}</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         @endforeach

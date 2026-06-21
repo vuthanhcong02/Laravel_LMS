@@ -13,6 +13,16 @@ class QuizAttempt extends Model
         'quiz_id', 'user_id', 'score', 'started_at', 'completed_at'
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'started_at' => 'datetime',
+        'completed_at' => 'datetime',
+    ];
+
     public function quiz()
     {
         return $this->belongsTo(Quiz::class);

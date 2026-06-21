@@ -18,6 +18,7 @@ use App\Http\Controllers\Student\AssignmentController as StudentAssignmentContro
 use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\Student\StudentDashboardController;
 use App\Http\Controllers\Student\StudentProfileController;
+use App\Http\Controllers\Student\StudentQuizController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
@@ -84,6 +85,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('student/assignments', [StudentAssignmentController::class, 'index'])->name('student.assignments.index');
             Route::get('student/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('student.assignments.show');
             Route::post('student/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('student.assignments.submit');
+
+            // Student Quizzes
+            Route::get('student/quizzes', [StudentQuizController::class, 'index'])->name('student.quizzes.index');
+            Route::get('student/quizzes/{quiz}', [StudentQuizController::class, 'show'])->name('student.quizzes.show');
+            Route::post('student/quizzes/{quiz}/attempt', [StudentQuizController::class, 'attempt'])->name('student.quizzes.attempt');
+            Route::get('student/quizzes/attempts/{attempt}', [StudentQuizController::class, 'take'])->name('student.quizzes.take');
+            Route::post('student/quizzes/attempts/{attempt}/submit', [StudentQuizController::class, 'submit'])->name('student.quizzes.submit');
+            Route::get('student/quizzes/attempts/{attempt}/result', [StudentQuizController::class, 'result'])->name('student.quizzes.result');
 
             Route::get('student/profile', [StudentProfileController::class, 'edit'])->name('student.profile.edit');
             Route::put('student/profile', [StudentProfileController::class, 'update'])->name('student.profile.update');

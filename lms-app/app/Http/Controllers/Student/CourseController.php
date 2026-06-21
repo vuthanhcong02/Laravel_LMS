@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assignment;
 use App\Models\Enrollment;
 use App\Models\Course;
 use Illuminate\Http\Request;
@@ -40,12 +41,19 @@ class CourseController extends Controller
             'teacher',
             'category',
             'lessons',
-            'quizzes',
-            'assignments' => function($q) {
-                $q->where('status', \App\Models\Assignment::STATUS_PUBLISHED)
-                  ->with(['submissions' => function($sq) {
-                      $sq->where('user_id', auth()->id());
-                  }]);
+            'quizzes' => function ($q) {
+                $q->with([
+                    'questions',
+                    'attempts' => function ($sq) {
+                        $sq->where('user_id', auth()->id())->latest();
+                    }
+                ]);
+            },
+            'assignments' => function ($q) {
+                $q->where('status', Assignment::STATUS_PUBLISHED)
+                    ->with(['submissions' => function ($sq) {
+                        $sq->where('user_id', auth()->id());
+                    }]);
             }
         ]);
 
@@ -62,7 +70,7 @@ class CourseController extends Controller
             ->where('course_id', $course->id)
             ->firstOrFail();
 
-        $course->load(['lessons' => function($q) {
+        $course->load(['lessons' => function ($q) {
             $q->orderBy('order');
         }]);
 

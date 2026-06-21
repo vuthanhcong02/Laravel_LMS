@@ -3,11 +3,8 @@
     <div class="flex flex-col gap-6">
         <!-- Profile học viên giống y hệt teacher -->
         <div class="flex items-center gap-3 px-2">
-            @if(Auth::user()->avatar)
-                @php
-                    $avatarUrl = str_starts_with(Auth::user()->avatar, 'http') ? Auth::user()->avatar : asset('storage/' . Auth::user()->avatar);
-                @endphp
-                <img src="{{ $avatarUrl }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover shadow-sm">
+            @if(Auth::user()->avatar_url)
+                <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover shadow-sm">
             @else
                 <div class="bg-primary/20 p-2 rounded-full flex items-center justify-center w-10 h-10 shadow-sm">
                     <span class="material-symbols-outlined text-primary">person</span>
@@ -19,7 +16,6 @@
             </div>
         </div>
 
-        <!-- Danh sách menu đồng bộ khoảng cách gap-3 và style active với teacher -->
         <nav class="flex flex-col gap-3">
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('student.dashboard') || request()->is('portal/student/dashboard') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
                 href="{{ route('student.dashboard') }}">
@@ -40,7 +36,7 @@
             </a>
             
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('student.quizzes.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
-                href="#">
+                href="{{ route('student.quizzes.index') }}">
                 <span class="material-symbols-outlined text-[22px]">quiz</span>
                 <p class="text-sm font-medium">{{ __('Bài kiểm tra') }}</p>
             </a>
