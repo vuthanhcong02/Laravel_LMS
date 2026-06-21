@@ -40,6 +40,7 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/roadmap', 'getViewRoadMap')->name('roadmap');
     Route::get('/courses', 'getViewCourses')->name('courses');
     Route::get('/blog', 'getViewBlog')->name('blog');
+    Route::get('/flashcards', 'getViewFlashcards')->name('flashcards');
 });
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────

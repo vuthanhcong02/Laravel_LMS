@@ -33,4 +33,9 @@ class PageController extends Controller
     {
         return view('blog');
     }
+
+    public function getViewFlashcards()
+    {
+        return view('flashcard');
+    }
 }

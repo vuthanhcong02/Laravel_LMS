@@ -11,10 +11,10 @@
         <nav class="hidden md:flex items-center gap-8">
             <a class="text-sm font-medium transition-colors {{ request()->routeIs('home') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('home') }}">Home</a>
-            <a class="text-sm font-medium transition-colors {{ request()->routeIs('courses') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
-                href="{{ route('courses') }}">Courses</a>
-            <a class="text-sm font-medium transition-colors {{ request()->routeIs('roadmap') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
-                href="{{ route('roadmap') }}">HSK Roadmap</a>
+            <a class="text-sm font-medium transition-colors {{ request()->routeIs('flashcards') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
+                href="{{ route('flashcards') }}">FlashCard</a>
+            <a class="text-sm font-medium transition-colors {{ request()->routeIs('student.quizzes.*') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
+                href="{{ route('student.quizzes.index') }}">Thi thử HSK</a>
             <a class="text-sm font-medium transition-colors {{ request()->routeIs('blog') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('blog') }}">Blog</a>
             <a class="text-sm font-medium transition-colors {{ request()->routeIs('contact') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
