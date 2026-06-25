@@ -4,11 +4,19 @@
 @section('breadcrumb', 'Flashcard HSK 1 - HSK 9')
 
 @section('content')
+    <script>
+        window.hskVocabularies = @json($vocabularies);
+        window.hskTopics = @json($topics ?? []);
+    </script>
 
     <!-- Main Workspace Section -->
     <section id="flashcard-section" class="pt-8 lg:pt-12 pb-24 bg-transparent"
         x-data="{
+            vocabularies: window.hskVocabularies || {},
+            topics: window.hskTopics || {},
+            studyMode: 'level',
             activeLevel: 1,
+            activeTopic: Object.keys(window.hskTopics || {})[0] || '',
             currentIndex: 0,
             flipped: false,
             autoplayAudio: false,
@@ -16,55 +24,14 @@
             shuffledWordsList: [],
             levels: [1, 2, 3, 4, 5, 6, 7, 8, 9],
             rememberedWords: JSON.parse(localStorage.getItem('remembered_hsk_words') || '[]'),
-            vocabularies: {
-                1: [
-                    { word: '爱', pinyin: 'ài', meaning: 'Yêu, thích', example: '我爱学汉语。', example_pinyin: 'Wǒ ài xué hànyǔ.', example_meaning: 'Tôi thích học tiếng Trung.' },
-                    { word: '谢谢', pinyin: 'xièxie', meaning: 'Cảm ơn', example: '谢谢你帮我。', example_pinyin: 'Xièxie nǐ bāng wǒ.', example_meaning: 'Cảm ơn bạn đã giúp tôi.' },
-                    { word: '医生', pinyin: 'yīshēng', meaning: 'Bác sĩ', example: '他是我们的医生。', example_pinyin: 'Tā shì wǒmen de yīshēng.', example_meaning: 'Ông ấy là bác sĩ của chúng tôi.' }
-                ],
-                2: [
-                    { word: '唱歌', pinyin: 'chànggē', meaning: 'Hát, ca hát', example: 'She 很喜欢唱歌。', example: '她很喜欢唱歌。', example_pinyin: 'Tā hěn xǐhuān chànggē.', example_meaning: 'Cô ấy rất thích hát.' },
-                    { word: '运动', pinyin: 'yùndòng', meaning: 'Vận động, thể thao', example: 'Chúng tôi vận động mỗi ngày。', example: '我们每天都运动。', example_pinyin: 'Wǒmen měitiān dōu yùndòng.', example_meaning: 'Chúng tôi vận động mỗi ngày.' },
-                    { word: '旅游', pinyin: 'lǚyóu', meaning: 'Du lịch', example: 'Tôi muốn đi du lịch Trung Quốc。', example: '我想去中国旅游。', example_pinyin: 'Wǒ xiǎng qù Zhōngguó lǚyóu.', example_meaning: 'Tôi muốn đi du lịch Trung Quốc.' }
-                ],
-                3: [
-                    { word: '办法', pinyin: 'bànfǎ', meaning: 'Biện pháp, cách giải quyết', example: 'Đây thực sự là một cách hay！', example: '这真是一个好办法！', example_pinyin: 'Zhè zhēn shì yí gè hǎo bànfǎ!', example_meaning: 'Đây thực sự là một cách hay!' },
-                    { word: '简单', pinyin: 'jiǎndān', meaning: 'Đơn giản, dễ dàng', example: 'Câu hỏi này rất đơn giản。', example: '这个问题很简单。', example_pinyin: 'Zhè gè wèntí hěn jiǎndān.', example_meaning: 'Câu hỏi này rất đơn giản.' },
-                    { word: '影响', pinyin: 'yǐngxiǎng', meaning: 'Ảnh hưởng, tác động', example: 'Đừng ảnh hưởng tới việc học của người khác。', example: '别影响别人学习。', example_pinyin: 'Bié yǐngxiǎng biérén xuéxí.', example_meaning: 'Đừng ảnh hưởng tới việc học của người khác.' }
-                ],
-                4: [
-                    { word: '关键', pinyin: 'guānjiàn', meaning: 'Mấu chốt, then chốt', example: 'Thái độ là chìa khóa của thành công。', example: '态度是成功的关键。', example_pinyin: 'Tàidù shì chénggōng de guānjiàn.', example_meaning: 'Thái độ là chìa khóa của thành công.' },
-                    { word: '幽默', pinyin: 'yōumò', meaning: 'Hài hước, hóm hỉnh', example: 'Anh ấy là một người hài hước。', example: '他是一个幽默的人。', example_pinyin: 'Tā shì yí gè yōumò de rén.', example_meaning: 'Anh ấy là một người hài hước.' },
-                    { word: '积极', pinyin: 'jījí', meaning: 'Tích cực, chủ động', example: 'Tích cực đối mặt với cuộc sống。', example: '积极面对生活。', example_pinyin: 'Jījí miànduì shēnghuó.', example_meaning: 'Tích cực đối mặt với cuộc sống.' }
-                ],
-                5: [
-                    { word: '彼此', pinyin: 'bǐcǐ', meaning: 'Lẫn nhau, cả hai bên', example: 'Chúng ta nên tin tưởng lẫn nhau。', example: '我们应该彼此信任。', example_pinyin: 'Wǒmen yīnggāi bǐcǐ xìnrèn.', example_meaning: 'Chúng ta nên tin tưởng lẫn nhau.' },
-                    { word: '诚实', pinyin: 'chéngshí', meaning: 'Thành thật, trung thực', example: 'Người trung thực là đáng yêu nhất。', example: '诚实的人最可爱。', example_pinyin: 'Chéngshí de rén zuì kě’ài.', example_meaning: 'Người trung thực là đáng yêu nhất.' },
-                    { word: '贡献', pinyin: 'gòngxiàn', meaning: 'Cống hiến, đóng góp', example: 'Đóng góp cho xã hội。', example: '为社会做出贡献。', example_pinyin: 'Wèi shèhuì zuò chū gòngxiàn.', example_meaning: 'Đóng góp cho xã hội.' }
-                ],
-                6: [
-                    { word: '忽略', pinyin: 'hūlüè', meaning: 'Bỏ qua, lơ là', example: 'Chi tiết không thể bị bỏ qua。', example: '细节不能被忽略。', example_pinyin: 'Xìjié bù néng bèi hūlüè.', example_meaning: 'Chi tiết không thể bị bỏ qua.' },
-                    { word: '艰巨', pinyin: 'jiānjù', meaning: 'Gian khổ, khó khăn lớn', example: 'Đây là một nhiệm vụ gian khổ。', example: '这是一个艰巨的任务。', example_pinyin: 'Zhè shì yí gè jiānjù de rènwu.', example_meaning: 'Đây là một nhiệm vụ gian khổ.' },
-                    { word: '偶尔', pinyin: 'ǒu\'ěr', meaning: 'Thỉnh thoảng, thi thoảng', example: 'Thỉnh thoảng tôi mới đến thư viện。', example: '我偶尔去图书馆。', example_pinyin: 'Wǒ ǒu\'ěr qù túshūguǎn.', example_meaning: 'Thỉnh thoảng tôi mới đến thư viện.' }
-                ],
-                7: [
-                    { word: '阐述', pinyin: 'chǎnshù', meaning: 'Trình bày, làm rõ', example: 'Trình bày rõ quan điểm học thuật。', example: '阐述学术观点。', example_pinyin: 'Chǎnshù xuéshù guāndiǎn.', example_meaning: 'Trình bày rõ quan điểm học thuật.' },
-                    { word: '磋商', pinyin: 'cuōshāng', meaning: 'Thương lượng, đàm phán', example: 'Hai bên đang đàm phán về sự hợp tác。', example: '双方正就合作进行磋商。', example_pinyin: 'Shuāngfāng zhèng jiù hézuò jìnxíng cuōshāng.', example_meaning: 'Hai bên đang đàm phán về sự hợp tác.' },
-                    { word: '拓宽', pinyin: 'tuòkuān', meaning: 'Mở rộng, phát triển rộng', example: 'Mở rộng tầm nhìn quốc tế。', example: '拓宽国际视野。', example_pinyin: 'Tuòkuān guójì shìyě.', example_meaning: 'Mở rộng tầm nhìn quốc tế.' }
-                ],
-                8: [
-                    { word: '宏观', pinyin: 'hóngguān', meaning: 'Vĩ mô', example: 'Điều tiết kinh tế vĩ mô。', example: '宏观经济调控。', example_pinyin: 'Hóngguān jīngjì tiáokòng.', example_meaning: 'Điều tiết kinh tế vĩ mô.' },
-                    { word: '弊端', pinyin: 'bìduān', meaning: 'Mặt hại, tệ nạn, khuyết tật', example: 'Loại bỏ những mặt hại của thể chế。', example: '消除体制弊端。', example_pinyin: 'Xiāochú tǐzhì bìduān.', example_meaning: 'Loại bỏ những mặt hại của thể chế.' },
-                    { word: '协调', pinyin: 'xiétiáo', meaning: 'Phối hợp, hài hòa', example: 'Phối hợp lợi ích các bên。', example: '协调各方利益。', example_pinyin: 'Xiétiáo gèfāng lìyì.', example_meaning: 'Phối hợp lợi ích các bên.' }
-                ],
-                9: [
-                    { word: '阐明', pinyin: 'chǎnmíng', meaning: 'Làm sáng tỏ, giải thích rõ', example: 'Làm sáng tỏ sự thật lịch sử。', example: '阐明历史事实。', example_pinyin: 'Chǎnmíng lìshǐ shìshí.', example_meaning: 'Làm sáng tỏ sự thật lịch sử.' },
-                    { word: '瞻望', pinyin: 'zhānwàng', meaning: 'Hướng về tương lai, triển vọng', example: 'Hướng về tương lai tốt đẹp。', example: '瞻望美好未来。', example_pinyin: 'Zhānwàng měihǎo wèilái.', example_meaning: 'Hướng về tương lai tốt đẹp.' },
-                    { word: '融洽', pinyin: 'róngqià', meaning: 'Hòa hợp, thân thiết, hòa mục', example: 'Quan hệ vô cùng hòa hợp。', example: '关系非常融洽。', example_pinyin: 'Guānxì fēicháng / Róngqià.', example_pinyin: 'Guānxì fēicháng róngqià.', example_meaning: 'Quan hệ vô cùng hòa hợp.' }
-                ]
-            },
+            
             currentWords() {
-                let allWords = this.vocabularies[this.activeLevel] || [];
+                let allWords = [];
+                if (this.studyMode === 'level') {
+                    allWords = this.vocabularies[this.activeLevel] || [];
+                } else {
+                    allWords = this.topics[this.activeTopic] || [];
+                }
                 let unremembered = allWords.filter(w => !this.rememberedWords.includes(w.word));
                 if (this.isShuffled) {
                     return this.shuffledWordsList.filter(w => !this.rememberedWords.includes(w.word));
@@ -93,6 +60,17 @@
                 };
                 return descs[level] || '';
             },
+            getTopicIcon(topic) {
+                const icons = {
+                    'Gia đình': 'family_restroom',
+                    'Ăn uống': 'restaurant',
+                    'Du lịch & Địa điểm': 'explore',
+                    'Thời gian & Thời tiết': 'wb_sunny',
+                    'Học tập & Công việc': 'school',
+                    'Giao tiếp hàng ngày': 'forum'
+                };
+                return icons[topic] || 'category';
+            },
             flipCard() {
                 if (this.currentWords().length === 0) return;
                 this.flipped = !this.flipped;
@@ -105,7 +83,12 @@
                         this.shuffledWordsList = [];
                         this.currentIndex = 0;
                     } else {
-                        let words = (this.vocabularies[this.activeLevel] || []).filter(w => !this.rememberedWords.includes(w.word));
+                        let words = [];
+                        if (this.studyMode === 'level') {
+                            words = (this.vocabularies[this.activeLevel] || []).filter(w => !this.rememberedWords.includes(w.word));
+                        } else {
+                            words = (this.topics[this.activeTopic] || []).filter(w => !this.rememberedWords.includes(w.word));
+                        }
                         if (words.length <= 1) return;
                         // Fisher-Yates shuffle
                         for (let i = words.length - 1; i > 0; i--) {
@@ -142,7 +125,19 @@
                 }, 150);
             },
             changeLevel(level) {
+                this.studyMode = 'level';
                 this.activeLevel = level;
+                this.currentIndex = 0;
+                this.flipped = false;
+                this.isShuffled = false;
+                this.shuffledWordsList = [];
+                if (this.autoplayAudio && this.currentWords().length > 0) {
+                    setTimeout(() => { this.speak(); }, 400);
+                }
+            },
+            changeTopic(topic) {
+                this.studyMode = 'topic';
+                this.activeTopic = topic;
                 this.currentIndex = 0;
                 this.flipped = false;
                 this.isShuffled = false;
@@ -168,8 +163,14 @@
                 }
             },
             resetRemembered() {
-                let levelWords = this.vocabularies[this.activeLevel].map(w => w.word);
-                this.rememberedWords = this.rememberedWords.filter(w => !levelWords.includes(w));
+                let currentWordsList = [];
+                if (this.studyMode === 'level') {
+                    currentWordsList = this.vocabularies[this.activeLevel] || [];
+                } else {
+                    currentWordsList = this.topics[this.activeTopic] || [];
+                }
+                let wordStrings = currentWordsList.map(w => w.word);
+                this.rememberedWords = this.rememberedWords.filter(w => !wordStrings.includes(w));
                 localStorage.setItem('remembered_hsk_words', JSON.stringify(this.rememberedWords));
                 
                 this.currentIndex = 0;
@@ -222,58 +223,75 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                 
                 <!-- LEFT COLUMN: Sidebar Filter HSK (1/4 Width) -->
-                <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/50 dark:border-slate-700/60 shadow-xl shadow-slate-100/30 dark:shadow-none p-5 relative z-10">
-                    <div class="px-2 pb-4 mb-4 border-b border-slate-100 dark:border-slate-700/50">
-                        <span class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">layers</span>
-                            CẤP ĐỘ HSK 1 - 9
-                        </span>
+                <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/50 dark:border-slate-700/60 shadow-xl shadow-slate-100/30 dark:shadow-none p-5 relative z-10 flex flex-col gap-6">
+                    
+                    <!-- Section 1: HSK Levels -->
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3.5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[16px]">layers</span>
+                            <span>Cấp Độ HSK</span>
+                        </h4>
+                        <div class="flex lg:grid lg:grid-cols-3 gap-2 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-2 lg:pb-0">
+                            <template x-for="level in levels" :key="level">
+                                <button 
+                                    @click="changeLevel(level)"
+                                    class="w-14 h-11 flex-shrink-0 lg:w-full lg:flex-shrink-1 flex flex-col items-center justify-center rounded-2xl text-sm font-black transition-all duration-300 border hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:scale-[0.95]"
+                                    :class="studyMode === 'level' && activeLevel === level 
+                                        ? 'bg-gradient-to-br from-primary to-primary/90 text-white border-primary shadow-md shadow-primary/20 scale-[1.03]' 
+                                        : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-350 border-slate-100 dark:border-slate-800 hover:border-primary/45 hover:bg-primary/5'"
+                                >
+                                    <span x-text="level"></span>
+                                    <span class="text-[8px] font-medium leading-none opacity-80 mt-0.5" x-text="'HSK ' + level"></span>
+                                </button>
+                            </template>
+                        </div>
                     </div>
 
-                    <!-- Desktop vertical list, mobile horizontal slide -->
-                    <div class="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-2 lg:pb-0">
-                        <template x-for="level in levels" :key="level">
-                            <button 
-                                @click="changeLevel(level)"
-                                class="w-72 lg:w-full flex-shrink-0 lg:flex-shrink-1 flex items-center justify-between gap-4 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 border hover:scale-[1.01] active:scale-[0.98]"
-                                :class="activeLevel === level 
-                                    ? 'bg-gradient-to-r from-primary to-primary/95 text-white border-primary shadow-lg shadow-primary/20 scale-[1.02]' 
-                                    : 'bg-transparent text-slate-700 dark:text-slate-300 border-slate-100 dark:border-slate-800 hover:border-primary/40 hover:bg-primary/5'"
-                            >
-                                <div class="flex items-center gap-3">
-                                    <!-- Dynamic Badge for Numbers -->
-                                    <div 
-                                        class="flex h-8 w-8 items-center justify-center rounded-xl text-xs font-black shadow-sm"
-                                        :class="activeLevel === level 
-                                            ? 'bg-white text-primary shadow-inner' 
-                                            : (level <= 3 ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500' 
-                                              : (level <= 6 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-500' 
-                                              : 'bg-rose-50 dark:bg-rose-500/10 text-rose-500'))"
-                                        x-text="level"
-                                    ></div>
-                                    <div class="text-left">
-                                        <p class="font-bold text-sm" :class="activeLevel === level ? 'text-white' : 'text-slate-800 dark:text-white'" x-text="'HSK Cấp ' + level"></p>
-                                        <p class="text-[10px] font-medium leading-tight mt-0.5" :class="activeLevel === level ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'" x-text="getLevelDesc(level)"></p>
+                    <!-- Elegant Divider Line -->
+                    <div class="h-[1px] bg-slate-100 dark:bg-slate-700/60"></div>
+
+                    <!-- Section 2: Topics -->
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3.5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[16px]">widgets</span>
+                            <span>Chủ Đề Học Tập</span>
+                        </h4>
+                        <div class="flex lg:flex-col gap-2.5 overflow-x-auto lg:overflow-y-auto lg:max-h-[350px] no-scrollbar pb-2 lg:pb-0 pr-1">
+                            <template x-for="(words, topicName) in topics" :key="topicName">
+                                <button 
+                                    @click="changeTopic(topicName)"
+                                    class="w-56 lg:w-full flex-shrink-0 lg:flex-shrink-1 flex items-center justify-between gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-300 border hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.99]"
+                                    :class="studyMode === 'topic' && activeTopic === topicName 
+                                        ? 'bg-gradient-to-r from-primary to-primary/95 text-white border-primary shadow-lg shadow-primary/20' 
+                                        : 'bg-transparent text-slate-700 dark:text-slate-350 border-slate-100 dark:border-slate-800/80 hover:border-primary/30 hover:bg-primary/5'"
+                                >
+                                    <div class="flex items-center gap-3">
+                                        <!-- Dynamic Circular Badge for Topics -->
+                                        <div 
+                                            class="flex h-7 w-7 items-center justify-center rounded-full text-xs shadow-sm transition-colors duration-300"
+                                            :class="studyMode === 'topic' && activeTopic === topicName 
+                                                ? 'bg-white text-primary' 
+                                                : 'bg-primary/5 dark:bg-primary/10 text-primary'"
+                                        >
+                                            <span class="material-symbols-outlined text-[16px] font-bold" x-text="getTopicIcon(topicName)"></span>
+                                        </div>
+                                        <div class="text-left">
+                                            <p class="font-bold text-xs tracking-wide" :class="studyMode === 'topic' && activeTopic === topicName ? 'text-white' : 'text-slate-800 dark:text-white'" x-text="topicName"></p>
+                                            <p class="text-[9px] font-medium leading-none mt-0.5 opacity-80" :class="studyMode === 'topic' && activeTopic === topicName ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'" x-text="words.length + ' từ vựng'"></p>
+                                        </div>
                                     </div>
-                                </div>
-                                <span 
-                                    class="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wide hidden sm:inline"
-                                    :class="activeLevel === level 
-                                        ? 'bg-white/20 text-white' 
-                                        : (level <= 3 ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                                          : (level <= 6 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' 
-                                          : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'))"
-                                    x-text="getLevelLabel(level)"
-                                ></span>
-                            </button>
-                        </template>
+                                    <span class="material-symbols-outlined text-[14px] transition-transform duration-300" :class="studyMode === 'topic' && activeTopic === topicName ? 'text-white translate-x-0.5' : 'text-slate-400 dark:text-slate-500'">chevron_right</span>
+                                </button>
+                            </template>
+                        </div>
                     </div>
+
                 </div>
 
                 <!-- RIGHT COLUMN: Flashcard Panel (3/4 Width) -->
                 <div class="lg:col-span-3 flex flex-col items-center justify-center gap-4 relative z-10 w-full">
                     
-                    <!-- If NOT completed HSK level words -->
+                    <!-- If NOT completed current words -->
                     <template x-if="currentWords().length > 0">
                         <div class="w-full flex flex-col items-center justify-center gap-4">
                             <!-- Progress Info & Settings Bar -->
@@ -315,7 +333,7 @@
                                     </div>
                                     <div class="flex items-center gap-1.5">
                                         <span class="h-2 w-2 rounded-full bg-primary animate-ping"></span>
-                                        <span class="font-extrabold text-primary" x-text="'Học thử HSK ' + activeLevel"></span>
+                                        <span class="font-extrabold text-primary" x-text="studyMode === 'level' ? 'Học thử HSK ' + activeLevel : 'Chủ đề: ' + activeTopic"></span>
                                     </div>
                                 </div>
                             </div>
@@ -323,7 +341,7 @@
                             <!-- 3D Card Container (Phóng to theo yêu cầu) -->
                             <div class="w-full max-w-3xl h-[420px] perspective">
                                 <div 
-                                    class="w-full h-full preserve-3d transition-transform duration-500 relative"
+                                    class="w-full h-full preserve-3d transition-transform duration-500 relative cursor-pointer"
                                     :class="flipped ? 'rotate-y-180' : ''"
                                     @click="flipCard()"
                                 >
@@ -391,7 +409,7 @@
 
                                             <!-- Example Section -->
                                             <template x-if="currentWord().example">
-                                                <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                                                <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex flex-col gap-2">
                                                     <div class="flex items-center justify-between mb-1">
                                                         <p class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ví dụ minh họa:</p>
                                                         <button 
@@ -413,10 +431,12 @@
                                                             <span class="material-symbols-outlined text-[12px]">volume_up</span>
                                                         </button>
                                                     </div>
-                                                    <p class="text-sm font-bold text-slate-800 dark:text-white tracking-wide" x-text="currentWord().example"></p>
-                                                    <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium italic mt-0.5" x-text="currentWord().example_pinyin"></p>
-                                                    <div class="h-[1px] bg-slate-100/80 dark:bg-slate-750 my-1"></div>
-                                                    <p class="text-xs text-slate-600 dark:text-slate-300" x-text="currentWord().example_meaning"></p>
+                                                    <template x-for="(ex, index) in currentWord().example.split('\n')" :key="index">
+                                                        <div class="flex flex-col gap-0.5 border-b last:border-b-0 border-slate-100 dark:border-slate-800/80 pb-2 last:pb-0">
+                                                            <p class="text-sm font-bold text-slate-800 dark:text-white tracking-wide" x-text="(index + 1) + '. ' + ex"></p>
+                                                            <p class="text-xs text-slate-600 dark:text-slate-300" x-text="currentWord().example_meaning.split('\n')[index] || ''"></p>
+                                                        </div>
+                                                    </template>
                                                 </div>
                                             </template>
                                         </div>
@@ -471,15 +491,15 @@
                                 <span class="material-symbols-outlined text-5xl">workspace_premium</span>
                             </div>
                             <div>
-                                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white" x-text="'Chúc mừng! Bạn đã thuộc hết từ vựng HSK ' + activeLevel"></h3>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Tuyệt vời! Bạn đã ghi nhớ toàn bộ từ vựng ở cấp độ này.</p>
+                                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white" x-text="studyMode === 'level' ? 'Chúc mừng! Bạn đã thuộc hết từ vựng HSK ' + activeLevel : 'Chúc mừng! Bạn đã thuộc hết từ vựng chủ đề ' + activeTopic"></h3>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Tuyệt vời! Bạn đã ghi nhớ toàn bộ từ vựng ở phần này.</p>
                             </div>
                             <button 
                                 @click="resetRemembered()" 
                                 class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all duration-200 font-bold text-sm shadow-lg shadow-primary/20"
                             >
                                 <span class="material-symbols-outlined text-lg">replay</span>
-                                Học lại cấp độ này từ đầu
+                                <span x-text="studyMode === 'level' ? 'Học lại cấp độ này từ đầu' : 'Học lại chủ đề này từ đầu'"></span>
                             </button>
                         </div>
                     </template>

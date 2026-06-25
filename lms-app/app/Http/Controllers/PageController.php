@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HskVocabulary;
+
 class PageController extends Controller
 {
     public function getViewHome()
@@ -36,6 +38,14 @@ class PageController extends Controller
 
     public function getViewFlashcards()
     {
-        return view('flashcard');
+        $allVocabularies = HskVocabulary::where('hsk_version', '3.0')
+            ->select('word', 'pinyin', 'meaning', 'meaning_en', 'level', 'topic', 'example', 'example_meaning')
+            ->get();
+
+        $vocabularies = $allVocabularies->groupBy('level');
+
+        $topics = $allVocabularies->whereNotNull('topic')->groupBy('topic');
+
+        return view('flashcard', compact('vocabularies', 'topics'));
     }
 }
