@@ -22,4 +22,13 @@ class HskVocabulary extends Model
         'example',
         'example_meaning',
     ];
+
+    /**
+     * Many-to-many relationship with users table (users who learned this vocabulary).
+     */
+    public function usersWhoRemembered()
+    {
+        return $this->belongsToMany(User::class, 'user_remembered_vocabularies', 'hsk_vocabulary_id', 'user_id')
+            ->withTimestamps();
+    }
 }

@@ -114,4 +114,13 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     {
         return $this->hasMany(Enrollment::class);
     }
+
+    /**
+     * Many-to-many relationship with hsk_vocabularies table (learned vocabularies).
+     */
+    public function rememberedVocabularies()
+    {
+        return $this->belongsToMany(HskVocabulary::class, 'user_remembered_vocabularies', 'user_id', 'hsk_vocabulary_id')
+            ->withTimestamps();
+    }
 }
