@@ -2,6 +2,7 @@
 
 @section('title', 'Flashcard Từ Vựng HSK 1 - HSK 9')
 @section('breadcrumb', 'Flashcard HSK 1 - HSK 9')
+@section('breadcrumb_desc', 'Luyện nhớ chữ Hán, phiên âm Pinyin và câu ví dụ thông qua hệ thống thẻ ghi nhớ 3D thông minh.')
 
 @section('content')
     <script>

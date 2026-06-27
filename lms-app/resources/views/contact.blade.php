@@ -5,7 +5,7 @@
 @section('breadcrumb', 'Liên hệ')
 
 @section('content')
-    <main class="flex-1 max-w-[1200px] mx-auto w-full px-6 py-12 md:py-20">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-12 md:py-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <!-- Left Column: Info -->
             <div class="flex flex-col gap-8">
