@@ -21,7 +21,7 @@
     <!-- Header -->
     <x-header />
 
-    @if (!request()->routeIs('home'))
+    @if (!request()->routeIs('home') && !View::hasSection('hide_default_breadcrumb'))
         @include('components.breadcrumb')
     @endif
     <!-- Main Content -->

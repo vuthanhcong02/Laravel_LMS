@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HskVocabulary;
+use App\Models\HskLevel;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -29,7 +30,17 @@ class PageController extends Controller
 
     public function getViewCourses()
     {
-        return view('course');
+        $levels = HskLevel::with([
+            'lessons' => function ($query) {
+                $query->orderBy('lesson_number', 'asc');
+            },
+            'lessons.vocabList',
+            'lessons.grammarList',
+            'lessons.dialogueSections.dialogues',
+            'lessons.practices.sections.questions'
+        ])->orderBy('id', 'asc')->get();
+
+        return view('course', compact('levels'));
     }
 
     public function getViewBlog()
