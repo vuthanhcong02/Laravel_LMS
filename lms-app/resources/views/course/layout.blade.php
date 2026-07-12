@@ -281,10 +281,10 @@
             <div class="space-y-3 flex-1 flex flex-col">
 
                 <!-- Toolbar: Tab Navigation & Action Button -->
-                    <div class="sticky top-[60px] md:top-[72px] z-40 -mx-6 sm:mx-0 px-6 sm:px-0 sm:rounded-2xl flex flex-col xl:flex-row xl:items-center w-full transition-all duration-500"
+                    <div class="sticky top-[60px] md:top-[72px] z-40 -mx-6 sm:mx-0 px-6 sm:px-0 flex flex-col xl:flex-row xl:items-center transition-all duration-500"
                          x-data="{ isStuck: false }"
                          @scroll.window="isStuck = window.scrollY > 300"
-                         :class="isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0' : 'p-1.5 sm:p-1.5 sm:px-2 border-y sm:border bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-700/60 shadow-sm gap-4 xl:gap-0'">
+                         :class="[activeTab === 'practice' ? 'w-full lg:w-[calc(75%-0.375rem)]' : 'w-full', isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0 sm:rounded-b-2xl' : 'p-1.5 sm:p-1.5 sm:px-2 border-y sm:border bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-700/60 shadow-sm gap-4 xl:gap-0 sm:rounded-2xl']">
                          
                         <!-- Left Side: Context & Navigation (Expands when scrolled) -->
                         <div class="hidden lg:flex items-center overflow-hidden transition-all duration-500 origin-left" 
@@ -359,16 +359,7 @@
                                 </a>
                             </div>
                         </div>
-                        <!-- Right Side: Action Button -->
-                        <div class="flex-shrink-0 transition-all duration-500 flex justify-end w-full xl:w-auto mt-2 xl:mt-0 xl:ml-auto">
-                            <button 
-                                class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-600 hover:to-emerald-500 text-white font-bold text-xs transition-all duration-300 active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-                                @click="alert('Chúc mừng bạn đã hoàn thành bài học này!')"
-                            >
-                                <span class="material-symbols-outlined text-[18px]">done_all</span>
-                                <span class="whitespace-nowrap">Hoàn thành bài học</span>
-                            </button>
-                        </div>
+
                     </div>
 
                     <!-- Tabs Content Panels -->
