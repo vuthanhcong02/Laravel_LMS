@@ -80,21 +80,43 @@ class ImportHskLessonData extends Command
         ]
     ];
 
-
+    /**
+     * Map of lesson titles populated from lessons.json
+     */
+    protected $lessonTitlesMap = [];
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $crawlPath = rtrim($this->argument('path'), '/');
+        $crawlPath = $this->argument('path') ?: storage_path('app/tiengtrungbotui_data');
 
-        if (!File::isDirectory($crawlPath)) {
-            $this->error("Thư mục dữ liệu crawl không tồn tại tại: {$crawlPath}");
+        if (!File::exists($crawlPath)) {
+            $this->error("Thư mục dữ liệu không tồn tại: {$crawlPath}");
             return 1;
         }
 
         $this->info("=== Bắt đầu import dữ liệu Giáo trình HSK từ: {$crawlPath} ===");
+
+        $lessonsJsonPath = "{$crawlPath}/lessons.json";
+        if (File::exists($lessonsJsonPath)) {
+            $lessonsData = json_decode(File::get($lessonsJsonPath), true);
+            if (isset($lessonsData['lessons'])) {
+                foreach ($lessonsData['lessons'] as $l) {
+                    if ($l['id'] === 'lesson9999') continue;
+                    $lNum = (int) str_replace('lesson', '', $l['id']);
+                    if (!isset($this->lessonTitlesMap[$l['level_id']][$lNum])) {
+                        $this->lessonTitlesMap[$l['level_id']][$lNum] = [
+                            'title' => $l['name'],
+                            'pinyin' => '',
+                            'translation' => $l['name_vi']
+                        ];
+                    }
+                }
+                $this->info("Đã nạp thành công dữ liệu tên bài học từ lessons.json");
+            }
+        }
 
         // levels are statically defined similarly to the Python crawler
         $levels = [
@@ -145,8 +167,8 @@ class ImportHskLessonData extends Command
                 for ($lNum = 1; $lNum <= $lessonCount; $lNum++) {
                     $lNumStr = sprintf('%02d', $lNum);
 
-                    // 2. Set default lesson title info
-                    $titleInfo = [
+                    // 2. Get lesson title info (Prioritize static mapping, fallback to default)
+                    $titleInfo = $this->lessonTitlesMap[$levelId][$lNum] ?? [
                         'title' => "Bài {$lNum}",
                         'pinyin' => "Bàizhī {$lNum}",
                         'translation' => "Bài học số {$lNum}"
@@ -169,7 +191,7 @@ class ImportHskLessonData extends Command
                     $vocabFile = "{$crawlPath}/json/{$levelId}/lesson_{$lNumStr}_vocab.json";
                     if (File::exists($vocabFile)) {
                         $vocabData = json_decode(File::get($vocabFile), true);
-                        
+
                         HskLessonVocab::where('hsk_lesson_id', $lesson->id)->delete();
 
                         foreach ($vocabData as $vItem) {
@@ -223,26 +245,33 @@ class ImportHskLessonData extends Command
 
                     // 5. Initialize dialogue section loaded directly from API tiengtrungbotui.com
                     $textApiUrl = "https://tiengtrungbotui.com/data/{$levelId}/texts/lesson{$lNum}.json";
-                    
+
                     HskLessonDialogueSection::where('hsk_lesson_id', $lesson->id)->delete();
 
                     try {
                         $this->info("--> Đang tải dữ liệu bài khóa từ API: {$textApiUrl}");
                         $response = Http::timeout(10)->get($textApiUrl);
-                        
+
                         if ($response->successful()) {
                             $dialogueSectionsData = $response->json();
                             if (is_array($dialogueSectionsData)) {
                                 foreach ($dialogueSectionsData as $index => $sectData) {
                                     $partNum = $index + 1;
-                                    
-                                    // Create dialogue title (e.g., "Dialogue 1: At the restaurant")
+
+                                    // Create dialogue title
+                                    $textHan = !empty($sectData['text_han']) ? trim($sectData['text_han']) : '';
+                                    $textVi = !empty($sectData['text_vi']) ? trim($sectData['text_vi']) : "Bài khóa {$partNum}";
                                     $titleHan = !empty($sectData['title_han']) ? trim($sectData['title_han']) : '';
                                     $titleVi = !empty($sectData['title_vi']) ? trim($sectData['title_vi']) : '';
-                                    $title = "Bài khóa {$partNum}";
-                                    if ($titleHan || $titleVi) {
-                                        $title .= ": " . ($titleHan ?: '') . ($titleHan && $titleVi ? ' - ' : '') . ($titleVi ?: '');
-                                    }
+
+                                    $fullHan = $textHan;
+                                    if ($titleHan) $fullHan .= '：' . $titleHan;
+
+                                    $fullVi = $textVi;
+                                    if ($titleVi) $fullVi .= ': ' . $titleVi;
+
+                                    $title = $fullHan;
+                                    if ($fullVi) $title .= " ($fullVi)";
 
                                     // Get corresponding audio filename based on structure
                                     $audioFile = sprintf('%02d-%d.mp3', $lNum, $partNum);
@@ -282,17 +311,17 @@ class ImportHskLessonData extends Command
                     $practiceFile = "{$crawlPath}/json/{$levelId}/lesson_{$lNumStr}_practice.json";
                     if (File::exists($practiceFile)) {
                         $practiceData = json_decode(File::get($practiceFile), true);
-                        
+
                         // Clear old practices for this lesson
                         HskLessonPractice::where('hsk_lesson_id', $lesson->id)->delete();
 
-                        $types = ['listening', 'reading'];
+                        $types = ['listening', 'reading', 'writing'];
                         foreach ($types as $pType) {
                             if (isset($practiceData[$pType])) {
                                 $pData = $practiceData[$pType];
                                 $audioPath = null;
                                 if (isset($pData['audio'])) {
-                                $audioPath = "audio/" . $pData['audio'] . ".mp3";
+                                    $audioPath = "audio/" . $pData['audio'] . ".mp3";
                                 }
 
                                 $practice = HskLessonPractice::create([
@@ -303,10 +332,22 @@ class ImportHskLessonData extends Command
 
                                 $sections = $pData['sections'] ?? [];
                                 foreach ($sections as $secId => $secData) {
+                                    $sectionAudioPath = null;
+                                    if (isset($secData['audio'])) {
+                                        $subFolderPath = "audio/{$levelId}/lesson_{$lNumStr}/bt/" . $secData['audio'] . ".mp3";
+                                        $subFolderFullPath = storage_path("app/public/hsk_media/{$subFolderPath}");
+                                        if (File::exists($subFolderFullPath)) {
+                                            $sectionAudioPath = $subFolderPath;
+                                        } else {
+                                            $sectionAudioPath = "audio/" . $secData['audio'] . ".mp3";
+                                        }
+                                    }
+
                                     $section = HskLessonPracticeSection::create([
                                         'practice_id' => $practice->id,
                                         'section_han' => $secData['section_han'] ?? null,
                                         'section_vi' => $secData['section_vi'] ?? null,
+                                        'audio_path' => $sectionAudioPath,
                                         'image_path' => !empty($secData['imageFileName']) ? "images/" . $secData['imageFileName'] : null
                                     ]);
 
@@ -317,9 +358,12 @@ class ImportHskLessonData extends Command
                                             'ques_id' => $q['ques_id'] ?? 0,
                                             'ques_type' => $q['ques_type'] ?? 'true_false',
                                             'question' => $q['question'] ?? null,
+                                            'context' => $q['context'] ?? null,
                                             'question_pinyin' => $q['question_pinyin'] ?? null,
                                             'options' => $q['options'] ?? [],
-                                            'correct_answer' => $q['correct'] ?? null,
+                                            'sub_questions' => $q['sub_questions'] ?? null,
+                                            'correct_answer' => isset($q['correct']) ? (is_array($q['correct']) ? json_encode($q['correct']) : $q['correct']) : null,
+                                            'question_segments' => $q['question_segments'] ?? null,
                                             'image_path' => !empty($q['imageFileName']) ? "images/" . $q['imageFileName'] : null
                                         ]);
                                     }
@@ -331,7 +375,7 @@ class ImportHskLessonData extends Command
 
                 // Update the actual number of vocabulary words after importing all lessons of the level
                 $actualVocabCount = HskLessonVocab::whereIn(
-                    'hsk_lesson_id', 
+                    'hsk_lesson_id',
                     HskLesson::where('hsk_level_id', $level->id)->pluck('id')
                 )->count();
 
