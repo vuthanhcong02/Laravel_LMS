@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HskLesson;
 use App\Models\HskVocabulary;
 use App\Models\HskLevel;
 use Illuminate\Http\Request;
@@ -28,19 +29,52 @@ class PageController extends Controller
         return view('roadmap');
     }
 
-    public function getViewCourses()
+    public function getViewCourses(Request $request)
     {
         $levels = HskLevel::with([
             'lessons' => function ($query) {
                 $query->orderBy('lesson_number', 'asc');
-            },
-            'lessons.vocabList',
-            'lessons.grammarList',
-            'lessons.dialogueSections.dialogues',
-            'lessons.practices.sections.questions'
+            }
         ])->orderBy('id', 'asc')->get();
 
-        return view('course', compact('levels'));
+        $levelId = $request->query('level');
+        $currentLevel = null;
+        if ($levelId) {
+            $currentLevel = HskLevel::with([
+                'lessons' => function ($query) {
+                    $query->orderBy('lesson_number', 'asc');
+                }
+            ])->find($levelId);
+        }
+
+        return view('course.layout', [
+            'levels' => $levels,
+            'currentLevel' => $currentLevel,
+            'currentLesson' => null,
+            'activeTab' => null
+        ]);
+    }
+
+    public function showCourseLesson(Request $request, $levelId, $lessonId)
+    {
+        $levels = HskLevel::with([
+            'lessons' => function ($query) {
+                $query->orderBy('lesson_number', 'asc');
+            }
+        ])->orderBy('id', 'asc')->get();
+
+        $currentLevel = HskLevel::findOrFail($levelId);
+
+        $currentLesson = HskLesson::with([
+            'vocabList',
+            'grammarList',
+            'dialogueSections.dialogues',
+            'practices.sections.questions'
+        ])->where('hsk_level_id', $levelId)->findOrFail($lessonId);
+
+        $activeTab = $request->query('tab', 'vocab');
+
+        return view('course.layout', compact('levels', 'currentLevel', 'currentLesson', 'activeTab'));
     }
 
     public function getViewBlog()
