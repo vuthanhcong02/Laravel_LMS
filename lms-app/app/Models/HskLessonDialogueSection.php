@@ -38,6 +38,6 @@ class HskLessonDialogueSection extends Model
         if (empty($this->audio_path)) {
             return null;
         }
-        return Storage::disk('public')->url('hsk_media/audio/' . ltrim($this->audio_path, '/'));
+        return asset('storage/hsk_media/audio/' . ltrim($this->audio_path, '/'));
     }
 }

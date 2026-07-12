@@ -37,6 +37,6 @@ class HskLessonVocab extends Model
             return null;
         }
         
-        return Storage::disk('public')->url('hsk_media/audio/' . ltrim($this->audio_path, '/'));
+        return asset('storage/hsk_media/audio/' . ltrim($this->audio_path, '/'));
     }
 }
