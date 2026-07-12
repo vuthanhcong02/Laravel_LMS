@@ -13,19 +13,19 @@
             <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] opacity-80 pointer-events-none"></div>
 
             <!-- Soft Blur Orbs for background depth -->
-            <div class="absolute right-[-10%] top-[-20%] w-[350px] h-[350px] bg-primary/30 rounded-full blur-[120px] pointer-events-none"></div>
-            <div class="absolute left-[30%] bottom-[-50%] w-[250px] h-[250px] bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="absolute right-[-10%] top-[-20%] w-[350px] h-[350px] bg-primary/30 rounded-xl blur-[120px] pointer-events-none"></div>
+            <div class="absolute left-[30%] bottom-[-50%] w-[250px] h-[250px] bg-indigo-500/20 rounded-xl blur-[100px] pointer-events-none"></div>
 
             <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-start gap-4">
                 <!-- Interactive Status Badge -->
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-[9px] font-black text-primary uppercase tracking-widest shadow-sm">
-                    <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></span>
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-primary/10 border border-primary/30 text-[9px] font-black text-primary uppercase tracking-widest shadow-sm">
+                    <span class="h-1.5 w-1.5 rounded-xl bg-primary animate-pulse"></span>
                     <span>Học tập & Rèn luyện</span>
                 </div>
 
                 <!-- Glassmorphism Dynamic Breadcrumb Navigation -->
                 <nav aria-label="Breadcrumb" class="hidden sm:block">
-                    <ol class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md text-[11px] md:text-xs text-white font-semibold font-sans">
+                    <ol class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-950/60 border border-white/20 backdrop-blur-md text-[11px] md:text-xs text-white font-semibold font-sans">
                         <li class="flex items-center">
                             <a href="{{ route('home') }}" class="flex items-center hover:text-primary transition-colors gap-1 text-slate-350">
                                 <span class="material-symbols-outlined text-[15px] font-bold">home</span>
@@ -88,8 +88,8 @@
         <div x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
             <!-- Modern Header Banner -->
             <div class="text-center mb-12 relative">
-                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 uppercase tracking-widest mb-4">
-                    <span class="h-1.5 w-1.5 rounded-full bg-primary animate-ping"></span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 uppercase tracking-widest mb-4">
+                    <span class="h-1.5 w-1.5 rounded-xl bg-primary animate-ping"></span>
                     Lộ trình tự học tiếng Trung
                 </span>
                 <h2 class="text-3xl md:text-4xl font-black text-slate-800 dark:text-white mt-1 mb-3 leading-tight tracking-tight">
@@ -284,7 +284,7 @@
                     <div class="sticky top-[60px] md:top-[72px] z-40 -mx-6 sm:mx-0 px-6 sm:px-0 sm:rounded-2xl flex flex-col xl:flex-row xl:items-center w-full transition-all duration-500"
                          x-data="{ isStuck: false }"
                          @scroll.window="isStuck = window.scrollY > 300"
-                         :class="isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0' : 'py-1 border-transparent gap-4 xl:gap-0'">
+                         :class="isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0' : 'p-1.5 sm:p-1.5 sm:px-2 border-y sm:border bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-700/60 shadow-sm gap-4 xl:gap-0'">
                          
                         <!-- Left Side: Context & Navigation (Expands when scrolled) -->
                         <div class="hidden lg:flex items-center overflow-hidden transition-all duration-500 origin-left" 
@@ -292,7 +292,7 @@
                              
                              <nav aria-label="Breadcrumb" class="w-max shrink-0 transition-transform duration-500 origin-left"
                                   :class="isStuck ? 'scale-100' : 'scale-95'">
-                                 <ol class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-[10px] xl:text-[11px] text-slate-600 dark:text-slate-300 font-semibold font-sans whitespace-nowrap">
+                                 <ol class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-[10px] xl:text-[11px] text-slate-600 dark:text-slate-300 font-semibold font-sans whitespace-nowrap">
                                      <li class="flex items-center shrink-0">
                                          <a href="{{ route('home') }}" class="flex items-center hover:text-primary transition-colors gap-1 text-slate-500 dark:text-slate-400">
                                              <span class="material-symbols-outlined text-[13px] font-bold">home</span>
@@ -332,28 +332,28 @@
 
                         <!-- Center/Left: Pill Tab Navigation -->
                         <div class="flex-shrink-0 z-10 transition-all duration-300 w-full xl:w-auto overflow-x-auto no-scrollbar">
-                            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-1.5 rounded-full border border-slate-200/60 dark:border-slate-700/60 shadow-sm flex flex-nowrap sm:inline-flex justify-start sm:justify-center gap-1 min-w-max transition-all duration-300">
+                            <div class="flex flex-nowrap sm:inline-flex justify-start sm:justify-center gap-1 min-w-max transition-all duration-300">
                                 <a 
                                     href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'vocab']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-full transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'vocab' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'vocab' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Từ vựng
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'dialogue']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-full transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'dialogue' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'dialogue' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Bài khóa
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'grammar']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-full transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'grammar' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'grammar' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Ngữ pháp
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'practice']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-full transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'practice' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'practice' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Luyện tập
                                 </a>
@@ -362,7 +362,7 @@
                         <!-- Right Side: Action Button -->
                         <div class="flex-shrink-0 transition-all duration-500 flex justify-end w-full xl:w-auto mt-2 xl:mt-0 xl:ml-auto">
                             <button 
-                                class="w-full sm:w-auto px-6 py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-600 hover:to-emerald-500 text-white font-bold text-xs transition-all duration-300 active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                                class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-600 hover:to-emerald-500 text-white font-bold text-xs transition-all duration-300 active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                                 @click="alert('Chúc mừng bạn đã hoàn thành bài học này!')"
                             >
                                 <span class="material-symbols-outlined text-[18px]">done_all</span>
@@ -389,6 +389,19 @@
     </main>
     </div>
 
+    
+    <script>
+        window.alignPinyin = function(hanzi, pinyin, levelCode) {
+            if (!hanzi || !pinyin) return null;
+            
+            const pArr = pinyin.trim().split(/\s+/).filter(Boolean);
+            const hArr = hanzi.replace(/\s+/g, '').split('');
+            if (pArr.length > 0 && pArr.length === hArr.length) {
+                return hArr.map((h, i) => ({ h, p: pArr[i] }));
+            }
+            return null;
+        };
+    </script>
     <script>
         function hskApp() {
             return {

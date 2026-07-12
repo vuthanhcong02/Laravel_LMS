@@ -76,7 +76,8 @@
                                                         <h4 class="text-[13px] font-bold text-primary uppercase tracking-widest">Nghe và gõ lại chữ Hán</h4>
                                                         
                                                         <button 
-                                                            @click="playAudio(dialogues[quizIndex].audio_path || 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(dialogues[quizIndex].character) + '&type=1')"
+                                                            x-show="dialogues[quizIndex].audio_path"
+                                                            @click="playAudio(dialogues[quizIndex].audio_path)"
                                                             class="w-16 h-16 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center hover:hover:bg-primary/90 transition-all mx-auto focus:outline-none active:scale-95"
                                                         >
                                                             <span class="material-symbols-outlined text-3xl">volume_up</span>
@@ -89,11 +90,23 @@
 
                                                     <!-- Gõ Mode Header -->
                                                     <div x-show="modeGo" class="text-left mb-6">
-                                                        <p class="text-2xl font-black text-slate-800 tracking-wide font-chinese flex items-center gap-2">
+                                                        <p class="text-2xl font-black text-slate-800 tracking-wide font-chinese flex items-center gap-2" x-show="!(modePinyin && window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code))">
                                                             <span x-text="dialogues[quizIndex].role + ':'" class="text-slate-800 font-bold"></span> 
                                                             <span x-text="dialogues[quizIndex].character"></span>
                                                         </p>
-                                                        <p x-show="modePinyin" class="text-sm text-slate-400 mt-2 font-medium" x-text="dialogues[quizIndex].pinyin"></p>
+                                                        <p x-show="modePinyin && !window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code)" class="text-sm text-slate-400 mt-2 font-medium" x-text="dialogues[quizIndex].pinyin"></p>
+                                                        
+                                                        <div x-show="modePinyin && window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code)" class="flex items-center gap-2">
+                                                            <span x-text="dialogues[quizIndex].role + ':'" class="text-slate-800 font-bold text-xl mb-1 self-end"></span> 
+                                                            <div class="flex flex-wrap items-end gap-x-1.5 gap-y-2 leading-none">
+                                                                <template x-for="(pair, idx) in window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                    <div class="flex flex-col items-center">
+                                                                        <span class="text-[13px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none mb-1.5" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                        <span class="font-chinese text-[24px] font-black text-slate-800 dark:text-slate-200 leading-none" x-text="pair.h"></span>
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+                                                        </div>
                                                         <p x-show="modeNghia" class="text-sm text-slate-500 mt-1 font-medium" x-text="dialogues[quizIndex].translation"></p>
                                                     </div>
                                                     
@@ -205,17 +218,39 @@
                                                                 <!-- Play Individual line sound -->
                                                                 <div class="flex justify-between items-center mb-1 gap-4">
                                                                     <span class="text-[9px] font-black uppercase text-slate-400">{{ $line->role }}</span>
+                                                                    @if($line->audio_path)
                                                                     <button 
-                                                                        @click="playAudio('{{ $line->audio_path ?: 'https://dict.youdao.com/dictvoice?audio=' . urlencode($line->character) . '&type=1' }}')"
+                                                                        @click="playAudio('{{ $line->audio_path }}')"
                                                                         class="h-5 w-5 rounded-full bg-primary/10 hover:bg-primary hover:text-white transition-all duration-205 flex items-center justify-center text-primary"
                                                                     >
                                                                         <span class="material-symbols-outlined text-[11px]">volume_up</span>
                                                                     </button>
+                                                                    @endif
                                                                 </div>
 
                                                                 <!-- Character display & pinyin toggles -->
-                                                                <p x-show="modePinyin" class="text-xs text-slate-400 dark:text-slate-550 italic mb-0.5 block">{{ $line->pinyin }}</p>
-                                                                <p x-show="modeHanyu" class="text-lg font-bold tracking-wide leading-relaxed block">{{ $line->character }}</p>
+                                                                <div x-data="{ l_c: {{ json_encode($line->character) }}, l_p: {{ json_encode($line->pinyin) }} }">
+                                                                    <template x-if="window.alignPinyin(l_c, l_p, currentLevelObj?.level_code)">
+                                                                        <div class="flex flex-wrap items-end gap-x-1.5 gap-y-2 leading-none" x-show="modePinyin && modeHanyu">
+                                                                            <template x-for="(pair, idx) in window.alignPinyin(l_c, l_p, currentLevelObj?.level_code)" :key="idx">
+                                                                                <div class="flex flex-col items-center">
+                                                                                    <span class="text-[12px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none mb-1" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                    <span class="font-chinese text-[18px] font-bold text-slate-800 dark:text-slate-200 leading-none" x-text="pair.h"></span>
+                                                                                </div>
+                                                                            </template>
+                                                                        </div>
+                                                                    </template>
+                                                                    
+                                                                    <template x-if="!window.alignPinyin(l_c, l_p, currentLevelObj?.level_code)">
+                                                                        <div>
+                                                                            <p x-show="modePinyin && modeHanyu" class="text-xs text-slate-400 dark:text-slate-550 italic mb-0.5 block" x-text="l_p"></p>
+                                                                            <p x-show="modeHanyu && modePinyin" class="text-lg font-bold tracking-wide leading-relaxed block" x-text="l_c"></p>
+                                                                        </div>
+                                                                    </template>
+                                                                    
+                                                                    <p x-show="modePinyin && !modeHanyu" class="text-xs text-slate-400 dark:text-slate-550 italic block" x-text="l_p"></p>
+                                                                    <p x-show="modeHanyu && !modePinyin" class="text-lg font-bold tracking-wide leading-relaxed block" x-text="l_c"></p>
+                                                                </div>
                                                                 
                                                                 <!-- Empty state placeholder (khi tắt cả pinyin và chữ Hán) -->
                                                                 <p x-show="!modePinyin && !modeHanyu" class="text-xs text-slate-400 dark:text-slate-600 italic py-1 opacity-60">(Đang ẩn nội dung)</p>

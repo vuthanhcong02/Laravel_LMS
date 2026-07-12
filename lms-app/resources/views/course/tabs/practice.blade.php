@@ -15,7 +15,7 @@
                                     
                                     <!-- Practice Main Content (Left column) -->
                                     <div class="lg:col-span-3">
-                                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150/80 dark:border-slate-800/80 p-5 shadow-sm flex flex-col h-[calc(100vh-180px)] overflow-y-auto custom-scrollbar relative">
+                                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150/80 dark:border-slate-800/80 p-5 shadow-sm flex flex-col relative">
                                         <!-- Header & Tabs -->
                                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 dark:border-slate-800/60 pb-5 mb-5 text-left">
                                             <div class="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
@@ -47,7 +47,7 @@
                                         </div>
 
                                         <!-- Listening Tab Content -->
-                                        <div x-show="practiceTab === 'listening'" x-transition class="space-y-6">
+                                        <div x-show="practiceTab === 'listening'" x-transition class="space-y-6 pb-10">
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'listening')">
                                                 <div>
                                                     <!-- Global Audio for Listening -->
@@ -59,7 +59,7 @@
                                                     </template>
 
                                                     <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === 'listening')?.sections || [])" :key="sIdx">
-                                                        <div class="space-y-4" x-show="practiceSectionIdx === sIdx">
+                                                        <div class="space-y-4 scroll-mt-[160px]" :id="'practice-' + 'listening' + '-section-' + sIdx">
                                                             <div class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-805/60 border-l-4 border-l-primary">
                                                                 <h4 class="text-sm font-black text-slate-800 dark:text-white font-chinese tracking-wider" x-text="sect.section_han"></h4>
                                                                 <p class="text-xs text-primary italic mt-1" x-show="sect.section_vi" x-text="sect.section_vi"></p>
@@ -68,6 +68,11 @@
                                                                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 mt-4 flex flex-col gap-2">
                                                                     <div class="text-sm font-bold text-blue-700 dark:text-blue-400" x-text="'Nghe đoạn hội thoại phần ' + (sIdx + 1) + ':'"></div>
                                                                     <audio controls class="w-full h-10 rounded-full" :src="'/storage/hsk_media/' + sect.audio_path"></audio>
+                                                                </div>
+                                                            </template>
+                                                            <template x-if="sect.image_path">
+                                                                <div class="my-4 text-center border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 flex justify-center shadow-sm">
+                                                                    <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
                                                                 </div>
                                                             </template>
 
@@ -135,10 +140,10 @@
                                                                                       class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
                                                                                       :disabled="quiz.sub_questions.some(sq => !sq.selected_option)"
                                                                                       :class="quiz.sub_questions.every(sq => sq.selected_option) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                      x-show="quiz.sub_questions.some(sq => !sq.answered)"
+                                                                                      x-show="quiz.sub_questions.some(sq => !sq.answered && sq.correct)"
                                                                                       @click="quiz.sub_questions.forEach(sq => sq.answered = true)"
                                                                                   >
-                                                                                      <span class="material-symbols-outlined text-[16px]">task_alt</span> Xác nhận toàn bộ
+                                                                                      <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra toàn bộ
                                                                                   </button>
                                                                               </div>
                                                                           </div>
@@ -153,10 +158,27 @@
                                                                               <template x-if="!quiz.sub_questions || quiz.sub_questions.length === 0">
                                                                                   <div>
                                                                                       <h5 class="text-sm font-extrabold text-slate-800 dark:text-white flex items-start gap-2">
-                                                                                          <span class="shrink-0 text-slate-400" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1)) + '.'"></span>
-                                                                                          <template x-if="quiz.question">
-                                                                                              <span x-text="quiz.question" class="font-chinese tracking-wide text-base"></span>
-                                                                                          </template>
+                                                                                          <span class="shrink-0 text-slate-400 mt-1" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1)) + '.'"></span>
+                                                                                          <template x-if="window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)">
+                                                                                                <div class="flex flex-wrap items-end gap-x-1.5 gap-y-2">
+                                                                                                    <template x-for="(pair, idx) in window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                                                        <div class="flex flex-col items-center">
+                                                                                                            <span class="text-[13px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                                            <span class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-none mt-1" x-text="pair.h"></span>
+                                                                                                        </div>
+                                                                                                    </template>
+                                                                                                </div>
+                                                                                            </template>
+                                                                                            <template x-if="!window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)">
+                                                                                                <div class="flex flex-col">
+                                                                                                    <template x-if="quiz.question_pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
+                                                                                                        <span x-text="quiz.question_pinyin" class="text-[13px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal"></span>
+                                                                                                    </template>
+                                                                                                    <template x-if="quiz.question">
+                                                                                                        <span x-text="quiz.question" class="font-chinese tracking-wide text-[18px]"></span>
+                                                                                                    </template>
+                                                                                                </div>
+                                                                                            </template>
                                                                                       </h5>
 
                                                                                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
@@ -170,7 +192,26 @@
                                                                                                   @click="if(!quiz.answered) quiz.selected = oIdx"
                                                                                                   :disabled="quiz.answered"
                                                                                               >
-                                                                                                  <span class="group-hover:translate-x-1 transition-transform font-chinese text-base" x-text="opt.text || opt"></span>
+                                                                                                  <div class="flex flex-col group-hover:translate-x-1 transition-transform">
+                                                                                                        <template x-if="window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-wrap items-end gap-x-1.5 gap-y-1">
+                                                                                                                <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                                                                    <div class="flex flex-col items-center">
+                                                                                                                        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                    </div>
+                                                                                                                </template>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                        <template x-if="!window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-col">
+                                                                                                                <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
+                                                                                                                    <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
+                                                                                                                </template>
+                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                    </div>
                                                                                                   <template x-if="quiz.answered">
                                                                                                       <div class="flex items-center gap-2">
                                                                                                           <template x-if="quiz.selected === oIdx && (opt.text || opt) == quiz.correct_answer">
@@ -194,14 +235,14 @@
                                                                                           </template>
                                                                                       </div>
 
-                                                                                      <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered">
+                                                                                      <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
                                                                                           <button 
                                                                                               class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
                                                                                               :disabled="quiz.selected === null"
                                                                                               :class="quiz.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                                               @click="quiz.answered = true"
                                                                                           >
-                                                                                              <span class="material-symbols-outlined text-[16px]">task_alt</span> Xác nhận đáp án
+                                                                                              <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra
                                                                                           </button>
                                                                                       </div>
                                                                                   </div>
@@ -221,20 +262,45 @@
                                                                                                       <button 
                                                                                                           class="text-left p-3 rounded-xl border text-sm font-bold transition-all flex justify-between items-center group"
                                                                                                           :class="sq.answered 
-                                                                                                              ? ((opt.text || opt) == sq.correct_answer ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold shadow-sm' : 
+                                                                                                              ? ((opt.text || opt) == sq.correct ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold shadow-sm' : 
                                                                                                                  (sq.selected === oIdx ? 'bg-red-500/10 border-red-500 text-red-600 dark:text-red-400' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 opacity-60'))
                                                                                                               : (sq.selected === oIdx ? 'bg-primary/10 border-primary text-primary font-extrabold shadow-sm shadow-primary/10' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 hover:bg-white hover:border-slate-300')"
                                                                                                           @click="if(!sq.answered) sq.selected = oIdx"
                                                                                                           :disabled="sq.answered"
                                                                                                       >
-                                                                                                          <span class="group-hover:translate-x-1 transition-transform font-chinese text-base" x-text="opt.text || opt"></span>
+                                                                                                          <div class="flex flex-col group-hover:translate-x-1 transition-transform">
+                                                                                                        <template x-if="window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-wrap items-end gap-x-1.5 gap-y-1">
+                                                                                                                <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                                                                    <div class="flex flex-col items-center">
+                                                                                                                        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                    </div>
+                                                                                                                </template>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                        <template x-if="!window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-col">
+                                                                                                                <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
+                                                                                                                    <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
+                                                                                                                </template>
+                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                    </div>
                                                                                                           <template x-if="sq.answered">
-                                                                                                              <div class="flex items-center gap-2">
-                                                                                                                  <template x-if="(opt.text || opt) == sq.correct_answer">
-                                                                                                                      <span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span>
+                                                                                                              <div class="flex items-center gap-1.5">
+                                                                                                                  <template x-if="(opt.text || opt) == sq.correct">
+                                                                                                                      <div class="flex items-center gap-1.5">
+                                                                                                                          <span class="text-[10px] font-black uppercase text-emerald-600 bg-emerald-500/20 px-2 py-0.5 rounded-md">Đáp án</span>
+                                                                                                                          <span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span>
+                                                                                                                      </div>
                                                                                                                   </template>
-                                                                                                                  <template x-if="sq.selected === oIdx && (opt.text || opt) != sq.correct_answer">
-                                                                                                                      <span class="material-symbols-outlined text-[18px] text-red-500">cancel</span>
+                                                                                                                  <template x-if="sq.selected === oIdx && (opt.text || opt) != sq.correct">
+                                                                                                                      <div class="flex items-center gap-1.5">
+                                                                                                                          <span class="text-[10px] font-black uppercase text-red-600 bg-red-500/20 px-2 py-0.5 rounded-md">Bạn chọn</span>
+                                                                                                                          <span class="material-symbols-outlined text-[18px] text-red-500">cancel</span>
+                                                                                                                      </div>
                                                                                                                   </template>
                                                                                                               </div>
                                                                                                           </template>
@@ -242,14 +308,14 @@
                                                                                                   </template>
                                                                                               </div>
 
-                                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-700" x-show="!sq.answered">
+                                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-700" x-show="!sq.answered && sq.correct">
                                                                                                   <button 
                                                                                                       class="px-4 py-2 bg-primary hover:bg-primary/95 text-white font-extrabold text-[11px] rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-1"
                                                                                                       :disabled="sq.selected === null"
                                                                                                       :class="sq.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                                                       @click="sq.answered = true"
                                                                                                   >
-                                                                                                      <span class="material-symbols-outlined text-[14px]">task_alt</span> Xác nhận
+                                                                                                      <span class="material-symbols-outlined text-[14px]">task_alt</span> Kiểm tra
                                                                                                   </button>
                                                                                               </div>
                                                                                           </div>
@@ -268,15 +334,21 @@
                                         </div>
 
                                         <!-- Reading Tab Content -->
-                                        <div x-show="practiceTab === 'reading'" x-transition class="space-y-6 pt-2">
+                                        <div x-show="practiceTab === 'reading'" x-transition class="space-y-6 pt-2 pb-10">
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'reading')">
                                                 <div>
                                                     <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === 'reading')?.sections || [])" :key="sIdx">
-                                                        <div class="space-y-4" x-show="practiceSectionIdx === sIdx">
+                                                        <div class="space-y-4 scroll-mt-[160px]" :id="'practice-' + 'reading' + '-section-' + sIdx">
                                                             <div class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-805/60 border-l-4 border-l-primary">
                                                                 <h4 class="text-sm font-black text-slate-800 dark:text-white font-chinese tracking-wider" x-text="sect.section_han"></h4>
                                                                 <p class="text-xs text-primary dark:text-primary-light italic mt-1" x-text="sect.section_vi"></p>
                                                             </div>
+
+                                                            <template x-if="sect.image_path">
+                                                                <div class="my-4 text-center border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 flex justify-center shadow-sm">
+                                                                    <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
+                                                                </div>
+                                                            </template>
 
                                                             <div class="flex flex-col gap-4">
                                                                 <template x-for="(quiz, qIdx) in sect.questions" :key="qIdx">
@@ -342,10 +414,10 @@
                                                                                       class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
                                                                                       :disabled="quiz.sub_questions.some(sq => !sq.selected_option)"
                                                                                       :class="quiz.sub_questions.every(sq => sq.selected_option) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                      x-show="quiz.sub_questions.some(sq => !sq.answered)"
+                                                                                      x-show="quiz.sub_questions.some(sq => !sq.answered && sq.correct)"
                                                                                       @click="quiz.sub_questions.forEach(sq => sq.answered = true)"
                                                                                   >
-                                                                                      <span class="material-symbols-outlined text-[16px]">task_alt</span> Xác nhận toàn bộ
+                                                                                      <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra toàn bộ
                                                                                   </button>
                                                                               </div>
                                                                           </div>
@@ -360,10 +432,27 @@
                                                                               <template x-if="!quiz.sub_questions || quiz.sub_questions.length === 0">
                                                                                   <div>
                                                                                       <h5 class="text-sm font-extrabold text-slate-800 dark:text-white flex items-start gap-2">
-                                                                                          <span class="shrink-0 text-slate-400" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1)) + '.'"></span>
-                                                                                          <template x-if="quiz.question">
-                                                                                              <span x-text="quiz.question" class="font-chinese tracking-wide text-base"></span>
-                                                                                          </template>
+                                                                                          <span class="shrink-0 text-slate-400 mt-1" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1)) + '.'"></span>
+                                                                                            <template x-if="window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)">
+                                                                                                <div class="flex flex-wrap items-end gap-x-1.5 gap-y-2">
+                                                                                                    <template x-for="(pair, idx) in window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                                                        <div class="flex flex-col items-center">
+                                                                                                            <span class="text-[13px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                                            <span class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-none mt-1" x-text="pair.h"></span>
+                                                                                                        </div>
+                                                                                                    </template>
+                                                                                                </div>
+                                                                                            </template>
+                                                                                            <template x-if="!window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)">
+                                                                                                <div class="flex flex-col">
+                                                                                                    <template x-if="quiz.question_pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
+                                                                                                        <span x-text="quiz.question_pinyin" class="text-[13px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal"></span>
+                                                                                                    </template>
+                                                                                                    <template x-if="quiz.question">
+                                                                                                        <span x-text="quiz.question" class="font-chinese tracking-wide text-[18px]"></span>
+                                                                                                    </template>
+                                                                                                </div>
+                                                                                            </template>
                                                                                       </h5>
 
                                                                                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
@@ -377,7 +466,26 @@
                                                                                                   @click="if(!quiz.answered) quiz.selected = oIdx"
                                                                                                   :disabled="quiz.answered"
                                                                                               >
-                                                                                                  <span class="group-hover:translate-x-1 transition-transform font-chinese text-base" x-text="opt.text || opt"></span>
+                                                                                                  <div class="flex flex-col group-hover:translate-x-1 transition-transform">
+                                                                                                        <template x-if="window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-wrap items-end gap-x-1.5 gap-y-1">
+                                                                                                                <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                                                                    <div class="flex flex-col items-center">
+                                                                                                                        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                    </div>
+                                                                                                                </template>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                        <template x-if="!window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-col">
+                                                                                                                <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
+                                                                                                                    <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
+                                                                                                                </template>
+                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                    </div>
                                                                                                   <template x-if="quiz.answered">
                                                                                                       <div class="flex items-center gap-2">
                                                                                                           <template x-if="quiz.selected === oIdx && (opt.text || opt) == quiz.correct_answer">
@@ -401,14 +509,14 @@
                                                                                           </template>
                                                                                       </div>
 
-                                                                                      <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered">
+                                                                                      <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
                                                                                           <button 
                                                                                               class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
                                                                                               :disabled="quiz.selected === null"
                                                                                               :class="quiz.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                                               @click="quiz.answered = true"
                                                                                           >
-                                                                                              <span class="material-symbols-outlined text-[16px]">task_alt</span> Xác nhận đáp án
+                                                                                              <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra
                                                                                           </button>
                                                                                       </div>
                                                                                   </div>
@@ -428,20 +536,45 @@
                                                                                                       <button 
                                                                                                           class="text-left p-3 rounded-xl border text-sm font-bold transition-all flex justify-between items-center group"
                                                                                                           :class="sq.answered 
-                                                                                                              ? ((opt.text || opt) == sq.correct_answer ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold shadow-sm' : 
+                                                                                                              ? ((opt.text || opt) == sq.correct ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold shadow-sm' : 
                                                                                                                  (sq.selected === oIdx ? 'bg-red-500/10 border-red-500 text-red-600 dark:text-red-400' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 opacity-60'))
                                                                                                               : (sq.selected === oIdx ? 'bg-primary/10 border-primary text-primary font-extrabold shadow-sm shadow-primary/10' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 hover:bg-white hover:border-slate-300')"
                                                                                                           @click="if(!sq.answered) sq.selected = oIdx"
                                                                                                           :disabled="sq.answered"
                                                                                                       >
-                                                                                                          <span class="group-hover:translate-x-1 transition-transform font-chinese text-base" x-text="opt.text || opt"></span>
+                                                                                                          <div class="flex flex-col group-hover:translate-x-1 transition-transform">
+                                                                                                        <template x-if="window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-wrap items-end gap-x-1.5 gap-y-1">
+                                                                                                                <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                                                                    <div class="flex flex-col items-center">
+                                                                                                                        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                    </div>
+                                                                                                                </template>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                        <template x-if="!window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)">
+                                                                                                            <div class="flex flex-col">
+                                                                                                                <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
+                                                                                                                    <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
+                                                                                                                </template>
+                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                            </div>
+                                                                                                        </template>
+                                                                                                    </div>
                                                                                                           <template x-if="sq.answered">
-                                                                                                              <div class="flex items-center gap-2">
-                                                                                                                  <template x-if="(opt.text || opt) == sq.correct_answer">
-                                                                                                                      <span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span>
+                                                                                                              <div class="flex items-center gap-1.5">
+                                                                                                                  <template x-if="(opt.text || opt) == sq.correct">
+                                                                                                                      <div class="flex items-center gap-1.5">
+                                                                                                                          <span class="text-[10px] font-black uppercase text-emerald-600 bg-emerald-500/20 px-2 py-0.5 rounded-md">Đáp án</span>
+                                                                                                                          <span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span>
+                                                                                                                      </div>
                                                                                                                   </template>
-                                                                                                                  <template x-if="sq.selected === oIdx && (opt.text || opt) != sq.correct_answer">
-                                                                                                                      <span class="material-symbols-outlined text-[18px] text-red-500">cancel</span>
+                                                                                                                  <template x-if="sq.selected === oIdx && (opt.text || opt) != sq.correct">
+                                                                                                                      <div class="flex items-center gap-1.5">
+                                                                                                                          <span class="text-[10px] font-black uppercase text-red-600 bg-red-500/20 px-2 py-0.5 rounded-md">Bạn chọn</span>
+                                                                                                                          <span class="material-symbols-outlined text-[18px] text-red-500">cancel</span>
+                                                                                                                      </div>
                                                                                                                   </template>
                                                                                                               </div>
                                                                                                           </template>
@@ -449,14 +582,14 @@
                                                                                                   </template>
                                                                                               </div>
 
-                                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-700" x-show="!sq.answered">
+                                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-700" x-show="!sq.answered && sq.correct">
                                                                                                   <button 
                                                                                                       class="px-4 py-2 bg-primary hover:bg-primary/95 text-white font-extrabold text-[11px] rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-1"
                                                                                                       :disabled="sq.selected === null"
                                                                                                       :class="sq.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                                                       @click="sq.answered = true"
                                                                                                   >
-                                                                                                      <span class="material-symbols-outlined text-[14px]">task_alt</span> Xác nhận
+                                                                                                      <span class="material-symbols-outlined text-[14px]">task_alt</span> Kiểm tra
                                                                                                   </button>
                                                                                               </div>
                                                                                           </div>
@@ -474,14 +607,14 @@
                                             </template>
                                         </div>
 
-                                        <div x-show="practiceTab === 'writing'" x-transition class="space-y-6 pt-2" style="display: none;">
+                                        <div x-show="practiceTab === 'writing'" x-transition class="space-y-6 pt-2 pb-10" style="display: none;">
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'writing')?.sections?.length === 0">
                                                 <div class="text-center py-10 text-slate-500">Chưa có bài tập Viết</div>
                                             </template>
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'writing')?.sections?.length > 0">
                                                 <div class="space-y-6">
                                                     <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === 'writing')?.sections || [])" :key="sIdx">
-                                                        <div x-show="practiceSectionIdx === sIdx">
+                                                        <div class="space-y-4 scroll-mt-[160px]" :id="'practice-' + 'writing' + '-section-' + sIdx">
                                                             <!-- Section Header -->
                                                             <div class="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-4">
                                                                 <h4 class="font-bold text-primary mb-1 text-lg" x-text="sect.section_han"></h4>
@@ -496,52 +629,188 @@
 
                                                             <div class="flex flex-col gap-4">
                                                                 <template x-for="(quiz, qIdx) in sect.questions" :key="qIdx">
-                                                                    <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-105 dark:border-slate-800 p-5 rounded-2xl space-y-4 text-left">
-                                                                        <div class="flex items-start gap-3 mb-2">
-                                                                            <div class="shrink-0 pt-0.5">
-                                                                                <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md text-xs font-black" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1))"></span>
-                                                                            </div>
-                                                                            <div class="flex flex-col gap-1 flex-1">
-                                                                                <template x-if="quiz.question">
-                                                                                    <span x-text="quiz.question" class="font-chinese text-[17px] font-bold text-slate-800 dark:text-white leading-snug"></span>
-                                                                                </template>
-                                                                            </div>
-                                                                        </div>
+                                                                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl shadow-sm mb-4">
+                                                                        
+                                                                        <!-- REORDER DUOLINGO LAYOUT -->
+                                                                        <template x-if="quiz.ques_type === 'reorder'">
+                                                                            <div 
+                                                                                x-data="{
+                                                                                    available: quiz.question_segments ? quiz.question_segments.map((text, idx) => ({ id: idx, text: text })) : [],
+                                                                                    selected: [],
+                                                                                    
+                                                                                    selectItem(index) {
+                                                                                        if(quiz.answered) return;
+                                                                                        const item = this.available[index];
+                                                                                        this.available.splice(index, 1);
+                                                                                        this.selected.push(item);
+                                                                                        this.updateAnswer();
+                                                                                    },
+                                                                                    
+                                                                                    unselectItem(index) {
+                                                                                        if(quiz.answered) return;
+                                                                                        const item = this.selected[index];
+                                                                                        this.selected.splice(index, 1);
+                                                                                        this.available.push(item);
+                                                                                        this.available.sort((a, b) => a.id - b.id);
+                                                                                        this.updateAnswer();
+                                                                                    },
+                                                                                    
+                                                                                    updateAnswer() {
+                                                                                        quiz.userAnswer = this.selected.map(item => item.text).join('');
+                                                                                        if(quiz.userAnswer.length > 0) {
+                                                                                            quiz.selected = 1;
+                                                                                        } else {
+                                                                                            quiz.selected = null;
+                                                                                        }
+                                                                                    }
+                                                                                }"
+                                                                                class="p-6"
+                                                                            >
+                                                                                <div class="flex items-start gap-3 mb-6">
+                                                                                    <div class="shrink-0 pt-0.5">
+                                                                                        <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md text-xs font-black" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1))"></span>
+                                                                                    </div>
+                                                                                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+                                                                                        Sắp xếp các từ sau thành câu hoàn chỉnh
+                                                                                    </div>
+                                                                                </div>
 
-                                                                        <!-- Textarea for Writing -->
-                                                                        <div class="mt-4">
-                                                                            <textarea 
-                                                                                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[16px] font-chinese focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none min-h-[120px]"
-                                                                                placeholder="Nhập câu trả lời của bạn..."
-                                                                                x-model="quiz.userAnswer"
-                                                                                :disabled="quiz.answered"
-                                                                                @input="if(quiz.userAnswer.trim().length > 0) quiz.selected = 1; else quiz.selected = null;"
-                                                                            ></textarea>
-                                                                        </div>
+                                                                                <!-- Available Segments -->
+                                                                                <div class="flex flex-wrap gap-3 mb-6 min-h-[50px] p-2 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+                                                                                    <template x-for="(item, i) in available" :key="item.id">
+                                                                                        <button 
+                                                                                            type="button"
+                                                                                            @click="selectItem(i)"
+                                                                                            :disabled="quiz.answered"
+                                                                                            class="px-5 py-2.5 font-chinese text-[18px] font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed select-none bg-white border-2 border-b-4 border-slate-200 text-slate-700 hover:bg-slate-50 hover:-translate-y-0.5 active:border-b-2 active:translate-y-0.5 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200"
+                                                                                            :class="/^[.,?，。？！]+$/.test(item.text) ? '!border-amber-200 !text-amber-600 !bg-amber-50 dark:!border-amber-700/50 dark:!bg-amber-900/30' : ''"
+                                                                                            x-text="item.text"
+                                                                                        ></button>
+                                                                                    </template>
+                                                                                    <template x-if="available.length === 0">
+                                                                                        <div class="w-full flex items-center justify-center text-slate-400 text-sm font-medium py-2">
+                                                                                            Đã chọn hết từ
+                                                                                        </div>
+                                                                                    </template>
+                                                                                </div>
 
-                                                                        <template x-if="quiz.answered">
-                                                                            <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
-                                                                                <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án tham khảo:</div>
-                                                                                <div class="font-chinese text-[16px] font-bold text-slate-800 dark:text-white leading-relaxed" x-text="quiz.correct_answer"></div>
-                                                                                <template x-if="quiz.explain_vi">
-                                                                                    <div class="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
-                                                                                        <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-1">Giải thích:</div>
-                                                                                        <div class="text-sm text-slate-600 dark:text-slate-300" x-html="quiz.explain_vi"></div>
+                                                                                <!-- Selected Segments (Answer area) -->
+                                                                                <div class="w-full bg-slate-50 dark:bg-slate-800/40 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-4 min-h-[120px] mb-6 flex flex-wrap gap-3 items-start content-start transition-colors"
+                                                                                     :class="quiz.answered ? (quiz.userAnswer === quiz.correct_answer ? 'border-emerald-400 bg-emerald-50/50' : 'border-rose-400 bg-rose-50/50') : 'hover:border-sky-300 dark:hover:border-sky-700/50'">
+                                                                                    
+                                                                                    <template x-if="selected.length === 0">
+                                                                                        <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 text-sm font-medium py-6 gap-2">
+                                                                                            <span class="material-symbols-outlined text-3xl opacity-50">touch_app</span>
+                                                                                            Nhấn vào các từ bên trên để ghép thành câu
+                                                                                        </div>
+                                                                                    </template>
+
+                                                                                    <template x-for="(item, i) in selected" :key="item.id">
+                                                                                        <button 
+                                                                                            type="button"
+                                                                                            @click="unselectItem(i)"
+                                                                                            :disabled="quiz.answered"
+                                                                                            class="px-5 py-2.5 font-chinese text-[18px] font-bold rounded-xl transition-all disabled:cursor-not-allowed select-none bg-sky-50 border-2 border-b-4 border-sky-200 text-sky-700 hover:bg-sky-100 hover:-translate-y-0.5 active:border-b-2 active:translate-y-0.5 dark:bg-sky-900/30 dark:border-sky-700/50 dark:text-sky-300 shadow-sm"
+                                                                                            :class="/^[.,?，。？！]+$/.test(item.text) ? '!border-amber-300 !text-amber-700 !bg-amber-100 dark:!border-amber-600/80 dark:!bg-amber-900/50' : ''"
+                                                                                            x-text="item.text"
+                                                                                        ></button>
+                                                                                    </template>
+                                                                                </div>
+
+                                                                                <template x-if="quiz.answered">
+                                                                                    <div class="mt-4 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20 mb-6 shadow-sm">
+                                                                                        <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-1.5">
+                                                                                            <span class="material-symbols-outlined text-[18px]">verified</span> Đáp án đúng:
+                                                                                        </div>
+                                                                                        <div class="font-chinese text-[20px] font-bold text-emerald-800 dark:text-emerald-300 leading-relaxed" x-text="quiz.correct_answer"></div>
+                                                                                        <template x-if="quiz.explain_vi">
+                                                                                            <div class="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+                                                                                                <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-1">Giải thích:</div>
+                                                                                                <div class="text-sm text-slate-600 dark:text-slate-300" x-html="quiz.explain_vi"></div>
+                                                                                            </div>
+                                                                                        </template>
                                                                                     </div>
                                                                                 </template>
+
+                                                                                <div class="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
+                                                                                    <button 
+                                                                                        class="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-[14px] rounded-xl shadow-md shadow-sky-500/20 transition-all hover:-translate-y-0.5 active:scale-95 active:translate-y-0 flex items-center gap-2"
+                                                                                        :disabled="!quiz.userAnswer || quiz.userAnswer.trim() === ''"
+                                                                                        :class="quiz.userAnswer && quiz.userAnswer.trim() !== '' ? '' : 'opacity-50 !cursor-not-allowed grayscale shadow-none'"
+                                                                                        @click="quiz.answered = true"
+                                                                                    >
+                                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> Kiểm tra
+                                                                                    </button>
+                                                                                </div>
                                                                             </div>
                                                                         </template>
 
-                                                                        <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered">
-                                                                            <button 
-                                                                                class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
-                                                                                :disabled="!quiz.userAnswer || quiz.userAnswer.trim() === ''"
-                                                                                :class="quiz.userAnswer && quiz.userAnswer.trim() !== '' ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                @click="quiz.answered = true"
-                                                                            >
-                                                                                <span class="material-symbols-outlined text-[16px]">task_alt</span> Xem đáp án
-                                                                            </button>
-                                                                        </div>
+                                                                        <!-- NORMAL VERTICAL LAYOUT (for paragraph etc) -->
+                                                                        <template x-if="quiz.ques_type !== 'reorder'">
+                                                                            <div class="p-6">
+                                                                                <div class="flex items-start gap-3 mb-2">
+                                                                                    <div class="shrink-0 pt-0.5">
+                                                                                        <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md text-xs font-black" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1))"></span>
+                                                                                    </div>
+                                                                                    <div class="flex flex-col gap-1 flex-1">
+                                                                                        <template x-if="window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)">
+                                                                                            <div class="flex flex-wrap items-end gap-x-1.5 gap-y-2">
+                                                                                                <template x-for="(pair, idx) in window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)" :key="idx">
+                                                                                                    <div class="flex flex-col items-center">
+                                                                                                        <span class="text-[13px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
+                                                                                                        <span class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-none mt-1" x-text="pair.h"></span>
+                                                                                                    </div>
+                                                                                                </template>
+                                                                                            </div>
+                                                                                        </template>
+                                                                                        <template x-if="!window.alignPinyin(quiz.question, quiz.question_pinyin, currentLevelObj?.level_code)">
+                                                                                            <div class="flex flex-col">
+                                                                                                <template x-if="quiz.question_pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
+                                                                                                    <span x-text="quiz.question_pinyin" class="text-[13px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal"></span>
+                                                                                                </template>
+                                                                                                <template x-if="quiz.question">
+                                                                                                    <span x-text="quiz.question" class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-snug"></span>
+                                                                                                </template>
+                                                                                            </div>
+                                                                                        </template>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div class="mt-4">
+                                                                                    <textarea 
+                                                                                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[16px] font-chinese focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none min-h-[120px]"
+                                                                                        placeholder="Nhập câu trả lời của bạn..."
+                                                                                        x-model="quiz.userAnswer"
+                                                                                        :disabled="quiz.answered"
+                                                                                        @input="if(quiz.userAnswer.trim().length > 0) quiz.selected = 1; else quiz.selected = null;"
+                                                                                    ></textarea>
+                                                                                </div>
+
+                                                                                <template x-if="quiz.answered">
+                                                                                    <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
+                                                                                        <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án tham khảo:</div>
+                                                                                        <div class="font-chinese text-[16px] font-bold text-slate-800 dark:text-white leading-relaxed" x-text="quiz.correct_answer"></div>
+                                                                                        <template x-if="quiz.explain_vi">
+                                                                                            <div class="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+                                                                                                <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-1">Giải thích:</div>
+                                                                                                <div class="text-sm text-slate-600 dark:text-slate-300" x-html="quiz.explain_vi"></div>
+                                                                                            </div>
+                                                                                        </template>
+                                                                                    </div>
+                                                                                </template>
+
+                                                                                <div class="flex justify-end pt-4 mt-6 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
+                                                                                    <button 
+                                                                                        class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+                                                                                        :disabled="!quiz.userAnswer || quiz.userAnswer.trim() === ''"
+                                                                                        :class="quiz.userAnswer && quiz.userAnswer.trim() !== '' ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
+                                                                                        @click="quiz.answered = true"
+                                                                                    >
+                                                                                        <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </template>
                                                                     </div>
                                                                 </template>
                                                             </div>
@@ -555,7 +824,7 @@
                                     </div>
 
                                     <!-- Navigation Sidebar (Right column) -->
-                                    <div class="lg:col-span-1 space-y-4 sticky top-6 self-start">
+                                    <div class="lg:col-span-1 space-y-4 sticky top-[140px] md:top-[160px] self-start max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar">
                                         <!-- Sidebar List -->
                                         <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl p-4 text-left">
                                             <h5 class="text-sm font-black text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3 mb-4 flex items-center gap-2">
@@ -566,7 +835,7 @@
                                             <div class="flex flex-col space-y-1 relative before:content-[''] before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-slate-100 dark:before:bg-slate-800">
                                                 <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === practiceTab)?.sections || [])" :key="sIdx">
                                                     <button 
-                                                        @click="practiceSectionIdx = sIdx"
+                                                        @click="practiceSectionIdx = sIdx; const el = document.getElementById('practice-' + practiceTab + '-section-' + sIdx); if(el) { el.scrollIntoView({ behavior: 'smooth' }) }"
                                                         class="group relative flex items-center gap-3 py-2 text-left z-10"
                                                     >
                                                         <div 
@@ -592,3 +861,5 @@
                                 </div>
                             </template>
                         </div>
+
+
