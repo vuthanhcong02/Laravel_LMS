@@ -13,6 +13,7 @@ class HskLessonPracticeSection extends Model
         'practice_id',
         'section_han',
         'section_vi',
+        'audio_path',
         'image_path'
     ];
 

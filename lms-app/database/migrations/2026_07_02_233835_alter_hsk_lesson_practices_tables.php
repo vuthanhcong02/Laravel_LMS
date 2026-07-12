@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('hsk_lesson_practices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hsk_lesson_id')->constrained('hsk_lessons')->onDelete('cascade');
-            $table->enum('type', ['listening', 'reading']);
+            $table->enum('type', ['listening', 'reading', 'writing']);
             $table->string('audio_path', 255)->nullable();
             $table->timestamps();
         });
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignId('practice_id')->constrained('hsk_lesson_practices')->onDelete('cascade');
             $table->string('section_han', 255)->nullable();
             $table->text('section_vi')->nullable();
+            $table->string('audio_path', 255)->nullable();
             $table->string('image_path', 255)->nullable();
             $table->timestamps();
         });
@@ -40,6 +41,7 @@ return new class extends Migration
             $table->text('question')->nullable();
             $table->string('question_pinyin', 255)->nullable();
             $table->json('options')->nullable();
+            $table->json('question_segments')->nullable();
             $table->string('correct_answer', 255)->nullable();
             $table->string('image_path', 255)->nullable();
             $table->timestamps();
