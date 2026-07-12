@@ -414,6 +414,37 @@
                 lessons: [],
                 hskLevels: @json($levels) || [],
                 
+                isSectionFullyAnswered(questions) {
+                    if (!questions || !questions.length) return false;
+                    return questions.every(q => {
+                        // Skip if no answers required
+                        if (!q.correct_answer && (!q.sub_questions || q.sub_questions.length === 0)) return true;
+                        
+                        if (q.sub_questions && q.sub_questions.length > 0) {
+                            return q.sub_questions.every(sq => {
+                                if (!sq.correct) return true;
+                                if (sq.ques_type === 'fill_blank' || sq.ques_type === 'reorder') return sq.selected_option !== undefined && sq.selected_option !== null;
+                                return sq.selected !== undefined && sq.selected !== null;
+                            });
+                        }
+                        
+                        if (q.ques_type === 'reorder' || q.ques_type === 'writing') return q.userAnswer && q.userAnswer.trim() !== '';
+                        return q.selected !== undefined && q.selected !== null;
+                    });
+                },
+
+                checkAllSection(questions) {
+                    if (!questions) return;
+                    questions.forEach(q => {
+                        if (q.correct_answer) q.answered = true;
+                        if (q.sub_questions) {
+                            q.sub_questions.forEach(sq => {
+                                if (sq.correct) sq.answered = true;
+                            });
+                        }
+                    });
+                },
+                
                 init() {
                     if (this.currentLesson) {
                         // Map Laravel relationship keys to what Alpine templates expect

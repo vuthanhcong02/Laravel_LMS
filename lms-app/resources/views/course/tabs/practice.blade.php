@@ -135,17 +135,6 @@
                                                                                   </div>
                                                                               </div>
 
-                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-200 dark:border-slate-700">
-                                                                                  <button 
-                                                                                      class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
-                                                                                      :disabled="quiz.sub_questions.some(sq => !sq.selected_option)"
-                                                                                      :class="quiz.sub_questions.every(sq => sq.selected_option) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                      x-show="quiz.sub_questions.some(sq => !sq.answered && sq.correct)"
-                                                                                      @click="quiz.sub_questions.forEach(sq => sq.answered = true)"
-                                                                                  >
-                                                                                      <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra toàn bộ
-                                                                                  </button>
-                                                                              </div>
                                                                           </div>
                                                                       </template>
 
@@ -235,16 +224,6 @@
                                                                                           </template>
                                                                                       </div>
 
-                                                                                      <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
-                                                                                          <button 
-                                                                                              class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
-                                                                                              :disabled="quiz.selected === null"
-                                                                                              :class="quiz.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                              @click="quiz.answered = true"
-                                                                                          >
-                                                                                              <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra
-                                                                                          </button>
-                                                                                      </div>
                                                                                   </div>
                                                                               </template>
                                                                               
@@ -308,16 +287,6 @@
                                                                                                   </template>
                                                                                               </div>
 
-                                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-700" x-show="!sq.answered && sq.correct">
-                                                                                                  <button 
-                                                                                                      class="px-4 py-2 bg-primary hover:bg-primary/95 text-white font-extrabold text-[11px] rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-1"
-                                                                                                      :disabled="sq.selected === null"
-                                                                                                      :class="sq.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                                      @click="sq.answered = true"
-                                                                                                  >
-                                                                                                      <span class="material-symbols-outlined text-[14px]">task_alt</span> Kiểm tra
-                                                                                                  </button>
-                                                                                              </div>
                                                                                           </div>
                                                                                       </template>
                                                                                   </div>
@@ -326,6 +295,19 @@
                                                                       </template>
                                                                   </div>
                                                                 </template>
+                                                                
+                                                                <!-- Global Check Button -->
+                                                                <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
+                                                                     x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
+                                                                    <button 
+                                                                        class="px-8 py-3.5 bg-primary hover:bg-primary/95 text-white font-black text-[15px] rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
+                                                                        :disabled="!isSectionFullyAnswered(sect.questions)"
+                                                                        :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
+                                                                        @click="checkAllSection(sect.questions)"
+                                                                    >
+                                                                        <span class="material-symbols-outlined text-[22px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </template>
@@ -409,17 +391,6 @@
                                                                                   </div>
                                                                               </div>
 
-                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-200 dark:border-slate-700">
-                                                                                  <button 
-                                                                                      class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
-                                                                                      :disabled="quiz.sub_questions.some(sq => !sq.selected_option)"
-                                                                                      :class="quiz.sub_questions.every(sq => sq.selected_option) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                      x-show="quiz.sub_questions.some(sq => !sq.answered && sq.correct)"
-                                                                                      @click="quiz.sub_questions.forEach(sq => sq.answered = true)"
-                                                                                  >
-                                                                                      <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra toàn bộ
-                                                                                  </button>
-                                                                              </div>
                                                                           </div>
                                                                       </template>
 
@@ -509,16 +480,6 @@
                                                                                           </template>
                                                                                       </div>
 
-                                                                                      <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
-                                                                                          <button 
-                                                                                              class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
-                                                                                              :disabled="quiz.selected === null"
-                                                                                              :class="quiz.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                              @click="quiz.answered = true"
-                                                                                          >
-                                                                                              <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra
-                                                                                          </button>
-                                                                                      </div>
                                                                                   </div>
                                                                               </template>
                                                                               
@@ -582,16 +543,6 @@
                                                                                                   </template>
                                                                                               </div>
 
-                                                                                              <div class="flex justify-end pt-2 mt-4 border-t border-slate-100 dark:border-slate-700" x-show="!sq.answered && sq.correct">
-                                                                                                  <button 
-                                                                                                      class="px-4 py-2 bg-primary hover:bg-primary/95 text-white font-extrabold text-[11px] rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-1"
-                                                                                                      :disabled="sq.selected === null"
-                                                                                                      :class="sq.selected !== null ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                                      @click="sq.answered = true"
-                                                                                                  >
-                                                                                                      <span class="material-symbols-outlined text-[14px]">task_alt</span> Kiểm tra
-                                                                                                  </button>
-                                                                                              </div>
                                                                                           </div>
                                                                                       </template>
                                                                                   </div>
@@ -600,6 +551,19 @@
                                                                       </template>
                                                                   </div>
                                                                 </template>
+                                                                
+                                                                <!-- Global Check Button -->
+                                                                <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
+                                                                     x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
+                                                                    <button 
+                                                                        class="px-8 py-3.5 bg-primary hover:bg-primary/95 text-white font-black text-[15px] rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
+                                                                        :disabled="!isSectionFullyAnswered(sect.questions)"
+                                                                        :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
+                                                                        @click="checkAllSection(sect.questions)"
+                                                                    >
+                                                                        <span class="material-symbols-outlined text-[22px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </template>
@@ -732,16 +696,6 @@
                                                                                     </div>
                                                                                 </template>
 
-                                                                                <div class="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
-                                                                                    <button 
-                                                                                        class="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-[14px] rounded-xl shadow-md shadow-sky-500/20 transition-all hover:-translate-y-0.5 active:scale-95 active:translate-y-0 flex items-center gap-2"
-                                                                                        :disabled="!quiz.userAnswer || quiz.userAnswer.trim() === ''"
-                                                                                        :class="quiz.userAnswer && quiz.userAnswer.trim() !== '' ? '' : 'opacity-50 !cursor-not-allowed grayscale shadow-none'"
-                                                                                        @click="quiz.answered = true"
-                                                                                    >
-                                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> Kiểm tra
-                                                                                    </button>
-                                                                                </div>
                                                                             </div>
                                                                         </template>
 
@@ -799,20 +753,23 @@
                                                                                     </div>
                                                                                 </template>
 
-                                                                                <div class="flex justify-end pt-4 mt-6 border-t border-slate-100 dark:border-slate-800" x-show="!quiz.answered && quiz.correct_answer">
-                                                                                    <button 
-                                                                                        class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5"
-                                                                                        :disabled="!quiz.userAnswer || quiz.userAnswer.trim() === ''"
-                                                                                        :class="quiz.userAnswer && quiz.userAnswer.trim() !== '' ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
-                                                                                        @click="quiz.answered = true"
-                                                                                    >
-                                                                                        <span class="material-symbols-outlined text-[16px]">task_alt</span> Kiểm tra
-                                                                                    </button>
-                                                                                </div>
                                                                             </div>
                                                                         </template>
                                                                     </div>
                                                                 </template>
+                                                                
+                                                                <!-- Global Check Button -->
+                                                                <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
+                                                                     x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
+                                                                    <button 
+                                                                        class="px-8 py-3.5 bg-primary hover:bg-primary/95 text-white font-black text-[15px] rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
+                                                                        :disabled="!isSectionFullyAnswered(sect.questions)"
+                                                                        :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
+                                                                        @click="checkAllSection(sect.questions)"
+                                                                    >
+                                                                        <span class="material-symbols-outlined text-[22px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </template>
