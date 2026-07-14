@@ -107,6 +107,32 @@
 
         <!-- Auth and Mobile menu triggers -->
         <div class="flex items-center gap-3">
+            <!-- Theme Toggle Button -->
+            <button 
+                x-data="{ isDark: document.documentElement.classList.contains('dark') }"
+                @click="
+                    isDark = !isDark;
+                    if (isDark) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.theme = 'dark';
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.theme = 'light';
+                    }
+                "
+                class="relative flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300 focus:outline-none hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 overflow-hidden"
+                title="Toggle Dark/Light Mode"
+            >
+                <span class="material-symbols-outlined text-[20px] absolute transition-all duration-500 transform text-slate-500"
+                      :class="isDark ? '-translate-y-10 opacity-0 rotate-90' : 'translate-y-0 opacity-100 rotate-0'">
+                    dark_mode
+                </span>
+                <span class="material-symbols-outlined text-[20px] absolute transition-all duration-500 transform text-slate-500 dark:text-slate-400"
+                      :class="isDark ? 'translate-y-0 opacity-100 rotate-0' : 'translate-y-10 opacity-0 -rotate-90'">
+                    light_mode
+                </span>
+            </button>
+
             @auth
                 <!-- Authenticated User Menu Dropdown -->
                 <div class="relative" x-data="{ open: false }">

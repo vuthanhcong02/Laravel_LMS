@@ -131,7 +131,7 @@
                                 
                                 <div class="my-auto py-1">
                                     <div class="flex items-baseline gap-1.5">
-                                        <span class="text-5xl font-black tracking-tighter {{ $level->number_color }}">{{ $level->level_code }}</span>
+                                        <span class="text-5xl font-black tracking-tighter uppercase {{ $level->number_color }}">{{ strtoupper($level->level_code) }}</span>
                                         <span class="text-xs font-black text-slate-400 uppercase tracking-widest">LEVEL</span>
                                     </div>
                                 </div>
@@ -420,6 +420,10 @@
                         }
                         
                         if (q.ques_type === 'reorder' || q.ques_type === 'writing') return q.userAnswer && q.userAnswer.trim() !== '';
+                        if (q.ques_type === 'fill_blank_dropdown') {
+                            if (!q.selected_answers) return false;
+                            return q.selected_answers.every(ans => ans !== '' && ans !== null && ans !== undefined);
+                        }
                         return q.selected !== undefined && q.selected !== null;
                     });
                 },
@@ -540,6 +544,22 @@
                                                         q.available_options.push({ id: idx, text: opt.text || opt, used: false });
                                                     });
                                                 }
+                                            }
+                                            
+                                            if (q.ques_type === 'fill_blank_dropdown') {
+                                                if (q.question && q.question.includes('@{{blank}}')) {
+                                                    q.parsed_question = q.question.split('@{{blank}}');
+                                                } else {
+                                                    q.parsed_question = [q.question];
+                                                }
+                                                // Initialize array for user's selected dropdown indices
+                                                q.selected_answers = new Array(Math.max(0, q.parsed_question.length - 1)).fill('');
+                                                
+                                                // Ensure arrays are parsed
+                                                if (typeof q.hints === 'string') try { q.hints = JSON.parse(q.hints); } catch(e){}
+                                                if (typeof q.options === 'string') try { q.options = JSON.parse(q.options); } catch(e){}
+                                                if (typeof q.correct === 'string') try { q.correct = JSON.parse(q.correct); } catch(e){}
+                                                if (typeof q.correct_answer === 'string' && q.correct_answer.startsWith('[')) try { q.correct = JSON.parse(q.correct_answer); } catch(e){}
                                             }
                                             
                                             if (q.sub_questions && Array.isArray(q.sub_questions)) {

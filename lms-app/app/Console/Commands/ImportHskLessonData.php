@@ -360,7 +360,7 @@ class ImportHskLessonData extends Command
                                             'question' => $q['question'] ?? null,
                                             'context' => $q['context'] ?? null,
                                             'question_pinyin' => $q['question_pinyin'] ?? null,
-                                            'options' => $q['options'] ?? [],
+                                            'options' => $q['options'] ?? $q['hints'] ?? [],
                                             'sub_questions' => $q['sub_questions'] ?? null,
                                             'correct_answer' => isset($q['correct']) ? (is_array($q['correct']) ? json_encode($q['correct']) : $q['correct']) : null,
                                             'question_segments' => $q['question_segments'] ?? null,

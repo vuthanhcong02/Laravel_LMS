@@ -138,7 +138,64 @@
                                                                           </div>
                                                                       </template>
 
-                                                                      <template x-if="quiz.ques_type !== 'fill_blank_dropdrag'">
+                                                                      
+                                                                      <template x-if="quiz.ques_type === 'fill_blank_dropdown'">
+                                                                          <div class="space-y-4">
+                                                                              <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                                                                  <div class="flex items-start gap-3 mb-4">
+                                                                                      <div class="shrink-0 pt-0.5">
+                                                                                          <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md text-xs font-black" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1))"></span>
+                                                                                      </div>
+                                                                                      <div class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-loose flex-1">
+                                                                                          <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
+                                                                                              <span class="inline">
+                                                                                                  <span x-html="segment"></span>
+                                                                                                  <template x-if="idx < quiz.parsed_question.length - 1">
+                                                                                                      <span class="inline-block mx-2 align-middle">
+                                                                                                          <select 
+                                                                                                              class="bg-slate-50 dark:bg-slate-800 border text-base font-chinese py-1.5 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer disabled:opacity-70"
+                                                                                                              :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? 'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-500/50' : 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/30 dark:border-red-500/50') : 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-primary'"
+                                                                                                              x-model="quiz.selected_answers[idx]"
+                                                                                                              :disabled="quiz.answered"
+                                                                                                          >
+                                                                                                              <option value="" disabled selected>Chọn...</option>
+                                                                                                              <template x-for="(hint, hIdx) in (quiz.hints || quiz.options)" :key="hIdx">
+                                                                                                                  <option :value="hIdx" x-text="hint"></option>
+                                                                                                              </template>
+                                                                                                          </select>
+                                                                                                      </span>
+                                                                                                  </template>
+                                                                                              </span>
+                                                                                          </template>
+                                                                                      </div>
+                                                                                  </div>
+                                                                                  
+                                                                                  <template x-if="quiz.answered">
+                                                                                      <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
+                                                                                          <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án chính xác:</div>
+                                                                                          <div class="font-chinese text-[16px] font-bold text-slate-800 dark:text-white leading-relaxed">
+                                                                                              <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
+                                                                                                  <span class="inline">
+                                                                                                      <span x-html="segment"></span>
+                                                                                                      <template x-if="idx < quiz.parsed_question.length - 1">
+                                                                                                          <span class="inline-block mx-1 font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2 underline-offset-4" x-text="((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]?.text || ((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]"></span>
+                                                                                                      </template>
+                                                                                                  </span>
+                                                                                              </template>
+                                                                                          </div>
+                                                                                          <template x-if="quiz.explain_vi">
+                                                                                              <div class="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+                                                                                                  <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-1">Giải thích:</div>
+                                                                                                  <div class="text-sm text-slate-600 dark:text-slate-300" x-html="quiz.explain_vi"></div>
+                                                                                              </div>
+                                                                                          </template>
+                                                                                      </div>
+                                                                                  </template>
+                                                                              </div>
+                                                                          </div>
+                                                                      </template>
+
+                                                                      <template x-if="quiz.ques_type !== 'fill_blank_dropdrag' && quiz.ques_type !== 'fill_blank_dropdown'">
                                                                           <div class="space-y-4">
                                                                               <template x-if="quiz.context">
                                                                                   <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl mb-4 text-slate-700 dark:text-slate-300 font-chinese text-base leading-relaxed" x-text="quiz.context"></div>
@@ -394,7 +451,64 @@
                                                                           </div>
                                                                       </template>
 
-                                                                      <template x-if="quiz.ques_type !== 'fill_blank_dropdrag'">
+                                                                      
+                                                                      <template x-if="quiz.ques_type === 'fill_blank_dropdown'">
+                                                                          <div class="space-y-4">
+                                                                              <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                                                                  <div class="flex items-start gap-3 mb-4">
+                                                                                      <div class="shrink-0 pt-0.5">
+                                                                                          <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md text-xs font-black" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1))"></span>
+                                                                                      </div>
+                                                                                      <div class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-loose flex-1">
+                                                                                          <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
+                                                                                              <span class="inline">
+                                                                                                  <span x-html="segment"></span>
+                                                                                                  <template x-if="idx < quiz.parsed_question.length - 1">
+                                                                                                      <span class="inline-block mx-2 align-middle">
+                                                                                                          <select 
+                                                                                                              class="bg-slate-50 dark:bg-slate-800 border text-base font-chinese py-1.5 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer disabled:opacity-70"
+                                                                                                              :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? 'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-500/50' : 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/30 dark:border-red-500/50') : 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-primary'"
+                                                                                                              x-model="quiz.selected_answers[idx]"
+                                                                                                              :disabled="quiz.answered"
+                                                                                                          >
+                                                                                                              <option value="" disabled selected>Chọn...</option>
+                                                                                                              <template x-for="(hint, hIdx) in (quiz.hints || quiz.options)" :key="hIdx">
+                                                                                                                  <option :value="hIdx" x-text="hint"></option>
+                                                                                                              </template>
+                                                                                                          </select>
+                                                                                                      </span>
+                                                                                                  </template>
+                                                                                              </span>
+                                                                                          </template>
+                                                                                      </div>
+                                                                                  </div>
+                                                                                  
+                                                                                  <template x-if="quiz.answered">
+                                                                                      <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
+                                                                                          <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án chính xác:</div>
+                                                                                          <div class="font-chinese text-[16px] font-bold text-slate-800 dark:text-white leading-relaxed">
+                                                                                              <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
+                                                                                                  <span class="inline">
+                                                                                                      <span x-html="segment"></span>
+                                                                                                      <template x-if="idx < quiz.parsed_question.length - 1">
+                                                                                                          <span class="inline-block mx-1 font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2 underline-offset-4" x-text="((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]?.text || ((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]"></span>
+                                                                                                      </template>
+                                                                                                  </span>
+                                                                                              </template>
+                                                                                          </div>
+                                                                                          <template x-if="quiz.explain_vi">
+                                                                                              <div class="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+                                                                                                  <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-1">Giải thích:</div>
+                                                                                                  <div class="text-sm text-slate-600 dark:text-slate-300" x-html="quiz.explain_vi"></div>
+                                                                                              </div>
+                                                                                          </template>
+                                                                                      </div>
+                                                                                  </template>
+                                                                              </div>
+                                                                          </div>
+                                                                      </template>
+
+                                                                      <template x-if="quiz.ques_type !== 'fill_blank_dropdrag' && quiz.ques_type !== 'fill_blank_dropdown'">
                                                                           <div class="space-y-4">
                                                                               <template x-if="quiz.context">
                                                                                   <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl mb-4 text-slate-700 dark:text-slate-300 font-chinese text-base leading-relaxed" x-text="quiz.context"></div>
@@ -700,7 +814,64 @@
                                                                         </template>
 
                                                                         <!-- NORMAL VERTICAL LAYOUT (for paragraph etc) -->
-                                                                        <template x-if="quiz.ques_type !== 'reorder'">
+                                                                        
+                                                                      <template x-if="quiz.ques_type === 'fill_blank_dropdown'">
+                                                                          <div class="space-y-4">
+                                                                              <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                                                                  <div class="flex items-start gap-3 mb-4">
+                                                                                      <div class="shrink-0 pt-0.5">
+                                                                                          <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md text-xs font-black" x-text="'Câu ' + (quiz.ques_id || (qIdx + 1))"></span>
+                                                                                      </div>
+                                                                                      <div class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-loose flex-1">
+                                                                                          <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
+                                                                                              <span class="inline">
+                                                                                                  <span x-html="segment"></span>
+                                                                                                  <template x-if="idx < quiz.parsed_question.length - 1">
+                                                                                                      <span class="inline-block mx-2 align-middle">
+                                                                                                          <select 
+                                                                                                              class="bg-slate-50 dark:bg-slate-800 border text-base font-chinese py-1.5 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer disabled:opacity-70"
+                                                                                                              :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? 'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-500/50' : 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/30 dark:border-red-500/50') : 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-primary'"
+                                                                                                              x-model="quiz.selected_answers[idx]"
+                                                                                                              :disabled="quiz.answered"
+                                                                                                          >
+                                                                                                              <option value="" disabled selected>Chọn...</option>
+                                                                                                              <template x-for="(hint, hIdx) in (quiz.hints || quiz.options)" :key="hIdx">
+                                                                                                                  <option :value="hIdx" x-text="hint"></option>
+                                                                                                              </template>
+                                                                                                          </select>
+                                                                                                      </span>
+                                                                                                  </template>
+                                                                                              </span>
+                                                                                          </template>
+                                                                                      </div>
+                                                                                  </div>
+                                                                                  
+                                                                                  <template x-if="quiz.answered">
+                                                                                      <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
+                                                                                          <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án chính xác:</div>
+                                                                                          <div class="font-chinese text-[16px] font-bold text-slate-800 dark:text-white leading-relaxed">
+                                                                                              <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
+                                                                                                  <span class="inline">
+                                                                                                      <span x-html="segment"></span>
+                                                                                                      <template x-if="idx < quiz.parsed_question.length - 1">
+                                                                                                          <span class="inline-block mx-1 font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2 underline-offset-4" x-text="((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]?.text || ((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]"></span>
+                                                                                                      </template>
+                                                                                                  </span>
+                                                                                              </template>
+                                                                                          </div>
+                                                                                          <template x-if="quiz.explain_vi">
+                                                                                              <div class="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+                                                                                                  <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-1">Giải thích:</div>
+                                                                                                  <div class="text-sm text-slate-600 dark:text-slate-300" x-html="quiz.explain_vi"></div>
+                                                                                              </div>
+                                                                                          </template>
+                                                                                      </div>
+                                                                                  </template>
+                                                                              </div>
+                                                                          </div>
+                                                                      </template>
+
+                                                                        <template x-if="quiz.ques_type !== 'reorder' && quiz.ques_type !== 'fill_blank_dropdown'">
                                                                             <div class="p-6">
                                                                                 <div class="flex items-start gap-3 mb-2">
                                                                                     <div class="shrink-0 pt-0.5">
