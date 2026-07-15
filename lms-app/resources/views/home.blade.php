@@ -21,17 +21,6 @@
                         Nền tảng học tiếng Trung trực tuyến tối ưu giúp bạn chinh phục HSK nhanh chóng và dễ dàng
                         hơn bao giờ hết với phương pháp giảng dạy hiện đại.
                     </p>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="{{ route('roadmap') }}"
-                            class="flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary/30 hover:scale-105 transition-transform">
-                            Bắt đầu học ngay
-                            <span class="material-symbols-outlined">arrow_forward</span>
-                        </a>
-                        <a href="{{ route('courses') }}"
-                            class="rounded-xl border-2 border-primary/20 bg-white/50 dark:bg-white/5 px-8 py-4 text-base font-bold text-slate-700 dark:text-slate-200 hover:bg-primary/10 transition-colors">
-                            Xem khoá học
-                        </a>
-                    </div>
                 </div>
                 <div class="relative">
                     <div class="aspect-square rounded-3xl bg-primary/10 p-8">
