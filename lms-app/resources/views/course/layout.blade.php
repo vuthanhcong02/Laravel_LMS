@@ -263,7 +263,7 @@
 
                         <!-- Start Play Button -->
                         <a 
-                            href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $lesson->id]) }}"
+                            href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}"
                             class="px-5 py-2.5 text-xs font-bold text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none flex items-center gap-1.5 self-start sm:self-auto cursor-pointer active:scale-95 {{ $buttonClass }}"
                         >
                             <span class="material-symbols-outlined text-[16px]">play_circle</span>
@@ -284,7 +284,7 @@
                     <div class="sticky top-[60px] md:top-[72px] z-40 -mx-6 sm:mx-0 px-6 sm:px-0 flex flex-col xl:flex-row xl:items-center transition-all duration-500"
                          x-data="{ isStuck: false }"
                          @scroll.window="isStuck = window.scrollY > 300"
-                         :class="[activeTab === 'practice' ? 'w-full lg:w-[calc(75%-0.375rem)]' : 'w-full', isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0 sm:rounded-b-2xl' : 'p-1.5 sm:p-1.5 sm:px-2 border-y sm:border bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-700/60 shadow-sm gap-4 xl:gap-0 sm:rounded-2xl']">
+                         :class="[activeTab === 'luyen-tap' ? 'w-full lg:w-[calc(75%-0.375rem)]' : 'w-full', isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0 sm:rounded-b-2xl' : 'p-1.5 sm:p-1.5 sm:px-2 border-y sm:border bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-700/60 shadow-sm gap-4 xl:gap-0 sm:rounded-2xl']">
                          
                         <!-- Left Side: Context & Navigation (Expands when scrolled) -->
                         <div class="hidden lg:flex items-center overflow-hidden transition-all duration-500 origin-left" 
@@ -334,26 +334,26 @@
                         <div class="flex-shrink-0 z-10 transition-all duration-300 w-full xl:w-auto overflow-x-auto no-scrollbar">
                             <div class="flex flex-nowrap sm:inline-flex justify-start sm:justify-center gap-1 min-w-max transition-all duration-300">
                                 <a 
-                                    href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'vocab']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'vocab' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'tu-vung']) }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'tu-vung' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Từ vựng
                                 </a>
                                 <a 
-                                    href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'dialogue']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'dialogue' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'hoi-thoai']) }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'hoi-thoai' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Bài khóa
                                 </a>
                                 <a 
-                                    href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'grammar']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'grammar' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'ngu-phap']) }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'ngu-phap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Ngữ pháp
                                 </a>
                                 <a 
-                                    href="{{ route('courses.lesson', ['levelId' => $currentLevel->id, 'lessonId' => $currentLesson->id, 'tab' => 'practice']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'practice' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'luyen-tap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Luyện tập
                                 </a>
@@ -364,13 +364,13 @@
 
                     <!-- Tabs Content Panels -->
                     <div class="mt-2 flex-1 flex flex-col">
-                        @if($activeTab === 'vocab')
+                        @if($activeTab === 'tu-vung')
                             @include('course.tabs.vocab')
-                        @elseif($activeTab === 'dialogue')
+                        @elseif($activeTab === 'hoi-thoai')
                             @include('course.tabs.dialogue')
-                        @elseif($activeTab === 'grammar')
+                        @elseif($activeTab === 'ngu-phap')
                             @include('course.tabs.grammar')
-                        @elseif($activeTab === 'practice')
+                        @elseif($activeTab === 'luyen-tap')
                             @include('course.tabs.practice')
                         @endif
                     </div>
@@ -401,7 +401,7 @@
                 levelTitle: @json($currentLevel ? $currentLevel->title . ' - ' . $currentLevel->subtitle : ''),
                 levelStats: {},
                 currentLesson: @json($currentLesson),
-                activeTab: @json($activeTab ?? 'vocab'),
+                activeTab: @json($activeTab ?? 'tu-vung'),
                 lessons: [],
                 hskLevels: @json($levels) || [],
                 
@@ -451,11 +451,17 @@
                     }
                     this.$watch('activeTab', () => {
                         const url = new URL(window.location);
-                        if (this.activeTab) {
-                            url.searchParams.set('tab', this.activeTab);
+                        const validTabs = ['tu-vung', 'ngu-phap', 'hoi-thoai', 'luyen-tap'];
+                        const pathParts = url.pathname.split('/').filter(p => p);
+                        
+                        if (validTabs.includes(pathParts[pathParts.length - 1])) {
+                            pathParts[pathParts.length - 1] = this.activeTab;
                         } else {
-                            url.searchParams.delete('tab');
+                            pathParts.push(this.activeTab);
                         }
+                        
+                        url.pathname = '/' + pathParts.join('/');
+                        url.searchParams.delete('tab');
                         window.history.replaceState({}, '', url);
                     });
                 },                

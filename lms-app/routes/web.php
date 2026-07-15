@@ -35,13 +35,11 @@ use Illuminate\Support\Facades\Route;
 // ─── Public pages ────────────────────────────────────────────────────────────
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'getViewHome')->name('home');
-    Route::get('/about', 'getViewAbout')->name('about');
-    Route::get('/contact', 'getViewContact')->name('contact');
-    Route::get('/roadmap', 'getViewRoadMap')->name('roadmap');
-    Route::get('/courses', 'getViewCourses')->name('courses');
-    Route::get('/courses/{levelId}/lesson/{lessonId}', 'showCourseLesson')->name('courses.lesson');
-    Route::get('/blog', 'getViewBlog')->name('blog');
-    Route::get('/flashcards', 'getViewFlashcards')->name('flashcards');
+    Route::get('/lien-he', 'getViewContact')->name('contact');
+    Route::get('/khoa-hoc', 'getViewCourses')->name('courses');
+    Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
+    Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
+    Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])

@@ -12,26 +12,26 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
+    Route::get('dang-ky', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('dang-ky', [RegisteredUserController::class, 'store']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
+    Route::get('dang-nhap', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('dang-nhap', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+    Route::get('quen-mat-khau', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    Route::post('quen-mat-khau', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+    Route::get('dat-lai-mat-khau/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
+    Route::post('dat-lai-mat-khau', [NewPasswordController::class, 'store'])
         ->name('password.store');
 
     Route::get('auth/{provider}', [AuthenticatedSessionController::class, 'redirect'])->name('socialite.redirect');
@@ -57,6 +57,6 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::post('dang-xuat', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });

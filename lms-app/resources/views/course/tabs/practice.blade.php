@@ -1,4 +1,4 @@
-                        <div x-show="activeTab === 'practice'" x-transition:enter="transition ease-out duration-200" style="display: none;">
+                        <div x-show="activeTab === 'luyen-tap'" x-transition:enter="transition ease-out duration-200" style="display: none;">
                             <!-- Empty State Practice -->
                             <template x-if="(!currentLesson?.practices || currentLesson?.practices.length === 0)">
                                 <div class="flex flex-col items-center justify-center py-20 px-4 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 border-dashed rounded-3xl text-center mt-2 max-w-2xl mx-auto">

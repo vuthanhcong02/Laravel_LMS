@@ -14,6 +14,7 @@ class HskLevel extends Model
     protected $fillable = [
         'level_code',
         'title',
+        'slug',
         'subtitle',
         'description',
         'color',
