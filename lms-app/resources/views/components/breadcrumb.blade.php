@@ -14,6 +14,7 @@
         </div>
 
         <!-- Glassmorphism Breadcrumb Navigation (High Contrast Dark) -->
+        @if(!View::hasSection('hide_breadcrumb_nav'))
         <nav aria-label="Breadcrumb">
             <ol class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md text-[11px] md:text-xs text-white font-semibold font-sans">
                 <li class="flex items-center">
@@ -30,6 +31,7 @@
                 </li>
             </ol>
         </nav>
+        @endif
 
         <!-- Main Banner Title & Dynamic Subtitle -->
         <div class="flex flex-col gap-2 mt-1">

@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             TeacherPortalSeeder::class,
+            HskLevelSeeder::class,
         ]);
         
         User::factory(10)->create();

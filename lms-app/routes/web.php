@@ -39,6 +39,7 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/contact', 'getViewContact')->name('contact');
     Route::get('/roadmap', 'getViewRoadMap')->name('roadmap');
     Route::get('/courses', 'getViewCourses')->name('courses');
+    Route::get('/courses/{levelId}/lesson/{lessonId}', 'showCourseLesson')->name('courses.lesson');
     Route::get('/blog', 'getViewBlog')->name('blog');
     Route::get('/flashcards', 'getViewFlashcards')->name('flashcards');
 });
