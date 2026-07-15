@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'Lỗi máy chủ nội bộ')
+@section('code', '500')
+@section('icon', 'dns')
+@section('message', 'Đã xảy ra sự cố từ phía máy chủ của chúng tôi. Đội ngũ kỹ thuật đã được thông báo và đang xử lý. Xin lỗi vì sự bất tiện này.')
