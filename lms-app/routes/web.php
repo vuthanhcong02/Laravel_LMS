@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\Student\StudentDashboardController;
@@ -34,14 +35,15 @@ use Illuminate\Support\Facades\Route;
 
 // ─── Public pages ────────────────────────────────────────────────────────────
 Route::controller(PageController::class)->group(function () {
-    Route::get('/', 'getViewHome')->name('home');
-    Route::get('/about', 'getViewAbout')->name('about');
-    Route::get('/contact', 'getViewContact')->name('contact');
-    Route::get('/roadmap', 'getViewRoadMap')->name('roadmap');
-    Route::get('/courses', 'getViewCourses')->name('courses');
-    Route::get('/courses/{levelId}/lesson/{lessonId}', 'showCourseLesson')->name('courses.lesson');
-    Route::get('/blog', 'getViewBlog')->name('blog');
-    Route::get('/flashcards', 'getViewFlashcards')->name('flashcards');
+    Route::get('/', function() {
+        return redirect()->route('home');
+    });
+    Route::get('/trang-chu', 'getViewHome')->name('home');
+    Route::get('/lien-he', 'getViewContact')->name('contact');
+    Route::get('/khoa-hoc', 'getViewCourses')->name('courses');
+    Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
+    Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
+    Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])
@@ -55,7 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/file-viewer', [\App\Http\Controllers\FileController::class, 'show'])->name('file.viewer');
+    Route::get('/file-viewer', [FileController::class, 'show'])->name('file.viewer');
 
     // Role-based dashboard redirect
     Route::get('/dashboard', function () {

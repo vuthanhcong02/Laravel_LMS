@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'Không tìm thấy trang')
+@section('code', '404')
+@section('icon', 'search_off')
+@section('message', 'Trang bạn đang tìm kiếm không tồn tại, đã bị xóa hoặc đường dẫn đã thay đổi.')

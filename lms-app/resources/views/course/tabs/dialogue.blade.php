@@ -1,5 +1,5 @@
 <!-- Tab 2: Dialogue Content Panel -->
-                        <div x-show="activeTab === 'dialogue'" x-transition:enter="transition ease-out duration-200" style="display: none;">
+                        <div x-show="activeTab === 'hoi-thoai'" x-transition:enter="transition ease-out duration-200" style="display: none;">
                             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 text-left">
                                 <!-- Dialogue Chat Box (Left column) -->
                                 <div class="lg:col-span-3 order-2 lg:order-1">

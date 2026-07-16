@@ -55,7 +55,7 @@ class PageController extends Controller
         ]);
     }
 
-    public function showCourseLesson(Request $request, $levelId, $lessonId)
+    public function showCourseLesson($levelSlug, $lessonSlug, $tab = 'tu-vung')
     {
         $levels = HskLevel::with([
             'lessons' => function ($query) {
@@ -63,16 +63,16 @@ class PageController extends Controller
             }
         ])->orderBy('id', 'asc')->get();
 
-        $currentLevel = HskLevel::findOrFail($levelId);
+        $currentLevel = HskLevel::where('slug', $levelSlug)->firstOrFail();
 
         $currentLesson = HskLesson::with([
             'vocabList',
             'grammarList',
             'dialogueSections.dialogues',
             'practices.sections.questions'
-        ])->where('hsk_level_id', $levelId)->findOrFail($lessonId);
+        ])->where('hsk_level_id', $currentLevel->id)->where('slug', $lessonSlug)->firstOrFail();
 
-        $activeTab = $request->query('tab', 'vocab');
+        $activeTab = $tab;
 
         return view('course.layout', compact('levels', 'currentLevel', 'currentLesson', 'activeTab'));
     }

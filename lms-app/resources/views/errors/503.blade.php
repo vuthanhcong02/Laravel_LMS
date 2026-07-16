@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'Đang bảo trì')
+@section('code', '503')
+@section('icon', 'build')
+@section('message', 'Hệ thống đang được nâng cấp hoặc bảo trì định kỳ. Vui lòng quay lại sau ít phút.')

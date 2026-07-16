@@ -15,6 +15,7 @@ class HskLesson extends Model
         'hsk_level_id',
         'lesson_number',
         'title',
+        'slug',
         'pinyin',
         'translation',
         'code'

@@ -1,6 +1,6 @@
 <!-- Tab 3: Grammar Content Panel -->
-                        <div x-show="activeTab === 'grammar'" x-transition:enter="transition ease-out duration-200" style="display: none;">
-                        <div x-show="activeTab === 'grammar'" x-transition:enter="transition ease-out duration-200" style="display: none;">
+                        <div x-show="activeTab === 'ngu-phap'" x-transition:enter="transition ease-out duration-200" style="display: none;">
+                        <div x-show="activeTab === 'ngu-phap'" x-transition:enter="transition ease-out duration-200" style="display: none;">
                             @if(isset($currentLesson) && $currentLesson->grammarList && count($currentLesson->grammarList) > 0)
                                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150/80 dark:border-slate-800/80 p-5 shadow-sm flex flex-col">
                                     <!-- Section Title - Unified -->

@@ -1,5 +1,5 @@
 <!-- Tab 1: Vocabulary Content Panel -->
-<div x-show="activeTab === 'vocab'" x-transition:enter="transition ease-out duration-200" x-data="vocabStudyComponent({{ Js::from($currentLesson->vocabList) }})">
+<div x-show="activeTab === 'tu-vung'" x-transition:enter="transition ease-out duration-200" x-data="vocabStudyComponent({{ Js::from($currentLesson->vocabList) }})">
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150/80 dark:border-slate-800/80 p-5 shadow-sm flex flex-col">
         <!-- Header area -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 text-left border-b border-slate-100 dark:border-slate-800/60 pb-5">
