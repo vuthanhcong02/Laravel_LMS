@@ -2,6 +2,119 @@
 
 @section('title', 'Trang chủ — XiaoMu Chinese')
 
+@push('styles')
+    <style>
+        /* ==== HERO CARD ANIMATIONS ==== */
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes float-alt {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(8px);
+            }
+        }
+
+        @keyframes shimmer-glow {
+
+            0%,
+            100% {
+                text-shadow: 0 0 0px transparent;
+            }
+
+            50% {
+                text-shadow: 0 0 24px rgba(232, 146, 122, 0.45);
+            }
+        }
+
+        @keyframes spin-very-slow {
+            from {
+                transform: rotate(6deg) translateX(3px) translateY(2px);
+            }
+
+            to {
+                transform: rotate(9deg) translateX(3px) translateY(2px);
+            }
+        }
+
+        @keyframes spin-very-slow-reverse {
+            from {
+                transform: rotate(-3deg) translateX(-2px);
+            }
+
+            to {
+                transform: rotate(-5deg) translateX(-2px);
+            }
+        }
+
+        @keyframes ping-soft {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            70% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .animate-float-alt {
+            animation: float-alt 3.5s ease-in-out infinite;
+        }
+
+        .animate-float-badge2 {
+            animation: float 5s ease-in-out infinite 1s;
+        }
+
+        .animate-shimmer-glow {
+            animation: shimmer-glow 3s ease-in-out infinite;
+        }
+
+        .animate-deco-1 {
+            animation: spin-very-slow 6s ease-in-out infinite alternate;
+        }
+
+        .animate-deco-2 {
+            animation: spin-very-slow-reverse 5s ease-in-out infinite alternate;
+        }
+
+        .animate-ping-soft::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background: #22c55e;
+            animation: ping-soft 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+            opacity: 0.6;
+        }
+    </style>
+@endpush
+
 @section('content')
 
     {{-- ===== HERO SECTION ===== --}}
@@ -99,15 +212,15 @@
                     <div class="relative w-full max-w-sm">
                         {{-- Decorative rotated cards --}}
                         <div
-                            class="absolute inset-0 rounded-3xl border-2 border-primary/20 bg-primary/5 rotate-6 translate-x-3 translate-y-2 dark:bg-primary/8">
+                            class="animate-deco-1 absolute inset-0 rounded-3xl border-2 border-primary/20 bg-primary/5 rotate-6 translate-x-3 translate-y-2 dark:bg-primary/8">
                         </div>
                         <div
-                            class="absolute inset-0 rounded-3xl border border-rose-200/50 bg-rose-50/50 -rotate-3 -translate-x-2 dark:bg-rose-900/10">
+                            class="animate-deco-2 absolute inset-0 rounded-3xl border border-rose-200/50 bg-rose-50/50 -rotate-3 -translate-x-2 dark:bg-rose-900/10">
                         </div>
 
                         {{-- Main Card --}}
                         <div
-                            class="relative rounded-3xl bg-white p-6 shadow-2xl shadow-primary/15 dark:bg-slate-800/90 dark:shadow-primary/10">
+                            class="animate-float relative rounded-3xl bg-white p-6 shadow-2xl shadow-primary/15 dark:bg-slate-800/90 dark:shadow-primary/10">
                             {{-- App preview mock --}}
                             <div class="mb-5 flex items-center justify-between">
                                 <div>
@@ -124,19 +237,9 @@
                             {{-- Flashcard preview --}}
                             <div
                                 class="mb-5 rounded-2xl bg-gradient-to-br from-primary/10 via-rose-50 to-amber-50/50 p-5 text-center dark:from-primary/15 dark:via-slate-700/50 dark:to-slate-700/30">
-                                <p class="text-5xl font-black text-slate-800 dark:text-white">家人</p>
+                                <p class="animate-shimmer-glow text-5xl font-black text-slate-800 dark:text-white">家人</p>
                                 <p class="mt-1 text-sm font-medium text-primary">jiā rén</p>
                                 <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Gia đình / Người thân</p>
-                            </div>
-
-                            {{-- Progress --}}
-                            <div
-                                class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
-                                <span>Tiến độ học</span>
-                                <span class="font-bold text-primary">72%</span>
-                            </div>
-                            <div class="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700">
-                                <div class="h-2 w-[72%] rounded-full bg-gradient-to-r from-primary to-rose-400"></div>
                             </div>
 
                             {{-- Quick actions --}}
@@ -163,19 +266,21 @@
 
                         {{-- Floating badge 1 --}}
                         <div
-                            class="reveal reveal-fade-up stagger-delay-5 absolute -left-8 -bottom-6 flex items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                            class="animate-float-alt reveal reveal-fade-up stagger-delay-5 absolute -left-8 -bottom-6 flex items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
+                            <div class="relative flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                <span
+                                    class="animate-ping-soft absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-30"></span>
                                 <span class="text-base">🎉</span>
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-slate-800 dark:text-white">Vừa qua HSK 3!</p>
-                                <p class="text-[10px] text-slate-400">Nguyễn Minh T. — 2 phút trước</p>
+                                <p class="text-[10px] text-slate-400">Nguyễn Thị Thủy Tiên. — 2 phút trước</p>
                             </div>
                         </div>
 
                         {{-- Floating badge 2 --}}
                         <div
-                            class="reveal reveal-fade-right stagger-delay-6 absolute -right-6 top-8 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
+                            class="animate-float-badge2 reveal reveal-fade-right stagger-delay-6 absolute -right-6 top-8 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
                             <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Từ mới hôm nay</p>
                             <p class="text-xl font-black text-slate-800 dark:text-white">+<span class="counter"
                                     data-target="24">24</span></p>

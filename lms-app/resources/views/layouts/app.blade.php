@@ -150,6 +150,7 @@
             scroll-behavior: smooth;
         }
     </style>
+    @stack('styles')
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
@@ -163,6 +164,33 @@
     @yield('content')
     <!-- Footer -->
     <x-footer />
+    <!-- Scroll to Top Button -->
+    <button id="scroll-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" aria-label="Cuộn lên đầu trang"
+        class="fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 opacity-0 translate-y-4 pointer-events-none transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40">
+        <span class="material-symbols-outlined text-[20px]">keyboard_arrow_up</span>
+    </button>
+
+    <script>
+        (function() {
+            const btn = document.getElementById('scroll-to-top');
+            if (!btn) return;
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    btn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    btn.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+                } else {
+                    btn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    btn.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+                }
+            }, {
+                passive: true
+            });
+        })();
+    </script>
+
+    @stack('scripts')
+
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
