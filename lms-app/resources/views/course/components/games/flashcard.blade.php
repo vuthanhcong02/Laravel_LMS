@@ -56,7 +56,7 @@
         <button @click="prevWord()" class="w-12 h-12 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors active:scale-95">
             <span class="material-symbols-outlined">chevron_left</span>
         </button>
-        <button @click="shuffleList()" class="px-6 py-3 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-2 transition-colors active:scale-95" :class="isShuffled ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50'">
+        <button @click="shuffleList()" class="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-2 transition-colors active:scale-95" :class="isShuffled ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50'">
             <span class="material-symbols-outlined text-[18px]">shuffle</span>
             <span class="font-bold text-sm" x-text="isShuffled ? 'Đang trộn' : 'Trộn thẻ'"></span>
         </button>

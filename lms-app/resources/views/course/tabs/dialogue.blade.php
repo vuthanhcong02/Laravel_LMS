@@ -29,7 +29,7 @@
                                             <div class="flex flex-wrap gap-2 mb-4">
                                                 <button 
                                                     @click="modePinyin = !modePinyin; modeNghe = false; modeGo = false; modeDich = false;"
-                                                    class="px-4 py-1.5 rounded-full text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
+                                                    class="px-4 py-1.5 rounded-2xl text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
                                                     :class="modePinyin ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20' : 'bg-white text-primary border-primary/30 hover:border-primary hover:bg-primary/5 dark:bg-slate-800 dark:border-primary/40 dark:text-primary'"
                                                 >
                                                     <span class="font-black text-[16px]">A</span> Pinyin
@@ -37,7 +37,7 @@
                                                 
                                                 <button 
                                                     @click="modeHanyu = !modeHanyu; modeNghe = false; modeGo = false; modeDich = false;"
-                                                    class="px-4 py-1.5 rounded-full text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
+                                                    class="px-4 py-1.5 rounded-2xl text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
                                                     :class="modeHanyu ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20' : 'bg-white text-primary border-primary/30 hover:border-primary hover:bg-primary/5 dark:bg-slate-800 dark:border-primary/40 dark:text-primary'"
                                                 >
                                                     <span class="font-black text-[16px]">字</span> Chữ Hán
@@ -45,7 +45,7 @@
                                                 
                                                 <button 
                                                     @click="modeGo = !modeGo; if(modeGo) { modeNghe = false; modeDich = false; quizIndex = 0; quizInput = ''; quizStatus = 'typing'; }"
-                                                    class="px-4 py-1.5 rounded-full text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border ml-0 sm:ml-4"
+                                                    class="px-4 py-1.5 rounded-2xl text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border ml-0 sm:ml-4"
                                                     :class="modeGo ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20' : 'bg-white text-primary border-primary/30 hover:border-primary hover:bg-primary/5 dark:bg-slate-800 dark:border-primary/40 dark:text-primary'"
                                                 >
                                                     <span class="material-symbols-outlined text-[18px]">keyboard</span> Luyện gõ
@@ -53,7 +53,7 @@
                                                 
                                                 <button 
                                                     @click="modeNghe = !modeNghe; if(modeNghe) { modeGo = false; modeDich = false; quizIndex = 0; quizInput = ''; quizStatus = 'typing'; }"
-                                                    class="px-4 py-1.5 rounded-full text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
+                                                    class="px-4 py-1.5 rounded-2xl text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
                                                     :class="modeNghe ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20' : 'bg-white text-primary border-primary/30 hover:border-primary hover:bg-primary/5 dark:bg-slate-800 dark:border-primary/40 dark:text-primary'"
                                                 >
                                                     <span class="material-symbols-outlined text-[18px]">volume_up</span> Luyện nghe
@@ -61,7 +61,7 @@
                                                 
                                                 <button 
                                                     @click="modeDich = !modeDich; if(modeDich) { modeNghe = false; modeGo = false; quizIndex = 0; quizInput = ''; quizStatus = 'typing'; }"
-                                                    class="px-4 py-1.5 rounded-full text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
+                                                    class="px-4 py-1.5 rounded-2xl text-[14px] font-bold transition-all duration-200 flex items-center gap-1.5 outline-none border"
                                                     :class="modeDich ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20' : 'bg-white text-primary border-primary/30 hover:border-primary hover:bg-primary/5 dark:bg-slate-800 dark:border-primary/40 dark:text-primary'"
                                                 >
                                                     <span class="material-symbols-outlined text-[18px]">translate</span> Luyện dịch
