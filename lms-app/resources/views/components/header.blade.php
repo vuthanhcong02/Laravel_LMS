@@ -33,7 +33,7 @@
             <!-- Home Link -->
             <a class="relative py-2 text-sm font-semibold transition-colors {{ $isHomeActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('home') }}">
-                Home
+                Trang chủ
             </a>
 
             <!-- Dropdown Menu for HSK Features (Học Hán ngữ) -->
@@ -94,13 +94,13 @@
             <!-- Blog Link -->
             <a class="relative py-2 text-sm font-semibold transition-colors {{ $isBlogActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('blog') }}">
-                Blog
+                Tin tức
             </a>
 
             <!-- Contact Link -->
             <a class="relative py-2 text-sm font-semibold transition-colors {{ $isContactActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('contact') }}">
-                Contact
+                Liên hệ
             </a>
         </nav>
 
@@ -219,7 +219,7 @@
             <a href="{{ route('home') }}"
                 class="text-sm font-bold flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800/80 transition-colors {{ $isHomeActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300' }}">
                 <span class="material-symbols-outlined text-[20px]">home</span>
-                <span>Home</span>
+                <span>Trang chủ</span>
             </a>
 
             <!-- HSK Submenu Accordion (Học Hán ngữ) -->
@@ -265,14 +265,14 @@
             <a href="{{ route('blog') }}"
                 class="text-sm font-bold flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800/80 transition-colors {{ $isBlogActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300' }}">
                 <span class="material-symbols-outlined text-[20px]">rss_feed</span>
-                <span>Blog</span>
+                <span>Tin tức</span>
             </a>
 
             <!-- Contact Navigation -->
             <a href="{{ route('contact') }}"
                 class="text-sm font-bold flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800/80 transition-colors {{ $isContactActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300' }}">
                 <span class="material-symbols-outlined text-[20px]">mail</span>
-                <span>Contact</span>
+                <span>Liên hệ</span>
             </a>
         </div>
     </div>
