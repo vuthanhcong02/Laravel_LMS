@@ -15,17 +15,6 @@
                     <div
                         class="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
                         <div class="bg-primary/20 text-primary p-3 rounded-lg">
-                            <span class="material-symbols-outlined text-2xl">location_on</span>
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-900 dark:text-white">Địa chỉ</p>
-                            <p class="text-slate-600 dark:text-slate-400">Số 15, Ngõ 10, Giao thông vận tải, Hà Nội</p>
-                        </div>
-                    </div>
-                    <!-- Contact Item -->
-                    <div
-                        class="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
-                        <div class="bg-primary/20 text-primary p-3 rounded-lg">
                             <span class="material-symbols-outlined text-2xl">call</span>
                         </div>
                         <div>
@@ -52,7 +41,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-slate-900 dark:text-white">Thời gian làm việc</p>
-                            <p class="text-slate-600 dark:text-slate-400">Thứ 2 - Thứ 7: 8:00 - 21:00</p>
+                            <p class="text-slate-600 dark:text-slate-400">Thứ 2 - Chủ Nhật: 8:00 - 24:00</p>
                         </div>
                     </div>
                 </div>
@@ -68,7 +57,10 @@
                     </a>
                     <a class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary hover:text-white transition-all"
                         href="#">
-                        <span class="material-symbols-outlined">chat</span>
+                        <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.22-1.15 4.39-2.92 5.74-1.73 1.3-4.04 1.76-6.14 1.25-2.19-.51-4.02-1.92-4.99-3.95-.97-2.02-.97-4.4.01-6.4 1.01-2.07 3.01-3.61 5.27-3.95.83-.13 1.68-.11 2.5-.02v4.06c-.4-.02-.8-.02-1.2-.02-1.07.03-2.15.42-2.92 1.17-.74.72-1.14 1.75-1.13 2.8.01 1.05.42 2.07 1.15 2.78.75.74 1.83 1.1 2.88 1.04 1.05-.05 2.05-.51 2.75-1.28.69-.76 1.04-1.8 1.03-2.85V.02z" />
+                        </svg>
                     </a>
                     <a class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary hover:text-white transition-all"
                         href="#">
@@ -90,7 +82,7 @@
                         <div
                             class="bg-white/90 dark:bg-slate-900/90 px-4 py-2 rounded-full shadow-lg border border-primary/20 flex items-center gap-2">
                             <span class="material-symbols-outlined text-red-500">location_on</span>
-                            <span class="text-sm font-semibold">Giao thông vận tải, Hà Nội</span>
+                            <span class="text-sm font-semibold">Hà Nội</span>
                         </div>
                     </div>
                 </div>
@@ -101,49 +93,72 @@
                 </h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-8">Điền thông tin bên dưới, chuyên viên tư vấn
                     sẽ liên hệ lại ngay.</p>
-                <form class="space-y-5">
+                <div id="success-message" class="hidden mb-6 p-4 rounded-xl bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 flex items-center gap-3">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <p class="font-medium text-sm"></p>
+                </div>
+                <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-5">
+                    @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Họ và
                             tên</label>
-                        <input
+                        <input name="name" id="name"
                             class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                            placeholder="Nhập họ tên của bạn" type="text" />
+                            placeholder="Nhập họ tên của bạn" type="text" required />
+                        <p id="error-name" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email</label>
-                            <input
+                            <input name="email" id="email"
                                 class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="email@example.com" type="email" />
+                                placeholder="email@example.com" type="email" required />
+                            <p id="error-email" class="text-red-500 text-xs mt-1 hidden"></p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Số
                                 điện thoại</label>
-                            <input
+                            <input name="phone" id="phone"
                                 class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 placeholder="09xx xxx xxx" type="tel" />
+                            <p id="error-phone" class="text-red-500 text-xs mt-1 hidden"></p>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Khóa
-                            học quan tâm</label>
-                        <select
-                            class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none cursor-pointer">
-                            <option disabled="" selected="" value="">Chọn trình độ HSK</option>
-                            <option value="hsk1">HSK 1 - Sơ cấp</option>
-                            <option value="hsk2">HSK 2 - Sơ cấp</option>
-                            <option value="hsk3">HSK 3 - Trung cấp</option>
-                            <option value="hsk4">HSK 4 - Trung cấp</option>
-                            <option value="hsk5">HSK 5 - Cao cấp</option>
-                            <option value="hsk6">HSK 6 - Cao cấp</option>
-                        </select>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Chủ đề liên
+                            hệ</label>
+                        <div class="flex flex-wrap gap-2.5">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" name="topics[]" value="tu-van" class="peer sr-only" />
+                                <div
+                                    class="px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-600 dark:text-slate-400 peer-checked:bg-primary/10 peer-checked:text-primary peer-checked:border-primary hover:border-primary/40 transition-all">
+                                    Tư vấn khóa học
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" name="topics[]" value="ho-tro" class="peer sr-only" />
+                                <div
+                                    class="px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-600 dark:text-slate-400 peer-checked:bg-primary/10 peer-checked:text-primary peer-checked:border-primary hover:border-primary/40 transition-all">
+                                    Hỗ trợ kỹ thuật
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" name="topics[]" value="gop-y" class="peer sr-only" checked />
+                                <div
+                                    class="px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-600 dark:text-slate-400 peer-checked:bg-primary/10 peer-checked:text-primary peer-checked:border-primary hover:border-primary/40 transition-all">
+                                    Góp ý & Phản hồi
+                                </div>
+                            </label>
+                        </div>
+                        <p id="error-topics" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Lời
                             nhắn</label>
-                        <textarea
+                        <textarea name="message" id="message" required
                             class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
                             placeholder="Bạn có thắc mắc gì cho chúng tôi không?" rows="4"></textarea>
+                        <p id="error-message" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
                     <button
                         class="w-full py-4 bg-primary text-white font-bold rounded-lg text-lg hover:opacity-90 shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2"

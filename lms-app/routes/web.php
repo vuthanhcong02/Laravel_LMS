@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Student\CourseController as StudentCourseController;
@@ -39,7 +41,8 @@ Route::controller(PageController::class)->group(function () {
         return redirect()->route('home');
     });
     Route::get('/trang-chu', 'getViewHome')->name('home');
-    Route::get('/lien-he', 'getViewContact')->name('contact');
+    Route::get('/lien-he', [PageController::class, 'getViewContact'])->name('contact');
+    Route::post('/lien-he', [ContactController::class, 'store'])->name('contact.store');
     Route::get('/khoa-hoc', 'getViewCourses')->name('courses');
     Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
@@ -132,6 +135,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('admin/support/{ticket}', [SupportController::class, 'show'])->name('admin.support.show');
             Route::post('admin/support/{ticket}/reply', [SupportController::class, 'reply'])->name('admin.support.reply');
             Route::put('admin/support/{ticket}/status', [SupportController::class, 'updateStatus'])->name('admin.support.updateStatus');
+
+            Route::get('admin/contacts', [AdminContactController::class, 'index'])->name('admin.contacts.index');
+            Route::get('admin/contacts/{contact}', [AdminContactController::class, 'show'])->name('admin.contacts.show');
+            Route::put('admin/contacts/{contact}/status', [AdminContactController::class, 'updateStatus'])->name('admin.contacts.updateStatus');
 
             Route::get('admin/revenue', [RevenueController::class, 'index'])->name('admin.revenue.index');
             Route::get('admin/revenue/transactions', [RevenueController::class, 'transactions'])->name('admin.revenue.transactions');
