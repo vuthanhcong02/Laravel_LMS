@@ -1,321 +1,502 @@
 @extends('layouts.app')
 
-@section('title', 'Trang chủ')
+@section('title', 'Trang chủ — XiaoMu Chinese')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-b from-primary/20 to-transparent py-20 lg:py-32">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="grid items-center gap-12 lg:grid-cols-2">
-                <div class="flex flex-col gap-8">
+
+    {{-- ===== HERO SECTION ===== --}}
+    <section
+        class="relative overflow-hidden bg-gradient-to-br from-primary/8 via-white to-rose-50/40 dark:from-primary/10 dark:via-background-dark dark:to-background-dark py-20 lg:py-28">
+        {{-- Decorative blobs --}}
+        <div class="parallax-slow pointer-events-none absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-primary/15 blur-[80px]"
+            data-speed="0.15"></div>
+        <div class="parallax-slow pointer-events-none absolute -left-40 bottom-0 h-80 w-80 rounded-full bg-rose-300/15 blur-[60px]"
+            data-speed="0.25"></div>
+
+        <div class="relative mx-auto max-w-7xl px-6">
+            <div class="grid items-center gap-16 lg:grid-cols-2">
+
+                {{-- Left: Text Content --}}
+                <div class="flex flex-col gap-7">
+                    {{-- Badge --}}
                     <div
-                        class="inline-flex w-fit items-center gap-2 rounded-full bg-white/50 dark:bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">
-                        <span class="material-symbols-outlined text-sm">auto_awesome</span>
-                        Học tiếng Trung thông minh hơn
+                        class="reveal reveal-fade-up inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:bg-primary/15">
+                        <span>✦</span> Học tiếng Trung cùng XiaoMu
                     </div>
+
+                    {{-- Headline --}}
                     <h1
-                        class="text-5xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white lg:text-6xl">
-                        Học Tiếng Trung hiệu quả cùng <span class="text-primary">XiaoMu</span>
+                        class="reveal reveal-fade-up stagger-delay-1 font-display text-4xl font-black leading-[1.1] tracking-tight text-slate-900 dark:text-white lg:text-5xl xl:text-6xl">
+                        Chinh phục<br>
+                        tiếng Trung
+                        <span class="relative mt-1 block">
+                            <span
+                                class="relative z-10 bg-gradient-to-r from-primary to-rose-400 bg-clip-text text-transparent">
+                                dễ dàng hơn
+                            </span>
+                            <svg class="absolute -bottom-1 left-0 w-full opacity-30" viewBox="0 0 240 10"
+                                preserveAspectRatio="none">
+                                <path d="M0 5 Q60 10 120 5 T240 5" stroke="#E8927A" stroke-width="3.5" fill="none"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </span>
                     </h1>
-                    <p class="text-lg text-slate-600 dark:text-slate-400">
-                        Nền tảng học tiếng Trung trực tuyến tối ưu giúp bạn chinh phục HSK nhanh chóng và dễ dàng
-                        hơn bao giờ hết với phương pháp giảng dạy hiện đại.
+
+                    {{-- Description --}}
+                    <p
+                        class="reveal reveal-fade-up stagger-delay-2 max-w-lg text-base leading-relaxed text-slate-500 dark:text-slate-400 lg:text-lg">
+                        Lộ trình học <strong class="font-semibold text-slate-700 dark:text-slate-200">bài bản từ HSK
+                            1→6</strong>, kết hợp flashcard thông minh và bài thi thử chuẩn quốc tế — giúp bạn giao tiếp tự
+                        tin trong <strong class="font-semibold text-slate-700 dark:text-slate-200">90 ngày</strong>.
                     </p>
-                </div>
-                <div class="relative">
-                    <div class="aspect-square rounded-3xl bg-primary/10 p-8">
-                        <img alt="XiaoMu Learning" class="h-full w-full rounded-2xl object-cover shadow-2xl"
-                            data-alt="Young student learning Chinese on a laptop"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhmLL44cmgFNEjikD9i_3fd0LdU3ArL_zc6SyL2QsrEGj3NC5OQt7OWm3VDeAzAZGNeAWTS8aUuHrfIJMWirivIn5gylkpPUjSAvx6GiO6ggndED1UxApsHfVcPTCSGit438eJy-kkuNn8FkHfkM5qzpLzafDSSdcfYSHucXHU7mMAh4LyeNUczjZsJ-S815m4DVnf2wRJP6AlEVaoxPrbO6fSs3ZL8YfU8G82wJoCi08a-JoUfFRUcgiq-sXF6gNO4TRXN-zTUQ" />
+
+                    {{-- CTA Buttons --}}
+                    <div class="reveal reveal-fade-up stagger-delay-3 flex flex-wrap items-center gap-4">
+                        <a href="{{ route('register') }}"
+                            class="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40">
+                            <span>Bắt đầu miễn phí</span>
+                            <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                        </a>
+                        <a href="{{ route('courses') }}"
+                            class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-200">
+                            <span class="material-symbols-outlined text-[18px] text-primary">play_circle</span>
+                            Xem khóa học
+                        </a>
                     </div>
+
+                    {{-- Social proof --}}
                     <div
-                        class="absolute -bottom-6 -left-6 rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-xl border border-primary/10">
-                        <div class="flex items-center gap-3">
-                            <div class="rounded-full bg-green-100 p-2 text-green-600">
-                                <span class="material-symbols-outlined">verified_user</span>
+                        class="reveal reveal-fade-up stagger-delay-4 flex flex-wrap items-center gap-6 border-t border-slate-100 pt-6 dark:border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex -space-x-2.5">
+                                <div class="h-9 w-9 rounded-full border-2 border-white bg-primary/70 dark:border-slate-800">
+                                </div>
+                                <div class="h-9 w-9 rounded-full border-2 border-white bg-rose-300 dark:border-slate-800">
+                                </div>
+                                <div class="h-9 w-9 rounded-full border-2 border-white bg-amber-300 dark:border-slate-800">
+                                </div>
+                                <div
+                                    class="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-slate-100 text-[10px] font-bold text-slate-600 dark:border-slate-800 dark:bg-slate-700 dark:text-slate-300">
+                                    +9k</div>
+                            </div>
+                            <div class="text-sm">
+                                <p class="font-bold text-slate-800 dark:text-white"><span class="counter"
+                                        data-target="10000">10,000</span> học viên</p>
+                                <p class="text-xs text-slate-400">đang học mỗi ngày</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="flex gap-0.5 text-amber-400">★★★★★</div>
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">4.9</span>
+                            <span class="text-xs text-slate-400">/5</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- Right: Visual Card Stack --}}
+                <div class="reveal reveal-zoom stagger-delay-2 relative flex justify-center lg:justify-end">
+                    <div class="relative w-full max-w-sm">
+                        {{-- Decorative rotated cards --}}
+                        <div
+                            class="absolute inset-0 rounded-3xl border-2 border-primary/20 bg-primary/5 rotate-6 translate-x-3 translate-y-2 dark:bg-primary/8">
+                        </div>
+                        <div
+                            class="absolute inset-0 rounded-3xl border border-rose-200/50 bg-rose-50/50 -rotate-3 -translate-x-2 dark:bg-rose-900/10">
+                        </div>
+
+                        {{-- Main Card --}}
+                        <div
+                            class="relative rounded-3xl bg-white p-6 shadow-2xl shadow-primary/15 dark:bg-slate-800/90 dark:shadow-primary/10">
+                            {{-- App preview mock --}}
+                            <div class="mb-5 flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-widest text-primary">Bài học hôm nay
+                                    </p>
+                                    <h3 class="mt-0.5 text-lg font-black text-slate-800 dark:text-white">HSK 2 — Gia đình
+                                    </h3>
+                                </div>
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                                    <span class="material-symbols-outlined text-[20px] text-primary">local_library</span>
+                                </div>
+                            </div>
+
+                            {{-- Flashcard preview --}}
+                            <div
+                                class="mb-5 rounded-2xl bg-gradient-to-br from-primary/10 via-rose-50 to-amber-50/50 p-5 text-center dark:from-primary/15 dark:via-slate-700/50 dark:to-slate-700/30">
+                                <p class="text-5xl font-black text-slate-800 dark:text-white">家人</p>
+                                <p class="mt-1 text-sm font-medium text-primary">jiā rén</p>
+                                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Gia đình / Người thân</p>
+                            </div>
+
+                            {{-- Progress --}}
+                            <div
+                                class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+                                <span>Tiến độ học</span>
+                                <span class="font-bold text-primary">72%</span>
+                            </div>
+                            <div class="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700">
+                                <div class="h-2 w-[72%] rounded-full bg-gradient-to-r from-primary to-rose-400"></div>
+                            </div>
+
+                            {{-- Quick actions --}}
+                            <div class="mt-4 grid grid-cols-3 gap-2">
+                                <div
+                                    class="flex flex-col items-center gap-1 rounded-xl bg-slate-50 px-3 py-2.5 dark:bg-slate-700/50">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">style</span>
+                                    <span
+                                        class="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Flashcard</span>
+                                </div>
+                                <div
+                                    class="flex flex-col items-center gap-1 rounded-xl bg-primary px-3 py-2.5 shadow-sm shadow-primary/30">
+                                    <span class="material-symbols-outlined text-[18px] text-white">fact_check</span>
+                                    <span class="text-[10px] font-bold text-white">Luyện tập</span>
+                                </div>
+                                <div
+                                    class="flex flex-col items-center gap-1 rounded-xl bg-slate-50 px-3 py-2.5 dark:bg-slate-700/50">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">auto_stories</span>
+                                    <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Giáo
+                                        trình</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Floating badge 1 --}}
+                        <div
+                            class="reveal reveal-fade-up stagger-delay-5 absolute -left-8 -bottom-6 flex items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                <span class="text-base">🎉</span>
                             </div>
                             <div>
-                                <p class="text-xs font-bold text-slate-500 uppercase">Trusted by</p>
-                                <p class="text-sm font-extrabold">10,000+ Students</p>
+                                <p class="text-xs font-bold text-slate-800 dark:text-white">Vừa qua HSK 3!</p>
+                                <p class="text-[10px] text-slate-400">Nguyễn Minh T. — 2 phút trước</p>
+                            </div>
+                        </div>
+
+                        {{-- Floating badge 2 --}}
+                        <div
+                            class="reveal reveal-fade-right stagger-delay-6 absolute -right-6 top-8 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
+                            <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Từ mới hôm nay</p>
+                            <p class="text-xl font-black text-slate-800 dark:text-white">+<span class="counter"
+                                    data-target="24">24</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ===== STATS BAR ===== --}}
+    <section class="border-y border-primary/10 bg-white py-10 dark:bg-slate-900/50">
+        <div class="mx-auto max-w-5xl px-6">
+            <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+                @foreach ([['target' => 10000, 'label' => 'Học viên', 'icon' => 'group', 'suffix' => '+'], ['target' => 6, 'label' => 'Cấp độ HSK', 'icon' => 'emoji_events', 'suffix' => ''], ['target' => 95, 'label' => 'Qua kỳ thi', 'icon' => 'verified', 'suffix' => '%'], ['target' => 3, 'label' => 'Năm kinh nghiệm', 'icon' => 'star', 'suffix' => '+']] as $stat)
+                    <div class="reveal reveal-fade-up flex flex-col items-center gap-2 text-center">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 mb-1">
+                            <span class="material-symbols-outlined text-[22px] text-primary">{{ $stat['icon'] }}</span>
+                        </div>
+                        <p class="text-3xl font-black text-slate-900 dark:text-white">
+                            <span class="counter"
+                                data-target="{{ $stat['target'] }}">{{ $stat['target'] }}</span>{{ $stat['suffix'] }}
+                        </p>
+                        <p class="text-xs font-semibold uppercase tracking-widest text-slate-400">{{ $stat['label'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ===== COURSES SECTION ===== --}}
+    <section class="py-20 dark:bg-background-dark">
+        <div class="mx-auto max-w-7xl px-6">
+            {{-- Header --}}
+            <div class="mb-14 text-center">
+                <span
+                    class="reveal reveal-fade-up inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:bg-primary/15">
+                    <span class="material-symbols-outlined text-[14px]">menu_book</span> Công cụ học tập
+                </span>
+                <h2
+                    class="reveal reveal-fade-up stagger-delay-1 font-display mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                    3 công cụ giúp bạn <span class="text-primary">học tiếng Trung hiệu quả</span>
+                </h2>
+                <p class="reveal reveal-fade-up stagger-delay-2 mx-auto mt-3 max-w-lg text-slate-500 dark:text-slate-400">
+                    Toàn bộ hành trình học — từ ghi nhớ từ vựng, theo giáo trình chuẩn HSK, đến thi thử thực chiến — đều có
+                    trên XiaoMu.
+                </p>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-3">
+
+                {{-- Card 1: Flashcard --}}
+                <div
+                    class="reveal reveal-fade-up stagger-delay-1 group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 dark:border-slate-700/50 dark:bg-slate-800/70">
+                    <div
+                        class="flex h-44 items-center justify-center rounded-t-2xl bg-gradient-to-br from-primary/15 to-rose-100/60 dark:from-primary/20 dark:to-rose-900/20">
+                        <span
+                            class="material-symbols-outlined text-[64px] text-primary/70 dark:text-primary/60">style</span>
+                    </div>
+                    <div class="flex flex-1 flex-col gap-4 p-6">
+                        <div>
+                            <h3 class="text-xl font-black text-slate-800 dark:text-white">Flashcard</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                                Học từ vựng bằng thẻ ghi nhớ thông minh. Hệ thống tự động ôn lại đúng lúc bạn sắp quên nhờ
+                                công nghệ Spaced Repetition.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-primary">HSK
+                                1–9</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">Chữ
+                                Hán & Pinyin</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">Offline</span>
+                        </div>
+                        <a href="{{ route('flashcards') }}"
+                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30">
+                            <span class="material-symbols-outlined text-[18px]">style</span>
+                            Luyện Flashcard
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Card 2: Giáo trình HSK --}}
+                <div
+                    class="reveal reveal-fade-up stagger-delay-2 group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 dark:border-slate-700/50 dark:bg-slate-800/70">
+                    <div
+                        class="flex h-44 items-center justify-center rounded-t-2xl bg-gradient-to-br from-amber-100/70 to-orange-100/50 dark:from-amber-900/20 dark:to-orange-900/15">
+                        <span
+                            class="material-symbols-outlined text-[64px] text-amber-500/70 dark:text-amber-400/60">auto_stories</span>
+                    </div>
+                    <div class="flex flex-1 flex-col gap-4 p-6">
+                        <div>
+                            <h3 class="text-xl font-black text-slate-800 dark:text-white">Giáo trình chuẩn HSK</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                                Học theo lộ trình bài bản từ HSK 1 đến HSK 6 với bài giảng video, bài tập tương tác và ngữ
+                                pháp chi tiết.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">6
+                                cấp độ</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">Video
+                                bài giảng</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">Bài
+                                tập</span>
+                        </div>
+                        <a href="{{ route('courses') }}"
+                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-white px-5 py-3 text-sm font-bold text-primary shadow-sm transition-all duration-300 hover:bg-primary hover:text-white dark:bg-slate-700/50 dark:hover:bg-primary">
+                            <span class="material-symbols-outlined text-[18px]">auto_stories</span>
+                            Xem giáo trình
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Card 3: Thi thử HSK --}}
+                <div
+                    class="reveal reveal-fade-up stagger-delay-3 group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 dark:border-slate-700/50 dark:bg-slate-800/70">
+                    <div
+                        class="flex h-44 items-center justify-center rounded-t-2xl bg-gradient-to-br from-green-100/70 to-teal-100/50 dark:from-green-900/20 dark:to-teal-900/15">
+                        <span
+                            class="material-symbols-outlined text-[64px] text-green-500/70 dark:text-green-400/60">fact_check</span>
+                    </div>
+                    <div class="flex flex-1 flex-col gap-4 p-6">
+                        <div>
+                            <h3 class="text-xl font-black text-slate-800 dark:text-white">Thi thử HSK</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                                Bộ đề thi mô phỏng 100% cấu trúc HSK thực tế. Làm xong tự động chấm điểm, phân tích điểm yếu
+                                và gợi ý ôn tập.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="rounded-full bg-green-100 px-2.5 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-900/30 dark:text-green-400">Chuẩn
+                                quốc tế</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">Chấm
+                                tự động</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">Phân
+                                tích kết quả</span>
+                        </div>
+                        <a href="{{ route('student.quizzes.index') }}"
+                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-white px-5 py-3 text-sm font-bold text-primary shadow-sm transition-all duration-300 hover:bg-primary hover:text-white dark:bg-slate-700/50 dark:hover:bg-primary">
+                            <span class="material-symbols-outlined text-[18px]">fact_check</span>
+                            Thi thử ngay
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    {{-- ===== FEATURES SECTION ===== --}}
+    <section class="py-20 bg-gradient-to-b from-slate-50/80 to-white dark:from-slate-900/50 dark:to-background-dark">
+        <div class="mx-auto max-w-7xl px-6">
+            <div class="mb-14 text-center">
+                <span
+                    class="reveal reveal-fade-up inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:bg-primary/15">
+                    <span class="material-symbols-outlined text-[14px]">bolt</span> Tại sao chọn XiaoMu
+                </span>
+                <h2
+                    class="reveal reveal-fade-up stagger-delay-1 font-display mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                    Học tiếng Trung <span class="text-primary">thông minh hơn</span>
+                </h2>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-3">
+                @foreach ([
+            ['icon' => 'route', 'title' => 'Lộ trình cá nhân hóa', 'desc' => 'Từ HSK 1 đến HSK 6, hệ thống tự động đề xuất bài học phù hợp với tốc độ tiếp thu của từng người.'],
+            ['icon' => 'style', 'title' => 'Flashcard thông minh', 'desc' => 'Công nghệ lặp lại có khoảng cách (Spaced Repetition) giúp bạn ghi nhớ từ vựng lâu dài, hiệu quả gấp 3 lần.'],
+            ['icon' => 'fact_check', 'title' => 'Thi thử HSK chuẩn quốc tế', 'desc' => 'Bộ đề thi mô phỏng 100% cấu trúc HSK thực tế, phân tích điểm yếu và gợi ý ôn tập tức thì.'],
+            ['icon' => 'translate', 'title' => 'Nhận diện chữ viết tay', 'desc' => 'Luyện viết chữ Hán và nhận phản hồi chính xác về nét bút, cấu trúc chữ theo tiêu chuẩn.'],
+            ['icon' => 'record_voice_over', 'title' => 'Luyện phát âm AI', 'desc' => 'Công nghệ nhận dạng giọng nói phân tích và chấm điểm phát âm 4 thanh điệu tiếng Trung.'],
+            ['icon' => 'devices', 'title' => 'Học mọi lúc mọi nơi', 'desc' => 'Đồng bộ tiến độ liền mạch giữa điện thoại, máy tính bảng và máy tính — học offline không cần mạng.'],
+        ] as $idx => $feat)
+                    <div
+                        class="reveal reveal-fade-up stagger-delay-{{ ($idx % 3) + 1 }} group rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg dark:border-slate-700/50 dark:bg-slate-800/70">
+                        <div
+                            class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 transition group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/30">
+                            <span
+                                class="material-symbols-outlined text-[22px] text-primary transition group-hover:text-white">{{ $feat['icon'] }}</span>
+                        </div>
+                        <h3 class="mb-2 font-bold text-slate-800 dark:text-white">{{ $feat['title'] }}</h3>
+                        <p class="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{{ $feat['desc'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ===== TESTIMONIALS SECTION ===== --}}
+    {{-- <section class="py-20 dark:bg-background-dark">
+        <div class="mx-auto max-w-7xl px-6">
+            <div class="mb-14 text-center">
+                <span
+                    class="reveal reveal-fade-up inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:bg-primary/15">
+                    <span class="material-symbols-outlined text-[14px]">reviews</span> Học viên nói gì
+                </span>
+                <h2
+                    class="reveal reveal-fade-up stagger-delay-1 font-display mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                    Hàng nghìn học viên <span class="text-primary">tin tưởng</span>
+                </h2>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-3">
+                @foreach ([['name' => 'Nguyễn Thu Hà', 'role' => 'Nhân viên xuất nhập khẩu', 'review' => 'Sau 3 tháng học với XiaoMu, mình đã đạt HSK 4 với điểm 285/300. Phương pháp flashcard và thi thử của app cực kỳ hiệu quả!', 'rating' => 5, 'initials' => 'NH'], ['name' => 'Trần Minh Khoa', 'role' => 'Sinh viên Đại học Ngoại thương', 'review' => 'App duy nhất mình thấy có bộ đề thi HSK thực sự giống đề thi thật. Giao diện đẹp, dễ dùng, lộ trình rõ ràng. Highly recommend!', 'rating' => 5, 'initials' => 'MK'], ['name' => 'Lê Bảo Châu', 'role' => 'Dịch thuật tự do', 'review' => 'Tính năng nhận diện phát âm giúp mình sửa được lỗi thanh điệu mà học mãi không sửa được. Giờ giao tiếp tự nhiên hơn rất nhiều!', 'rating' => 5, 'initials' => 'BC']] as $idx => $t)
+                    <div
+                        class="reveal reveal-zoom stagger-delay-{{ $idx + 1 }} flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700/50 dark:bg-slate-800/70">
+                        <div class="flex gap-0.5 text-amber-400 text-sm">
+                            @for ($i = 0; $i < $t['rating']; $i++)
+                                ★
+                            @endfor
+                        </div>
+                        <p class="flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">"{{ $t['review'] }}"
+                        </p>
+                        <div class="flex items-center gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+                                {{ $t['initials'] }}
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800 dark:text-white">{{ $t['name'] }}</p>
+                                <p class="text-xs text-slate-400">{{ $t['role'] }}</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endforeach
             </div>
         </div>
-    </section>
-    <!-- Benefits Section -->
-    <section class="py-24 bg-white dark:bg-background-dark/50">
+    </section> --}}
+
+    {{-- ===== BLOG PREVIEW ===== --}}
+    <section class="py-20 bg-slate-50/80 dark:bg-slate-900/50">
         <div class="mx-auto max-w-7xl px-6">
-            <div class="mb-16 text-center">
-                <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Tại sao chọn XiaoMu?</h2>
-                <p class="mt-4 text-slate-600 dark:text-slate-400">Trải nghiệm học tập vượt trội với các tính năng
-                    độc quyền</p>
-            </div>
-            <div class="grid gap-8 md:grid-cols-3">
-                <div
-                    class="group rounded-2xl border border-primary/10 bg-background-light dark:bg-slate-800/50 p-8 transition-all hover:border-primary hover:shadow-xl">
-                    <div
-                        class="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/20 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined text-3xl">map</span>
-                    </div>
-                    <h3 class="mb-3 text-xl font-bold">Lộ trình HSK</h3>
-                    <p class="text-slate-600 dark:text-slate-400">Lộ trình cá nhân hóa được thiết kế khoa học giúp
-                        bạn chinh phục mọi cấp độ HSK từ 1 đến 6.</p>
-                </div>
-                <div
-                    class="group rounded-2xl border border-primary/10 bg-background-light dark:bg-slate-800/50 p-8 transition-all hover:border-primary hover:shadow-xl">
-                    <div
-                        class="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/20 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined text-3xl">edit_note</span>
-                    </div>
-                    <h3 class="mb-3 text-xl font-bold">Bài tập trực tuyến</h3>
-                    <p class="text-slate-600 dark:text-slate-400">Hệ thống hàng ngàn bài tập tương tác sinh động,
-                        giúp ghi nhớ từ vựng và ngữ pháp nhanh chóng.</p>
-                </div>
-                <div
-                    class="group rounded-2xl border border-primary/10 bg-background-light dark:bg-slate-800/50 p-8 transition-all hover:border-primary hover:shadow-xl">
-                    <div
-                        class="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/20 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined text-3xl">monitoring</span>
-                    </div>
-                    <h3 class="mb-3 text-xl font-bold">Theo dõi tiến độ</h3>
-                    <p class="text-slate-600 dark:text-slate-400">Hệ thống AI phân tích và báo cáo chi tiết kết quả
-                        học tập hàng tuần để bạn luôn đi đúng hướng.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Courses Section -->
-    <section class="py-24">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div class="mb-12 flex items-end justify-between">
                 <div>
-                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Khóa học nổi bật</h2>
-                    <p class="mt-2 text-slate-600 dark:text-slate-400">Tìm kiếm lộ trình phù hợp nhất với trình độ
-                        của bạn</p>
+                    <span
+                        class="reveal reveal-fade-up inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:bg-primary/15">
+                        <span class="material-symbols-outlined text-[14px]">rss_feed</span> Blog
+                    </span>
+                    <h2
+                        class="reveal reveal-fade-up stagger-delay-1 font-display mt-3 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+                        Bài viết mới nhất</h2>
                 </div>
-                <a href="{{ route('courses') }}" class="text-sm font-bold text-primary hover:underline">Xem tất cả khóa
-                    học</a>
+                <a href="{{ route('blog') }}"
+                    class="reveal reveal-fade-right hidden items-center gap-1 text-sm font-semibold text-primary transition hover:gap-2 sm:inline-flex">
+                    Xem tất cả <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
             </div>
-            <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                <!-- Course Card 1 -->
-                <div
-                    class="overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-                    <div class="aspect-video relative">
-                        <img class="h-full w-full object-cover" data-alt="Online Chinese beginners classroom visual"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDci807kZuVH_YOp3PcsVPb_8YuTmRwOIRrF46YH9Hu8NP8aXj_OTBwoDKI4Us_ebop9_orftZ9r40t9ZWRxvOu8IN_9OvPGf9c0bdP8N5fpIuygac9SLTKc3JbIkE_dGg1Cy6gfUWsSdUgb5vKuM5D-mNFydt4hxC-cAcspe5rwlZ4jI5cw7HCTFFNLu7DN_8N1qn8Trz_yiksOUdbe6HeIIUwQ0SKOxDNXuSq0lXdpuf-vlUzPaex3D9-LZa8W9lAwbUx_KIgqg" />
+
+            <div class="grid gap-6 md:grid-cols-3">
+                @foreach ([['tag' => 'Học tập', 'title' => 'Cách ghi nhớ 214 bộ thủ tiếng Trung', 'desc' => 'Phương pháp ghi nhớ hiệu quả cho người mới bắt đầu bằng câu chuyện liên tưởng.', 'date' => '15/07/2026', 'time' => '5'], ['tag' => 'Luyện thi', 'title' => 'Bí kíp đạt HSK 4 trong 3 tháng', 'desc' => 'Lộ trình ôn luyện cấp tốc dành riêng cho người đi làm bận rộn.', 'date' => '10/07/2026', 'time' => '7'], ['tag' => 'Giao tiếp', 'title' => '20 câu giao tiếp công sở thông dụng', 'desc' => 'Từ vựng và mẫu câu cần thiết khi làm việc với đối tác Trung Quốc.', 'date' => '05/07/2026', 'time' => '4']] as $idx => $post)
+                    <article
+                        class="reveal reveal-fade-up stagger-delay-{{ $idx + 1 }} group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg dark:border-slate-700/50 dark:bg-slate-800/70">
                         <div
-                            class="absolute left-3 top-3 rounded-lg bg-primary px-2 py-1 text-[10px] font-bold text-white uppercase">
-                            Cơ Bản</div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="mb-2 text-lg font-bold line-clamp-1">Hán ngữ Sơ cấp 1</h3>
-                        <div class="flex items-center gap-4 text-xs font-medium text-slate-500">
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">stars</span> HSK 1</span>
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">menu_book</span> 24 Bài học</span>
+                            class="h-40 w-full overflow-hidden rounded-t-2xl bg-gradient-to-br from-primary/20 via-rose-100/60 to-amber-100/60 transition group-hover:from-primary/30 dark:from-primary/15 dark:via-slate-700/40 dark:to-slate-700/20 flex items-center justify-center">
+                            <span
+                                class="material-symbols-outlined text-[48px] text-primary/40 dark:text-primary/30">article</span>
                         </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-lg font-bold text-primary">1.200.000đ</span>
-                            <button
-                                class="rounded-lg bg-primary/10 p-2 text-primary hover:bg-primary hover:text-white transition-colors">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </button>
+                        <div class="flex flex-1 flex-col gap-2 p-5">
+                            <span
+                                class="inline-flex w-fit rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">{{ $post['tag'] }}</span>
+                            <h3 class="font-bold text-slate-800 transition group-hover:text-primary dark:text-white">
+                                {{ $post['title'] }}</h3>
+                            <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ $post['desc'] }}</p>
+                            <div class="mt-auto flex items-center gap-2 pt-3 text-[10px] text-slate-400">
+                                <span class="material-symbols-outlined text-[12px]">calendar_today</span>
+                                <span>{{ $post['date'] }}</span>
+                                <span>•</span>
+                                <span class="material-symbols-outlined text-[12px]">schedule</span>
+                                <span>{{ $post['time'] }} phút đọc</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Course Card 2 -->
-                <div
-                    class="overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-                    <div class="aspect-video relative">
-                        <img class="h-full w-full object-cover" data-alt="Student studying with Chinese textbooks"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT-0Bc2uuiEdPTZXnXrQKA-U3zIcR3R_rVVjAcJz4TX4t1Taw3EaRrCbniNwJpAk8oLBqdANiHRszV8pBtRB8l1Q2pzJhsu87mx4AyMMQHVqH5MrsJ-4BmPkpKftVDv0oVBRC43PWlPXVTKrql7pWXdWQu26v-Kud2SpjjYVswta2OnIKnjK16spIcrQNpX2ocmZPOzkfWE_3AOt76Ts2b3zI8k9WR7EdhkRGVToLws7x3TJ781Dx3eKTit1fQ3MCuasf3Kjjcmw" />
-                        <div
-                            class="absolute left-3 top-3 rounded-lg bg-primary px-2 py-1 text-[10px] font-bold text-white uppercase">
-                            Trung cấp</div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="mb-2 text-lg font-bold line-clamp-1">Luyện thi HSK 3 Cấp tốc</h3>
-                        <div class="flex items-center gap-4 text-xs font-medium text-slate-500">
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">stars</span> HSK 3</span>
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">menu_book</span> 40 Bài học</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-lg font-bold text-primary">2.500.000đ</span>
-                            <button
-                                class="rounded-lg bg-primary/10 p-2 text-primary hover:bg-primary hover:text-white transition-colors">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Course Card 3 -->
-                <div
-                    class="overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-                    <div class="aspect-video relative">
-                        <img class="h-full w-full object-cover" data-alt="Virtual classroom on a tablet screen"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_BmL6wtiZtR_60Z8mlKJ1IxL6W2q3WaEPrGHxj5AA_M6EazMmiMCsfGIauQH0tkfmBfoFhCUaRKfkHm-KwE5RmxShKe-vRmDlrdiJbZ14L5stWAq9LxLgfbqrWVgCWVFiMWDABmGJjNVx5BfQ1HSo5gTFWlR-HHaVKXdHruy_h5S9tVYgepp1fCg9c3trjb-paxpyt12qE5hJJKJE_PDzJt6iXONI0ix_9tVAfHpewUxbApo2rSrvSWFAF2e1tiyemnJMrOo_hA" />
-                        <div
-                            class="absolute left-3 top-3 rounded-lg bg-primary px-2 py-1 text-[10px] font-bold text-white uppercase">
-                            Giao tiếp</div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="mb-2 text-lg font-bold line-clamp-1">Giao tiếp Công việc</h3>
-                        <div class="flex items-center gap-4 text-xs font-medium text-slate-500">
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">stars</span> HSK 4</span>
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">menu_book</span> 30 Bài học</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-lg font-bold text-primary">3.200.000đ</span>
-                            <button
-                                class="rounded-lg bg-primary/10 p-2 text-primary hover:bg-primary hover:text-white transition-colors">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Course Card 4 -->
-                <div
-                    class="overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-                    <div class="aspect-video relative">
-                        <img class="h-full w-full object-cover" data-alt="Chinese calligraphy being practiced"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1HJmNfvBdv1y0d4Bs__cykBUst_q1s0S4L2Eby97TC7E6KdT4ayAMqIfDL-k31u0_29tmG85XILHWj0T38lnkquS4iQP3obnLuiEyEBdie_KBKCSpSXMa-JxHi8q3Qn8YUvsmwRx5hcpO3RypU7wJzQmg3P0XHSFX-3JEnderP1j9zs38mN3XIe5ECULbs_agWFNRqYaMs7W2f6P0_HPRfBHk5xi35pnBBDi9Psl-BoqxRcrU_uOXSxJ-vhwWLT3E_ts5lF94Qg" />
-                        <div
-                            class="absolute left-3 top-3 rounded-lg bg-primary px-2 py-1 text-[10px] font-bold text-white uppercase">
-                            Nâng cao</div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="mb-2 text-lg font-bold line-clamp-1">HSK 5 Chuyên sâu</h3>
-                        <div class="flex items-center gap-4 text-xs font-medium text-slate-500">
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">stars</span> HSK 5</span>
-                            <span class="flex items-center gap-1"><span
-                                    class="material-symbols-outlined text-sm">menu_book</span> 60 Bài học</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-lg font-bold text-primary">4.500.000đ</span>
-                            <button
-                                class="rounded-lg bg-primary/10 p-2 text-primary hover:bg-primary hover:text-white transition-colors">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                    </article>
+                @endforeach
             </div>
         </div>
     </section>
-    <!-- Learning Process -->
-    <section class="py-24 bg-background-light dark:bg-background-dark/50">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="mb-16 text-center">
-                <h2 class="text-3xl font-bold">Lộ trình 4 bước đơn giản</h2>
-                <p class="mt-4 text-slate-600 dark:text-slate-400">Hành trình từ người mới bắt đầu đến thành thạo
-                </p>
-            </div>
-            <div class="relative flex flex-col gap-12 lg:flex-row lg:justify-between">
-                <div class="absolute top-1/2 left-0 hidden h-0.5 w-full bg-primary/20 lg:block"></div>
-                <div class="relative z-10 flex flex-col items-center text-center lg:w-1/4">
-                    <div
-                        class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-primary shadow-lg border-4 border-primary/10">
-                        <span class="text-xl font-bold">01</span>
-                    </div>
-                    <h4 class="mb-2 font-bold">Đăng ký tài khoản</h4>
-                    <p class="text-sm text-slate-500">Tạo tài khoản miễn phí chỉ trong 30 giây.</p>
-                </div>
-                <div class="relative z-10 flex flex-col items-center text-center lg:w-1/4">
-                    <div
-                        class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-primary shadow-lg border-4 border-primary/10">
-                        <span class="text-xl font-bold">02</span>
-                    </div>
-                    <h4 class="mb-2 font-bold">Tham gia lớp học</h4>
-                    <p class="text-sm text-slate-500">Lựa chọn khóa học và bắt đầu video bài giảng.</p>
-                </div>
-                <div class="relative z-10 flex flex-col items-center text-center lg:w-1/4">
-                    <div
-                        class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-primary shadow-lg border-4 border-primary/10">
-                        <span class="text-xl font-bold">03</span>
-                    </div>
-                    <h4 class="mb-2 font-bold">Luyện tập mỗi ngày</h4>
-                    <p class="text-sm text-slate-500">Hoàn thành bài tập để củng cố kiến thức.</p>
-                </div>
-                <div class="relative z-10 flex flex-col items-center text-center lg:w-1/4">
-                    <div
-                        class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-primary shadow-lg border-4 border-primary/10">
-                        <span class="text-xl font-bold">04</span>
-                    </div>
-                    <h4 class="mb-2 font-bold">Nhận feedback</h4>
-                    <p class="text-sm text-slate-500">Giáo viên hỗ trợ chỉnh sửa lỗi sai kịp thời.</p>
-                </div>
-            </div>
+
+    {{-- ===== NEWSLETTER / CTA ===== --}}
+    <section class="relative overflow-hidden py-24">
+        {{-- Gradient background --}}
+        <div class="absolute inset-0 bg-gradient-to-br from-primary via-rose-400 to-amber-400"></div>
+        {{-- Pattern overlay --}}
+        <div class="absolute inset-0 opacity-10"
+            style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 24px 24px;">
+        </div>
+
+        <div class="relative mx-auto max-w-3xl px-6 text-center">
+            <span
+                class="reveal reveal-fade-up inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
+                ✉️ Nhận tư vấn
+            </span>
+            <h2
+                class="reveal reveal-fade-up stagger-delay-1 font-display mt-5 text-3xl font-black text-white sm:text-4xl lg:text-5xl">
+                Bắt đầu hành trình<br>tiếng Trung của bạn
+            </h2>
+            <p class="reveal reveal-fade-up stagger-delay-2 mt-4 text-base text-white/80">
+                Để lại email — chúng tôi sẽ gửi lộ trình học <strong class="font-bold text-white">hoàn toàn miễn
+                    phí</strong> phù hợp với mục tiêu của bạn.
+            </p>
+
+            <form class="reveal reveal-fade-up stagger-delay-3 mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <input type="email" placeholder="Email của bạn"
+                    class="flex-1 rounded-2xl border-2 border-white/20 bg-white/15 px-5 py-4 text-sm font-medium text-white placeholder-white/60 outline-none backdrop-blur-sm transition focus:border-white/60 focus:bg-white/20 sm:max-w-xs">
+                <button type="submit"
+                    class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-primary shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:shadow-xl">
+                    Nhận tư vấn ngay
+                </button>
+            </form>
+            <p class="reveal reveal-fade-up stagger-delay-4 mt-4 text-xs text-white/60">
+                🔒 Cam kết không spam. Hủy bất cứ lúc nào.
+            </p>
         </div>
     </section>
-    <!-- Reviews Section -->
-    <section class="py-24">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="mb-16 text-center">
-                <h2 class="text-3xl font-bold">Học viên nói gì về XiaoMu?</h2>
-                <div class="mt-4 flex justify-center gap-1 text-yellow-400">
-                    <span class="material-symbols-outlined">star</span>
-                    <span class="material-symbols-outlined">star</span>
-                    <span class="material-symbols-outlined">star</span>
-                    <span class="material-symbols-outlined">star</span>
-                    <span class="material-symbols-outlined">star</span>
-                </div>
-            </div>
-            <div class="grid gap-8 md:grid-cols-3">
-                <div
-                    class="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-sm border border-slate-100 dark:border-slate-700">
-                    <div class="mb-6 flex items-center gap-4">
-                        <div class="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
-                            <img class="h-full w-full object-cover" data-alt="Female student testimonial portrait"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSzDCVvxhSsYplqLStVi_sJVjarNg0MDiUrdlKNR5-NeGZ84mewKi-r1aikITYQDN6tO5ZKxlSCMf86OzE50zHG2atWzYJ8t78_3V2jg4Yki4hrBCzKJEDLlTTq4ywSk-Gncvyn1b9rSX8e0dr7NQ5umPuaV5CubIdRujLEZUGbDLQXNFKTFyEJOynh6Be2PuZ_1s_Q74QqTFsuQol_lOM7Pu1Cx4_L1txpiYrEIQGLLPiEz7_3lNq-_2yFD9NpqsPZQbsElOetA" />
-                        </div>
-                        <div>
-                            <h5 class="font-bold">Minh Anh</h5>
-                            <p class="text-xs text-slate-500">Học viên HSK 4</p>
-                        </div>
-                    </div>
-                    <p class="italic text-slate-600 dark:text-slate-400">"Phương pháp giảng dạy rất dễ hiểu, mình
-                        đã thi đỗ HSK 4 chỉ sau 4 tháng ôn luyện tại trung tâm. Rất đề xuất cho các bạn!"</p>
-                </div>
-                <div
-                    class="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-sm border border-slate-100 dark:border-slate-700">
-                    <div class="mb-6 flex items-center gap-4">
-                        <div class="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
-                            <img class="h-full w-full object-cover" data-alt="Male student testimonial portrait"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAuvSGjFvoa5zJhHNKo-fXgLo1kq569Hm7EUwnjmrob7_Q5EzmA15ploK2d3EqI6vhOGPCmHPVr1RtC_VmfTVigakJOdf41jODcyGC-vp43sqgTjaF5uBZHnUpU8G8MULkN3BsUrqL7oQAqH6odFil0k4cTfOffZZHkhVrYL1-COWeHjLKh1P2_tF5vkaXlRjqkbmt_8Axreoe5pIVJsov1UC-d0e_UgtdktS7KFkCsfE5Yj2uZkUGbs_9yagTaQUhAwXg9yXFgQ" />
-                        </div>
-                        <div>
-                            <h5 class="font-bold">Quốc Trung</h5>
-                            <p class="text-xs text-slate-500">Người đi làm</p>
-                        </div>
-                    </div>
-                    <p class="italic text-slate-600 dark:text-slate-400">"Nền tảng học trực tuyến rất mượt, mình có
-                        thể học bất cứ khi nào có thời gian rảnh. Bài tập tương tác giúp mình nhớ chữ Hán rất lâu."
-                    </p>
-                </div>
-                <div
-                    class="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-sm border border-slate-100 dark:border-slate-700">
-                    <div class="mb-6 flex items-center gap-4">
-                        <div class="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
-                            <img class="h-full w-full object-cover" data-alt="Another female student testimonial portrait"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmteIuqXfG63pI0S5LEeW-FP6ckiQdJfay3g-uVfyCTHYxGXWGK__huCfdXCv8pUtwDD06-DGqp7UPXocHdu5HwwdBKyX3C1jKekPBvYgD24QRmOiQdSQPpQOL3quU-tbbcmweGswUgFMbB1i91sNeODlVn1rXb-7UX8LKsXnAcrHpes40OmLH05UrWhQz2F9TDooFFB-txVruZU4BAzEf9w51ZnNOBMenQOwaGfD-2H3u1SLMWwmE3o-iGoc251YAy7t3k-F9Wg" />
-                        </div>
-                        <div>
-                            <h5 class="font-bold">Thu Hà</h5>
-                            <p class="text-xs text-slate-500">Sinh viên ngoại ngữ</p>
-                        </div>
-                    </div>
-                    <p class="italic text-slate-600 dark:text-slate-400">"Các thầy cô ở XiaoMu cực kỳ nhiệt tình,
-                        luôn trả lời thắc mắc của mình ngay lập tức. Hệ thống lộ trình rất chuyên nghiệp."</p>
-                </div>
-            </div>
-        </div>
-    </section>
+
 @endsection

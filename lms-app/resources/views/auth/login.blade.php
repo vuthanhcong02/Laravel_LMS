@@ -11,10 +11,10 @@
             <div class="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary rounded-full blur-[120px]"></div>
         </div>
         <div
-            class="w-full max-w-[480px] bg-white rounded-xl shadow-xl shadow-primary/5 border border-primary/5 p-8 md:p-10 z-10">
+            class="w-full max-w-[480px] bg-white dark:bg-slate-900 rounded-xl shadow-xl shadow-primary/5 border border-primary/5 dark:border-slate-700/50 p-8 md:p-10 z-10">
             <div class="flex flex-col items-center text-center mb-8">
-                <h1 class="text-3xl font-poppins font-bold text-slate-900 tracking-tight">Chào mừng quay trở lại!</h1>
-                <p class="text-slate-500 mt-2">Vui lòng đăng nhập để tiếp tục học tập.</p>
+                <h1 class="text-3xl font-poppins font-bold text-slate-900 dark:text-white tracking-tight">Chào mừng quay trở lại!</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Vui lòng đăng nhập để tiếp tục học tập.</p>
             </div>
             @if (session('status'))
                 <div class="mb-4 font-medium text-sm text-green-600">
@@ -29,11 +29,11 @@
             <form class="space-y-5" method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="flex flex-col gap-2">
-                    <label class="text-slate-700 text-sm font-semibold px-1">Email</label>
+                    <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold px-1">Email</label>
                     <input
                         name="email"
                         value="{{ old('email') }}"
-                        class="w-full h-12 px-4 rounded-lg border @error('email') border-red-500 @else border-slate-200 @enderror focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 placeholder:text-slate-400"
+                        class="w-full h-12 px-4 rounded-lg border @error('email') border-red-500 @else border-slate-200 dark:border-slate-600 @enderror bg-white dark:bg-slate-700 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                         placeholder="example@gmail.com" type="email" required autofocus />
                     @error('email')
                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-slate-700 text-sm font-semibold">Mật khẩu</label>
+                        <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Mật khẩu</label>
                         <a class="text-primary text-xs font-bold hover:underline"
                             href="{{ route('password.request') }}">Quên
                             mật khẩu?</a>
@@ -50,7 +50,7 @@
                         <input
                             name="password"
                             id="password_input"
-                            class="w-full h-12 px-4 pr-12 rounded-lg border @error('password') border-red-500 @else border-slate-200 @enderror focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 placeholder:text-slate-400"
+                            class="w-full h-12 px-4 pr-12 rounded-lg border @error('password') border-red-500 @else border-slate-200 dark:border-slate-600 @enderror bg-white dark:bg-slate-700 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                             placeholder="••••••••" type="password" required />
                         <button class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                             onclick="document.getElementById('password_input').type = document.getElementById('password_input').type === 'password' ? 'text' : 'password'"
@@ -65,7 +65,7 @@
                 <div class="flex items-center px-1 py-1">
                     <input id="remember_me" name="remember" type="checkbox"
                         class="h-4 w-4 text-primary focus:ring-primary border-slate-300 rounded">
-                    <label for="remember_me" class="ml-2 block text-sm text-slate-700 font-medium">
+                    <label for="remember_me" class="ml-2 block text-sm text-slate-700 dark:text-slate-300 font-medium">
                         Ghi nhớ đăng nhập
                     </label>
                 </div>
@@ -77,15 +77,15 @@
             </form>
             <div class="relative my-8">
                 <div class="absolute inset-0 flex items-center">
-                    <span class="w-full border-t border-slate-100"></span>
+                    <span class="w-full border-t border-slate-200 dark:border-slate-600"></span>
                 </div>
                 <div class="relative flex justify-center text-xs uppercase">
-                    <span class="bg-white px-3 text-slate-400 font-medium">Hoặc đăng nhập bằng</span>
+                    <span class="bg-white dark:bg-slate-900 px-3 text-slate-400 dark:text-slate-500 font-medium">Hoặc đăng nhập bằng</span>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <a href="{{ route('socialite.redirect', ['provider' => 'google']) }}"
-                    class="flex items-center justify-center gap-2 h-11 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                    class="flex items-center justify-center gap-2 h-11 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
                     <svg class="size-5" viewbox="0 0 24 24">
                         <path
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -100,19 +100,19 @@
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                             fill="#EA4335"></path>
                     </svg>
-                    <span class="text-slate-700 text-sm font-semibold">Google</span>
+                    <span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Google</span>
                 </a>
                 <a href="{{ route('socialite.redirect', ['provider' => 'facebook']) }}"
-                    class="flex items-center justify-center gap-2 h-11 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                    class="flex items-center justify-center gap-2 h-11 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
                     <svg class="size-5 text-[#1877F2]" fill="currentColor" viewbox="0 0 24 24">
                         <path
                             d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z">
                         </path>
                     </svg>
-                    <span class="text-slate-700 text-sm font-semibold">Facebook</span>
+                    <span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Facebook</span>
                 </a>
             </div>
-            <div class="mt-8 text-center text-sm text-slate-500">
+            <div class="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
                 Bạn chưa có tài khoản?
                 <a class="text-primary font-bold hover:underline" href="{{ route('register') }}">Đăng ký ngay</a>
             </div>
