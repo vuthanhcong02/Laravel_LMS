@@ -393,7 +393,7 @@
                                 tập</span>
                         </div>
                         <a href="{{ route('courses') }}"
-                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-white px-5 py-3 text-sm font-bold text-primary shadow-sm transition-all duration-300 hover:bg-primary hover:text-white dark:bg-slate-700/50 dark:hover:bg-primary">
+                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30">
                             <span class="material-symbols-outlined text-[18px]">auto_stories</span>
                             Xem giáo trình
                         </a>
@@ -428,7 +428,7 @@
                                 tích kết quả</span>
                         </div>
                         <a href="{{ route('student.quizzes.index') }}"
-                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-white px-5 py-3 text-sm font-bold text-primary shadow-sm transition-all duration-300 hover:bg-primary hover:text-white dark:bg-slate-700/50 dark:hover:bg-primary">
+                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30">
                             <span class="material-symbols-outlined text-[18px]">fact_check</span>
                             Thi thử ngay
                         </a>

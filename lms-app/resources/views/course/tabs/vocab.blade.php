@@ -17,7 +17,7 @@
             <button 
                 x-show="viewMode === 'list'"
                 @click="viewMode = 'flashcard'"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white font-bold text-xs rounded-xl shadow-sm shadow-primary/20 transition-all duration-200 cursor-pointer active:scale-95 shrink-0"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white font-bold text-xs rounded-2xl shadow-sm shadow-primary/20 transition-all duration-200 cursor-pointer active:scale-95 shrink-0"
             >
                 <span class="material-symbols-outlined text-[16px]">style</span>
                 <span>Học Flashcard</span>
@@ -25,7 +25,7 @@
             <button 
                 x-show="viewMode !== 'list'"
                 @click="viewMode = 'list'"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-primary text-primary hover:bg-primary/5 font-bold text-xs rounded-xl transition-all duration-200 cursor-pointer active:scale-95 shrink-0"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-primary text-primary hover:bg-primary/5 font-bold text-xs rounded-2xl transition-all duration-200 cursor-pointer active:scale-95 shrink-0"
             >
                 <span>Danh sách</span>
             </button>

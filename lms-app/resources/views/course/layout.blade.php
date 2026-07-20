@@ -281,7 +281,7 @@
             <div class="space-y-3 flex-1 flex flex-col">
 
                 <!-- Toolbar: Tab Navigation & Action Button -->
-                    <div class="sticky top-[60px] md:top-[72px] z-40 -mx-6 sm:mx-0 px-6 sm:px-0 flex flex-col xl:flex-row xl:items-center transition-all duration-500"
+                    <div class="sticky top-[76px] sm:top-[86px] z-40 -mx-6 sm:mx-0 px-6 sm:px-0 flex flex-col xl:flex-row xl:items-center transition-all duration-500"
                          x-data="{ isStuck: false }"
                          @scroll.window="isStuck = window.scrollY > 300"
                          :class="[activeTab === 'luyen-tap' ? 'w-full lg:w-[calc(75%-0.375rem)]' : 'w-full', isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0 sm:rounded-b-2xl' : 'p-1.5 sm:p-1.5 sm:px-2 border-y sm:border bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-700/60 shadow-sm gap-4 xl:gap-0 sm:rounded-2xl']">
@@ -335,25 +335,25 @@
                             <div class="flex flex-nowrap sm:inline-flex justify-start sm:justify-center gap-1 min-w-max transition-all duration-300">
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'tu-vung']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'tu-vung' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'tu-vung' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Từ vựng
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'hoi-thoai']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'hoi-thoai' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'hoi-thoai' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Bài khóa
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'ngu-phap']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'ngu-phap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'ngu-phap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Ngữ pháp
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'luyen-tap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'luyen-tap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Luyện tập
                                 </a>
