@@ -5,14 +5,20 @@
 @section('breadcrumb', 'Đăng ký')
 
 @section('content')
-    <main class="flex-grow flex items-center justify-center py-12 px-4">
-        <div class="w-full max-w-[520px] bg-white dark:bg-slate-900 rounded-lg shadow-xl shadow-primary/5 p-8 md:p-12">
+    <main class="flex-1 flex items-center justify-center p-6 relative overflow-hidden mb-24">
+        <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            <div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-primary rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary rounded-full blur-[120px]"></div>
+        </div>
+        <div
+            class="w-full max-w-[520px] bg-white dark:bg-slate-900 rounded-xl shadow-xl shadow-primary/5 border border-primary/5 dark:border-slate-700/50 p-8 md:p-12 z-10">
             <div class="text-center mb-10">
                 <h1 class="text-3xl font-bold font-poppins text-slate-900 dark:text-white mb-2">Tạo tài khoản mới</h1>
                 <p class="text-slate-500 dark:text-slate-400">Tham gia cộng đồng học tiếng Trung cùng XiaoMu</p>
             </div>
             @if ($errors->has('error'))
-                <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 text-center">
+                <div
+                    class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 text-center">
                     {{ $errors->first('error') }}
                 </div>
             @endif
@@ -24,9 +30,7 @@
                         <div class="relative">
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
-                            <input
-                                name="first_name"
-                                value="{{ old('first_name') }}"
+                            <input name="first_name" value="{{ old('first_name') }}"
                                 class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('first_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
                                 placeholder="Nhập họ" type="text" required />
                         </div>
@@ -39,9 +43,7 @@
                         <div class="relative">
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
-                            <input
-                                name="last_name"
-                                value="{{ old('last_name') }}"
+                            <input name="last_name" value="{{ old('last_name') }}"
                                 class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('last_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
                                 placeholder="Nhập tên" type="text" required />
                         </div>
@@ -55,9 +57,7 @@
                     <div class="relative">
                         <span
                             class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
-                        <input
-                            name="email"
-                            value="{{ old('email') }}"
+                        <input name="email" value="{{ old('email') }}"
                             class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('email') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
                             placeholder="example@email.com" type="email" required />
                     </div>
@@ -70,9 +70,7 @@
                     <div class="relative">
                         <span
                             class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
-                        <input
-                            name="password"
-                            id="password_input"
+                        <input name="password" id="password_input"
                             class="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border @error('password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
                             placeholder="••••••••" type="password" required />
                         <button
@@ -87,13 +85,12 @@
                     @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Xác nhận mật khẩu</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Xác nhận mật
+                        khẩu</label>
                     <div class="relative">
                         <span
                             class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
-                        <input
-                            name="password_confirmation"
-                            id="password_confirmation_input"
+                        <input name="password_confirmation" id="password_confirmation_input"
                             class="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white"
                             placeholder="••••••••" type="password" required />
                         <button
@@ -105,9 +102,7 @@
                     </div>
                 </div>
                 <div class="flex items-start gap-3 py-2">
-                    <input
-                        name="agree_terms"
-                        required
+                    <input name="agree_terms" required
                         class="mt-1 size-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary"
                         id="terms" type="checkbox" />
                     <label class="text-sm text-slate-600 dark:text-slate-400 leading-tight" for="terms">
@@ -116,7 +111,7 @@
                     </label>
                 </div>
                 <button
-                    class="w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold py-4 rounded-lg shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98]"
+                    class="w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98]"
                     type="submit">
                     Đăng ký
                 </button>

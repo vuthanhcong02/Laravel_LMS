@@ -5,9 +5,13 @@
 @section('breadcrumb', 'Đặt lại mật khẩu')
 
 @section('content')
-    <main class="flex-grow flex items-center justify-center p-4">
+    <main class="flex-1 flex items-center justify-center p-6 relative overflow-hidden mb-24">
+        <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            <div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-primary rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary rounded-full blur-[120px]"></div>
+        </div>
         <div
-            class="w-full max-w-[480px] bg-white dark:bg-slate-900 rounded-xl shadow-xl shadow-primary/5 border border-slate-100 dark:border-slate-800 overflow-hidden">
+            class="w-full max-w-[480px] bg-white dark:bg-slate-900 rounded-xl shadow-xl shadow-primary/5 border border-primary/5 dark:border-slate-700/50 overflow-hidden z-10">
             <div class="p-8 pb-4">
                 <div class="flex justify-center mb-6">
                     <div class="bg-primary/10 p-4 rounded-full">
@@ -27,9 +31,7 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mật khẩu mới</label>
                     <div class="relative">
-                        <input
-                            name="password"
-                            id="password_input"
+                        <input name="password" id="password_input"
                             class="w-full h-12 px-4 rounded-lg border @error('password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12 text-slate-900 dark:text-white placeholder:text-slate-400"
                             placeholder="Nhập mật khẩu mới" type="password" required />
                         <button
@@ -47,9 +49,7 @@
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Xác nhận mật khẩu
                         mới</label>
                     <div class="relative">
-                        <input
-                            name="password_confirmation"
-                            id="password_confirmation_input"
+                        <input name="password_confirmation" id="password_confirmation_input"
                             class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12 text-slate-900 dark:text-white placeholder:text-slate-400"
                             placeholder="Nhập lại mật khẩu mới" type="password" required />
                         <button
@@ -62,7 +62,7 @@
                 </div>
                 <div class="space-y-4 pt-2">
                     <button
-                        class="w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold h-12 rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                        class="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                         type="submit">
                         Cập nhật mật khẩu
                     </button>
