@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('hsk_lesson_practice_sections', function (Blueprint $table) {
-            //
+            $table->dropColumn('audio_path');
         });
     }
 };

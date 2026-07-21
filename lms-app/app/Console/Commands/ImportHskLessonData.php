@@ -15,6 +15,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class ImportHskLessonData extends Command
 {
@@ -23,7 +24,7 @@ class ImportHskLessonData extends Command
      *
      * @var string
      */
-    protected $signature = 'hsk:import-lessons {path : Path to the tiengtrungbotui_data directory}';
+    protected $signature = 'hsk:import-lessons {path? : Path to the tiengtrungbotui_data directory}';
 
     /**
      * The console command description.
@@ -90,7 +91,7 @@ class ImportHskLessonData extends Command
      */
     public function handle()
     {
-        $crawlPath = $this->argument('path') ?: storage_path('app/tiengtrungbotui_data');
+        $crawlPath = $this->argument('path') ?: base_path('tiengtrungbotui_data');
 
         if (!File::exists($crawlPath)) {
             $this->error("Thư mục dữ liệu không tồn tại: {$crawlPath}");
@@ -152,6 +153,7 @@ class ImportHskLessonData extends Command
                     ['level_code' => $levelId],
                     [
                         'title' => $levelName,
+                        'slug' => Str::slug($levelName),
                         'subtitle' => $design['subtitle'],
                         'color' => $design['color'],
                         'spine_color' => $design['spine_color'],
@@ -181,6 +183,7 @@ class ImportHskLessonData extends Command
                         ],
                         [
                             'title' => $titleInfo['title'],
+                            'slug' => Str::slug('bai ' . $lNumStr . ' ' . $titleInfo['title'] . '-' . $titleInfo['translation']),
                             'pinyin' => $titleInfo['pinyin'],
                             'translation' => $titleInfo['translation'],
                             'code' => 'H' . substr($levelId, 3) . 'L' . $lNumStr

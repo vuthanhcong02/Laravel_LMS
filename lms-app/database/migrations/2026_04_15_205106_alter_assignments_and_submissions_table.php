@@ -12,27 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('assignments', function (Blueprint $table) {
-            if (!Schema::hasColumn('assignments', 'lesson_id')) {
-                $table->foreignId('lesson_id')->nullable()->after('course_id')->constrained('lessons')->onDelete('cascade');
-            }
-            if (Schema::hasColumn('assignments', 'file_url')) {
-                $table->dropColumn('file_url');
-            }
-            if (!Schema::hasColumn('assignments', 'attachments')) {
-                $table->json('attachments')->nullable()->after('description');
-            }
-            if (!Schema::hasColumn('assignments', 'status')) {
-                $table->integer('status')->default(0)->after('due_date')->comment('0: Draft, 1: Published');
-            }
+            $table->foreignId('lesson_id')->nullable()->after('course_id')->constrained('lessons')->onDelete('cascade');
+            $table->dropColumn('file_url');
+            $table->json('attachments')->nullable()->after('description');
+            $table->integer('status')->default(0)->after('due_date')->comment('0: Draft, 1: Published');
         });
 
         Schema::table('assignment_submissions', function (Blueprint $table) {
-            if (Schema::hasColumn('assignment_submissions', 'file_url')) {
-                $table->dropColumn('file_url');
-            }
-            if (!Schema::hasColumn('assignment_submissions', 'attachments')) {
-                $table->json('attachments')->nullable()->after('user_id');
-            }
+            $table->dropColumn('file_url');
+            $table->json('attachments')->nullable()->after('user_id');
         });
     }
 
