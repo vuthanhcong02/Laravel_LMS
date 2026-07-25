@@ -1,0 +1,168 @@
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+<div x-data="{
+        isDown: false, 
+        isDragging: false,
+        startX: 0, 
+        scrollLeft: 0, 
+        startY: 0, 
+        scrollTop: 0,
+        initDrag(e) {
+            this.isDown = true;
+            this.isDragging = false;
+            this.$el.classList.add('!cursor-grabbing', 'select-none');
+            this.startX = e.pageX - this.$el.offsetLeft;
+            this.scrollLeft = this.$el.scrollLeft;
+            this.startY = e.pageY - this.$el.offsetTop;
+            this.scrollTop = this.$el.scrollTop;
+        },
+        endDrag(e) {
+            this.isDown = false;
+            this.$el.classList.remove('!cursor-grabbing', 'select-none');
+            // Reset dragging state slightly after so click events can be blocked
+            setTimeout(() => { this.isDragging = false; }, 50);
+        },
+        doDrag(e) {
+            if(!this.isDown) return;
+            
+            const x = e.pageX - this.$el.offsetLeft;
+            const y = e.pageY - this.$el.offsetTop;
+            const walkX = (x - this.startX) * 1.5;
+            const walkY = (y - this.startY) * 1.5;
+            
+            if (Math.abs(walkX) > 5 || Math.abs(walkY) > 5) {
+                this.isDragging = true;
+            }
+            
+            if (this.isDragging) {
+                e.preventDefault();
+                this.$el.scrollLeft = this.scrollLeft - walkX;
+                this.$el.scrollTop = this.scrollTop - walkY;
+            }
+        },
+        handleClick(e) {
+            if (this.isDragging) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }
+     }"
+     @mousedown="initDrag($event)"
+     @mouseleave="endDrag($event)"
+     @mouseup="endDrag($event)"
+     @mousemove="doDrag($event)"
+     @click.capture="handleClick($event)"
+     :class="isFullscreen ? '!fixed !inset-0 !z-[99999] !w-screen !h-screen overflow-auto bg-slate-50 dark:bg-[#0b1120] rounded-none m-0 p-2 sm:p-4 no-scrollbar cursor-grab' : 'relative overflow-auto rounded-[2rem] bg-white dark:bg-[#1a2332] shadow-2xl shadow-indigo-900/10 dark:shadow-none border border-slate-100 dark:border-slate-800 no-scrollbar cursor-grab'"
+     style="max-height: 85vh;"
+     x-ref="gridContainer">
+    <table class="w-full text-center border-collapse bg-white dark:bg-[#1a2332]">
+        <!-- Table Header (Finals) -->
+        <thead>
+            <tr>
+                <th class="sticky left-0 top-0 z-30 min-w-[140px] p-4 bg-white dark:bg-[#1a2332] border-b border-r border-slate-100 dark:border-slate-800 shadow-[2px_2px_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-none">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                            Thanh mẫu <span class="text-slate-300 dark:text-slate-600 px-1">\</span> Vận mẫu
+                        </div>
+                        <button @click="
+                                isFullscreen = !isFullscreen; 
+                                if (isFullscreen && $refs.gridContainer.requestFullscreen) { $refs.gridContainer.requestFullscreen(); }
+                                else if (!isFullscreen && document.fullscreenElement) { document.exitFullscreen(); }
+                            " 
+                            class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-600 dark:hover:text-slate-300 transition-colors" title="Phóng to / Thu nhỏ (Phím F)">
+                            <span class="material-symbols-outlined text-[18px]" x-text="isFullscreen ? 'fullscreen_exit' : 'fullscreen'"></span>
+                        </button>
+                    </div>
+                </th>
+                @foreach($finals as $final)
+                <th class="min-w-[70px] p-4 bg-white dark:bg-[#1a2332] border-b border-slate-100 dark:border-slate-800">
+                    <span class="text-[15px] font-bold text-slate-700 dark:text-slate-100">{{ $final->name }}</span>
+                </th>
+                @endforeach
+            </tr>
+        </thead>
+        
+        <!-- Table Body (Initials x Finals) -->
+        <tbody>
+            @foreach($initials as $initial)
+            <tr class="group hover:bg-indigo-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                <!-- Initial Column -->
+                <td class="sticky left-0 z-10 w-24 p-4 bg-white dark:bg-[#1a2332] group-hover:bg-indigo-50/90 dark:group-hover:bg-slate-800/50 border-r border-slate-100 dark:border-slate-800 font-bold text-[17px] text-indigo-600 dark:text-indigo-400">
+                    {{ $initial->name === '' ? 'không thanh mẫu' : $initial->name }}
+                </td>
+                
+                <!-- Pinyin Cells -->
+                @foreach($finals as $final)
+                    @php
+                        $key = $initial->id . '_' . $final->id;
+                        $pinyin = $pinyins->get($key);
+                    @endphp
+                    
+                    <td class="p-1.5 border-b border-r border-slate-50 dark:border-slate-800/50 last:border-r-0 relative">
+                        @if($pinyin)
+                        <button 
+                            @click='currentPinyin = @json($pinyin)'
+                            class="w-full h-11 rounded-lg flex items-center justify-center font-medium text-[15px] text-slate-700 dark:text-slate-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 hover:text-indigo-700 dark:hover:text-indigo-300 transition-all active:scale-95">
+                            {{ $pinyin->full }}
+                        </button>
+                        @else
+                        <div class="w-full h-11 flex items-center justify-center text-slate-200 dark:text-slate-800/50">
+                            
+                        </div>
+                        @endif
+                    </td>
+                @endforeach
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+<!-- Placeholder for Popup (Will be built in Phase 2) -->
+<div x-show="currentPinyin" 
+     x-transition.opacity
+     style="display: none;" 
+     class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+    
+    <div x-show="currentPinyin"
+         @click.away="currentPinyin = null"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+         x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+         class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 dark:border-slate-700 relative">
+        
+        <button @click="currentPinyin = null" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 bg-slate-50 dark:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+        
+        <div class="text-center mb-6">
+            <h2 class="text-4xl font-black text-indigo-600 dark:text-indigo-400 mb-2" x-text="currentPinyin ? currentPinyin.full : ''"></h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Chọn thanh điệu để nghe phát âm</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3" x-show="currentPinyin && currentPinyin.tones && currentPinyin.tones.length > 0">
+            <template x-for="tone in (currentPinyin ? currentPinyin.tones : [])" :key="tone.id">
+                <button 
+                    @click="$refs.audioPlayer.src = '/storage/audio/pinyin/' + tone.audio; $refs.audioPlayer.play()"
+                    class="p-4 rounded-2xl border-2 border-indigo-100 dark:border-slate-700 bg-indigo-50/50 dark:bg-slate-700/50 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 hover:border-indigo-300 dark:hover:border-indigo-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2 group">
+                    <span class="text-2xl font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors" x-text="tone.display"></span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400/80 tracking-wider">Thanh <span x-text="tone.tone"></span></span>
+                </button>
+            </template>
+        </div>
+        
+        <div x-show="currentPinyin && (!currentPinyin.tones || currentPinyin.tones.length === 0)" class="text-center py-6 text-slate-400 text-sm">
+            Chưa có dữ liệu thanh điệu cho âm này.
+        </div>
+    </div>
+</div>
