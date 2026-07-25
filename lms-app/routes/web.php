@@ -205,3 +205,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/pinyin', [\App\Http\Controllers\PinyinController::class, 'index'])->name('pinyin.index');
