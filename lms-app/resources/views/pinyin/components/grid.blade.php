@@ -59,31 +59,34 @@
      @mouseup="endDrag($event)"
      @mousemove="doDrag($event)"
      @click.capture="handleClick($event)"
-     :class="isFullscreen ? '!fixed !inset-0 !z-[99999] !w-screen !h-screen overflow-auto bg-slate-50 dark:bg-[#0b1120] rounded-none m-0 p-2 sm:p-4 no-scrollbar cursor-grab' : 'relative overflow-auto rounded-[2rem] bg-white dark:bg-[#1a2332] shadow-2xl shadow-indigo-900/10 dark:shadow-none border border-slate-100 dark:border-slate-800 no-scrollbar cursor-grab'"
+     :class="isFullscreen ? '!fixed !inset-0 !z-[99999] !w-screen !h-screen overflow-auto bg-slate-50 dark:bg-[#0b1120] rounded-none m-0 p-2 sm:p-4 no-scrollbar cursor-grab' : 'relative overflow-auto w-full no-scrollbar cursor-grab'"
      style="max-height: 85vh;"
      x-ref="gridContainer">
-    <table class="w-full text-center border-collapse bg-white dark:bg-[#1a2332]">
+    <table class="w-full text-center border-collapse bg-white">
         <!-- Table Header (Finals) -->
         <thead>
             <tr>
-                <th class="sticky left-0 top-0 z-30 min-w-[140px] p-4 bg-white dark:bg-[#1a2332] border-b border-r border-slate-100 dark:border-slate-800 shadow-[2px_2px_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-none">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                            Thanh mẫu <span class="text-slate-300 dark:text-slate-600 px-1">\</span> Vận mẫu
-                        </div>
-                        <button @click="
-                                isFullscreen = !isFullscreen; 
-                                if (isFullscreen && $refs.gridContainer.requestFullscreen) { $refs.gridContainer.requestFullscreen(); }
-                                else if (!isFullscreen && document.fullscreenElement) { document.exitFullscreen(); }
-                            " 
-                            class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-600 dark:hover:text-slate-300 transition-colors" title="Phóng to / Thu nhỏ (Phím F)">
-                            <span class="material-symbols-outlined text-[18px]" x-text="isFullscreen ? 'fullscreen_exit' : 'fullscreen'"></span>
-                        </button>
-                    </div>
+                <th rowspan="2" class="sticky left-0 top-0 z-30 min-w-[28px] w-[28px] p-0.5 bg-blue-300 border border-slate-300 shadow-[2px_2px_5px_-2px_rgba(0,0,0,0.05)] text-blue-900">
+                    <button @click="
+                            isFullscreen = !isFullscreen; 
+                            if (isFullscreen && $refs.gridContainer.requestFullscreen) { $refs.gridContainer.requestFullscreen(); }
+                            else if (!isFullscreen && document.fullscreenElement) { document.exitFullscreen(); }
+                        " 
+                        class="p-0.5 rounded hover:bg-blue-400/50 text-blue-900 transition-colors w-full flex justify-center" title="Phóng to / Thu nhỏ (Phím F)">
+                        <span class="material-symbols-outlined text-[14px]" x-text="isFullscreen ? 'fullscreen_exit' : 'fullscreen'"></span>
+                    </button>
                 </th>
+                <th colspan="5" class="p-0.5 bg-blue-300 border border-slate-300 text-blue-900 font-bold text-center text-xs">a</th>
+                <th colspan="3" class="p-0.5 bg-blue-300 border border-slate-300 text-blue-900 font-bold text-center text-xs">o</th>
+                <th colspan="5" class="p-0.5 bg-blue-300 border border-slate-300 text-blue-900 font-bold text-center text-xs">e</th>
+                <th colspan="10" class="p-0.5 bg-blue-300 border border-slate-300 text-blue-900 font-bold text-center text-xs">i</th>
+                <th colspan="9" class="p-0.5 bg-blue-300 border border-slate-300 text-blue-900 font-bold text-center text-xs">u</th>
+                <th colspan="4" class="p-0.5 bg-blue-300 border border-slate-300 text-blue-900 font-bold text-center text-xs">ü</th>
+            </tr>
+            <tr>
                 @foreach($finals as $final)
-                <th class="min-w-[70px] p-4 bg-white dark:bg-[#1a2332] border-b border-slate-100 dark:border-slate-800">
-                    <span class="text-[15px] font-bold text-slate-700 dark:text-slate-100">{{ $final->name }}</span>
+                <th class="min-w-[26px] p-0.5 bg-orange-200 border border-slate-300 text-orange-900 font-bold text-center text-[11px]">
+                    {{ $final->name }}
                 </th>
                 @endforeach
             </tr>
@@ -92,10 +95,10 @@
         <!-- Table Body (Initials x Finals) -->
         <tbody>
             @foreach($initials as $initial)
-            <tr class="group hover:bg-indigo-50/50 dark:hover:bg-slate-800/50 transition-colors">
+            <tr class="group hover:bg-indigo-50/50 transition-colors">
                 <!-- Initial Column -->
-                <td class="sticky left-0 z-10 w-24 p-4 bg-white dark:bg-[#1a2332] group-hover:bg-indigo-50/90 dark:group-hover:bg-slate-800/50 border-r border-slate-100 dark:border-slate-800 font-bold text-[17px] text-indigo-600 dark:text-indigo-400">
-                    {{ $initial->name === '' ? 'không thanh mẫu' : $initial->name }}
+                <td class="sticky left-0 z-10 w-[28px] text-center p-0.5 bg-blue-300 border border-slate-300 font-bold text-[11px] text-blue-900 group-hover:bg-blue-400 transition-colors">
+                    {{ $initial->name === '' ? '-' : $initial->name }}
                 </td>
                 
                 <!-- Pinyin Cells -->
@@ -105,17 +108,13 @@
                         $pinyin = $pinyins->get($key);
                     @endphp
                     
-                    <td class="p-1.5 border-b border-r border-slate-50 dark:border-slate-800/50 last:border-r-0 relative">
+                    <td class="p-0 border border-slate-300 {{ $pinyin ? 'bg-indigo-100 hover:bg-indigo-200' : 'bg-white' }}">
                         @if($pinyin)
                         <button 
                             @click='currentPinyin = @json($pinyin)'
-                            class="w-full h-11 rounded-lg flex items-center justify-center font-medium text-[15px] text-slate-700 dark:text-slate-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 hover:text-indigo-700 dark:hover:text-indigo-300 transition-all active:scale-95">
+                            class="w-full h-6 px-0.5 flex items-center justify-center font-medium text-[11px] text-slate-800 transition-colors active:scale-95">
                             {{ $pinyin->full }}
                         </button>
-                        @else
-                        <div class="w-full h-11 flex items-center justify-center text-slate-200 dark:text-slate-800/50">
-                            
-                        </div>
                         @endif
                     </td>
                 @endforeach
