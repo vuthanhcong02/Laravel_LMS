@@ -207,3 +207,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 require __DIR__ . '/auth.php';
 
 Route::get('/pinyin', [\App\Http\Controllers\PinyinController::class, 'index'])->name('pinyin.index');
+Route::get('/pinyin-quiz', [\App\Http\Controllers\PinyinQuizController::class, 'index'])->name('pinyin.quiz');

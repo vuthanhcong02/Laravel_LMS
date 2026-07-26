@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Pinyin;
 
 use App\Models\Pinyin;
 use App\Models\PinyinFinal;
