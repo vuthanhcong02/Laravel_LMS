@@ -15,7 +15,7 @@ class PinyinController extends Controller
         $data = Cache::rememberForever('pinyin_data', function () {
             $initials = PinyinInitial::orderBy('order')->get();
             $finals = PinyinFinal::orderBy('order')->get();
-            $pinyins = Pinyin::with('tones')->get()->keyBy(function($item) {
+            $pinyins = Pinyin::with('tones.examples')->get()->keyBy(function($item) {
                 return $item->initial_id . '_' . $item->final_id;
             });
             
