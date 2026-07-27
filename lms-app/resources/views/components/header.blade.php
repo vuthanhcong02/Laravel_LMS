@@ -66,6 +66,26 @@
                             </div>
                         </a>
 
+                        <!-- Pinyin Link -->
+                        <a href="{{ url('/pinyin') }}"
+                            class="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 {{ request()->is('pinyin') ? 'bg-primary/10 text-primary' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-primary' }}">
+                            <span class="material-symbols-outlined text-[20px] font-bold">sort_by_alpha</span>
+                            <div class="text-left">
+                                <p class="leading-none text-xs font-bold">Bảng Pinyin</p>
+                                <p class="text-[9px] font-medium text-slate-400 dark:text-slate-500 mt-1.5">Học phát âm chuẩn tiếng Trung</p>
+                            </div>
+                        </a>
+
+                        <!-- Pinyin Quiz Link -->
+                        <a href="{{ route('pinyin.quiz') }}"
+                            class="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 {{ request()->routeIs('pinyin.quiz') ? 'bg-primary/10 text-primary' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-primary' }}">
+                            <span class="material-symbols-outlined text-[20px] font-bold">headphones</span>
+                            <div class="text-left">
+                                <p class="leading-none text-xs font-bold">Luyện nghe Pinyin</p>
+                                <p class="text-[9px] font-medium text-slate-400 dark:text-slate-500 mt-1.5">Phản xạ nghe & chọn thanh điệu</p>
+                            </div>
+                        </a>
+
                         <!-- Course Curriculum Link (Giáo trình HSK) -->
                         <a href="{{ route('courses') }}"
                             class="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 {{ request()->routeIs('courses') ? 'bg-primary/10 text-primary' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-primary' }}">
@@ -243,6 +263,20 @@
                         class="text-xs font-semibold flex items-center gap-2.5 transition-colors {{ request()->routeIs('flashcards') ? 'text-primary' : 'text-slate-500 dark:text-slate-400' }}">
                         <span class="material-symbols-outlined text-[18px]">style</span>
                         <span>Flashcard</span>
+                    </a>
+
+                    <!-- Pinyin -->
+                    <a href="{{ url('/pinyin') }}"
+                        class="text-xs font-semibold flex items-center gap-2.5 transition-colors {{ request()->is('pinyin') ? 'text-primary' : 'text-slate-500 dark:text-slate-400' }}">
+                        <span class="material-symbols-outlined text-[18px]">sort_by_alpha</span>
+                        <span>Bảng Pinyin</span>
+                    </a>
+
+                    <!-- Pinyin Quiz -->
+                    <a href="{{ route('pinyin.quiz') }}"
+                        class="text-xs font-semibold flex items-center gap-2.5 transition-colors {{ request()->routeIs('pinyin.quiz') ? 'text-primary' : 'text-slate-500 dark:text-slate-400' }}">
+                        <span class="material-symbols-outlined text-[18px]">headphones</span>
+                        <span>Luyện nghe Pinyin</span>
                     </a>
 
                     <!-- Course Curriculum (Giáo trình HSK) -->
