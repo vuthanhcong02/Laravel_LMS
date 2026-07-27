@@ -28,10 +28,10 @@
                 </div>
             </a>
         </div>
-        <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-8">
+        <!-- Desktop Navigation (Desktop lg+) -->
+        <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
             <!-- Home Link -->
-            <a class="relative py-2 text-sm font-semibold transition-colors {{ $isHomeActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
+            <a class="relative py-2 text-sm font-semibold whitespace-nowrap transition-colors {{ $isHomeActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('home') }}">
                 Trang chủ
             </a>
@@ -40,7 +40,7 @@
             <div class="relative" @mouseenter="openHSK = true" @mouseleave="openHSK = false"
                 @click.away="openHSK = false">
                 <button @click="openHSK = !openHSK"
-                    class="relative py-2 flex items-center gap-1 text-sm font-semibold transition-colors focus:outline-none {{ $isHskActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}">
+                    class="relative py-2 flex items-center gap-1 text-sm font-semibold whitespace-nowrap transition-colors focus:outline-none {{ $isHskActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}">
                     <span>Học Hán ngữ</span>
                     <span class="material-symbols-outlined text-[18px] transition-transform duration-200"
                         :class="openHSK ? 'rotate-180' : ''">expand_more</span>
@@ -112,13 +112,13 @@
             </div>
 
             <!-- Blog Link -->
-            <a class="relative py-2 text-sm font-semibold transition-colors {{ $isBlogActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
+            <a class="relative py-2 text-sm font-semibold whitespace-nowrap transition-colors {{ $isBlogActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('blog') }}">
                 Tin tức
             </a>
 
             <!-- Contact Link -->
-            <a class="relative py-2 text-sm font-semibold transition-colors {{ $isContactActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
+            <a class="relative py-2 text-sm font-semibold whitespace-nowrap transition-colors {{ $isContactActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('contact') }}">
                 Liên hệ
             </a>
@@ -160,7 +160,7 @@
                         <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) . '&color=FFFFFF&background=8fc0e0' }}"
                             alt="Avatar" class="h-10 w-10 rounded-full object-cover border-2 border-primary/20">
                         <span
-                            class="text-sm font-bold text-slate-700 dark:text-slate-200 hidden md:block">{{ auth()->user()->first_name }}
+                            class="text-sm font-bold text-slate-700 dark:text-slate-200 hidden lg:block">{{ auth()->user()->first_name }}
                             {{ auth()->user()->last_name }}</span>
                         <span class="material-symbols-outlined text-slate-400">expand_more</span>
                     </button>
@@ -209,31 +209,31 @@
                     </div>
                 </div>
             @else
-                <!-- Guest Actions -->
-                <a href="{{ route('login') }}"
-                    class="px-5 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-primary transition-colors">Đăng
-                    nhập</a>
-                <a href="{{ route('register') }}"
-                    class="rounded-2xl bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/40">Đăng
-                    ký</a>
+                <!-- Guest Actions (Desktop lg+) -->
+                <div class="hidden lg:flex items-center gap-3">
+                    <a href="{{ route('login') }}"
+                        class="whitespace-nowrap px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-primary transition-colors">Đăng nhập</a>
+                    <a href="{{ route('register') }}"
+                        class="whitespace-nowrap rounded-2xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90">Đăng ký</a>
+                </div>
             @endauth
 
-            <!-- Mobile Hamburger Menu Toggle Trigger -->
+            <!-- Mobile & Tablet Hamburger Menu Toggle Trigger (lg:hidden) -->
             <button @click="mobileMenuOpen = !mobileMenuOpen"
-                class="flex h-10 w-10 md:hidden items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 text-slate-600 dark:text-slate-300 active:scale-95 transition-all focus:outline-none">
+                class="flex h-10 w-10 lg:hidden items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 text-slate-600 dark:text-slate-300 active:scale-95 transition-all focus:outline-none">
                 <span class="material-symbols-outlined text-[22px] font-bold"
                     x-text="mobileMenuOpen ? 'close' : 'menu'">menu</span>
             </button>
         </div>
     </div>
 
-    <!-- Mobile Navigation Drawer Panel -->
+    <!-- Mobile & Tablet Navigation Drawer Panel (lg:hidden) -->
     <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200 transform"
         x-transition:enter-start="-translate-y-4 opacity-0" x-transition:enter-end="translate-y-0 opacity-100"
         x-transition:leave="transition ease-in duration-150 transform"
         x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="-translate-y-4 opacity-0"
         style="display: none;"
-        class="w-full md:hidden bg-white/95 dark:bg-background-dark/95 border-b border-primary/10 backdrop-blur-md">
+        class="w-full lg:hidden bg-white/95 dark:bg-background-dark/95 border-b border-primary/10 backdrop-blur-md">
         <div class="px-6 py-4 flex flex-col gap-4" x-data="{ mobileHSKOpen: false }">
             <!-- Home Navigation -->
             <a href="{{ route('home') }}"
@@ -304,10 +304,24 @@
 
             <!-- Contact Navigation -->
             <a href="{{ route('contact') }}"
-                class="text-sm font-bold flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800/80 transition-colors {{ $isContactActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300' }}">
+                class="text-sm font-bold flex items-center gap-3 py-2 transition-colors {{ $isContactActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300' }}">
                 <span class="material-symbols-outlined text-[20px]">mail</span>
                 <span>Liên hệ</span>
             </a>
+
+            @guest
+                <!-- Mobile Guest Action Buttons -->
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex flex-col gap-2.5">
+                    <a href="{{ route('login') }}"
+                        class="w-full text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        Đăng nhập
+                    </a>
+                    <a href="{{ route('register') }}"
+                        class="w-full text-center py-2.5 rounded-xl bg-primary text-sm font-bold text-white shadow-md shadow-primary/30 hover:bg-primary/90 transition-all">
+                        Đăng ký tài khoản
+                    </a>
+                </div>
+            @endguest
         </div>
     </div>
 </header>
