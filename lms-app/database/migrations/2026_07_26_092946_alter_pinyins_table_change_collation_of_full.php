@@ -21,6 +21,14 @@ return new class extends Migration
         Schema::table('pinyins', function (Blueprint $table) {
             $table->string('full')->collation('utf8mb4_bin')->unique()->change();
         });
+
+        Schema::table('pinyin_finals', function (Blueprint $table) {
+            $table->dropUnique(['name']);
+        });
+
+        Schema::table('pinyin_finals', function (Blueprint $table) {
+            $table->string('name')->collation('utf8mb4_bin')->unique()->change();
+        });
     }
 
     /**
@@ -34,6 +42,14 @@ return new class extends Migration
 
         Schema::table('pinyins', function (Blueprint $table) {
             $table->string('full')->collation('utf8mb4_unicode_ci')->unique()->change();
+        });
+
+        Schema::table('pinyin_finals', function (Blueprint $table) {
+            $table->dropUnique(['name']);
+        });
+
+        Schema::table('pinyin_finals', function (Blueprint $table) {
+            $table->string('name')->collation('utf8mb4_unicode_ci')->unique()->change();
         });
     }
 };

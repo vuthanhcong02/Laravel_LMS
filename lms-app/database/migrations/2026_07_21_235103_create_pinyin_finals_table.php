@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pinyin_finals', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique()->comment('Final name, e.g., a, o, e, i, u, ü');
+            $table->string('name')->collation('utf8mb4_bin')->unique()->comment('Final name, e.g., a, o, e, i, u, ü');
             $table->integer('order')->default(0)->comment('Sorting order on Grid');
             $table->string('description')->nullable()->comment('Pronunciation description');
             $table->timestamps();
