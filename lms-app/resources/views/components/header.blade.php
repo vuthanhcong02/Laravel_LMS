@@ -16,7 +16,7 @@
                     class="relative shrink-0 p-[2.5px] rounded-full overflow-hidden bg-gradient-to-br from-primary via-orange-400 to-amber-300 shadow-lg shadow-primary/30">
                     <div class="rounded-full overflow-hidden w-10 h-10 sm:w-12 sm:h-12">
                         <img src="{{ asset('logo.png') }}" alt="XiaoMu Logo"
-                            class="w-full h-full object-cover object-center">
+                            class="w-full h-full object-cover object-center rounded-full">
                     </div>
                 </div>
                 <div class="flex flex-col leading-none">
