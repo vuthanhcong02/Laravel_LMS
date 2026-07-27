@@ -91,9 +91,10 @@ class PinyinSyncAudioCommand extends Command
 
                 // 3. Create Pinyin
                 $pinyin = Pinyin::firstOrCreate([
+                    'full' => $pinyinText,
+                ], [
                     'initial_id' => $initialModel ? $initialModel->id : null,
                     'final_id' => $finalModel->id,
-                    'full' => $pinyinText,
                 ]);
 
                 // 4. Create PinyinTone
