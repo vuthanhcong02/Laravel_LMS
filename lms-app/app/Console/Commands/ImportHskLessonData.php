@@ -93,30 +93,26 @@ class ImportHskLessonData extends Command
     {
         $crawlPath = $this->argument('path') ?: base_path('tiengtrungbotui_data');
 
-        if (!File::exists($crawlPath)) {
-            $this->error("Thư mục dữ liệu không tồn tại: {$crawlPath}");
-            return 1;
+        if (File::exists($crawlPath)) {
+            $this->info("=== Bắt đầu import dữ liệu Giáo trình HSK từ: {$crawlPath} ===");
+        } else {
+            $this->info("=== Không tìm thấy thư mục Local. Tự động nạp dữ liệu từ Online Repository ===");
         }
 
-        $this->info("=== Bắt đầu import dữ liệu Giáo trình HSK từ: {$crawlPath} ===");
-
-        $lessonsJsonPath = "{$crawlPath}/lessons.json";
-        if (File::exists($lessonsJsonPath)) {
-            $lessonsData = json_decode(File::get($lessonsJsonPath), true);
-            if (isset($lessonsData['lessons'])) {
-                foreach ($lessonsData['lessons'] as $l) {
-                    if ($l['id'] === 'lesson9999') continue;
-                    $lNum = (int) str_replace('lesson', '', $l['id']);
-                    if (!isset($this->lessonTitlesMap[$l['level_id']][$lNum])) {
-                        $this->lessonTitlesMap[$l['level_id']][$lNum] = [
-                            'title' => $l['name'],
-                            'pinyin' => '',
-                            'translation' => $l['name_vi']
-                        ];
-                    }
+        $lessonsData = $this->getJsonContent('lessons.json', $crawlPath);
+        if ($lessonsData && isset($lessonsData['lessons'])) {
+            foreach ($lessonsData['lessons'] as $l) {
+                if ($l['id'] === 'lesson9999') continue;
+                $lNum = (int) str_replace('lesson', '', $l['id']);
+                if (!isset($this->lessonTitlesMap[$l['level_id']][$lNum])) {
+                    $this->lessonTitlesMap[$l['level_id']][$lNum] = [
+                        'title' => $l['name'],
+                        'pinyin' => '',
+                        'translation' => $l['name_vi']
+                    ];
                 }
-                $this->info("Đã nạp thành công dữ liệu tên bài học từ lessons.json");
             }
+            $this->info("Đã nạp thành công dữ liệu tên bài học từ lessons.json");
         }
 
         // levels are statically defined similarly to the Python crawler
@@ -191,10 +187,8 @@ class ImportHskLessonData extends Command
                     );
 
                     // 3. Read and Import Vocabulary (Vocab JSON)
-                    $vocabFile = "{$crawlPath}/json/{$levelId}/lesson_{$lNumStr}_vocab.json";
-                    if (File::exists($vocabFile)) {
-                        $vocabData = json_decode(File::get($vocabFile), true);
-
+                    $vocabData = $this->getJsonContent("json/{$levelId}/lesson_{$lNumStr}_vocab.json", $crawlPath);
+                    if ($vocabData) {
                         HskLessonVocab::where('hsk_lesson_id', $lesson->id)->delete();
 
                         foreach ($vocabData as $vItem) {
@@ -216,10 +210,8 @@ class ImportHskLessonData extends Command
                     }
 
                     // 4. Read and Import Grammar (Grammar JSON)
-                    $grammarFile = "{$crawlPath}/json/{$levelId}/lesson_{$lNumStr}_grammar.json";
-                    if (File::exists($grammarFile)) {
-                        $grammarData = json_decode(File::get($grammarFile), true);
-
+                    $grammarData = $this->getJsonContent("json/{$levelId}/lesson_{$lNumStr}_grammar.json", $crawlPath);
+                    if ($grammarData) {
                         HskLessonGrammar::where('hsk_lesson_id', $lesson->id)->delete();
 
                         foreach ($grammarData as $gItem) {
@@ -246,75 +238,56 @@ class ImportHskLessonData extends Command
                         }
                     }
 
-                    // 5. Initialize dialogue section loaded directly from API tiengtrungbotui.com
-                    $textApiUrl = "https://tiengtrungbotui.com/data/{$levelId}/texts/lesson{$lNum}.json";
+                    // 5. Initialize dialogue sections and link audio
+                    $textData = $this->getJsonContent("json/{$levelId}/lesson_{$lNumStr}_text.json", $crawlPath);
+                    if ($textData && is_array($textData)) {
+                        HskLessonDialogueSection::where('hsk_lesson_id', $lesson->id)->delete();
+                        foreach ($textData as $index => $sectData) {
+                            $partNum = $index + 1;
 
-                    HskLessonDialogueSection::where('hsk_lesson_id', $lesson->id)->delete();
+                            $textHan = !empty($sectData['text_han']) ? trim($sectData['text_han']) : '';
+                            $textVi = !empty($sectData['text_vi']) ? trim($sectData['text_vi']) : "Bài khóa {$partNum}";
+                            $titleHan = !empty($sectData['title_han']) ? trim($sectData['title_han']) : '';
+                            $titleVi = !empty($sectData['title_vi']) ? trim($sectData['title_vi']) : '';
 
-                    try {
-                        $this->info("--> Đang tải dữ liệu bài khóa từ API: {$textApiUrl}");
-                        $response = Http::timeout(10)->get($textApiUrl);
+                            $fullHan = $textHan;
+                            if ($titleHan) $fullHan .= '：' . $titleHan;
 
-                        if ($response->successful()) {
-                            $dialogueSectionsData = $response->json();
-                            if (is_array($dialogueSectionsData)) {
-                                foreach ($dialogueSectionsData as $index => $sectData) {
-                                    $partNum = $index + 1;
+                            $fullVi = $textVi;
+                            if ($titleVi) $fullVi .= ': ' . $titleVi;
 
-                                    // Create dialogue title
-                                    $textHan = !empty($sectData['text_han']) ? trim($sectData['text_han']) : '';
-                                    $textVi = !empty($sectData['text_vi']) ? trim($sectData['text_vi']) : "Bài khóa {$partNum}";
-                                    $titleHan = !empty($sectData['title_han']) ? trim($sectData['title_han']) : '';
-                                    $titleVi = !empty($sectData['title_vi']) ? trim($sectData['title_vi']) : '';
+                            $title = $fullHan;
+                            if ($fullVi) $title .= " ($fullVi)";
 
-                                    $fullHan = $textHan;
-                                    if ($titleHan) $fullHan .= '：' . $titleHan;
+                            $audioFile = sprintf('%02d-%d.mp3', $lNum, $partNum);
+                            $audioRelativePath = "{$levelId}/lesson_{$lNumStr}/gt/{$audioFile}";
 
-                                    $fullVi = $textVi;
-                                    if ($titleVi) $fullVi .= ': ' . $titleVi;
+                            $section = HskLessonDialogueSection::create([
+                                'hsk_lesson_id' => $lesson->id,
+                                'title' => $title,
+                                'audio_path' => $audioRelativePath
+                            ]);
 
-                                    $title = $fullHan;
-                                    if ($fullVi) $title .= " ($fullVi)";
-
-                                    // Get corresponding audio filename based on structure
-                                    $audioFile = sprintf('%02d-%d.mp3', $lNum, $partNum);
-                                    $audioRelativePath = "{$levelId}/lesson_{$lNumStr}/gt/{$audioFile}";
-
-                                    $section = HskLessonDialogueSection::create([
-                                        'hsk_lesson_id' => $lesson->id,
-                                        'title' => $title,
-                                        'audio_path' => $audioRelativePath
+                            if (isset($sectData['content']) && is_array($sectData['content'])) {
+                                foreach ($sectData['content'] as $dialogLine) {
+                                    HskLessonDialogue::create([
+                                        'dialogue_section_id' => $section->id,
+                                        'role' => $dialogLine['speaker'] ?? $dialogLine['speaker_vi'] ?? 'A',
+                                        'character' => $dialogLine['text_han'] ?? '',
+                                        'pinyin' => $dialogLine['pinyin'] ?? '',
+                                        'translation' => $dialogLine['meaning'] ?? '',
+                                        'audio_path' => isset($dialogLine['audio']) ? 'https://media.tiengtrungbotui.com/texts/audio/' . $dialogLine['audio'] : null
                                     ]);
-
-                                    // Import detailed dialogue lines
-                                    if (isset($sectData['content']) && is_array($sectData['content'])) {
-                                        foreach ($sectData['content'] as $dialogLine) {
-                                            HskLessonDialogue::create([
-                                                'dialogue_section_id' => $section->id,
-                                                'role' => $dialogLine['speaker'] ?? $dialogLine['speaker_vi'] ?? '',
-                                                'character' => $dialogLine['text_han'] ?? '',
-                                                'pinyin' => $dialogLine['pinyin'] ?? '',
-                                                'translation' => $dialogLine['meaning'] ?? '',
-                                                'audio_path' => isset($dialogLine['audio']) ? 'https://media.tiengtrungbotui.com/texts/audio/' . $dialogLine['audio'] : null
-                                            ]);
-                                        }
-                                    }
                                 }
                             }
-                        } else {
-                            $this->warn("--> Không tải được text bài khóa từ API (Mã lỗi: {$response->status()}). Sử dụng fallback audio.");
-                            $this->fallbackDialogueImport($lesson, $levelId, $lNumStr);
                         }
-                    } catch (\Exception $ex) {
-                        $this->warn("--> Lỗi kết nối tải bài khóa: {$ex->getMessage()}. Sử dụng fallback audio.");
+                    } else {
                         $this->fallbackDialogueImport($lesson, $levelId, $lNumStr);
                     }
 
                     // 6. Import Practice
-                    $practiceFile = "{$crawlPath}/json/{$levelId}/lesson_{$lNumStr}_practice.json";
-                    if (File::exists($practiceFile)) {
-                        $practiceData = json_decode(File::get($practiceFile), true);
-
+                    $practiceData = $this->getJsonContent("json/{$levelId}/lesson_{$lNumStr}_practice.json", $crawlPath);
+                    if ($practiceData) {
                         // Clear old practices for this lesson
                         HskLessonPractice::where('hsk_lesson_id', $lesson->id)->delete();
 
@@ -403,36 +376,55 @@ class ImportHskLessonData extends Command
      */
     protected function fallbackDialogueImport($lesson, $levelId, $lNumStr)
     {
-        $gtAudioDir = base_path("tiengtrungbotui_data/audio/{$levelId}/lesson_{$lNumStr}/gt");
-        if (File::isDirectory($gtAudioDir)) {
-            $files = File::files($gtAudioDir);
-            sort($files);
+        $maxParts = ($levelId === 'hsk1' || $levelId === 'hsk2') ? 3 : (($levelId === 'hsk3') ? 4 : 5);
+        $lNum = (int) str_replace('lesson', '', $lNumStr);
 
-            foreach ($files as $file) {
-                $filename = $file->getFilename();
-                if (preg_match('/-(\d+)\.mp3$/i', $filename, $matches)) {
-                    $partNum = (int)$matches[1];
-                    $maxParts = ($levelId === 'hsk1' || $levelId === 'hsk2') ? 3 : (($levelId === 'hsk3') ? 4 : 5);
+        for ($partNum = 1; $partNum <= $maxParts; $partNum++) {
+            $filename = sprintf('%02d-%d.mp3', $lNum, $partNum);
+            $audioPath = "{$levelId}/lesson_{$lNumStr}/gt/{$filename}";
 
-                    if ($partNum > $maxParts) {
-                        continue;
-                    }
+            $section = HskLessonDialogueSection::firstOrCreate(
+                [
+                    'hsk_lesson_id' => $lesson->id,
+                    'title' => "Bài đọc {$partNum}"
+                ],
+                [
+                    'audio_path' => $audioPath
+                ]
+            );
 
-                    $section = HskLessonDialogueSection::create([
-                        'hsk_lesson_id' => $lesson->id,
-                        'title' => "Bài khóa {$partNum}",
-                        'audio_path' => "{$levelId}/lesson_{$lNumStr}/gt/{$filename}"
-                    ]);
-
-                    HskLessonDialogue::create([
-                        'dialogue_section_id' => $section->id,
-                        'role' => 'A',
-                        'character' => '你好！ (Nghe âm thanh đính kèm để luyện nói)',
-                        'pinyin' => 'Nǐ hǎo!',
-                        'translation' => 'Xin chào!'
-                    ]);
-                }
+            if ($section->dialogues()->count() === 0) {
+                HskLessonDialogue::create([
+                    'dialogue_section_id' => $section->id,
+                    'role' => 'Audio',
+                    'character' => "Bài đọc {$partNum}",
+                    'pinyin' => "Bàidú {$partNum}",
+                    'translation' => "Lắng nghe audio bài đọc đính kèm ở trình phát âm thanh phía trên."
+                ]);
             }
         }
+    }
+
+    /**
+     * Read JSON content from local directory, or fallback to online GitHub raw data
+     */
+    private function getJsonContent(string $relativePath, string $crawlPath): ?array
+    {
+        $localFile = "{$crawlPath}/{$relativePath}";
+        if (File::exists($localFile)) {
+            return json_decode(File::get($localFile), true);
+        }
+
+        $onlineUrl = "https://raw.githubusercontent.com/vuthanhcong02/Laravel_LMS/dev/tiengtrungbotui_data/{$relativePath}";
+        try {
+            $response = Http::timeout(8)->get($onlineUrl);
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            // Fallback fail silently
+        }
+
+        return null;
     }
 }
