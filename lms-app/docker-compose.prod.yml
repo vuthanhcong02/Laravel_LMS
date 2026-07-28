@@ -1,0 +1,89 @@
+services:
+    laravel:
+        build:
+            context: "./docker/8.4"
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: "${WWWGROUP:-1000}"
+        image: "sail-8.4/app"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        ports:
+            - "${APP_PORT:-80}:80"
+        environment:
+            WWWUSER: "${WWWUSER:-1000}"
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: "off"
+        volumes:
+            - ".:/var/www/html"
+        networks:
+            - sail
+        restart: unless-stopped
+        depends_on:
+            - mysql
+            - redis
+
+    mysql:
+        image: "mysql/mysql-server:8.0"
+        environment:
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+            MYSQL_DATABASE: "${DB_DATABASE}"
+            MYSQL_USER: "${DB_USERNAME}"
+            MYSQL_PASSWORD: "${DB_PASSWORD}"
+        volumes:
+            - "sail-mysql:/var/lib/mysql"
+        networks:
+            - sail
+        restart: unless-stopped
+        healthcheck:
+            test:
+                - CMD
+                - mysqladmin
+                - ping
+                - "-p${DB_PASSWORD}"
+            retries: 3
+            timeout: 5s
+
+    redis:
+        image: "redis:alpine"
+        command: redis-server --requirepass "${REDIS_PASSWORD}"
+        volumes:
+            - "sail-redis:/data"
+        networks:
+            - sail
+        restart: unless-stopped
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - "-a"
+                - "${REDIS_PASSWORD}"
+                - ping
+            retries: 3
+            timeout: 5s
+
+    phpmyadmin:
+        image: "phpmyadmin/phpmyadmin"
+        ports:
+            - "127.0.0.1:${FORWARD_PMA_PORT:-8181}:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_USER: "${DB_USERNAME}"
+            PMA_PASSWORD: "${DB_PASSWORD}"
+            UPLOAD_LIMIT: 64M
+        depends_on:
+            - mysql
+        networks:
+            - sail
+        restart: unless-stopped
+
+networks:
+    sail:
+        driver: bridge
+
+volumes:
+    sail-mysql:
+        driver: local
+    sail-redis:
+        driver: local
