@@ -37,16 +37,16 @@
             <!-- FRONT -->
             <div class="backface-hidden w-full h-full bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-xl flex flex-col items-center justify-center p-6 absolute top-0 left-0">
                 <div class="absolute top-6 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs font-bold text-slate-500 dark:text-slate-400" x-text="(currentIndex + 1) + ' / ' + vocabList.length"></div>
-                <h3 class="text-7xl font-black text-slate-800 dark:text-white" x-text="currentWord().word"></h3>
-                <div class="mt-8 text-sm font-bold text-slate-400">Chạm để xem mặt sau</div>
+                <h3 class="text-4xl sm:text-5xl md:text-6xl font-black text-slate-800 dark:text-white" x-text="currentWord().word"></h3>
+                <div class="mt-8 text-xs sm:text-sm font-bold text-slate-400">Chạm để xem mặt sau</div>
             </div>
 
             <!-- BACK -->
             <div class="backface-hidden w-full h-full bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-600 shadow-xl flex flex-col items-center justify-center p-6 absolute top-0 left-0 rotate-y-180">
                 <div class="absolute top-6 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-200 dark:bg-slate-800 rounded-full text-xs font-bold text-slate-500 dark:text-slate-400" x-text="(currentIndex + 1) + ' / ' + vocabList.length"></div>
-                <h3 class="text-3xl font-black text-slate-800 dark:text-white mb-2" x-text="currentWord().word"></h3>
-                <div class="text-xl font-bold text-blue-500 dark:text-blue-400 mb-6 italic" x-text="'[' + currentWord().pinyin + ']'"></div>
-                <div class="text-2xl font-bold text-slate-600 dark:text-slate-300 text-center px-4" x-text="currentWord().meaning"></div>
+                <h3 class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white mb-1" x-text="currentWord().word"></h3>
+                <div class="text-sm sm:text-base font-bold text-blue-500 dark:text-blue-400 mb-4 italic" x-text="'[' + currentWord().pinyin + ']'"></div>
+                <div class="text-sm sm:text-base md:text-lg font-semibold text-slate-600 dark:text-slate-300 text-center px-4 leading-relaxed" x-text="currentWord().meaning"></div>
             </div>
         </div>
     </div>

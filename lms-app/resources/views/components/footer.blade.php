@@ -1,62 +1,186 @@
 <footer class="bg-slate-900 py-16 text-slate-400 mt-36">
     <div class="mx-auto max-w-7xl px-6">
         <div class="grid gap-12 lg:grid-cols-4">
-            <div class="flex flex-col gap-6">
-                <div class="flex items-center gap-2">
-                    <div class="flex h-8 w-8 items-center justify-center rounded bg-primary text-white">
-                        <span class="material-symbols-outlined text-sm">translate</span>
+
+            {{-- Cột 1: Logo + mô tả + social --}}
+            <div class="flex flex-col gap-6 lg:col-span-1">
+                <a href="{{ route('home') }}" class="flex items-center gap-3 w-fit group">
+                    <div
+                        class="relative shrink-0 p-[2.5px] rounded-full overflow-hidden bg-gradient-to-br from-primary via-orange-400 to-amber-300 shadow-lg shadow-primary/30">
+                        <div class="rounded-full overflow-hidden w-10 h-10">
+                            <img src="{{ asset('logo.png') }}" alt="XiaoMu Logo"
+                                class="w-full h-full object-cover object-center rounded-full">
+                        </div>
                     </div>
-                    <h2 class="text-lg font-bold text-white">XiaoMu Chinese</h2>
-                </div>
-                <p class="text-sm leading-relaxed">Đơn vị tiên phong trong việc áp dụng công nghệ vào giảng dạy và học
-                    tập tiếng Trung trực tuyến tại Việt Nam.</p>
-                <div class="flex gap-4">
-                    <a class="hover:text-primary transition-colors" href="#"><span
-                            class="material-symbols-outlined">social_leaderboard</span></a>
-                    <a class="hover:text-primary transition-colors" href="#"><span
-                            class="material-symbols-outlined">youtube_activity</span></a>
-                    <a class="hover:text-primary transition-colors" href="#"><span
-                            class="material-symbols-outlined">chat_bubble</span></a>
+                    <div class="flex flex-col leading-none">
+                        <span
+                            class="text-lg font-black tracking-tight text-white group-hover:text-primary transition-colors duration-300">小木</span>
+                        <span
+                            class="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary/80 mt-0.5 transition-colors duration-300 group-hover:text-primary">Tiếng
+                            Trung</span>
+                    </div>
+                </a>
+                <p class="text-sm leading-relaxed">
+                    Nền tảng học tiếng Trung online theo chuẩn HSK — kết hợp bài khóa, hội thoại, ngữ pháp và luyện tập
+                    toàn diện.
+                </p>
+                {{-- Social media --}}
+                <div class="flex items-center gap-3">
+                    {{-- Facebook --}}
+                    <a href="#"
+                        class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-primary text-slate-400 hover:text-white transition-all duration-200"
+                        title="Facebook XiaoMu Chinese" aria-label="Facebook">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                    </a>
+                    {{-- TikTok --}}
+                    <a href="#"
+                        class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-primary text-slate-400 hover:text-white transition-all duration-200"
+                        title="TikTok XiaoMu Chinese" aria-label="TikTok">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.22-1.15 4.39-2.92 5.74-1.73 1.3-4.04 1.76-6.14 1.25-2.19-.51-4.02-1.92-4.99-3.95-.97-2.02-.97-4.4.01-6.4 1.01-2.07 3.01-3.61 5.27-3.95.83-.13 1.68-.11 2.5-.02v4.06c-.4-.02-.8-.02-1.2-.02-1.07.03-2.15.42-2.92 1.17-.74.72-1.14 1.75-1.13 2.8.01 1.05.42 2.07 1.15 2.78.75.74 1.83 1.1 2.88 1.04 1.05-.05 2.05-.51 2.75-1.28.69-.76 1.04-1.8 1.03-2.85V.02z" />
+                        </svg>
+                    </a>
+                    {{-- YouTube --}}
+                    <a href="#"
+                        class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-primary text-slate-400 hover:text-white transition-all duration-200"
+                        title="YouTube XiaoMu Chinese" aria-label="YouTube">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                    </a>
                 </div>
             </div>
+
             <div>
-                <h4 class="mb-6 font-bold text-white">Khám phá</h4>
-                <ul class="flex flex-col gap-4 text-sm">
-                    <li><a class="hover:text-primary transition-colors" href="#">Tất cả khóa học</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">HSK Roadmap</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Đội ngũ giáo viên</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Thư viện tài liệu</a></li>
+                <h4 class="mb-5 font-bold text-white text-sm uppercase tracking-widest">Khám phá</h4>
+                <ul class="flex flex-col gap-3 text-sm">
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('home') }}">
+                            <span class="material-symbols-outlined text-[15px] text-primary/60">home</span>
+                            Trang chủ
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('courses') }}">
+                            <span class="material-symbols-outlined text-[15px] text-primary/60">school</span>
+                            Tất cả khóa học
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('flashcards') }}">
+                            <span class="material-symbols-outlined text-[15px] text-primary/60">style</span>
+                            Thẻ ghi nhớ
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('blog') }}">
+                            <span class="material-symbols-outlined text-[15px] text-primary/60">article</span>
+                            Góc chia sẻ
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('contact') }}">
+                            <span class="material-symbols-outlined text-[15px] text-primary/60">contact_support</span>
+                            Liên hệ
+                        </a>
+                    </li>
                 </ul>
             </div>
+
             <div>
-                <h4 class="mb-6 font-bold text-white">Chính sách</h4>
-                <ul class="flex flex-col gap-4 text-sm">
-                    <li><a class="hover:text-primary transition-colors" href="#">Chính sách bảo mật</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Điều khoản dịch vụ</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Chính sách hoàn tiền</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Câu hỏi thường gặp</a></li>
+                <h4 class="mb-5 font-bold text-white text-sm uppercase tracking-widest">Lộ trình HSK</h4>
+                <ul class="flex flex-col gap-3 text-sm">
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('courses') }}?level=hsk1">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">1</span>
+                            HSK 1 — Sơ cấp
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('courses') }}?level=hsk2">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">2</span>
+                            HSK 2 — Cơ bản
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('courses') }}?level=hsk3">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">3</span>
+                            HSK 3 — Trung cấp
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('courses') }}?level=hsk4">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">4</span>
+                            HSK 4 — Trung cao
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('courses') }}?level=hsk5">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">5</span>
+                            HSK 5 — Nâng cao
+                        </a>
+                    </li>
+                    <li>
+                        <a class="hover:text-primary transition-colors flex items-center gap-2"
+                            href="{{ route('courses') }}?level=hsk6">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">6</span>
+                            HSK 6 — Thành thạo
+                        </a>
+                    </li>
                 </ul>
             </div>
+
+            {{-- Cột 4: Liên hệ --}}
             <div>
-                <h4 class="mb-6 font-bold text-white">Liên hệ</h4>
+                <h4 class="mb-5 font-bold text-white text-sm uppercase tracking-widest">Liên hệ</h4>
                 <ul class="flex flex-col gap-4 text-sm">
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-[18px] shrink-0">call</span>
+                        <a href="tel:+84395294730" class="hover:text-primary transition-colors">0395 294 730</a>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-[18px] shrink-0">mail</span>
+                        <a href="mailto:xiaomuhsk@gmail.com" class="hover:text-primary transition-colors">xiaomuhsk@gmail.com</a>
+                    </li>
                     <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-primary text-sm">location_on</span>
-                        123 Đường Cầu Giấy, Hà Nội
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-sm">call</span>
-                        0123 456 789
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-sm">mail</span>
-                        hello@xiaomu.edu.vn
+                        <span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">schedule</span>
+                        <span>Thứ 2 – Chủ Nhật<br>8:00 – 24:00</span>
                     </li>
                 </ul>
             </div>
+
         </div>
-        <div class="mt-16 border-t border-slate-800 pt-8 text-center text-xs">
-            © 2024 XiaoMu Chinese Language Center. All rights reserved.
+
+        {{-- Bottom bar --}}
+        <div
+            class="mt-14 border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <span>© {{ date('Y') }} XiaoMu Chinese. All rights reserved.</span>
+            <div class="flex items-center gap-4">
+                <a href="#" class="hover:text-primary transition-colors">Chính sách bảo mật</a>
+                <span class="text-slate-700">·</span>
+                <a href="#" class="hover:text-primary transition-colors">Điều khoản dịch vụ</a>
+            </div>
         </div>
     </div>
 </footer>

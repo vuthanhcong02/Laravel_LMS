@@ -206,41 +206,43 @@
             @endphp
 
             <!-- Curriclum Banner Hero -->
-            <div class="p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 text-left">
-                <div class="flex items-center gap-4">
+            <div class="p-4 sm:p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 mb-6 sm:mb-8 text-left">
+                <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 self-stretch sm:self-auto">
                     <div 
-                        class="h-14 w-14 rounded-xl flex items-center justify-center font-black text-lg text-white shadow-md shadow-slate-950/10 animate-pulse {{ $accentClass }}"
+                        class="w-12 h-12 sm:w-14 sm:h-14 aspect-square shrink-0 self-center rounded-2xl flex items-center justify-center font-black text-xs sm:text-sm text-white shadow-sm {{ $accentClass }}"
                     >
-                        <span>{{ explode(' ', $currentLevel->title)[0] ?? 'H' }}</span>
+                        <span>{{ strtoupper($currentLevel->level_code ?? 'HSK1') }}</span>
                     </div>
-                    <div>
-                        <h2 class="text-xl md:text-2xl font-black text-slate-855 dark:text-white">{{ $currentLevel->title }} - {{ $currentLevel->subtitle }}</h2>
-                        <p class="text-xs font-bold text-slate-405 dark:text-slate-505 mt-0.5">Lộ trình bài học chính khóa bám sát cấu trúc khung</p>
+                    <div class="min-w-0 flex-1 self-center">
+                        <h2 class="text-base sm:text-xl md:text-2xl font-black text-slate-800 dark:text-white leading-tight truncate sm:whitespace-normal">{{ $currentLevel->title }} - {{ $currentLevel->subtitle }}</h2>
+                        <p class="text-[11px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 mt-0.5 truncate sm:whitespace-normal">Lộ trình bài học chính khóa bám sát cấu trúc khung</p>
                     </div>
                 </div>
 
                 <!-- Stats Badges -->
-                <div class="flex flex-wrap gap-2 md:self-auto self-stretch">
-                    <span class="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-855 text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->lessons_count }} Bài học</span>
-                    <span class="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-855 text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->vocab_count }} Từ vựng</span>
+                <div class="flex flex-wrap gap-2 sm:self-auto self-stretch shrink-0">
+                    <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->lessons_count }} Bài học</span>
+                    <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->vocab_count }} Từ vựng</span>
                 </div>
             </div>
 
             <!-- Curriculum Roadmap -->
-            <div class="space-y-4 text-left">
+            <div class="flex flex-col gap-4 sm:gap-5 text-left">
                 @foreach($currentLevel->lessons as $lesson)
-                    <div 
-                        class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-805/85 shadow-sm hover:shadow-md hover:border-primary/20 dark:hover:border-primary/20 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    <a 
+                        href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}"
+                        title="Bắt đầu học {{ $lesson->title }}"
+                        class="group cursor-pointer p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-805/85 shadow-sm hover:shadow-md hover:border-primary/30 dark:hover:border-primary/30 hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200 flex items-center justify-between gap-3 sm:gap-4 block"
                     >
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                             <!-- Premium Big Lesson Number Indicator -->
                             <span 
-                                class="text-3xl font-black text-slate-200 dark:text-slate-800 select-none w-12 text-center" 
+                                class="text-2xl sm:text-3xl font-black text-slate-200 dark:text-slate-800 group-hover:text-primary/40 select-none w-8 sm:w-12 text-center shrink-0 transition-colors" 
                             >{{ $lesson->lesson_number < 10 ? '0' . $lesson->lesson_number : $lesson->lesson_number }}</span>
                             
-                            <div>
+                            <div class="min-w-0 flex-1">
                                 <span class="text-[9px] font-black text-primary dark:text-primary-light uppercase tracking-wider block mb-0.5">Mã bài: <span>{{ $lesson->code }}</span></span>
-                                <div class="flex items-baseline gap-2">
+                                <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                                     @php
                                         $isDummyData = ($lesson->title === 'Bài ' . $lesson->lesson_number);
                                         // Xóa "Bài 1: ", "Bài 1 - " hoặc "Bài 1" ra khỏi đầu chuỗi title để hiển thị đẹp hơn với số lớn
@@ -252,24 +254,22 @@
                                             $displayTitle = 'Đang cập nhật nội dung...';
                                         }
                                     @endphp
-                                    <h3 class="text-base font-extrabold text-slate-800 dark:text-white">{{ $displayTitle }}</h3>
+                                    <h3 class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-white group-hover:text-primary transition-colors truncate">{{ $displayTitle }}</h3>
                                     @if($lesson->pinyin && !$isDummyData)
-                                        <span class="text-xs font-bold text-slate-405 italic">/ {{ $lesson->pinyin }}</span>
+                                        <span class="text-[11px] sm:text-xs font-bold text-slate-400 italic shrink-0">/ {{ $lesson->pinyin }}</span>
                                     @endif
                                 </div>
-                                <p class="text-xs text-slate-500 mt-0.5 font-semibold">{{ $isDummyData ? 'Vui lòng quay lại sau' : $lesson->translation }}</p>
+                                <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-semibold truncate">{{ $isDummyData ? 'Vui lòng quay lại sau' : $lesson->translation }}</p>
                             </div>
                         </div>
 
-                        <!-- Start Play Button -->
-                        <a 
-                            href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}"
-                            class="px-5 py-2.5 text-xs font-bold text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none flex items-center gap-1.5 self-start sm:self-auto cursor-pointer active:scale-95 {{ $buttonClass }}"
+                        <!-- Start Play Indicator Icon -->
+                        <div 
+                            class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-white shadow-xs group-hover:shadow-md group-hover:scale-105 transition-all duration-200 flex items-center justify-center shrink-0 {{ $buttonClass }}"
                         >
-                            <span class="material-symbols-outlined text-[16px]">play_circle</span>
-                            <span>Bắt đầu học</span>
-                        </a>
-                    </div>
+                            <span class="material-symbols-outlined text-xl sm:text-2xl pl-0.5">play_arrow</span>
+                        </div>
+                    </a>
                 @endforeach
             </div>
         </div>
@@ -332,28 +332,28 @@
 
                         <!-- Center/Left: Pill Tab Navigation -->
                         <div class="flex-shrink-0 z-10 transition-all duration-300 w-full xl:w-auto overflow-x-auto no-scrollbar">
-                            <div class="flex flex-nowrap sm:inline-flex justify-start sm:justify-center gap-1 min-w-max transition-all duration-300">
+                            <div class="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 transition-all duration-300 w-full sm:w-auto">
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'tu-vung']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'tu-vung' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'tu-vung' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Từ vựng
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'hoi-thoai']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'hoi-thoai' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'hoi-thoai' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Bài khóa
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'ngu-phap']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'ngu-phap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'ngu-phap' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Ngữ pháp
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}"
-                                    class="shrink-0 px-4 md:px-5 py-1.5 text-xs md:text-sm font-bold rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap {{ $activeTab === 'luyen-tap' ? 'bg-primary text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'luyen-tap' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Luyện tập
                                 </a>

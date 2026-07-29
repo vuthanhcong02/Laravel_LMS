@@ -318,7 +318,7 @@
                     </a>
                     <a href="{{ route('register') }}"
                         class="w-full text-center py-2.5 rounded-xl bg-primary text-sm font-bold text-white shadow-md shadow-primary/30 hover:bg-primary/90 transition-all">
-                        Đăng ký tài khoản
+                        Đăng ký
                     </a>
                 </div>
             @endguest
