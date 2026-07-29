@@ -157,11 +157,11 @@
                 <ul class="flex flex-col gap-4 text-sm">
                     <li class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-primary text-[18px] shrink-0">call</span>
-                        <a href="tel:+84123456789" class="hover:text-primary transition-colors">+84 123 456 789</a>
+                        <a href="tel:+84395294730" class="hover:text-primary transition-colors">0395 294 730</a>
                     </li>
                     <li class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-primary text-[18px] shrink-0">mail</span>
-                        <a href="mailto:info@xiaomu.vn" class="hover:text-primary transition-colors">info@xiaomu.vn</a>
+                        <a href="mailto:xiaomuhsk@gmail.com" class="hover:text-primary transition-colors">xiaomuhsk@gmail.com</a>
                     </li>
                     <li class="flex items-start gap-3">
                         <span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">schedule</span>

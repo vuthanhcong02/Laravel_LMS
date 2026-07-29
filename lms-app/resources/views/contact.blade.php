@@ -19,7 +19,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-slate-900 dark:text-white">Số điện thoại</p>
-                            <p class="text-slate-600 dark:text-slate-400">+84 123 456 789</p>
+                            <p class="text-slate-600 dark:text-slate-400">0395 294 730</p>
                         </div>
                     </div>
                     <!-- Contact Item -->
@@ -30,7 +30,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-slate-900 dark:text-white">Email</p>
-                            <p class="text-slate-600 dark:text-slate-400">info@xiaomu.vn</p>
+                            <p class="text-slate-600 dark:text-slate-400">xiaomuhsk@gmail.com</p>
                         </div>
                     </div>
                     <!-- Contact Item -->
