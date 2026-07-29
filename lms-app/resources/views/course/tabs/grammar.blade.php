@@ -49,7 +49,7 @@
                                                             @foreach($grammar->examples as $ex)
                                                                 <div class="p-4 rounded-xl border border-slate-100 dark:border-slate-85 bg-slate-50/50 dark:bg-slate-800/40 relative group/ex">
                                                                     <p class="text-xs text-primary font-bold italic mb-0.5">{{ is_array($ex) ? ($ex['pinyin'] ?? '') : ($ex->pinyin ?? '') }}</p>
-                                                                    <p class="text-xl font-black text-slate-800 dark:text-white leading-normal">{{ is_array($ex) ? ($ex['character'] ?? '') : ($ex->character ?? '') }}</p>
+                                                                    <p class="text-base sm:text-lg font-bold text-slate-800 dark:text-white leading-normal">{{ is_array($ex) ? ($ex['character'] ?? '') : ($ex->character ?? '') }}</p>
                                                                     <p class="text-xs text-slate-455 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/40 font-semibold">Nghĩa Việt: {{ is_array($ex) ? ($ex['translation'] ?? '') : ($ex->translation ?? '') }}</p>
                                                                 </div>
                                                             @endforeach

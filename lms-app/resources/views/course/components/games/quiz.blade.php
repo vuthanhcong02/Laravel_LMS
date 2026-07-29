@@ -38,29 +38,29 @@
                 </div>
 
                 <!-- Question Card -->
-                <div class="w-full bg-white dark:bg-slate-800 rounded-3xl p-8 mb-8 text-center border-2 border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden">
+                <div class="w-full bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 mb-6 text-center border-2 border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden">
                     <!-- Audio Button -->
-                    <button @click="playWordAudio(currentQuestion.word.word)" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                    <button @click="playWordAudio(currentQuestion.word.word)" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">volume_up</span>
                     </button>
                     
-                    <div class="text-sm font-bold text-slate-400 dark:text-slate-500 mb-4 uppercase tracking-widest" x-text="currentQuestion.type === 'meaning' ? 'Chọn nghĩa đúng' : 'Chọn chữ Hán đúng'"></div>
-                    <div class="text-4xl md:text-5xl font-black text-slate-800 dark:text-white" x-text="currentQuestion.questionText"></div>
+                    <div class="text-xs font-bold text-slate-400 dark:text-slate-500 mb-3 uppercase tracking-widest" x-text="currentQuestion.type === 'meaning' ? 'Chọn nghĩa đúng' : 'Chọn chữ Hán đúng'"></div>
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 dark:text-white" x-text="currentQuestion.questionText"></div>
                 </div>
 
                 <!-- Answer Buttons -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     <template x-for="(option, index) in currentQuestion.options" :key="'opt-'+index">
                         <button 
                             @click="selectAnswer(index)"
                             :disabled="hasAnswered"
-                            class="relative w-full flex items-center bg-white dark:bg-slate-800 border-2 rounded-2xl p-5 transition-all duration-200 group"
+                            class="relative w-full flex items-center bg-white dark:bg-slate-800 border-2 rounded-2xl p-3.5 sm:p-4 transition-all duration-200 group"
                             :class="getOptionClass(index)"
                         >
                             <div class="w-6 h-6 rounded bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs font-bold transition-colors shrink-0 z-10"
                                  :class="getOptionBadgeClass(index)"
                                  x-text="index + 1"></div>
-                            <div class="ml-5 text-lg font-bold text-slate-700 dark:text-slate-200 text-left z-10" x-text="option.text"></div>
+                            <div class="ml-3.5 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 text-left z-10" x-text="option.text"></div>
                         </button>
                     </template>
                 </div>

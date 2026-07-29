@@ -40,39 +40,39 @@
         </div>
 
         <!-- The 2 Columns -->
-        <div class="grid grid-cols-2 gap-6 md:gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <!-- Left Column: Words -->
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-3">
                 <template x-for="(item, index) in currentLeftWords" :key="'left-'+item.id">
                     <button 
                         @click="selectLeft(item)"
-                        class="relative w-full flex items-center bg-white dark:bg-slate-800 border-2 rounded-2xl p-5 md:p-6 transition-all duration-300 ease-out group overflow-hidden"
+                        class="relative w-full flex items-center bg-white dark:bg-slate-800 border-2 rounded-2xl p-3.5 sm:p-4 transition-all duration-300 ease-out group overflow-hidden"
                         :class="[
-                            item.matched ? 'opacity-40 grayscale pointer-events-none scale-95' : 'opacity-100 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_10px_20px_rgba(0,0,0,0.2)]',
-                            selectedLeft && selectedLeft.id === item.id ? 'border-green-500 ring-4 ring-green-500/20 scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.15)] dark:shadow-[0_0_20px_rgba(34,197,94,0.1)] z-10' : 'border-slate-100 dark:border-slate-700 hover:border-green-300 dark:hover:border-green-700'
+                            item.matched ? 'opacity-40 grayscale pointer-events-none scale-95' : 'opacity-100 hover:-translate-y-0.5 hover:shadow-md',
+                            selectedLeft && selectedLeft.id === item.id ? 'border-green-500 ring-4 ring-green-500/20 scale-[1.01] shadow-md z-10' : 'border-slate-100 dark:border-slate-700/80 hover:border-green-300 dark:hover:border-green-700'
                         ]"
                     >
                         <div class="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-900/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs font-bold group-hover:bg-green-100 group-hover:text-green-600 transition-colors shrink-0 z-10" x-text="index + 1"></div>
-                        <div class="ml-5 text-2xl md:text-3xl font-black text-slate-800 dark:text-white tracking-wide text-left z-10" x-text="item.word"></div>
+                        <div class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs font-bold group-hover:bg-green-100 group-hover:text-green-600 transition-colors shrink-0 z-10" x-text="index + 1"></div>
+                        <div class="ml-3.5 text-lg sm:text-xl font-black text-slate-800 dark:text-white tracking-wide text-left z-10" x-text="item.word"></div>
                     </button>
                 </template>
             </div>
 
             <!-- Right Column: Meanings -->
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-3">
                 <template x-for="(item, index) in currentRightWords" :key="'right-'+item.id">
                     <button 
                         @click="selectRight(item)"
-                        class="relative w-full flex items-center bg-white dark:bg-slate-800 border-2 rounded-2xl p-5 md:p-6 transition-all duration-300 ease-out group overflow-hidden"
+                        class="relative w-full flex items-center bg-white dark:bg-slate-800 border-2 rounded-2xl p-3.5 sm:p-4 transition-all duration-300 ease-out group overflow-hidden"
                         :class="[
-                            item.matched ? 'opacity-40 grayscale pointer-events-none scale-95' : 'opacity-100 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_10px_20px_rgba(0,0,0,0.2)]',
-                            selectedRight && selectedRight.id === item.id ? 'border-green-500 ring-4 ring-green-500/20 scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.15)] dark:shadow-[0_0_20px_rgba(34,197,94,0.1)] z-10' : 'border-slate-100 dark:border-slate-700 hover:border-green-300 dark:hover:border-green-700'
+                            item.matched ? 'opacity-40 grayscale pointer-events-none scale-95' : 'opacity-100 hover:-translate-y-0.5 hover:shadow-md',
+                            selectedRight && selectedRight.id === item.id ? 'border-green-500 ring-4 ring-green-500/20 scale-[1.01] shadow-md z-10' : 'border-slate-100 dark:border-slate-700/80 hover:border-green-300 dark:hover:border-green-700'
                         ]"
                     >
                         <div class="absolute inset-0 bg-gradient-to-bl from-green-50/50 to-transparent dark:from-green-900/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs font-bold group-hover:bg-green-100 group-hover:text-green-600 transition-colors shrink-0 z-10" x-text="rightHotkeys[index]"></div>
-                        <div class="ml-5 text-base md:text-lg font-bold text-slate-600 dark:text-slate-300 leading-relaxed text-left z-10" x-text="item.meaning"></div>
+                        <div class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs font-bold group-hover:bg-green-100 group-hover:text-green-600 transition-colors shrink-0 z-10" x-text="rightHotkeys[index]"></div>
+                        <div class="ml-3.5 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 leading-snug text-left z-10" x-text="item.meaning"></div>
                     </button>
                 </template>
             </div>

@@ -61,8 +61,20 @@
                                                     <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === 'listening')?.sections || [])" :key="sIdx">
                                                         <div class="space-y-4 scroll-mt-[160px]" :id="'practice-' + 'listening' + '-section-' + sIdx">
                                                             <div class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-805/60 border-l-4 border-l-primary">
-                                                                <h4 class="text-sm font-black text-slate-800 dark:text-white font-chinese tracking-wider" x-text="sect.section_han"></h4>
-                                                                <p class="text-xs text-primary italic mt-1" x-show="sect.section_vi" x-text="sect.section_vi"></p>
+                                                                <h4 class="text-sm font-black text-slate-800 dark:text-white font-chinese tracking-wider" x-text="sect.section_han" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"></h4>
+                                                                <template x-if="sect.section_vi">
+                                                                    <div class="mt-2 text-xs">
+                                                                        <template x-if="!window.parseSectionVi(sect.section_vi).hasExample">
+                                                                            <p class="text-primary dark:text-primary-light italic font-medium" x-text="sect.section_vi" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"></p>
+                                                                        </template>
+                                                                        <template x-if="window.parseSectionVi(sect.section_vi).hasExample">
+                                                                            <div class="space-y-2 mt-1">
+                                                                                <p class="text-primary dark:text-primary-light font-bold" x-text="window.parseSectionVi(sect.section_vi).mainText"></p>
+                                                                                <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" x-html="window.parseSectionVi(sect.section_vi).exampleHtml"></div>
+                                                                            </div>
+                                                                        </template>
+                                                                    </div>
+                                                                </template>
                                                             </div>
                                                             <template x-if="sect.audio_path">
                                                                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 mt-4 flex flex-col gap-2">
@@ -244,7 +256,7 @@
                                                                                                                 <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
                                                                                                                     <div class="flex flex-col items-center">
                                                                                                                         <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
-                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                        <span class="font-chinese text-xs sm:text-sm font-semibold leading-none mt-1" x-text="pair.h"></span>
                                                                                                                     </div>
                                                                                                                 </template>
                                                                                                             </div>
@@ -254,7 +266,7 @@
                                                                                                                 <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
                                                                                                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
                                                                                                                 </template>
-                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                                <span class="font-chinese text-xs sm:text-sm font-semibold" x-text="opt.text || opt"></span>
                                                                                                             </div>
                                                                                                         </template>
                                                                                                     </div>
@@ -310,7 +322,7 @@
                                                                                                                 <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
                                                                                                                     <div class="flex flex-col items-center">
                                                                                                                         <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
-                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                        <span class="font-chinese text-xs sm:text-sm font-semibold leading-none mt-1" x-text="pair.h"></span>
                                                                                                                     </div>
                                                                                                                 </template>
                                                                                                             </div>
@@ -320,7 +332,7 @@
                                                                                                                 <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
                                                                                                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
                                                                                                                 </template>
-                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                                <span class="font-chinese text-xs sm:text-sm font-semibold" x-text="opt.text || opt"></span>
                                                                                                             </div>
                                                                                                         </template>
                                                                                                     </div>
@@ -379,8 +391,20 @@
                                                     <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === 'reading')?.sections || [])" :key="sIdx">
                                                         <div class="space-y-4 scroll-mt-[160px]" :id="'practice-' + 'reading' + '-section-' + sIdx">
                                                             <div class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-805/60 border-l-4 border-l-primary">
-                                                                <h4 class="text-sm font-black text-slate-800 dark:text-white font-chinese tracking-wider" x-text="sect.section_han"></h4>
-                                                                <p class="text-xs text-primary dark:text-primary-light italic mt-1" x-text="sect.section_vi"></p>
+                                                                <h4 class="text-sm font-black text-slate-800 dark:text-white font-chinese tracking-wider" x-text="sect.section_han" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"></h4>
+                                                                <template x-if="sect.section_vi">
+                                                                     <div class="mt-2 text-xs">
+                                                                         <template x-if="!window.parseSectionVi(sect.section_vi).hasExample">
+                                                                             <p class="text-primary dark:text-primary-light italic font-medium" x-text="sect.section_vi" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"></p>
+                                                                         </template>
+                                                                         <template x-if="window.parseSectionVi(sect.section_vi).hasExample">
+                                                                             <div class="space-y-2 mt-1">
+                                                                                 <p class="text-primary dark:text-primary-light font-bold" x-text="window.parseSectionVi(sect.section_vi).mainText"></p>
+                                                                                 <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" x-html="window.parseSectionVi(sect.section_vi).exampleHtml"></div>
+                                                                             </div>
+                                                                         </template>
+                                                                     </div>
+                                                                 </template>
                                                             </div>
 
                                                             <template x-if="sect.image_path">
@@ -557,7 +581,7 @@
                                                                                                                 <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
                                                                                                                     <div class="flex flex-col items-center">
                                                                                                                         <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
-                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                        <span class="font-chinese text-xs sm:text-sm font-semibold leading-none mt-1" x-text="pair.h"></span>
                                                                                                                     </div>
                                                                                                                 </template>
                                                                                                             </div>
@@ -567,7 +591,7 @@
                                                                                                                 <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
                                                                                                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
                                                                                                                 </template>
-                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                                <span class="font-chinese text-xs sm:text-sm font-semibold" x-text="opt.text || opt"></span>
                                                                                                             </div>
                                                                                                         </template>
                                                                                                     </div>
@@ -623,7 +647,7 @@
                                                                                                                 <template x-for="(pair, idx) in window.alignPinyin(opt.text || opt, opt.pinyin, currentLevelObj?.level_code)" :key="idx">
                                                                                                                     <div class="flex flex-col items-center">
                                                                                                                         <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pinyin font-normal leading-none" x-html="pair.p === '.' ? '&nbsp;' : pair.p"></span>
-                                                                                                                        <span class="font-chinese text-[17px] leading-none mt-1" x-text="pair.h"></span>
+                                                                                                                        <span class="font-chinese text-xs sm:text-sm font-semibold leading-none mt-1" x-text="pair.h"></span>
                                                                                                                     </div>
                                                                                                                 </template>
                                                                                                             </div>
@@ -633,7 +657,7 @@
                                                                                                                 <template x-if="opt.pinyin && ['hsk1', 'hsk2', 'hsk3'].includes(currentLevelObj?.level_code)">
                                                                                                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide mb-0.5 font-pinyin font-normal" x-text="opt.pinyin"></span>
                                                                                                                 </template>
-                                                                                                                <span class="font-chinese text-[17px]" x-text="opt.text || opt"></span>
+                                                                                                                <span class="font-chinese text-xs sm:text-sm font-semibold" x-text="opt.text || opt"></span>
                                                                                                             </div>
                                                                                                         </template>
                                                                                                     </div>
@@ -695,8 +719,20 @@
                                                         <div class="space-y-4 scroll-mt-[160px]" :id="'practice-' + 'writing' + '-section-' + sIdx">
                                                             <!-- Section Header -->
                                                             <div class="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-4">
-                                                                <h4 class="font-bold text-primary mb-1 text-lg" x-text="sect.section_han"></h4>
-                                                                <p class="text-sm text-slate-600 dark:text-slate-400" x-show="sect.section_vi" x-text="sect.section_vi"></p>
+                                                                <h4 class="font-bold text-primary mb-1 text-lg" x-text="sect.section_han" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"></h4>
+                                                                <template x-if="sect.section_vi">
+                                                                    <div class="mt-2 text-xs">
+                                                                        <template x-if="!window.parseSectionVi(sect.section_vi).hasExample">
+                                                                            <p class="text-slate-600 dark:text-slate-400 font-medium" x-text="sect.section_vi" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"></p>
+                                                                        </template>
+                                                                        <template x-if="window.parseSectionVi(sect.section_vi).hasExample">
+                                                                            <div class="space-y-2 mt-1">
+                                                                                <p class="text-primary dark:text-primary-light font-bold text-sm" x-text="window.parseSectionVi(sect.section_vi).mainText"></p>
+                                                                                <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" x-html="window.parseSectionVi(sect.section_vi).exampleHtml"></div>
+                                                                            </div>
+                                                                        </template>
+                                                                    </div>
+                                                                </template>
                                                             </div>
 
                                                             <template x-if="sect.image_path">
@@ -964,7 +1000,7 @@
                                                 <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === practiceTab)?.sections || [])" :key="sIdx">
                                                     <button 
                                                         @click="practiceSectionIdx = sIdx; const el = document.getElementById('practice-' + practiceTab + '-section-' + sIdx); if(el) { el.scrollIntoView({ behavior: 'smooth' }) }"
-                                                        class="group relative flex items-center gap-3 py-2 text-left z-10"
+                                                        class="group relative flex items-center gap-3 py-2 text-left z-10" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"
                                                     >
                                                         <div 
                                                             class="h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all border-4 border-white dark:border-slate-900"
@@ -976,9 +1012,8 @@
                                                             <span 
                                                                 class="text-sm font-bold transition-colors line-clamp-2"
                                                                 :class="practiceSectionIdx === sIdx ? 'text-primary' : 'text-slate-500 dark:text-slate-400 group-hover:text-primary dark:group-hover:text-primary-light'"
-                                                                x-text="sect.section_han"
-                                                            ></span>
-                                                            <span class="text-[10px] text-slate-400 font-medium line-clamp-1" x-show="sect.section_vi" x-text="sect.section_vi"></span>
+                                                                x-text="sect.section_han" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"
+                                                            <span class="text-[10px] text-slate-400 font-medium line-clamp-1" x-show="sect.section_vi" x-text="sect.section_vi" :title="sect.section_han + (sect.section_vi ? ' (' + sect.section_vi + ')' : '')"></span>
                                                         </div>
                                                     </button>
                                                 </template>
@@ -989,5 +1024,107 @@
                                 </div>
                             </template>
                         </div>
+
+                        <script>
+                            window.parseSectionVi = function(text) {
+                                if (!text) return { mainText: '', hasExample: false, exampleHtml: '' };
+
+                                // === BƯỚC 1: Tìm điểm bắt đầu của ví dụ ===
+                                const headerRx = /(例如(?:\s*[\(（]?\s*Ví dụ\s*[\)）]?)?\s*[:：]?|Ví dụ\s*[:：]?)/i;
+                                const firstTagRx = /(男\s*[:：]|女\s*[:：]|问\s*[:：]|★|\s+[A-D]\s+|[\(（](?:ĐÚNG|SAI|✓|✕|v|x|√|N)[\)）])/i;
+
+                                const headerMatch = text.match(headerRx);
+                                const firstTagMatch = text.match(firstTagRx);
+
+                                // Không có gì đặc biệt
+                                if (!headerMatch && !firstTagMatch) {
+                                    return { mainText: text, hasExample: false, exampleHtml: '' };
+                                }
+
+                                let mainText = '';
+                                let exampleRaw = text;
+
+                                if (headerMatch) {
+                                    mainText = text.substring(0, headerMatch.index).trim();
+                                    exampleRaw = text.substring(headerMatch.index).trim();
+                                } else if (firstTagMatch) {
+                                    mainText = text.substring(0, firstTagMatch.index).trim();
+                                    exampleRaw = text.substring(firstTagMatch.index).trim();
+                                }
+
+                                // === BƯỚC 2: Tách 例如 header ra khỏi phần nội dung ví dụ ===
+                                let exHeader = '';
+                                let exBody = exampleRaw;
+                                const hm = exampleRaw.match(headerRx);
+                                if (hm && hm.index === 0) {
+                                    exHeader = exampleRaw.substring(0, hm.index + hm[0].length).trim();
+                                    exBody = exampleRaw.substring(hm.index + hm[0].length).trim();
+                                }
+
+                                // === BƯỚC 3: Xử lý tách dòng trên PLAIN TEXT (exBody) trước khi chèn HTML ===
+                                // Tách tại: 女：/男：, 问：, ★, A/B/C/D đứng trước nội dung, (ĐÚNG)/(SAI)
+                                let parts = [exBody];
+
+                                // Tách theo lượt thoại nhân vật và câu hỏi
+                                let splitRx = /(女\s*[:：]|男\s*[:：]|问\s*[:：]|★)/g;
+                                let combined = exBody;
+                                // Chèn ký tự phân tách trước mỗi keyword
+                                combined = combined.replace(/(.)(\s*)(女\s*[:：]|男\s*[:：])/g, '$1\n$3');
+                                combined = combined.replace(/(.)(\s*)(问\s*[:：])/g, '$1\n$3');
+                                combined = combined.replace(/(.)(\s*)(★)/g, '$1\n$3');
+                                combined = combined.replace(/\s+([A-D])\s+/g, '\n$1 ');
+
+                                // Tách các dòng
+                                const lines = combined.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+                                // === BƯỚC 4: Render từng dòng thành HTML ===
+                                let htmlLines = lines.map((line, i) => {
+                                    // Đánh dấu (ĐÚNG)/(SAI)/(✓)/(✕)
+                                    line = line
+                                        .replace(/([\(（](?:ĐÚNG|✓|v|√)[\)）])/gi, '<span class="inline-block bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold px-2 py-0.5 rounded-md text-xs ml-1">$1</span>')
+                                        .replace(/([\(（](?:SAI|✕|x|N)[\)）])/gi, '<span class="inline-block bg-red-500/15 text-red-600 dark:text-red-400 font-extrabold px-2 py-0.5 rounded-md text-xs ml-1">$1</span>');
+
+                                    // Đáp án A / B / C / D đứng đầu dòng
+                                    const answerMatch = line.match(/^([A-D])\s+(.*)/s);
+                                    if (answerMatch) {
+                                        return '<div class="flex items-start gap-2 mt-1.5"><span class="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-extrabold text-slate-700 dark:text-slate-200">' + answerMatch[1] + '</span><span>' + answerMatch[2] + '</span></div>';
+                                    }
+
+                                    // Câu hỏi 问：
+                                    const wenMatch = line.match(/^(问\s*[:：])(.*)/s);
+                                    if (wenMatch) {
+                                        return '<div class="mt-2"><span class="font-bold text-primary">' + wenMatch[1] + '</span>' + wenMatch[2] + '</div>';
+                                    }
+
+                                    // Ngôi sao ★
+                                    const starMatch = line.match(/^(★\s*)(.*)/s);
+                                    if (starMatch) {
+                                        return '<div class="mt-1.5"><span class="text-amber-500 font-bold">★</span> ' + starMatch[2] + '</div>';
+                                    }
+
+                                    // Lượt thoại 女：/男：
+                                    const dialogMatch = line.match(/^(女\s*[:：]|男\s*[:：])(.*)/s);
+                                    if (dialogMatch) {
+                                        return '<div class="mt-1.5"><span class="font-bold text-slate-700 dark:text-slate-200">' + dialogMatch[1] + '</span>' + dialogMatch[2] + '</div>';
+                                    }
+
+                                    // Dòng thường (phần đầu tiên sau 例如)
+                                    return (i === 0 ? '' : '<div class="mt-1">') + line + (i === 0 ? '' : '</div>');
+                                });
+
+                                // === BƯỚC 5: Ghép badge 例如 + nội dung ===
+                                let exHeaderHtml = exHeader
+                                    ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' + exHeader + '</span>'
+                                    : '';
+
+                                const formattedBody = exHeaderHtml + htmlLines.join('');
+
+                                return {
+                                    mainText: mainText || '',
+                                    hasExample: true,
+                                    exampleHtml: formattedBody
+                                };
+                            };
+                        </script>
 
 

@@ -38,15 +38,15 @@
                 </div>
 
                 <!-- Question Card -->
-                <div class="w-full bg-white dark:bg-slate-800 rounded-3xl p-8 mb-8 text-center border-2 border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden transition-colors duration-300"
+                <div class="w-full bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 mb-6 text-center border-2 border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden transition-colors duration-300"
                      :class="{'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20': showError, 'border-green-500 dark:border-green-500 bg-green-50 dark:bg-green-900/20': showSuccess}">
                     
-                    <button @click="playWordAudio(currentWord.word)" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                    <button @click="playWordAudio(currentWord.word)" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">volume_up</span>
                     </button>
                     
-                    <div class="text-sm font-bold text-slate-400 dark:text-slate-500 mb-4 uppercase tracking-widest">Gõ chữ Hán cho từ này</div>
-                    <div class="text-xl md:text-2xl font-black text-slate-700 dark:text-slate-300 mb-2" x-text="currentWord.meaning"></div>
+                    <div class="text-xs font-bold text-slate-400 dark:text-slate-500 mb-3 uppercase tracking-widest">Gõ chữ Hán cho từ này</div>
+                    <div class="text-sm sm:text-base md:text-lg font-bold text-slate-700 dark:text-slate-300 mb-1 leading-relaxed" x-text="currentWord.meaning"></div>
                 </div>
 
                 <!-- Input Area -->
