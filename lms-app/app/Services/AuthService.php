@@ -109,12 +109,14 @@ class AuthService
                     return redirect('/login')->with('error', 'Email này đã được sử dụng. Vui lòng đăng nhập bằng mật khẩu.');
                 }
             } else {
+                $avatar = $socialUser->getAvatar();
+
                 $user = User::create([
                     'first_name' => splitName($socialUser->getName())['first_name'],
                     'last_name' => splitName($socialUser->getName())['last_name'],
                     'email' => $email,
                     'password' => bcrypt(str()->random(16)),
-                    'avatar' => $socialUser->getAvatar(),
+                    'avatar' => $avatar,
                     'provider' => $provider,
                     'provider_id' => $socialUser->getId(),
                 ]);

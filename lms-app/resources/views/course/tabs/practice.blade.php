@@ -369,12 +369,12 @@
                                                                 <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
                                                                      x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
                                                                     <button 
-                                                                        class="px-8 py-3.5 bg-primary hover:bg-primary/95 text-white font-black text-[15px] rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
+                                                                        class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs rounded-lg shadow-md shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
                                                                         :disabled="!isSectionFullyAnswered(sect.questions)"
                                                                         :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                         @click="checkAllSection(sect.questions)"
                                                                     >
-                                                                        <span class="material-symbols-outlined text-[22px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> KIỂM TRA ĐÁP ÁN
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -694,12 +694,12 @@
                                                                 <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
                                                                      x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
                                                                     <button 
-                                                                        class="px-8 py-3.5 bg-primary hover:bg-primary/95 text-white font-black text-[15px] rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
+                                                                        class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs rounded-lg shadow-md shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
                                                                         :disabled="!isSectionFullyAnswered(sect.questions)"
                                                                         :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                         @click="checkAllSection(sect.questions)"
                                                                     >
-                                                                        <span class="material-symbols-outlined text-[22px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> KIỂM TRA ĐÁP ÁN
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -969,12 +969,12 @@
                                                                 <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
                                                                      x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
                                                                     <button 
-                                                                        class="px-8 py-3.5 bg-primary hover:bg-primary/95 text-white font-black text-[15px] rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
+                                                                        class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs rounded-lg shadow-md shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
                                                                         :disabled="!isSectionFullyAnswered(sect.questions)"
                                                                         :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                         @click="checkAllSection(sect.questions)"
                                                                     >
-                                                                        <span class="material-symbols-outlined text-[22px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> KIỂM TRA ĐÁP ÁN
                                                                     </button>
                                                                 </div>
                                                             </div>

@@ -99,8 +99,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
     public function getAvatarUrlAttribute()
     {
+        $defaultAvatar = 'https://ui-avatars.com/api/?name=' . urlencode($this->first_name . ' ' . $this->last_name) . '&color=FFFFFF&background=8fc0e0';
+
         if (!$this->avatar) {
-            return null;
+            return $defaultAvatar;
         }
 
         if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {

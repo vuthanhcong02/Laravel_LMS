@@ -221,8 +221,8 @@
 
                 <!-- Stats Badges -->
                 <div class="flex flex-wrap gap-2 sm:self-auto self-stretch shrink-0">
-                    <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->lessons_count }} Bài học</span>
-                    <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->vocab_count }} Từ vựng</span>
+                    <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->lessons_count }} Bài học</span>
+                    <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->vocab_count }} Từ vựng</span>
                 </div>
             </div>
 
@@ -335,25 +335,25 @@
                             <div class="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 transition-all duration-300 w-full sm:w-auto">
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'tu-vung']) }}"
-                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'tu-vung' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-lg transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'tu-vung' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Từ vựng
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'hoi-thoai']) }}"
-                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'hoi-thoai' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-lg transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'hoi-thoai' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Bài khóa
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'ngu-phap']) }}"
-                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'ngu-phap' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-lg transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'ngu-phap' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Ngữ pháp
                                 </a>
                                 <a 
                                     href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}"
-                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-xl transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'luyen-tap' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
+                                    class="h-9 sm:h-10 px-3.5 sm:px-5 text-xs sm:text-sm font-extrabold rounded-lg transition-all duration-300 focus:outline-none cursor-pointer active:scale-95 text-center whitespace-nowrap flex items-center justify-center shrink-0 {{ $activeTab === 'luyen-tap' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     Luyện tập
                                 </a>

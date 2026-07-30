@@ -165,16 +165,29 @@
 
                     {{-- CTA Buttons --}}
                     <div class="reveal reveal-fade-up stagger-delay-3 flex flex-wrap items-center gap-4">
-                        <a href="{{ route('register') }}"
-                            class="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40">
-                            <span>Bắt đầu miễn phí</span>
-                            <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                        </a>
-                        <a href="{{ route('courses') }}"
-                            class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-200">
-                            <span class="material-symbols-outlined text-[18px] text-primary">play_circle</span>
-                            Xem khóa học
-                        </a>
+                        @guest
+                            <a href="{{ route('register') }}"
+                                class="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40">
+                                <span>Bắt đầu miễn phí</span>
+                                <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                            </a>
+                            <a href="{{ route('courses') }}"
+                                class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-200">
+                                <span class="material-symbols-outlined text-[18px] text-primary">play_circle</span>
+                                Xem khóa học
+                            </a>
+                        @else
+                            <a href="{{ route('courses') }}"
+                                class="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40">
+                                <span>Học ngay</span>
+                                <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                            </a>
+                            <a href="{{ route('flashcards') }}"
+                                class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-200">
+                                <span class="material-symbols-outlined text-[18px] text-primary">style</span>
+                                Luyện Flashcard
+                            </a>
+                        @endguest
                     </div>
 
                     {{-- Social proof --}}
@@ -295,7 +308,7 @@
     <section class="border-y border-primary/10 bg-white py-10 dark:bg-slate-900/50">
         <div class="mx-auto max-w-5xl px-6">
             <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
-                @foreach ([['target' => 10000, 'label' => 'Học viên', 'icon' => 'group', 'suffix' => '+'], ['target' => 6, 'label' => 'Cấp độ HSK', 'icon' => 'emoji_events', 'suffix' => ''], ['target' => 95, 'label' => 'Qua kỳ thi', 'icon' => 'verified', 'suffix' => '%'], ['target' => 3, 'label' => 'Năm kinh nghiệm', 'icon' => 'star', 'suffix' => '+']] as $stat)
+                @foreach ([['target' => 10800, 'label' => 'Từ vựng HSK', 'icon' => 'translate', 'suffix' => '+'], ['target' => 6, 'label' => 'Cấp độ HSK', 'icon' => 'emoji_events', 'suffix' => ''], ['target' => 100, 'label' => 'Miễn phí trải nghiệm', 'icon' => 'verified', 'suffix' => '%'], ['target' => 1000, 'label' => 'Học viên đồng hành', 'icon' => 'group', 'suffix' => '+']] as $stat)
                     <div class="reveal reveal-fade-up flex flex-col items-center gap-2 text-center">
                         <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 mb-1">
                             <span class="material-symbols-outlined text-[22px] text-primary">{{ $stat['icon'] }}</span>
@@ -538,32 +551,52 @@
                 </a>
             </div>
 
-            <div class="grid gap-6 md:grid-cols-3">
-                @foreach ([['tag' => 'Học tập', 'title' => 'Cách ghi nhớ 214 bộ thủ tiếng Trung', 'desc' => 'Phương pháp ghi nhớ hiệu quả cho người mới bắt đầu bằng câu chuyện liên tưởng.', 'date' => '15/07/2026', 'time' => '5'], ['tag' => 'Luyện thi', 'title' => 'Bí kíp đạt HSK 4 trong 3 tháng', 'desc' => 'Lộ trình ôn luyện cấp tốc dành riêng cho người đi làm bận rộn.', 'date' => '10/07/2026', 'time' => '7'], ['tag' => 'Giao tiếp', 'title' => '20 câu giao tiếp công sở thông dụng', 'desc' => 'Từ vựng và mẫu câu cần thiết khi làm việc với đối tác Trung Quốc.', 'date' => '05/07/2026', 'time' => '4']] as $idx => $post)
-                    <article
-                        class="reveal reveal-fade-up stagger-delay-{{ $idx + 1 }} group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg dark:border-slate-700/50 dark:bg-slate-800/70">
-                        <div
-                            class="h-40 w-full overflow-hidden rounded-t-2xl bg-gradient-to-br from-primary/20 via-rose-100/60 to-amber-100/60 transition group-hover:from-primary/30 dark:from-primary/15 dark:via-slate-700/40 dark:to-slate-700/20 flex items-center justify-center">
-                            <span
-                                class="material-symbols-outlined text-[48px] text-primary/40 dark:text-primary/30">article</span>
-                        </div>
-                        <div class="flex flex-1 flex-col gap-2 p-5">
-                            <span
-                                class="inline-flex w-fit rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">{{ $post['tag'] }}</span>
-                            <h3 class="font-bold text-slate-800 transition group-hover:text-primary dark:text-white">
-                                {{ $post['title'] }}</h3>
-                            <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ $post['desc'] }}</p>
-                            <div class="mt-auto flex items-center gap-2 pt-3 text-[10px] text-slate-400">
-                                <span class="material-symbols-outlined text-[12px]">calendar_today</span>
-                                <span>{{ $post['date'] }}</span>
-                                <span>•</span>
-                                <span class="material-symbols-outlined text-[12px]">schedule</span>
-                                <span>{{ $post['time'] }} phút đọc</span>
+            @if (isset($latestBlogs) && $latestBlogs->isNotEmpty())
+                <div class="grid gap-6 md:grid-cols-3">
+                    @foreach ($latestBlogs as $idx => $blog)
+                        <article
+                            class="reveal reveal-fade-up stagger-delay-{{ $idx + 1 }} group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg dark:border-slate-700/50 dark:bg-slate-800/70">
+                            <div
+                                class="h-40 w-full overflow-hidden rounded-t-2xl bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center">
+                                @if ($blog->thumbnail)
+                                    <img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="{{ $blog->title }}" class="w-full h-full object-cover">
+                                @else
+                                    <span class="material-symbols-outlined text-[48px] text-primary/40 dark:text-primary/30">article</span>
+                                @endif
                             </div>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
+                            <div class="flex flex-1 flex-col gap-2 p-5">
+                                @if ($blog->category)
+                                    <span class="inline-flex w-fit rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                                        {{ $blog->category->name }}
+                                    </span>
+                                @endif
+                                <h3 class="font-bold text-slate-800 transition group-hover:text-primary dark:text-white line-clamp-2">
+                                    {{ $blog->title }}
+                                </h3>
+                                <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-2">
+                                    {{ Str::limit(strip_tags($blog->content), 100) }}
+                                </p>
+                                <div class="mt-auto flex items-center gap-2 pt-3 text-[10px] text-slate-400">
+                                    <span class="material-symbols-outlined text-[12px]">calendar_today</span>
+                                    <span>{{ $blog->created_at->format('d/m/Y') }}</span>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                {{-- Empty state khi chưa có bài viết ở trang chủ --}}
+                <div class="reveal reveal-fade-up p-8 rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-center max-w-lg mx-auto flex flex-col items-center">
+                    <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-3">
+                        <span class="material-symbols-outlined text-2xl">newspaper</span>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1">Chưa có bài viết mới</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">Các nội dung chia sẻ bí kíp học tiếng Trung và mẹo thi HSK sẽ sớm được xuất bản.</p>
+                    <a href="{{ route('blog') }}" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                        Xem trang Góc chia sẻ <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </a>
+                </div>
+            @endif
         </div>
     </section>
 
@@ -590,18 +623,104 @@
                     phí</strong> phù hợp với mục tiêu của bạn.
             </p>
 
-            <form class="reveal reveal-fade-up stagger-delay-3 mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <input type="email" placeholder="Email của bạn"
-                    class="flex-1 rounded-2xl border-2 border-white/20 bg-white/15 px-5 py-4 text-sm font-medium text-white placeholder-white/60 outline-none backdrop-blur-sm transition focus:border-white/60 focus:bg-white/20 sm:max-w-xs">
-                <button type="submit"
-                    class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-primary shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:shadow-xl">
-                    Nhận tư vấn ngay
-                </button>
-            </form>
+            <div x-data="ctaConsultationForm()" class="mt-8 max-w-md mx-auto">
+                <form x-show="!submitted" @submit.prevent="submitForm"
+                    class="reveal reveal-fade-up stagger-delay-3 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                    @csrf
+                    <input type="hidden" name="topics[]" value="Tư vấn khóa học">
+                    <input type="text" name="website" x-model="website" class="hidden" tabindex="-1"
+                        autocomplete="off" aria-hidden="true">
+                    <input type="email" name="email" x-model="email" placeholder="Email của bạn" required
+                        class="flex-1 rounded-2xl border-2 border-white/30 bg-white/20 px-5 py-4 text-sm font-semibold text-white placeholder-white/70 outline-none backdrop-blur-md transition focus:border-white focus:bg-white/30 sm:max-w-xs shadow-inner">
+                    <button type="submit" :disabled="loading"
+                        class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-primary shadow-xl shadow-black/10 transition hover:-translate-y-0.5 hover:shadow-2xl active:scale-95 disabled:opacity-75 flex items-center justify-center gap-2 shrink-0">
+                        <span x-show="!loading">Nhận tư vấn ngay</span>
+                        <span x-show="loading" style="display:none"
+                            class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                    </button>
+                </form>
+
+                <div x-show="submitted" x-transition:enter="transition ease-out duration-300 transform"
+                    x-transition:enter-start="opacity-0 translate-y-3 scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 scale-100" style="display:none"
+                    class="p-5 rounded-2xl bg-white text-slate-900 shadow-2xl border-2 border-emerald-500 flex items-start gap-4 text-left">
+                    <div
+                        class="size-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined text-2xl">check_circle</span>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-black text-base text-slate-900">Đã đăng ký thành công!</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Cảm ơn bạn! {{ config('app.name', 'Tiếng Trung XiaoMu') }} sẽ liên hệ tư vấn lộ trình học phù
+                            hợp nhất cho bạn trong thời gian sớm nhất.
+                        </p>
+                    </div>
+                </div>
+
+                <div x-show="errorMsg" x-transition:enter="transition ease-out duration-300 transform"
+                    x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                    style="display:none"
+                    class="mt-3 p-3.5 rounded-xl bg-white text-rose-700 shadow-lg border border-rose-200 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-rose-500 text-lg">error</span>
+                    <span x-text="errorMsg"></span>
+                </div>
+            </div>
             <p class="reveal reveal-fade-up stagger-delay-4 mt-4 text-xs text-white/60">
                 🔒 Cam kết không spam. Hủy bất cứ lúc nào.
             </p>
         </div>
     </section>
 
+    <script>
+        function ctaConsultationForm() {
+            return {
+                email: '',
+                website: '',
+                loading: false,
+                submitted: false,
+                errorMsg: '',
+                async submitForm() {
+                    if (!this.email) return;
+                    this.loading = true;
+                    this.errorMsg = '';
+                    try {
+                        const response = await fetch('{{ route('contact.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: this.email,
+                                website: this.website,
+                                topics: ['Tư vấn khóa học']
+                            })
+                        });
+                        const data = await response.json();
+                        if (response.ok && data.success) {
+                            this.submitted = true;
+                            this.email = '';
+                        } else {
+                            if (response.status === 429) {
+                                this.errorMsg = 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút.';
+                            } else if (data.errors && data.errors.email) {
+                                this.errorMsg = data.errors.email[0];
+                            } else if (data.errors) {
+                                const firstKey = Object.keys(data.errors)[0];
+                                this.errorMsg = data.errors[firstKey][0];
+                            } else {
+                                this.errorMsg = data.message || 'Đã có lỗi xảy ra. Vui lòng thử lại sau.';
+                            }
+                        }
+                    } catch (e) {
+                        this.errorMsg = 'Đã có lỗi xảy ra. Vui lòng thử lại sau.';
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            };
+        }
+    </script>
 @endsection

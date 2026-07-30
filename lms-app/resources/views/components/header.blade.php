@@ -19,12 +19,11 @@
                             class="w-full h-full object-cover object-center rounded-full">
                     </div>
                 </div>
-                <div class="flex flex-col leading-none">
+                <div class="flex flex-col leading-tight">
                     <span
-                        class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors duration-300">小木</span>
+                        class="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors duration-300">XiaoMu</span>
                     <span
-                        class="text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-primary/80 dark:text-primary/90 mt-0.5 transition-colors duration-300 group-hover:text-primary">Tiếng
-                        Trung</span>
+                        class="text-[9px] sm:text-[10px] font-bold tracking-[0.18em] uppercase text-primary transition-colors duration-300">Tiếng Trung</span>
                 </div>
             </a>
         </div>
@@ -67,8 +66,8 @@
                         </a>
 
                         <!-- Pinyin Link -->
-                        <a href="{{ url('/pinyin') }}"
-                            class="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 {{ request()->is('pinyin') ? 'bg-primary/10 text-primary' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-primary' }}">
+                        <a href="{{ route('pinyin.index') }}"
+                            class="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 {{ request()->routeIs('pinyin.index') ? 'bg-primary/10 text-primary' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-primary' }}">
                             <span class="material-symbols-outlined text-[20px] font-bold">sort_by_alpha</span>
                             <div class="text-left">
                                 <p class="leading-none text-xs font-bold">Bảng Pinyin</p>
@@ -114,7 +113,7 @@
             <!-- Blog Link -->
             <a class="relative py-2 text-sm font-semibold whitespace-nowrap transition-colors {{ $isBlogActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary' }}"
                 href="{{ route('blog') }}">
-                Tin tức
+                Góc chia sẻ
             </a>
 
             <!-- Contact Link -->
@@ -157,7 +156,8 @@
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" @click.away="open = false"
                         class="flex items-center gap-2 focus:outline-none">
-                        <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) . '&color=FFFFFF&background=8fc0e0' }}"
+                        <img src="{{ auth()->user()->avatar_url }}"
+                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) }}&color=FFFFFF&background=8fc0e0';"
                             alt="Avatar" class="h-10 w-10 rounded-full object-cover border-2 border-primary/20">
                         <span
                             class="text-sm font-bold text-slate-700 dark:text-slate-200 hidden lg:block">{{ auth()->user()->first_name }}
@@ -266,8 +266,8 @@
                     </a>
 
                     <!-- Pinyin -->
-                    <a href="{{ url('/pinyin') }}"
-                        class="text-xs font-semibold flex items-center gap-2.5 transition-colors {{ request()->is('pinyin') ? 'text-primary' : 'text-slate-500 dark:text-slate-400' }}">
+                    <a href="{{ route('pinyin.index') }}"
+                        class="text-xs font-semibold flex items-center gap-2.5 transition-colors {{ request()->routeIs('pinyin.index') ? 'text-primary' : 'text-slate-500 dark:text-slate-400' }}">
                         <span class="material-symbols-outlined text-[18px]">sort_by_alpha</span>
                         <span>Bảng Pinyin</span>
                     </a>
@@ -299,7 +299,7 @@
             <a href="{{ route('blog') }}"
                 class="text-sm font-bold flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800/80 transition-colors {{ $isBlogActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300' }}">
                 <span class="material-symbols-outlined text-[20px]">rss_feed</span>
-                <span>Tin tức</span>
+                <span>Góc chia sẻ</span>
             </a>
 
             <!-- Contact Navigation -->
@@ -313,11 +313,11 @@
                 <!-- Mobile Guest Action Buttons -->
                 <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex flex-col gap-2.5">
                     <a href="{{ route('login') }}"
-                        class="w-full text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        class="w-full text-center py-3 rounded-2xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                         Đăng nhập
                     </a>
                     <a href="{{ route('register') }}"
-                        class="w-full text-center py-2.5 rounded-xl bg-primary text-sm font-bold text-white shadow-md shadow-primary/30 hover:bg-primary/90 transition-all">
+                        class="w-full text-center py-3 rounded-2xl bg-primary text-sm font-bold text-white shadow-md shadow-primary/30 hover:bg-primary/90 transition-all">
                         Đăng ký
                     </a>
                 </div>
