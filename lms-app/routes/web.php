@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PinyinController;
+use App\Http\Controllers\PinyinQuizController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\Student\StudentDashboardController;
@@ -42,11 +44,13 @@ Route::controller(PageController::class)->group(function () {
     });
     Route::get('/trang-chu', 'getViewHome')->name('home');
     Route::get('/lien-he', [PageController::class, 'getViewContact'])->name('contact');
-    Route::post('/lien-he', [ContactController::class, 'store'])->name('contact.store');
+    Route::post('/lien-he', [ContactController::class, 'store'])->middleware('throttle:3,1')->name('contact.store');
     Route::get('/khoa-hoc', 'getViewCourses')->name('courses');
     Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
     Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
+    Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
+    Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])
@@ -57,10 +61,10 @@ Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Shared profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/file-viewer', [FileController::class, 'show'])->name('file.viewer');
+    Route::get('/ho-so-ca-nhan', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/ho-so-ca-nhan', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/ho-so-ca-nhan', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/xem-tai-lieu', [FileController::class, 'show'])->name('file.viewer');
 
     // Role-based dashboard redirect
     Route::get('/dashboard', function () {
@@ -205,6 +209,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
-
-Route::get('/pinyin', [\App\Http\Controllers\PinyinController::class, 'index'])->name('pinyin.index');
-Route::get('/pinyin-quiz', [\App\Http\Controllers\PinyinQuizController::class, 'index'])->name('pinyin.quiz');

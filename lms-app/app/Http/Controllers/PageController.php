@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
 use App\Models\HskLesson;
 use App\Models\HskVocabulary;
 use App\Models\HskLevel;
@@ -11,7 +12,13 @@ class PageController extends Controller
 {
     public function getViewHome()
     {
-        return view('home');
+        $latestBlogs = Blog::with(['author', 'category'])
+            ->published()
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('home', compact('latestBlogs'));
     }
 
     public function getViewAbout()
@@ -79,7 +86,17 @@ class PageController extends Controller
 
     public function getViewBlog()
     {
-        return view('blog');
+        $featuredBlog = Blog::with(['author', 'category'])
+            ->published()
+            ->latest()
+            ->first();
+
+        $blogs = Blog::with(['author', 'category'])
+            ->published()
+            ->latest()
+            ->paginate(9);
+
+        return view('blog', compact('featuredBlog', 'blogs'));
     }
 
     public function getViewFlashcards()

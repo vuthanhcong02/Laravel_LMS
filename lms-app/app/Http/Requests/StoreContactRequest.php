@@ -16,6 +16,33 @@ class StoreContactRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $email = $this->input('email');
+        $name = $this->input('name');
+        $message = $this->input('message');
+        $topics = $this->input('topics');
+
+        if (empty($name) && !empty($email)) {
+            $emailPrefix = explode('@', $email)[0];
+            $name = 'Khách hàng (' . $emailPrefix . ')';
+        }
+
+        if (empty($message)) {
+            $message = 'Đăng ký nhận tư vấn lộ trình học tiếng Trung miễn phí.';
+        }
+
+        if (empty($topics)) {
+            $topics = ['Tư vấn khóa học'];
+        }
+
+        $this->merge([
+            'name' => $name,
+            'message' => $message,
+            'topics' => $topics,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -29,6 +56,7 @@ class StoreContactRequest extends FormRequest
             'phone' => ['nullable', 'string', 'regex:/(84|0[3|5|7|8|9])+([0-9]{8})\b/'],
             'topics' => 'nullable|array',
             'message' => 'required|string|min:10|max:10000',
+            'website' => 'nullable|max:0',
         ];
     }
 
@@ -43,12 +71,13 @@ class StoreContactRequest extends FormRequest
             'phone.regex' => 'Số điện thoại không hợp lệ (Vui lòng nhập SĐT Việt Nam hợp lệ).',
             'message.required' => 'Vui lòng nhập nội dung lời nhắn.',
             'message.min' => 'Nội dung lời nhắn phải có ít nhất 10 ký tự.',
+            'website.max' => 'Phát hiện hành vi nghi vấn spam bot.',
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
-        if ($this->ajax()) {
+        if ($this->expectsJson() || $this->ajax() || $this->wantsJson()) {
             throw new HttpResponseException(response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
