@@ -26,7 +26,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Chỉ cho phép tài khoản Admin truy cập Dashboard Laravel Pulse (/pulse)
         Gate::define('viewPulse', function (User $user) {
             return $user->role === User::ROLE_ADMIN;
         });
