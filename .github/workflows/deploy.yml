@@ -1,0 +1,95 @@
+name: 🚀 Deploy to Production VPS
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  # ─────────────────────────────────────────────────────
+  # JOB: Deploy to Production VPS
+  # ─────────────────────────────────────────────────────
+  deploy:
+    name: 🚀 Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout source code
+      - name: 📦 Checkout source code
+        uses: actions/checkout@v4
+
+      # Step 2: SSH into VPS and execute deploy script
+      - name: 🔐 Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          command_timeout: 10m
+          script: |
+            set -e  # Stop the script if any command fails
+
+            echo "────────────────────────────────────────"
+            echo "🔄  Starting deploy to VPS..."
+            echo "────────────────────────────────────────"
+
+            # Move into the git repo directory (outside lms-app/)
+            cd /var/www/Laravel_LMS
+
+            # Pull latest code from dev branch
+            echo "📥  Pulling code từ GitHub..."
+            git pull origin dev
+
+            # Move into the Laravel app directory
+            cd /var/www/Laravel_LMS/lms-app
+
+            # Turn on maintenance mode to prevent user from encountering errors during deployment
+            echo "🔧  Bật maintenance mode..."
+            docker compose -f docker-compose.prod.yml exec -T laravel php artisan down || true
+
+            # Install Composer dependencies (do not install dev packages)
+            echo "📦  Installing Composer dependencies..."
+            docker compose -f docker-compose.prod.yml exec -T laravel \
+              composer install --prefer-dist --no-dev --no-interaction --optimize-autoloader
+
+            # Build front-end assets
+            echo "🎨  Building front-end assets..."
+            docker compose -f docker-compose.prod.yml exec -T laravel npm ci
+            docker compose -f docker-compose.prod.yml exec -T laravel npm run build
+
+            # Run database migrations
+            echo "🗄️   Chạy database migrations..."
+            docker compose -f docker-compose.prod.yml exec -T laravel \
+              php artisan migrate --force
+
+            # Create symbolic link storage -> public/storage
+            echo "🔗  Tạo storage link..."
+            docker compose -f docker-compose.prod.yml exec -T laravel \
+              php artisan storage:link --force
+
+            # Clear old cache and create new cache
+            echo "🧹  Tối ưu hóa Laravel..."
+            docker compose -f docker-compose.prod.yml exec -T laravel php artisan optimize:clear
+            docker compose -f docker-compose.prod.yml exec -T laravel php artisan optimize
+
+            # Restart Queue Workers to load new code
+            echo "🔄  Restart Queue Workers..."
+            docker compose -f docker-compose.prod.yml exec -T laravel php artisan queue:restart
+
+            # Publish Pulse assets (if package updated)
+            echo "📊  Publish Laravel Pulse assets..."
+            docker compose -f docker-compose.prod.yml exec -T laravel \
+              php artisan vendor:publish --tag=pulse-assets --force
+
+            # Reload Nginx
+            echo "🔁  Reload Nginx..."
+            docker compose -f docker-compose.prod.yml exec -T nginx nginx -s reload
+
+            # Turn off maintenance mode
+            echo "✅  Turn off maintenance mode..."
+            docker compose -f docker-compose.prod.yml exec -T laravel php artisan up
+
+            echo "────────────────────────────────────────"
+            echo "🎉  Deploy successful!"
+            echo "────────────────────────────────────────"
