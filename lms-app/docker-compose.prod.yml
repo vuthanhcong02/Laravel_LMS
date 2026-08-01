@@ -14,6 +14,7 @@ services:
             - laravel
 
     laravel:
+        container_name: laravel
         build:
             context: "./docker/8.4"
             dockerfile: Dockerfile
