@@ -26,6 +26,7 @@ services:
             WWWUSER: "${WWWUSER:-1000}"
             LARAVEL_SAIL: 1
             XDEBUG_MODE: "off"
+            PHP_CLI_SERVER_WORKERS: 4
         volumes:
             - ".:/var/www/html"
         networks:
