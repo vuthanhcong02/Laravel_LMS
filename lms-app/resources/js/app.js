@@ -8,6 +8,8 @@ import './quiz-builder.js';
 import './components/games/index.js';
 
 AOS.init();
-window.Alpine = Alpine;
 
-Alpine.start();
+if (!window.Alpine) {
+    window.Alpine = Alpine;
+    Alpine.start();
+}

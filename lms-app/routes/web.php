@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\MonitoringController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FileController;
@@ -152,12 +153,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('admin/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
             Route::post('admin/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('admin.notifications.markAllAsRead');
 
-            // ─── Backup routes ────────────────────────────────────────────────────
+            // ─── Backup & Monitoring routes ──────────────────────────────────────
             Route::get('admin/backup', [BackupController::class, 'index'])->name('admin.backup.index');
             Route::post('admin/backup/settings', [BackupController::class, 'updateSettings'])->name('admin.backup.settings');
             Route::post('admin/backup/run-now', [BackupController::class, 'runNow'])->name('admin.backup.run-now');
             Route::get('admin/backup/download/{filename}', [BackupController::class, 'download'])->name('admin.backup.download')->where('filename', '.+');
             Route::delete('admin/backup/{filename}', [BackupController::class, 'destroy'])->name('admin.backup.destroy')->where('filename', '.+');
+            Route::get('admin/monitoring', [MonitoringController::class, 'index'])->name('admin.monitoring.index');
         });
 
         // ─── Teacher routes ───────────────────────────────────────────────────
