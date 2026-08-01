@@ -10,6 +10,6 @@ if (! function_exists('splitName')) {
         return [
             'first_name' => $firstName ?? '',
             'last_name'  => $lastName ?? '',
-        ];;
+        ];
     }
 }

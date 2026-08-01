@@ -83,11 +83,7 @@ class StudentDashboardService
 
             $teacher = $course->teacher;
             $teacherName = $teacher ? ($teacher->first_name . ' ' . $teacher->last_name) : __('Chưa phân công');
-            $teacherAvatar = $teacher && $teacher->avatar
-                ? (str_starts_with($teacher->avatar, 'http')
-                    ? $teacher->avatar
-                    : asset('storage/' . $teacher->avatar))
-                : null;
+            $teacherAvatar = $teacher?->avatar_url;
 
             $continuingCourses[] = [
                 'id' => $course->id,

@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
-
 use App\Models\Course;
+use App\Models\User;
 use App\Policies\CoursePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -20,10 +20,14 @@ class AuthServiceProvider extends ServiceProvider
     ];
 
     /**
-     * Register any authentication / authorization services.
+     * Authorization policies for the application.
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+        Gate::define('viewPulse', function (User $user) {
+            return $user->role === User::ROLE_ADMIN;
+        });
     }
 }

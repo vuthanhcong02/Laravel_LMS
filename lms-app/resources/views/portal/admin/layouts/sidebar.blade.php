@@ -51,6 +51,11 @@
                 <span class="material-symbols-outlined">database</span>
                 <p class="text-sm font-medium">Database Backup</p>
             </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.monitoring.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
+                href="{{ route('admin.monitoring.index') }}">
+                <span class="material-symbols-outlined">monitor_heart</span>
+                <p class="text-sm font-medium">Real-time Pulse</p>
+            </a>
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('settings.index') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
                 href="{{ route('settings.index') }}">
                 <span class="material-symbols-outlined">settings</span>
