@@ -428,6 +428,34 @@
                     });
                 },
 
+                getSectionAnsweredProgress(questions) {
+                    if (!questions || !questions.length) return { answered: 0, total: 0 };
+                    let total = 0;
+                    let answered = 0;
+                    questions.forEach(q => {
+                        if (!q.correct_answer && (!q.sub_questions || q.sub_questions.length === 0)) return;
+                        if (q.sub_questions && q.sub_questions.length > 0) {
+                            q.sub_questions.forEach(sq => {
+                                if (!sq.correct) return;
+                                total++;
+                                let isDone = false;
+                                if (sq.ques_type === 'fill_blank' || sq.ques_type === 'reorder') isDone = sq.selected_option !== undefined && sq.selected_option !== null;
+                                else isDone = sq.selected !== undefined && sq.selected !== null;
+                                if (isDone) answered++;
+                            });
+                        } else {
+                            total++;
+                            let isDone = false;
+                            if (q.ques_type === 'reorder' || q.ques_type === 'writing') isDone = !!(q.userAnswer && q.userAnswer.trim() !== '');
+                            else if (q.ques_type === 'fill_blank_dropdown') {
+                                isDone = !!(q.selected_answers && q.selected_answers.length > 0 && q.selected_answers.every(ans => ans !== '' && ans !== null && ans !== undefined));
+                            } else isDone = q.selected !== undefined && q.selected !== null;
+                            if (isDone) answered++;
+                        }
+                    });
+                    return { answered, total };
+                },
+
                 checkAllSection(questions) {
                     if (!questions) return;
                     questions.forEach(q => {
@@ -435,6 +463,23 @@
                         if (q.sub_questions) {
                             q.sub_questions.forEach(sq => {
                                 if (sq.correct) sq.answered = true;
+                            });
+                        }
+                    });
+                },
+
+                resetSection(questions) {
+                    if (!questions) return;
+                    questions.forEach(q => {
+                        q.answered = false;
+                        q.selected = null;
+                        q.userAnswer = '';
+                        q.selected_answers = [];
+                        if (q.sub_questions) {
+                            q.sub_questions.forEach(sq => {
+                                sq.answered = false;
+                                sq.selected = null;
+                                sq.selected_answers = [];
                             });
                         }
                     });

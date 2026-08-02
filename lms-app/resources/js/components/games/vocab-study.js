@@ -1,57 +1,61 @@
-window.vocabStudyComponent = function(initialVocabList) {
+window.vocabStudyComponent = function (initialVocabList) {
     return {
         viewMode: 'list', // list, flashcard, match, quiz, typing
         vocabList: initialVocabList,
         shuffledList: [],
         isShuffled: false,
+        isShuffling: false,
         currentIndex: 0,
         flipped: false,
-        
+
         init() {
             this.shuffledList = [...this.vocabList];
         },
-        
+
         currentWord() {
             return this.shuffledList[this.currentIndex] || this.vocabList[0];
         },
-        
+
         flipCard() {
             this.flipped = !this.flipped;
         },
-        
+
         nextWord() {
             this.flipped = false;
             setTimeout(() => {
                 this.currentIndex = (this.currentIndex + 1) % this.shuffledList.length;
             }, 150);
         },
-        
+
         prevWord() {
             this.flipped = false;
             setTimeout(() => {
                 this.currentIndex = (this.currentIndex - 1 + this.shuffledList.length) % this.shuffledList.length;
             }, 150);
         },
-        
+
         shuffleList() {
             this.flipped = false;
-            setTimeout(() => {
-                if (this.isShuffled) {
-                    this.isShuffled = false;
-                    this.shuffledList = [...this.vocabList];
-                } else {
-                    this.isShuffled = true;
+            if (this.isShuffled) {
+                this.isShuffled = false;
+                this.shuffledList = [...this.vocabList];
+                this.currentIndex = 0;
+            } else {
+                this.isShuffling = true;
+                setTimeout(() => {
                     let list = [...this.vocabList];
                     for (let i = list.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [list[i], list[j]] = [list[j], list[i]];
                     }
                     this.shuffledList = list;
-                }
-                this.currentIndex = 0;
-            }, 150);
+                    this.isShuffled = true;
+                    this.currentIndex = 0;
+                    this.isShuffling = false;
+                }, 200);
+            }
         },
-        
+
         playWordAudio(wordText) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
