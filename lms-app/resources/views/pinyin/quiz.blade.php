@@ -85,9 +85,9 @@
                     </div>
 
                     <span class="material-symbols-outlined text-[52px] sm:text-[58px] group-hover:scale-110 transition-transform">volume_up</span>
-                    <span class="text-[11px] font-black uppercase tracking-wider mt-1" x-text="isPlaying ? 'Đang phát...' : 'Nghe lại 🔊'">Nghe lại 🔊</span>
+                    <span class="text-[11px] font-black uppercase tracking-wider mt-1" x-text="isPlaying ? 'Đang phát...' : 'Bấm để nghe 🔊'">Bấm để nghe 🔊</span>
                 </button>
-                <p class="text-xs font-medium text-slate-400 dark:text-slate-500">Chạm vào loa để nghe lại âm thanh</p>
+                <p class="text-xs font-medium text-slate-400 dark:text-slate-500">Chạm vào loa để nghe phát âm</p>
             </div>
 
             <!-- Option Buttons Grid (2x2) -->
@@ -212,7 +212,7 @@ function pinyinQuizApp() {
 
         initQuiz() {
             this.filterTones();
-            this.nextQuestion();
+            this.nextQuestion(false); // Không tự động phát âm thanh khi vừa truy cập trang
         },
 
         filterTones() {
@@ -243,7 +243,7 @@ function pinyinQuizApp() {
             this.questionInRound = 1;
             this.showSummaryModal = false;
             this.filterTones();
-            this.nextQuestion();
+            this.nextQuestion(false); // Không tự động phát khi đổi danh mục
         },
 
         handleNextStep() {
@@ -251,11 +251,11 @@ function pinyinQuizApp() {
                 this.showSummaryModal = true;
             } else {
                 this.questionInRound++;
-                this.nextQuestion();
+                this.nextQuestion(true); // Tự động phát khi người dùng bấm sang câu tiếp theo
             }
         },
 
-        nextQuestion() {
+        nextQuestion(autoPlay = true) {
             this.answered = false;
             this.selectedOpt = null;
             this.isCorrect = false;
@@ -272,10 +272,12 @@ function pinyinQuizApp() {
             // Shuffle options
             this.currentOptions = [this.targetTone, ...distractors].sort(() => 0.5 - Math.random());
 
-            // Play audio automatically
-            setTimeout(() => {
-                this.playAudio();
-            }, 300);
+            // Chỉ tự động phát nếu autoPlay là true (khi người dùng bấm câu tiếp theo)
+            if (autoPlay) {
+                setTimeout(() => {
+                    this.playAudio();
+                }, 300);
+            }
         },
 
         getSmartDistractors(target, pool) {

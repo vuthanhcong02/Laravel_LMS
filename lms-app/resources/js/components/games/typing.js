@@ -8,6 +8,7 @@ window.typingGameComponent = function() {
         userInput: '',
         showError: false,
         showSuccess: false,
+        hasFailedCurrent: false,
         
         init() {
             this.initTyping();
@@ -40,6 +41,7 @@ window.typingGameComponent = function() {
             this.hasAnswered = false;
             this.showError = false;
             this.showSuccess = false;
+            this.hasFailedCurrent = false;
             setTimeout(() => {
                 if (this.$refs.typingInput) this.$refs.typingInput.focus();
             }, 50);
@@ -60,6 +62,7 @@ window.typingGameComponent = function() {
                 }, 1000);
             } else {
                 this.showError = true;
+                this.hasFailedCurrent = true;
                 setTimeout(() => {
                     this.showError = false;
                     this.hasAnswered = false;
@@ -85,8 +88,8 @@ window.typingGameComponent = function() {
         },
         
         getInputClass() {
-            if (this.showError) return 'border-red-500 focus:ring-red-500/20 text-red-500';
-            if (this.showSuccess) return 'border-green-500 focus:ring-green-500/20 text-green-600';
+            if (this.showError) return 'border-red-500 focus:ring-red-500/20 text-red-500 dark:text-red-400';
+            if (this.showSuccess) return 'border-green-500 focus:ring-green-500/20 text-green-600 dark:text-green-400';
             return 'border-slate-200 dark:border-slate-700 focus:border-orange-500 focus:ring-orange-500/20';
         }
     };

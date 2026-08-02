@@ -43,18 +43,25 @@
                                                 </button>
                                             </div>
 
-
                                         </div>
 
                                         <!-- Listening Tab Content -->
                                         <div x-show="practiceTab === 'listening'" x-transition class="space-y-6 pb-10">
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'listening')">
                                                 <div>
-                                                    <!-- Global Audio for Listening -->
+                                                    <!-- Sticky Global Audio for Listening -->
                                                     <template x-if="currentLesson?.practices?.find(p => p.type === 'listening')?.audio_path">
-                                                        <div class="bg-primary/5 border border-primary/20 rounded-2xl p-5 mb-6 flex flex-col gap-3">
-                                                            <h5 class="text-sm font-extrabold text-primary dark:text-primary-light">Tệp Âm Thanh Bài Nghe (Toàn bộ)</h5>
-                                                            <audio controls class="w-full h-10 rounded-full" :src="'/storage/hsk_media/' + currentLesson?.practices?.find(p => p.type === 'listening')?.audio_path"></audio>
+                                                        <div class="sticky top-[140px] sm:top-[150px] md:top-[160px] z-30 mb-6 backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border border-primary/20 dark:border-primary/40 rounded-2xl p-3.5 sm:p-4 shadow-lg shadow-primary/5 transition-all">
+                                                            <div class="flex items-center gap-2 mb-2">
+                                                                <div class="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                                                    <span class="material-symbols-outlined text-[18px]">headphones</span>
+                                                                </div>
+                                                                <h5 class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white flex items-center gap-1.5">
+                                                                    Tệp Âm Thanh Bài Nghe
+                                                                    <span class="hidden sm:inline-block text-[11px] font-medium text-slate-400 dark:text-slate-500">(Toàn bộ bài tập)</span>
+                                                                </h5>
+                                                            </div>
+                                                            <audio controls class="w-full h-9 rounded-lg" :src="'/storage/hsk_media/' + currentLesson?.practices?.find(p => p.type === 'listening')?.audio_path"></audio>
                                                         </div>
                                                     </template>
 
@@ -77,10 +84,13 @@
                                                                 </template>
                                                             </div>
                                                             <template x-if="sect.audio_path">
-                                                                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 mt-4 flex flex-col gap-2">
-                                                                    <div class="text-sm font-bold text-blue-700 dark:text-blue-400" x-text="'Nghe đoạn hội thoại phần ' + (sIdx + 1) + ':'"></div>
-                                                                    <audio controls class="w-full h-10 rounded-full" :src="'/storage/hsk_media/' + sect.audio_path"></audio>
-                                                                </div>
+                                                               <div class="sticky top-[145px] sm:top-[155px] md:top-[165px] z-20 bg-blue-50/95 dark:bg-blue-950/90 backdrop-blur-md border border-blue-200 dark:border-blue-800 rounded-xl p-3 sm:p-4 mt-4 flex flex-col gap-2 shadow-sm">
+                                                                    <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-blue-700 dark:text-blue-300">
+                                                                        <span class="material-symbols-outlined text-[18px]">volume_up</span>
+                                                                        <span x-text="'Nghe đoạn hội thoại phần ' + (sIdx + 1) + ':'"></span>
+                                                                    </div>
+                                                                   <audio controls class="w-full h-9 rounded-lg" :src="'/storage/hsk_media/' + sect.audio_path"></audio>
+                                                               </div>
                                                             </template>
                                                             <template x-if="sect.image_path">
                                                                 <div class="my-4 text-center border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 flex justify-center shadow-sm">
@@ -365,16 +375,24 @@
                                                                   </div>
                                                                 </template>
                                                                 
-                                                                <!-- Global Check Button -->
-                                                                <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
-                                                                     x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
+                                                                <!-- Global Check / Retry Button Bar -->
+                                                                <div class="flex justify-center items-center gap-3 mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
+                                                                     x-show="sect.questions && sect.questions.length > 0">
                                                                     <button 
+                                                                        x-show="sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))"
                                                                         class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs rounded-lg shadow-md shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
                                                                         :disabled="!isSectionFullyAnswered(sect.questions)"
                                                                         :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                         @click="checkAllSection(sect.questions)"
                                                                     >
-                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> <span x-text="'KIỂM TRA ĐÁP ÁN (' + getSectionAnsweredProgress(sect.questions).answered + '/' + getSectionAnsweredProgress(sect.questions).total + ')'"></span>
+                                                                    </button>
+                                                                    <button 
+                                                                        x-show="sect.questions.every(q => q.answered || (!q.correct_answer && (!q.sub_questions || !q.sub_questions.some(sq => sq.correct))))"
+                                                                        class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-all active:scale-95 flex items-center gap-2"
+                                                                        @click="resetSection(sect.questions)"
+                                                                    >
+                                                                        <span class="material-symbols-outlined text-[18px]">refresh</span> LÀM LẠI BÀI NÀY
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -690,16 +708,24 @@
                                                                   </div>
                                                                 </template>
                                                                 
-                                                                <!-- Global Check Button -->
-                                                                <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
-                                                                     x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
+                                                                <!-- Global Check / Retry Button Bar -->
+                                                                <div class="flex justify-center items-center gap-3 mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
+                                                                     x-show="sect.questions && sect.questions.length > 0">
                                                                     <button 
+                                                                        x-show="sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))"
                                                                         class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs rounded-lg shadow-md shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
                                                                         :disabled="!isSectionFullyAnswered(sect.questions)"
                                                                         :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                         @click="checkAllSection(sect.questions)"
                                                                     >
-                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> <span x-text="'KIỂM TRA ĐÁP ÁN (' + getSectionAnsweredProgress(sect.questions).answered + '/' + getSectionAnsweredProgress(sect.questions).total + ')'"></span>
+                                                                    </button>
+                                                                    <button 
+                                                                        x-show="sect.questions.every(q => q.answered || (!q.correct_answer && (!q.sub_questions || !q.sub_questions.some(sq => sq.correct))))"
+                                                                        class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-all active:scale-95 flex items-center gap-2"
+                                                                        @click="resetSection(sect.questions)"
+                                                                    >
+                                                                        <span class="material-symbols-outlined text-[18px]">refresh</span> LÀM LẠI BÀI NÀY
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -939,7 +965,7 @@
 
                                                                                 <div class="mt-4">
                                                                                     <textarea 
-                                                                                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[16px] font-chinese focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none min-h-[120px]"
+                                                                                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[16px] font-chinese text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none min-h-[120px]"
                                                                                         placeholder="Nhập câu trả lời của bạn..."
                                                                                         x-model="quiz.userAnswer"
                                                                                         :disabled="quiz.answered"
@@ -965,16 +991,24 @@
                                                                     </div>
                                                                 </template>
                                                                 
-                                                                <!-- Global Check Button -->
-                                                                <div class="flex justify-center mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
-                                                                     x-show="sect.questions && sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))">
+                                                                <!-- Global Check / Retry Button Bar -->
+                                                                <div class="flex justify-center items-center gap-3 mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
+                                                                     x-show="sect.questions && sect.questions.length > 0">
                                                                     <button 
+                                                                        x-show="sect.questions.some(q => !q.answered && (q.correct_answer || (q.sub_questions && q.sub_questions.some(sq => sq.correct))))"
                                                                         class="px-5 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs rounded-lg shadow-md shadow-primary/30 transition-all active:scale-95 flex items-center gap-2"
                                                                         :disabled="!isSectionFullyAnswered(sect.questions)"
                                                                         :class="isSectionFullyAnswered(sect.questions) ? '' : 'opacity-50 !cursor-not-allowed grayscale'"
                                                                         @click="checkAllSection(sect.questions)"
                                                                     >
-                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> KIỂM TRA ĐÁP ÁN
+                                                                        <span class="material-symbols-outlined text-[18px]">fact_check</span> <span x-text="'KIỂM TRA ĐÁP ÁN (' + getSectionAnsweredProgress(sect.questions).answered + '/' + getSectionAnsweredProgress(sect.questions).total + ')'"></span>
+                                                                    </button>
+                                                                    <button 
+                                                                        x-show="sect.questions.every(q => q.answered || (!q.correct_answer && (!q.sub_questions || !q.sub_questions.some(sq => sq.correct))))"
+                                                                        class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-all active:scale-95 flex items-center gap-2"
+                                                                        @click="resetSection(sect.questions)"
+                                                                    >
+                                                                        <span class="material-symbols-outlined text-[18px]">refresh</span> LÀM LẠI BÀI NÀY
                                                                     </button>
                                                                 </div>
                                                             </div>

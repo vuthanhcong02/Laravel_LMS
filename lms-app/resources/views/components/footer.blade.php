@@ -92,7 +92,7 @@
                 <ul class="flex flex-col gap-3 text-sm">
                     <li>
                         <a class="hover:text-primary transition-colors flex items-center gap-2"
-                            href="{{ route('courses') }}?level=hsk1">
+                            href="{{ route('courses') }}?level=1">
                             <span
                                 class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">1</span>
                             HSK 1 — Sơ cấp
@@ -100,7 +100,7 @@
                     </li>
                     <li>
                         <a class="hover:text-primary transition-colors flex items-center gap-2"
-                            href="{{ route('courses') }}?level=hsk2">
+                            href="{{ route('courses') }}?level=2">
                             <span
                                 class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">2</span>
                             HSK 2 — Cơ bản
@@ -108,7 +108,7 @@
                     </li>
                     <li>
                         <a class="hover:text-primary transition-colors flex items-center gap-2"
-                            href="{{ route('courses') }}?level=hsk3">
+                            href="{{ route('courses') }}?level=3">
                             <span
                                 class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">3</span>
                             HSK 3 — Trung cấp
@@ -116,7 +116,7 @@
                     </li>
                     <li>
                         <a class="hover:text-primary transition-colors flex items-center gap-2"
-                            href="{{ route('courses') }}?level=hsk4">
+                            href="{{ route('courses') }}?level=4">
                             <span
                                 class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">4</span>
                             HSK 4 — Trung cao
@@ -124,7 +124,7 @@
                     </li>
                     <li>
                         <a class="hover:text-primary transition-colors flex items-center gap-2"
-                            href="{{ route('courses') }}?level=hsk5">
+                            href="{{ route('courses') }}?level=5">
                             <span
                                 class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">5</span>
                             HSK 5 — Nâng cao
@@ -132,7 +132,7 @@
                     </li>
                     <li>
                         <a class="hover:text-primary transition-colors flex items-center gap-2"
-                            href="{{ route('courses') }}?level=hsk6">
+                            href="{{ route('courses') }}?level=6">
                             <span
                                 class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/20 text-primary text-[10px] font-extrabold shrink-0">6</span>
                             HSK 6 — Thành thạo

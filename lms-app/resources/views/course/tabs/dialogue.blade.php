@@ -76,7 +76,7 @@
 
                             <!-- Quiz Mode (Luyện Nghe / Luyện Gõ / Luyện Dịch) -->
                             <div x-show="modeNghe || modeGo || modeDich" class="mt-6 mb-4 w-full">
-                                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 relative">
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-6 relative">
                                     <!-- Nghe Mode Header -->
                                     <div x-show="modeNghe" class="text-center space-y-4 mb-6">
                                         <h4 class="text-[13px] font-bold text-primary uppercase tracking-widest">Nghe và
@@ -88,27 +88,27 @@
                                             <span class="material-symbols-outlined text-3xl">volume_up</span>
                                         </button>
 
-                                        <p class="text-sm text-slate-400 italic">
+                                        <p class="text-sm text-slate-400 dark:text-slate-500 italic">
                                             Gợi ý: <span x-text="dialogues[quizIndex].role"></span> đang nói...
                                         </p>
                                     </div>
 
                                     <!-- Gõ Mode Header -->
                                     <div x-show="modeGo" class="text-left mb-6">
-                                        <p class="text-2xl font-black text-slate-800 tracking-wide font-chinese flex items-center gap-2"
+                                        <p class="text-2xl font-black text-slate-800 dark:text-white tracking-wide font-chinese flex items-center gap-2"
                                             x-show="!(modePinyin && window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code))">
                                             <span x-text="dialogues[quizIndex].role + ':'"
-                                                class="text-slate-800 font-bold"></span>
+                                                class="text-slate-800 dark:text-white font-bold"></span>
                                             <span x-text="dialogues[quizIndex].character"></span>
                                         </p>
                                         <p x-show="modePinyin && !window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code)"
-                                            class="text-sm text-slate-400 mt-2 font-medium"
+                                            class="text-sm text-slate-400 dark:text-slate-500 mt-2 font-medium"
                                             x-text="dialogues[quizIndex].pinyin"></p>
 
                                         <div x-show="modePinyin && window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code)"
                                             class="flex items-center gap-2">
                                             <span x-text="dialogues[quizIndex].role + ':'"
-                                                class="text-slate-800 font-bold text-xl mb-1 self-end"></span>
+                                                class="text-slate-800 dark:text-white font-bold text-xl mb-1 self-end"></span>
                                             <div class="flex flex-wrap items-end gap-x-1.5 gap-y-2 leading-none">
                                                 <template
                                                     x-for="(pair, idx) in window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code)"
@@ -124,14 +124,14 @@
                                                 </template>
                                             </div>
                                         </div>
-                                        <p x-show="modeNghia" class="text-sm text-slate-500 mt-1 font-medium"
+                                        <p x-show="modeNghia" class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium"
                                             x-text="dialogues[quizIndex].translation"></p>
                                     </div>
 
                                     <!-- Dịch Mode Header -->
                                     <div x-show="modeDich" class="text-left mb-4">
-                                        <p class="text-[15px] text-slate-700">
-                                            <span class="font-bold text-slate-800"
+                                        <p class="text-[15px] text-slate-700 dark:text-slate-300">
+                                            <span class="font-bold text-slate-800 dark:text-white"
                                                 x-text="dialogues[quizIndex].role + ':'"></span>
                                             <span class="italic" x-text="dialogues[quizIndex].translation"></span>
                                         </p>
@@ -142,12 +142,12 @@
                                         <input type="text" x-model="quizInput"
                                             :placeholder="modeNghe ? 'Nghe được gì, gõ nấy...' : (modeGo ?
                                                 'Gõ lại câu chữ Hán đầy đủ...' : 'Dịch sang tiếng Trung...')"
-                                            class="w-full px-4 py-4 rounded-lg border-2 text-lg font-chinese focus:outline-none transition-colors pr-12"
+                                            class="w-full px-4 py-4 rounded-lg border-2 text-lg font-chinese focus:outline-none transition-colors pr-12 text-slate-800 dark:text-white bg-white dark:bg-slate-800 placeholder-slate-400 dark:placeholder-slate-500"
                                             :class="quizStatus === 'correct' ?
-                                                'border-emerald-500 bg-emerald-50/50 text-emerald-700' :
+                                                'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300' :
                                                 (quizStatus === 'incorrect' ?
-                                                    'border-red-500 bg-red-50/50 text-red-700' :
-                                                    'border-slate-300 focus:border-primary')"
+                                                    'border-red-500 bg-red-50/80 dark:bg-red-950/50 text-red-800 dark:text-red-300' :
+                                                    'border-slate-300 dark:border-slate-700 focus:border-primary')"
                                             @keyup.enter="quizCheck()">
 
                                         <!-- Result Icons -->
@@ -170,7 +170,7 @@
                                             </button>
                                             <button x-show="quizStatus === 'correct'" @click="quizNext()"
                                                 :disabled="quizIndex >= dialogues.length - 1"
-                                                class="px-5 py-2.5 rounded-lg border border-slate-300 font-bold text-sm transition-all focus:outline-none text-slate-700 hover:bg-slate-50 active:scale-95"
+                                                class="px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 font-bold text-sm transition-all focus:outline-none text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95"
                                                 :class="quizIndex >= dialogues.length - 1 ? 'opacity-50 cursor-not-allowed' : ''">
                                                 Câu tiếp
                                             </button>
@@ -306,7 +306,7 @@
                                             <!-- Typing field for typing exercise -->
                                             <div x-show="modeGo" class="mt-1.5 w-60">
                                                 <input type="text" placeholder="Luyện gõ câu hội thoại này..."
-                                                    class="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-primary focus:outline-none bg-slate-50 dark:bg-slate-900"
+                                                    class="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-primary focus:outline-none bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                                                     x-model="typeInputs['{{ $sIdx }}_{{ $lineIdx }}']">
                                             </div>
                                         </div>
