@@ -35,4 +35,9 @@ class HskLevel extends Model
     {
         return $this->hasMany(HskLesson::class, 'hsk_level_id');
     }
+
+    public function mockExams()
+    {
+        return $this->hasMany(HskMockExam::class, 'hsk_level_id');
+    }
 }

@@ -16,7 +16,7 @@ class HskLevelStructureSeeder extends Seeder
         if ($hsk1) {
             $hsk1->update([
                 'exam_structure' => [
-                    'note' => 'Đề thi HSK 1 sẽ có pinyin và mỗi câu hỏi được nghe 2 lần.',
+                    'note' => 'HSK 1 là phần đầu tiên của kỳ thi HSK, chính vì vậy cấu trúc đề thi cũng tương đối đơn giản. Đề thi HSK 1 gồm hai phần chính: Nghe và Đọc. Tổng cộng phần thi có 40 câu hỏi và thời gian làm bài là 40 phút (5 phút điền thông tin cá nhân, 15 phút cho phần nghe, 17 phút cho phần đọc và 3 phút điền đáp án).',
                     'sections' => [
                         [
                             'title' => 'Nghe hiểu',
@@ -81,7 +81,7 @@ class HskLevelStructureSeeder extends Seeder
         if ($hsk2) {
             $hsk2->update([
                 'exam_structure' => [
-                    'note' => 'Nắm rõ cấu trúc đề thi HSK 2 giúp bạn nắm được thể chủ động tự tin trong quá trình làm bài thi, tránh hiện tượng tâm lý dẫn đến kết quả bài thi không tốt. Bài thi HSK 2 gồm 3 phần thi cụ thể như sau:',
+                    'note' => 'Tương tự như HSK 1, cấu trúc đề thi HSK 2 cũng gồm hai phần chính: Nghe và Đọc. Tổng cộng HSK 2 có 60 câu hỏi và thời gian làm bài là 55 phút (5 phút điền thông tin cá nhân, 35 phút cho phần nghe, 25 phút cho phần đọc và 3 phút điền đáp án). ',
                     'sections' => [
                         [
                             'title' => 'Nghe hiểu',
@@ -148,7 +148,7 @@ class HskLevelStructureSeeder extends Seeder
         if ($hsk3) {
             $hsk3->update([
                 'exam_structure' => [
-                    'note' => 'Cấu trúc đề thi HSK 3 bao gồm 3 phần thi chính: Nghe hiểu, Đọc hiểu và Viết.',
+                    'note' => 'Khi sang tới kỳ thi HSK 3, khối lượng từ vựng thí sinh cần ghi nhớ nhiều hơn. Ngoài ra, HSK 3 không còn phiên âm pinyin nữa, cùng với việc thí sinh phải thi thêm phần viết kể từ HSK 3 trở lên. Tổng cộng HSK 3 có 80 câu hỏi và thời gian làm bài là 90 phút (5 phút điền thông tin cá nhân, 35 phút cho phần nghe, 25 phút cho phần đọc và 10 phút cho phần viết và 5 phút điền đáp án).',
                     'sections' => [
                         [
                             'title' => 'Nghe hiểu',
@@ -225,7 +225,7 @@ class HskLevelStructureSeeder extends Seeder
         if ($hsk4) {
             $hsk4->update([
                 'exam_structure' => [
-                    'note' => 'Cấu trúc đề thi HSK 4 bao gồm 3 phần thi chính: Nghe hiểu, Đọc hiểu và Viết.',
+                    'note' => 'Đề thi HSK 4 gồm ba phần chính, diễn ra lần lượt theo thứ tự như sau: Nghe, Đọc và Viết. Tổng cộng HSK 4 có 100 câu hỏi và thời gian làm bài là 105 phút (5 phút điền thông tin cá nhân, 30 phút cho phần nghe, 40 phút cho phần đọc và 25 phút cho phần viết và 5 phút điền đáp án).',
                     'sections' => [
                         [
                             'title' => 'Nghe hiểu',
@@ -297,7 +297,7 @@ class HskLevelStructureSeeder extends Seeder
         if ($hsk5) {
             $hsk5->update([
                 'exam_structure' => [
-                    'note' => 'Cấu trúc đề thi HSK 5 bao gồm 3 phần thi chính: Nghe hiểu, Đọc hiểu và Viết.',
+                    'note' => 'Đề thi HSK 5 gồm 3 phần: Nghe, Đọc và Viết. Bài thi HSK 5 sẽ có tổng cộng 100 câu hỏi và thời gian làm bài là 125 phút (5 phút điền thông tin cá nhân, 30 phút cho phần nghe, 45 phút cho phần đọc và 40 phút cho phần viết và 5 phút điền đáp án).',
                     'sections' => [
                         [
                             'title' => 'Nghe hiểu',
@@ -364,7 +364,7 @@ class HskLevelStructureSeeder extends Seeder
         if ($hsk6) {
             $hsk6->update([
                 'exam_structure' => [
-                    'note' => 'Cấu trúc đề thi HSK 6 bao gồm 3 phần thi chính: Nghe hiểu, Đọc hiểu và Viết.',
+                    'note' => 'Tại cấp độ HSK 6, bài thi sẽ gồm ba phần chính: Nghe, Đọc và Viết. Tổng cộng HSK 6 có 101 câu hỏi và thời gian làm bài là 140 phút  (5 phút điền thông tin cá nhân, 35 phút cho phần nghe, 50 phút cho phần đọc và 45 phút cho phần viết và 5 phút điền đáp án). ',
                     'sections' => [
                         [
                             'title' => 'Nghe hiểu',
