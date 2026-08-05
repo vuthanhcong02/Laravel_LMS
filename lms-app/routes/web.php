@@ -23,6 +23,7 @@ use App\Http\Controllers\PinyinController;
 use App\Http\Controllers\PinyinQuizController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Student\CourseController as StudentCourseController;
+use App\Http\Controllers\Student\HskMockExamController;
 use App\Http\Controllers\Student\StudentDashboardController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentQuizController;
@@ -41,7 +42,7 @@ use Illuminate\Support\Facades\Route;
 
 // ─── Public pages ────────────────────────────────────────────────────────────
 Route::controller(PageController::class)->group(function () {
-    Route::get('/', function() {
+    Route::get('/', function () {
         return redirect()->route('home');
     });
     Route::get('/trang-chu', 'getViewHome')->name('home');
@@ -53,6 +54,9 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
+    Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
+    Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
+    Route::get('/thi-thu-hsk/{level}/bai-thi/{id}', [HskMockExamController::class, 'take'])->name('student.hsk-mock-exams.take');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])
@@ -103,7 +107,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('student/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('student.assignments.show');
             Route::post('student/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('student.assignments.submit');
 
-            // Student Quizzes
             Route::get('student/quizzes', [StudentQuizController::class, 'index'])->name('student.quizzes.index');
             Route::get('student/quizzes/{quiz}', [StudentQuizController::class, 'show'])->name('student.quizzes.show');
             Route::post('student/quizzes/{quiz}/attempt', [StudentQuizController::class, 'attempt'])->name('student.quizzes.attempt');
