@@ -1,3 +1,35 @@
+<?php
+if (!function_exists('renderHskRubyText')) {
+    function renderHskRubyText($html, $pinyin = '', $hanzi = '') {
+        $html = trim($html ?? '');
+        if (!empty($html) && str_contains($html, '<ruby')) {
+            return $html;
+        }
+        
+        $pinyinStr = trim($pinyin ?? '');
+        $hanziStr = trim(preg_replace('/\s+/', '', $hanzi ?? ''));
+        
+        if (empty($pinyinStr) && empty($hanziStr)) {
+            return !empty($html) ? $html : '';
+        }
+        if (empty($pinyinStr)) return e($hanziStr);
+        if (empty($hanziStr)) return e($pinyinStr);
+
+        $pinyins = preg_split('/\s+/', $pinyinStr);
+        $chars = mb_str_split($hanziStr);
+
+        if (count($pinyins) === count($chars)) {
+            $out = '';
+            foreach ($chars as $i => $char) {
+                $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($pinyins[$i]) . '</rt></ruby>';
+            }
+            return $out;
+        } else {
+            return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none"><span class="text-base font-black text-slate-900 dark:text-white">' . e($hanziStr) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($pinyinStr) . '</rt></ruby>';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -108,6 +140,19 @@
         </form>
     </header>
 
+    {{-- Mobile / Tablet Sticky Audio Player Bar --}}
+    @if ($exam->audio_file)
+        <div class="lg:hidden sticky top-16 z-20 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md text-white px-3.5 py-2 border-b border-slate-800 flex items-center justify-between gap-2.5 shadow-md">
+            <div class="flex items-center gap-1.5 text-xs font-black text-amber-400 shrink-0">
+                <span class="material-symbols-outlined text-[18px]">volume_up</span>
+                <span class="hidden sm:inline">File nghe:</span>
+            </div>
+            <audio controls controlsList="nodownload" class="custom-audio w-full h-8 flex-1">
+                <source src="{{ Storage::url($exam->audio_file) }}" type="audio/mpeg">
+            </audio>
+        </div>
+    @endif
+
     {{-- Mobile Nav Overlay --}}
     <div id="nav-overlay" class="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm hidden md:hidden" onclick="toggleNavSidebar()"></div>
 
@@ -121,152 +166,179 @@
                 @php $qCount = 1; @endphp
                 @foreach ($exam->sections as $sectionIndex => $section)
                     <div>
-                        {{-- Section Title Divider --}}
-                        <div class="flex items-center gap-3 mb-6 pb-3 border-b-2 border-primary/20">
-                            <span class="w-3 h-3 rounded-full bg-primary shrink-0"></span>
-                            <h2 class="text-lg font-black text-slate-800 dark:text-white uppercase tracking-wide">
-                                Phần {{ $sectionIndex + 1 }}: {{ $section->name }}
-                            </h2>
+                        {{-- Section Title Divider Banner --}}
+                        <div class="flex items-center justify-between gap-4 mb-8 p-4 md:p-5 rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-white shadow-md">
+                            <div class="flex items-center gap-3">
+                                <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-lg">
+                                    {{ $sectionIndex + 1 }}
+                                </span>
+                                <div>
+                                    <h2 class="text-lg md:text-xl font-black uppercase tracking-wide">
+                                        {{ $section->name }}
+                                    </h2>
+                                    <p class="text-xs text-white/80 font-medium">
+                                        {{ $section->questionGroups->count() }} phần bài tập • {{ $section->questionGroups->sum(fn($g) => $g->questions->count()) }} câu hỏi
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         @foreach ($section->questionGroups as $groupIndex => $group)
-                            <div class="mb-8">
+                            @php
+                                $startQNum = $qCount;
+                                $endQNum = $qCount + $group->questions->count() - 1;
+                            @endphp
+
+                            {{-- Part Container Card --}}
+                            <div class="mb-10 bg-white dark:bg-[#1a2332] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 md:p-7 shadow-sm transition-all hover:shadow-md">
+                                {{-- Part Header Badge & Range --}}
+                                <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                                    <div class="flex items-center gap-3">
+                                        <span class="px-3.5 py-1.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary text-xs font-black uppercase tracking-wider">
+                                            Part {{ $groupIndex + 1 }}
+                                        </span>
+                                        @if($group->questions->count() > 0)
+                                            <span class="text-sm font-black text-slate-800 dark:text-slate-200">
+                                                第 {{ $startQNum }}-{{ $endQNum }} 题 {{ $startQNum == $endQNum ? "(Câu {$startQNum})" : "(Câu {$startQNum} - {$endQNum})" }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-700/60">
+                                        {{ $group->questions->count() }} câu hỏi
+                                    </span>
+                                </div>
 
                                 {{-- Passage Text (Instructions / Options reference block) --}}
                                 @if ($group->passage_text)
-                                    @if (!str_starts_with(trim($group->passage_text), '<div'))
-                                        <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-                                            <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-                                                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如) / Hướng dẫn</span>
-                                            </div>
-                                            <div class="text-base font-bold text-slate-800 dark:text-slate-200 space-y-2">
-                                                {!! nl2br($group->passage_text) !!}
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div class="mb-6">
-                                            {!! nl2br($group->passage_text) !!}
-                                        </div>
-                                    @endif
-                                @endif
-                                                             {{-- Passage Images Grid (Answer bank images A-F or Part 1 Examples) --}}
-                                @if ($group->passage_image)
-                                    @php
-                                        $passageImages = array_filter(array_map('trim', explode(',', $group->passage_image)));
-                                        $imgLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
-                                    @endphp
-                                    @if($groupIndex == 0 && count($passageImages) == 2)
-                                        {{-- Part 1 True/False Examples Card --}}
-                                        <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-                                            <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-                                                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-                                            </div>
-                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-                                                <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-amber-100 dark:border-slate-700/80 shadow-sm">
-                                                    <img src="{{ Storage::url($passageImages[0]) }}" class="h-20 object-contain rounded-lg" alt="Ex 1">
-                                                    <span class="w-10 h-10 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-xl shadow-sm">✓</span>
-                                                </div>
-                                                <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-amber-100 dark:border-slate-700/80 shadow-sm">
-                                                    <img src="{{ Storage::url($passageImages[1]) }}" class="h-20 object-contain rounded-lg" alt="Ex 2">
-                                                    <span class="w-10 h-10 rounded-xl bg-rose-500 text-white font-black flex items-center justify-center text-xl shadow-sm">✕</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @elseif($groupIndex == 1 && count($passageImages) == 3)
-                                        {{-- Part 2 Multiple Choice Examples Card --}}
-                                        <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-                                            <div class="flex items-center justify-between font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-                                                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-                                                <span class="text-xs font-bold text-emerald-600">Đáp án mẫu: A</span>
-                                            </div>
-                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
-                                                <div class="flex flex-col items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border-2 border-emerald-500 shadow-sm">
-                                                    <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-emerald-200 text-xs font-black">
-                                                        <span class="px-2 py-0.5 rounded bg-emerald-600 text-white text-[11px]">A</span>
-                                                        <span class="text-emerald-600 text-[11px]">✓ ĐÚNG</span>
+                                    @php $isJson = str_starts_with(trim($group->passage_text), '{'); @endphp
+                                    @if ($isJson)
+                                        @php $exData = json_decode(trim($group->passage_text), true); @endphp
+                                        
+                                        @if(is_array($exData))
+                                            @if(isset($exData['q_html']) || isset($exData['q_pinyin']) || isset($exData['q_hanzi']))
+                                                {{-- Type 1: Matching Q&A Example --}}
+                                                @php
+                                                    $qContent = renderHskRubyText($exData['q_html'] ?? '', $exData['q_pinyin'] ?? '', $exData['q_hanzi'] ?? '');
+                                                    $aContent = renderHskRubyText($exData['a_html'] ?? '', $exData['a_pinyin'] ?? '', $exData['a_hanzi'] ?? '');
+                                                @endphp
+                                                <div class="bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-amber-50/80 dark:from-amber-950/40 dark:via-slate-900/60 dark:to-amber-950/30 border border-amber-200/90 dark:border-amber-700/50 rounded-2xl p-5 mb-6 shadow-sm">
+                                                    <div class="flex items-center justify-between font-bold text-amber-800 dark:text-amber-300 text-sm mb-4">
+                                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-500 text-white text-xs font-black shadow-xs">
+                                                            <span class="material-symbols-outlined text-[15px]">stars</span>
+                                                            Ví dụ (例如)
+                                                        </span>
+                                                        <span class="inline-flex items-center gap-1 text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-300/60 dark:border-emerald-800/60">
+                                                            Đáp án mẫu: {{ $exData['a_letter'] ?? 'F' }}
+                                                        </span>
                                                     </div>
-                                                    <img src="{{ Storage::url($passageImages[0]) }}" class="h-24 object-contain rounded-lg" alt="Ex A">
-                                                </div>
-                                                <div class="flex flex-col items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 opacity-60">
-                                                    <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-slate-100 text-xs font-black text-slate-500">
-                                                        <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 text-[11px]">B</span>
-                                                    </div>
-                                                    <img src="{{ Storage::url($passageImages[1]) }}" class="h-24 object-contain rounded-lg" alt="Ex B">
-                                                </div>
-                                                <div class="flex flex-col items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 opacity-60">
-                                                    <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-slate-100 text-xs font-black text-slate-500">
-                                                        <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 text-[11px]">C</span>
-                                                    </div>
-                                                    <img src="{{ Storage::url($passageImages[2]) }}" class="h-24 object-contain rounded-lg" alt="Ex C">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @elseif($groupIndex == 2 && count($passageImages) >= 5)
-                                        {{-- Part 3 Matching Example Card --}}
-                                        <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-                                            <div class="flex items-center justify-between font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-                                                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-                                                <span class="text-xs font-bold text-emerald-600">Đáp án mẫu: C</span>
-                                            </div>
-                                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                                            <div class="p-3.5 bg-white dark:bg-slate-800 rounded-xl border border-amber-200/70 dark:border-slate-700 space-y-1.5 flex-1 w-full text-sm font-bold text-slate-800 dark:text-slate-200">
-                                                <div class="flex items-start gap-2">
-                                                    <span class="text-slate-400">女:</span>
-                                                    <div><ruby>你<rt>Nǐ</rt></ruby> <ruby>好<rt>hǎo</rt></ruby>！</div>
-                                                </div>
-                                                <div class="flex items-start gap-2">
-                                                    <span class="text-slate-400">男:</span>
-                                                    <div><ruby>你<rt>Nǐ</rt></ruby> <ruby>好<rt>hǎo</rt></ruby>！<ruby>很<rt>Hěn</rt></ruby> <ruby>高<rt>gāo</rt></ruby><ruby>兴<rt>xìng</rt></ruby> <ruby>认<rt>rèn</rt></ruby><ruby>识<rt>shi</rt></ruby> <ruby>你<rt>nǐ</rt></ruby>。</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border-2 border-emerald-500 shadow-sm max-w-[200px] w-full">
-                                                <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-emerald-200 text-xs font-black">
-                                                    <span class="px-2 py-0.5 rounded bg-emerald-600 text-white text-[11px]">C</span>
-                                                    <span class="text-emerald-600 text-[11px]">✓ ĐÚNG</span>
-                                                </div>
-                                                <img src="{{ Storage::url($passageImages[2]) }}" class="h-24 object-contain rounded-xl p-1 bg-white dark:bg-slate-800" alt="Ex C">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @elseif($sectionIndex == 1 && $groupIndex == 2)
-                                        {{-- Reading Part 3 (Q31-35) Matching Example Card --}}
-                                        @php
-                                            $exData = null;
-                                            if ($group->passage_text && str_starts_with($group->passage_text, '{')) {
-                                                $exData = json_decode($group->passage_text, true);
-                                            }
-                                            if (!$exData) {
-                                                $exData = [
-                                                    'q_html' => '<ruby>你<rt>Nǐ</rt></ruby> <ruby>喝<rt>hē</rt></ruby> <ruby>水<rt>shuǐ</rt></ruby> <ruby>吗<rt>ma</rt></ruby> ？',
-                                                    'a_letter' => 'F',
-                                                    'a_html' => '<ruby>好<rt>Hǎo</rt></ruby> <ruby>的<rt>de</rt></ruby> ， <ruby>谢<rt>xiè</rt></ruby><ruby>谢<rt>xie</rt></ruby> ！'
-                                                ];
-                                            }
-                                        @endphp
-                                        <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-                                            <div class="flex items-center justify-between font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-                                                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-                                                <span class="text-xs font-bold text-emerald-600">Đáp án mẫu: {{ $exData['a_letter'] ?? 'F' }}</span>
-                                            </div>
-                                            <div class="space-y-3">
-                                                <div class="p-3.5 bg-white dark:bg-slate-800 rounded-xl border border-amber-200/70 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-200 shadow-sm flex items-center gap-2">
-                                                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                                                    {!! $exData['q_html'] ?? '' !!}
-                                                </div>
-                                                <div class="grid grid-cols-1">
-                                                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border-2 border-emerald-500 shadow-sm flex items-center justify-between">
-                                                        <div class="flex items-center gap-3">
-                                                            <span class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-black">{{ $exData['a_letter'] ?? 'F' }}</span>
-                                                            <div class="text-sm font-bold text-slate-900 dark:text-white">
-                                                                {!! $exData['a_html'] ?? '' !!}
+                                                    <div class="space-y-3">
+                                                        {{-- Question Line --}}
+                                                        <div class="p-4 bg-white/90 dark:bg-slate-800/90 rounded-xl border border-amber-200/80 dark:border-slate-700/80 text-base font-bold text-slate-800 dark:text-slate-100 shadow-xs flex items-center gap-3">
+                                                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+                                                            <div class="flex-1 flex flex-wrap items-end gap-x-2 gap-y-1">
+                                                                {!! $qContent !!}
                                                             </div>
                                                         </div>
-                                                        <span class="text-emerald-600 text-[11px] font-black">✓ ĐÚNG</span>
+                                                        {{-- Answer Line --}}
+                                                        <div class="p-3.5 bg-emerald-50/90 dark:bg-emerald-950/40 rounded-xl border-2 border-emerald-500/80 shadow-xs flex items-center justify-between gap-3">
+                                                            <div class="flex items-center gap-3 min-w-0">
+                                                                <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-black shadow-xs shrink-0">{{ $exData['a_letter'] ?? 'F' }}</span>
+                                                                <div class="text-base font-bold text-slate-900 dark:text-white flex flex-wrap items-end gap-x-2 gap-y-1">
+                                                                    {!! $aContent !!}
+                                                                </div>
+                                                            </div>
+                                                            <span class="text-emerald-600 dark:text-emerald-400 text-xs font-black tracking-wider uppercase shrink-0 flex items-center gap-1">
+                                                                <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                                                ĐÚNG
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
+
+                                            @elseif(isset($exData['ex_q_html']) || isset($exData['ex_q_pinyin']) || isset($exData['options']))
+                                                {{-- Type 2: Options Bank & Fill-in Example --}}
+                                                @if(!empty($exData['options']))
+                                                    <div class="mb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                                                        @foreach($exData['options'] as $idx => $opt)
+                                                            @php
+                                                                $optLetter = chr(65 + $idx);
+                                                                $isExAns = ($optLetter === ($exData['ex_a_letter'] ?? 'D'));
+                                                                $optText = renderHskRubyText($opt['html'] ?? '', $opt['pinyin'] ?? '', $opt['hanzi'] ?? '');
+                                                            @endphp
+                                                            <div class="p-3 rounded-2xl border flex flex-col justify-between text-center transition-all min-h-[80px] relative shadow-xs
+                                                                {{ $isExAns 
+                                                                    ? 'bg-amber-500/10 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80 ring-2 ring-amber-400/20' 
+                                                                    : 'bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700/80 hover:border-primary/40' }}">
+                                                                
+                                                                {{-- Top Header Row --}}
+                                                                <div class="w-full flex items-center justify-between gap-1 mb-1">
+                                                                    <span class="w-5 h-5 rounded-md text-[11px] font-black flex items-center justify-center shrink-0
+                                                                        {{ $isExAns 
+                                                                            ? 'bg-amber-500 text-white shadow-xs' 
+                                                                            : 'bg-slate-100 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300' }}">
+                                                                        {{ $optLetter }}
+                                                                    </span>
+                                                                    @if($isExAns)
+                                                                        <span class="px-1.5 py-0.5 rounded bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider whitespace-nowrap shrink-0">
+                                                                            Ví dụ
+                                                                        </span>
+                                                                    @endif
+                                                                </div>
+
+                                                                {{-- Content (Pinyin + Hanzi) --}}
+                                                                <div class="my-auto flex items-center justify-center flex-wrap gap-1 py-1">
+                                                                    {!! $optText !!}
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+
+                                                @if(isset($exData['ex_q_html']) || isset($exData['ex_q_pinyin']) || isset($exData['ex_q_hanzi']))
+                                                    @php
+                                                        $exQContent = renderHskRubyText($exData['ex_q_html'] ?? '', $exData['ex_q_pinyin'] ?? '', $exData['ex_q_hanzi'] ?? '');
+                                                    @endphp
+                                                    <div class="bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-amber-50/80 dark:from-amber-950/40 dark:via-slate-900/60 dark:to-amber-950/30 border border-amber-200/90 dark:border-amber-700/50 rounded-2xl p-5 mb-6 shadow-sm">
+                                                        <div class="flex items-center justify-between font-bold text-amber-800 dark:text-amber-300 text-sm mb-3">
+                                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-500 text-white text-xs font-black shadow-xs">
+                                                                <span class="material-symbols-outlined text-[15px]">stars</span>
+                                                                Ví dụ (例如)
+                                                            </span>
+                                                            <span class="inline-flex items-center gap-1 text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-300/60 dark:border-emerald-800/60">
+                                                                Đáp án mẫu: {{ $exData['ex_a_letter'] ?? 'D' }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="p-4 bg-white/90 dark:bg-slate-800/90 rounded-xl border border-amber-200/80 dark:border-slate-700/80 text-base font-bold text-slate-800 dark:text-slate-100 shadow-xs flex items-center gap-3">
+                                                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+                                                            <div class="flex-1 flex flex-wrap items-end gap-x-2 gap-y-1">
+                                                                {!! $exQContent !!}
+                                                                <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 font-black text-sm ml-1">
+                                                                    {{ $exData['ex_a_letter'] ?? 'D' }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endif
+                                        @endif
+                                    @else
+                                        @if (!str_starts_with(trim($group->passage_text), '<div'))
+                                            <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
+                                                <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
+                                                    <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如) / Hướng dẫn</span>
+                                                </div>
+                                                <div class="text-base font-bold text-slate-800 dark:text-slate-200 space-y-2">
+                                                    {!! nl2br($group->passage_text) !!}
+                                                </div>
                                             </div>
-                                        </div>
-                                    @elseif($sectionIndex == 0 && $groupIndex == 3)
+                                        @else
+                                            <div class="mb-6">
+                                                {!! nl2br($group->passage_text) !!}
+                                            </div>
+                                        @endif
+                                    @endif
+                                @else
+                                    @if($sectionIndex == 0 && $groupIndex == 3)
                                         {{-- Part 4 Multiple Choice Example Card (Listening) --}}
                                         <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
                                             <div class="flex items-center justify-between font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
@@ -279,7 +351,7 @@
                                                     <div><span class="text-slate-400">问：</span> <ruby>她<rt>Tā</rt></ruby> <ruby>下<rt>xià</rt></ruby><ruby>午<rt>wǔ</rt></ruby> <ruby>去<rt>qù</rt></ruby> <ruby>哪<rt>nǎ</rt></ruby><ruby>里<rt>li</rt></ruby> ？</div>
                                                 </div>
                                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border-2 border-emerald-500 flex flex-col items-center justify-between text-center shadow-sm">
+                                                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border-2 border-emerald-500 flex flex-col items-center justify-between text-center shadow-xs">
                                                         <div class="flex items-center justify-between w-full pb-1 mb-1 border-b border-emerald-200 text-xs font-black">
                                                             <span class="px-2 py-0.5 rounded bg-emerald-600 text-white text-[11px]">A</span>
                                                             <span class="text-emerald-600 text-[11px]">✓ ĐÚNG</span>
@@ -307,61 +379,92 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    @elseif($sectionIndex == 1 && $groupIndex == 3)
-                                        {{-- Reading Part 4 (Q36-40) Text Options Bank & Example Card --}}
-                                        @php
-                                            $part4Data = null;
-                                            if ($group->passage_text && str_starts_with($group->passage_text, '{')) {
-                                                $part4Data = json_decode($group->passage_text, true);
-                                            }
-                                        @endphp
-                                        @if($part4Data && isset($part4Data['options']))
-                                            {{-- Text Options Bank --}}
-                                            <div class="mb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                                                @foreach($part4Data['options'] as $idx => $opt)
-                                                    <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-                                                        <div class="absolute top-0 left-0 bg-primary/10 text-primary px-2 py-0.5 rounded-br-lg text-xs font-black">
-                                                            {{ chr(65 + $idx) }}
-                                                        </div>
-                                                        @if(chr(65 + $idx) === ($part4Data['ex_a_letter'] ?? 'D'))
-                                                            <div class="absolute top-0 right-0 bg-amber-500 text-white px-1.5 py-0.5 rounded-bl-lg text-[10px] font-bold">
-                                                                Ví dụ
-                                                            </div>
-                                                        @endif
-                                                        <div class="mt-4 flex items-center justify-center h-8">
-                                                            {!! $opt['html'] ?? '' !!}
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                    @endif
+                                @endif
 
-                                            {{-- Reading Part 4 Example Card --}}
-                                            <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-                                                <div class="flex items-center justify-between font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-                                                    <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-                                                    <span class="text-xs font-bold text-emerald-600">Đáp án mẫu: {{ $part4Data['ex_a_letter'] ?? 'D' }}</span>
+                                {{-- Passage Images Grid (Answer bank images A-F or Part 1 Examples) --}}
+                                @if ($group->passage_image)
+                                    @php
+                                        $passageImages = array_filter(array_map('trim', explode(',', $group->passage_image)));
+                                        $imgLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+                                        
+                                        $exLetter = null;
+                                        if ($group->passage_text && str_starts_with(trim($group->passage_text), '{')) {
+                                            $parsedEx = json_decode(trim($group->passage_text), true);
+                                            $exLetter = $parsedEx['a_letter'] ?? $parsedEx['ex_a_letter'] ?? null;
+                                        }
+                                        if (!$exLetter) {
+                                            if ($sectionIndex == 0 && $groupIndex == 2) $exLetter = 'C';
+                                            if ($sectionIndex == 1 && $groupIndex == 1) $exLetter = 'E';
+                                        }
+                                    @endphp
+
+                                    @if($groupIndex == 0 && count($passageImages) == 2)
+                                        {{-- Part 1 True/False Examples Card --}}
+                                        <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
+                                            <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
+                                                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                                                <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-amber-100 dark:border-slate-700/80 shadow-xs">
+                                                    <img src="{{ Storage::url($passageImages[0]) }}" class="h-20 object-contain rounded-lg" alt="Ex 1">
+                                                    <span class="w-10 h-10 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-xl shadow-xs">✓</span>
                                                 </div>
-                                                <div class="p-3.5 bg-white dark:bg-slate-800 rounded-xl border border-amber-200/70 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-200 shadow-sm flex items-center gap-2">
-                                                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                                                    <span class="flex-1">{!! $part4Data['ex_q_html'] ?? '' !!} <span class="text-emerald-600 font-black px-1">( {{ $part4Data['ex_a_letter'] ?? 'D' }} )</span> ?</span>
+                                                <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-amber-100 dark:border-slate-700/80 shadow-xs">
+                                                    <img src="{{ Storage::url($passageImages[1]) }}" class="h-20 object-contain rounded-lg" alt="Ex 2">
+                                                    <span class="w-10 h-10 rounded-xl bg-rose-500 text-white font-black flex items-center justify-center text-xl shadow-xs">✕</span>
                                                 </div>
                                             </div>
-                                        @endif
+                                        </div>
+                                    @elseif($sectionIndex == 0 && $groupIndex == 1 && count($passageImages) == 3)
+                                        {{-- Part 2 Multiple Choice Examples Card (Listening) --}}
+                                        <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
+                                            <div class="flex items-center justify-between font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
+                                                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
+                                                <span class="text-xs font-bold text-emerald-600">Đáp án mẫu: A</span>
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
+                                                <div class="flex flex-col items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border-2 border-emerald-500 shadow-xs">
+                                                    <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-emerald-200 text-xs font-black">
+                                                        <span class="px-2 py-0.5 rounded bg-emerald-600 text-white text-[11px]">A</span>
+                                                        <span class="text-emerald-600 text-[11px]">✓ ĐÚNG</span>
+                                                    </div>
+                                                    <img src="{{ Storage::url($passageImages[0]) }}" class="h-24 object-contain rounded-lg" alt="Ex A">
+                                                </div>
+                                                <div class="flex flex-col items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 opacity-60">
+                                                    <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-slate-100 text-xs font-black text-slate-500">
+                                                        <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 text-[11px]">B</span>
+                                                    </div>
+                                                    <img src="{{ Storage::url($passageImages[1]) }}" class="h-24 object-contain rounded-lg" alt="Ex B">
+                                                </div>
+                                                <div class="flex flex-col items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 opacity-60">
+                                                    <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-slate-100 text-xs font-black text-slate-500">
+                                                        <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 text-[11px]">C</span>
+                                                    </div>
+                                                    <img src="{{ Storage::url($passageImages[2]) }}" class="h-24 object-contain rounded-lg" alt="Ex C">
+                                                </div>
+                                            </div>
+                                        </div>
                                     @elseif(count($passageImages) > 1)
                                         <div class="mb-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
                                             @foreach($passageImages as $idx => $img)
                                                 @php
-                                                    $label = $imgLabels[$idx] ?? '';
-                                                    $isExampleImg = false;
-                                                    if ($sectionIndex == 0 && $groupIndex == 2 && $label === 'C') $isExampleImg = true; // Nghe part 3
-                                                    if ($sectionIndex == 1 && $groupIndex == 1 && $label === 'E') $isExampleImg = true; // Đọc part 2
+                                                    $label = $imgLabels[$idx] ?? chr(65 + $idx);
+                                                    $isExampleImg = ($exLetter && $label === $exLetter);
                                                 @endphp
-                                                <div class="relative rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 p-3 flex flex-col items-center justify-center hover:border-primary/50 transition-all shadow-sm group {{ $isExampleImg ? 'opacity-60 grayscale hover:grayscale-0' : '' }}">
-                                                    <div class="absolute top-2.5 left-2.5 w-7 h-7 rounded-lg {{ $isExampleImg ? 'bg-amber-500 text-white' : 'bg-primary/10 text-primary' }} font-black text-xs flex items-center justify-center">
+                                                <div class="relative rounded-2xl p-3 flex flex-col items-center justify-center transition-all shadow-xs group
+                                                    {{ $isExampleImg 
+                                                        ? 'border-2 border-emerald-500/80 bg-emerald-50/40 dark:bg-emerald-950/30 ring-2 ring-emerald-500/10' 
+                                                        : 'border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-primary/50' }}">
+                                                    
+                                                    <div class="absolute top-2.5 left-2.5 w-7 h-7 rounded-lg {{ $isExampleImg ? 'bg-emerald-600 text-white' : 'bg-primary/10 text-primary' }} font-black text-xs flex items-center justify-center shadow-xs">
                                                         {{ $label }}
                                                     </div>
                                                     @if($isExampleImg)
-                                                        <span class="absolute top-2.5 right-2.5 text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold">Ví dụ</span>
+                                                        <span class="absolute top-2.5 right-2.5 text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-md font-black tracking-wider uppercase flex items-center gap-1 shadow-xs">
+                                                            <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                                                            Ví dụ (Mẫu)
+                                                        </span>
                                                     @endif
                                                     <img src="{{ Storage::url(trim($img)) }}" 
                                                          class="max-h-28 w-full object-contain p-1 group-hover:scale-105 transition-transform duration-200" 
@@ -372,7 +475,7 @@
                                     @else
                                         <div class="mb-6 flex justify-center">
                                             <img src="{{ Storage::url(trim($passageImages[0])) }}" 
-                                                 class="rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm max-w-full max-h-64 object-contain bg-white dark:bg-slate-800 p-2" 
+                                                 class="rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs max-w-full max-h-64 object-contain bg-white dark:bg-slate-800 p-2" 
                                                  alt="Passage Image">
                                         </div>
                                     @endif
@@ -408,42 +511,46 @@
 
                                         {{-- ========== TYPE 1: TRUE / FALSE ========== --}}
                                         @if ($isTrueFalse)
-                                            <div class="q-card flex items-center justify-between gap-4 scroll-mt-24 p-4 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm"
+                                            <div class="q-card scroll-mt-24 p-4 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-4"
                                                 id="q-{{ $currentQNum }}">
 
-                                                {{-- Left: Number & Content --}}
-                                                <div class="flex items-center gap-4 flex-1 min-w-0">
-                                                    <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">
+                                                <div class="flex items-start gap-4">
+                                                    {{-- Question Number --}}
+                                                    <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                                         {{ $currentQNum }}
                                                     </div>
 
-                                                    @if ($question->image)
-                                                        <div class="shrink-0">
-                                                            <img src="{{ Storage::url($question->image) }}"
-                                                                class="max-h-24 max-w-[140px] object-contain rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 p-1"
-                                                                alt="Q {{ $currentQNum }}">
-                                                        </div>
-                                                    @endif
+                                                    {{-- Image & Title Container --}}
+                                                    <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start gap-4 min-w-0">
+                                                        @if ($question->image)
+                                                            <div class="shrink-0 bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-center">
+                                                                <img src="{{ Storage::url($question->image) }}"
+                                                                    class="max-h-28 max-w-[160px] object-contain rounded-lg"
+                                                                    alt="Q {{ $currentQNum }}">
+                                                            </div>
+                                                        @endif
 
-                                                    @if ($question->title)
-                                                        <div class="flex-1 text-xl font-bold text-slate-800 dark:text-slate-100 leading-loose min-w-0">
-                                                            {!! $question->title !!}
-                                                        </div>
-                                                    @endif
+                                                        @if ($question->title)
+                                                            <div class="flex-1 text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed text-center sm:text-left min-w-0 flex flex-wrap items-end justify-center sm:justify-start gap-x-2 gap-y-1 py-1">
+                                                                {!! $question->title !!}
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
 
-                                                {{-- Right: √ / × Buttons --}}
-                                                <div class="shrink-0 flex items-center gap-2.5">
+                                                {{-- Bottom Row: √ / × Buttons --}}
+                                                <div class="flex items-center justify-center sm:justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                                                    <span class="text-xs font-semibold text-slate-400 mr-1 select-none">Đúng / Sai:</span>
                                                     @foreach ($question->options as $option)
                                                         <label class="cursor-pointer group select-none">
                                                             <input type="radio" name="answers[{{ $question->id }}]"
                                                                 class="peer hidden" value="{{ $option->id }}"
                                                                 @change="selectAnswer({{ $currentQNum }})">
-                                                            <div class="w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all duration-150
+                                                            <div class="w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all duration-150
                                                                 {{ $option->content === '√'
                                                                     ? 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-emerald-500 group-hover:border-emerald-400 group-hover:bg-emerald-50/50 dark:group-hover:bg-emerald-950/20 peer-checked:border-emerald-500 peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:shadow-sm'
                                                                     : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-rose-500 group-hover:border-rose-400 group-hover:bg-rose-50/50 dark:group-hover:bg-rose-950/20 peer-checked:border-rose-500 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:shadow-sm' }}">
-                                                                <span class="material-symbols-outlined text-[24px] font-bold">
+                                                                <span class="material-symbols-outlined text-[26px] font-black">
                                                                     {{ $option->content === '√' ? 'check' : 'close' }}
                                                                 </span>
                                                             </div>
@@ -500,26 +607,27 @@
                                                 if ($currentQNum >= 31 && $currentQNum <= 35) $excludedLetters = ['F'];
                                                 if ($currentQNum >= 36 && $currentQNum <= 40) $excludedLetters = ['D'];
                                             @endphp
-                                            <div class="q-card flex items-center justify-between gap-4 scroll-mt-24 px-4 py-3.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm"
+                                            <div class="q-card scroll-mt-24 p-4 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-3"
                                                 id="q-{{ $currentQNum }}">
 
                                                 {{-- Number & Title --}}
-                                                <div class="flex items-center gap-3.5 flex-1 min-w-0">
-                                                    <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">
+                                                <div class="flex items-start gap-3.5">
+                                                    <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                                         {{ $currentQNum }}
                                                     </div>
 
-                                                    @if ($question->title)
-                                                        <div class="flex-1 text-lg font-bold text-slate-800 dark:text-slate-100 leading-loose min-w-0">
+                                                    <div class="flex-1 text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed min-w-0 flex flex-wrap items-end gap-x-2 gap-y-1">
+                                                        @if ($question->title)
                                                             {!! $question->title !!}
-                                                        </div>
-                                                    @else
-                                                        <div class="flex-1 text-sm italic text-slate-400">Chọn đáp án nghe được:</div>
-                                                    @endif
+                                                        @else
+                                                            <span class="text-sm font-semibold italic text-slate-400">Chọn đáp án nghe được:</span>
+                                                        @endif
+                                                    </div>
                                                 </div>
 
-                                                {{-- 1 Straight Row of Option Buttons (Excludes example letter) --}}
-                                                <div class="shrink-0 flex items-center gap-1.5">
+                                                {{-- Option Buttons Row --}}
+                                                <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                                                    <span class="text-xs font-semibold text-slate-400 mr-1 select-none">Đáp án:</span>
                                                     @foreach ($question->options as $option)
                                                         @php $optContent = trim($option->content); @endphp
                                                         @if (in_array($optContent, $excludedLetters))
