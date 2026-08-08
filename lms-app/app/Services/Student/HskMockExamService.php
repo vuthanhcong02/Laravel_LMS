@@ -4,6 +4,7 @@ namespace App\Services\Student;
 
 use App\Models\HskLevel;
 use App\Models\HskMockExamResult;
+use App\Models\HskMockExam;
 
 class HskMockExamService
 {
@@ -21,6 +22,16 @@ class HskMockExamService
     public function getHskLevelWithMockExams($levelCode)
     {
         return HskLevel::where('level_code', $levelCode)->with('mockExams')->firstOrFail();
+    }
+
+    /**
+     * Get a specific exam with all its nested structure (sections, groups, questions, options)
+     */
+    public function getExamForTaking($examId)
+    {
+        return HskMockExam::with([
+            'sections.questionGroups.questions.options'
+        ])->findOrFail($examId);
     }
 
     /**

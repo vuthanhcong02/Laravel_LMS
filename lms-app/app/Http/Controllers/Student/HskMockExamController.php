@@ -41,6 +41,12 @@ class HskMockExamController extends Controller
 
     public function take($level, $id)
     {
-        return view('portal.student.hsk-mock-exams.take', compact('level', 'id'));
+        $exam = $this->hskMockExamService->getExamForTaking($id);
+        return view('portal.student.hsk-mock-exams.take', compact('level', 'exam'));
+    }
+
+    public function submit(Request $request, $level, $id)
+    {
+        dd($request->all(), 'Logic chấm điểm sẽ được implement tiếp theo.');
     }
 }

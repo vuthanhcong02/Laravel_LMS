@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class HskMockExamOption extends Model
 {
+    protected $guarded = [];
+    
     use HasFactory;
+
+    public function question()
+    {
+        return $this->belongsTo(HskMockExamQuestion::class, 'hsk_mock_exam_question_id');
+    }
 }

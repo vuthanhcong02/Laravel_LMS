@@ -134,32 +134,69 @@
                                 </div>
                                 
                                 <div class="p-3 border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/20">
-                                    <a href="{{ route('student.hsk-mock-exams.take', ['level' => $level, 'id' => $exam->id]) }}" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                        <span class="material-symbols-outlined text-[18px]">play_circle</span> Bắt đầu thi
-                                    </a>
+                                    @auth
+                                        <a href="{{ route('student.hsk-mock-exams.take', ['level' => $level, 'id' => $exam->id]) }}" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                            <span class="material-symbols-outlined text-[18px]">play_circle</span> Bắt đầu thi
+                                        </a>
+                                    @else
+                                        <button type="button" onclick="openLoginModal('{{ route('student.hsk-mock-exams.take', ['level' => $level, 'id' => $exam->id]) }}')" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                            <span class="material-symbols-outlined text-[18px]">play_circle</span> Bắt đầu thi
+                                        </button>
+                                    @endauth
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                    
-                    {{-- Pagination (Demo) --}}
-                    <div class="flex justify-center pt-6">
-                        <nav class="flex gap-2">
-                            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary/50 transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                            </a>
-                            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white font-bold shadow-md shadow-primary/20">1</a>
-                            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary hover:border-primary/50 font-semibold transition-colors">2</a>
-                            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary hover:border-primary/50 font-semibold transition-colors">3</a>
-                            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary/50 transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                            </a>
-                        </nav>
                     </div>
                 @endif
             </div>
 
         </div>
     </div>
+
+    {{-- Login Required Modal (Vanilla JS) --}}
+    <div id="loginModal" class="hidden relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="document.getElementById('loginModal').classList.add('hidden')"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 pointer-events-none">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md pointer-events-auto border border-slate-200 dark:border-slate-700">
+                    <div class="px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 sm:mx-0 sm:h-10 sm:w-10">
+                                <span class="material-symbols-outlined text-slate-500 dark:text-slate-400">lock</span>
+                            </div>
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                <h3 class="text-lg font-semibold leading-6 text-slate-900 dark:text-white" id="modal-title">Đăng nhập để tiếp tục</h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                                        Bạn cần đăng nhập để làm bài thi và lưu lại kết quả. Quá trình này rất nhanh chóng.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <a id="loginModalBtn" href="{{ route('login') }}" class="inline-flex w-full justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 sm:ml-3 sm:w-auto">
+                            Đăng nhập
+                        </a>
+                        <button type="button" onclick="document.getElementById('loginModal').classList.add('hidden')" class="mt-3 inline-flex w-full justify-center rounded-lg bg-white dark:bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-900 dark:text-slate-200 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 sm:mt-0 sm:w-auto">
+                            Để sau
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    function openLoginModal(intendedUrl) {
+        // Point the login button to the intended protected route
+        // This leverages Laravel's auth middleware to redirect back after login
+        document.getElementById('loginModalBtn').href = intendedUrl;
+        document.getElementById('loginModal').classList.remove('hidden');
+    }
+</script>
 @endsection

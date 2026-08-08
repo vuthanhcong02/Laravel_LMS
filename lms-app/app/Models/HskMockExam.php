@@ -15,4 +15,9 @@ class HskMockExam extends Model
     {
         return $this->belongsTo(HskLevel::class);
     }
+
+    public function sections()
+    {
+        return $this->hasMany(HskMockExamSection::class)->orderBy('order_index');
+    }
 }
