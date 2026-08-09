@@ -2,31 +2,96 @@
 if (!function_exists('renderHskRubyText')) {
     function renderHskRubyText($html, $pinyin = '', $hanzi = '') {
         $html = trim($html ?? '');
-        if (!empty($html) && str_contains($html, '<ruby')) {
-            return $html;
-        }
-        
         $pinyinStr = trim($pinyin ?? '');
-        $hanziStr = trim(preg_replace('/\s+/', '', $hanzi ?? ''));
-        
-        if (empty($pinyinStr) && empty($hanziStr)) {
-            return !empty($html) ? $html : '';
-        }
-        if (empty($pinyinStr)) return e($hanziStr);
-        if (empty($hanziStr)) return e($pinyinStr);
+        $hanziStr = trim($hanzi ?? '');
 
-        $pinyins = preg_split('/\s+/', $pinyinStr);
+        if (empty($hanziStr) && !empty($html) && !str_contains($html, '<ruby')) {
+            $hanziStr = strip_tags($html);
+        }
+
+        if (!empty($html) && str_contains($html, '<ruby')) {
+            // If already split into multiple 1-to-1 rubies, format them with modern flex styling
+            if (substr_count($html, '<ruby') > 1) {
+                $styled = preg_replace_callback('/<ruby[^>]*>(.*?)<\/ruby>/is', function($m) {
+                    $inner = $m[1];
+                    $rt = '';
+                    if (preg_match('/<rt[^>]*>(.*?)<\/rt>/is', $inner, $rtMatch)) {
+                        $rt = trim(strip_tags($rtMatch[1]));
+                    }
+                    $hz = trim(strip_tags(preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $inner)));
+                    if (!empty($rt) && !empty($hz)) {
+                        return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($hz) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($rt) . '</rt></ruby>';
+                    }
+                    return $m[0];
+                }, $html);
+
+                $styled = preg_replace('/<br\s*\/?>/i', '<div class="w-full h-0 basis-full my-1"></div>', $styled);
+                return '<div class="flex flex-wrap items-end gap-x-2 gap-y-1">' . $styled . '</div>';
+            }
+            // If it is a single fallback ruby tag, extract Pinyin & Hanzi to re-align 1-to-1
+            if (preg_match('/<rt[^>]*>(.*?)<\/rt>/is', $html, $pyM)) {
+                $extractedPinyin = trim(strip_tags($pyM[1]));
+                $cleanHtml = preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $html);
+                $extractedHanzi = trim(strip_tags($cleanHtml));
+                if (!empty($extractedPinyin) && !empty($extractedHanzi)) {
+                    $pinyinStr = $extractedPinyin;
+                    $hanziStr = $extractedHanzi;
+                } else {
+                    return $html;
+                }
+            } else {
+                return $html;
+            }
+        }
+
+        if (str_contains($hanziStr, "\n") || str_contains($pinyinStr, "\n")) {
+            $pinyinLines = explode("\n", $pinyinStr);
+            $hanziLines = explode("\n", $hanziStr);
+            $maxLines = max(count($pinyinLines), count($hanziLines));
+            $renderedLines = [];
+            for ($l = 0; $l < $maxLines; $l++) {
+                $renderedLines[] = renderHskRubyText(
+                    '',
+                    $pinyinLines[$l] ?? '',
+                    $hanziLines[$l] ?? ''
+                );
+            }
+            return implode('<div class="w-full h-0 basis-full my-1"></div>', $renderedLines);
+        }
+
+        preg_match_all('/(?:[a-zA-Z]{1,3})?[aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜAEIOUÜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙǕǗǙǛ]+(?:ng|n|r)?/iu', $pinyinStr, $m);
+        $validPinyins = $m[0] ?? [];
+
+        $hanziStr = preg_replace('/[ \t\r]+/u', '', $hanziStr);
         $chars = mb_str_split($hanziStr);
 
-        if (count($pinyins) === count($chars)) {
+        $chineseCharCount = 0;
+        foreach ($chars as $char) {
+            if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                $chineseCharCount++;
+            }
+        }
+
+        if (count($validPinyins) === $chineseCharCount && $chineseCharCount > 0) {
             $out = '';
+            $pIdx = 0;
             foreach ($chars as $i => $char) {
-                $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($pinyins[$i]) . '</rt></ruby>';
+                if ($char === "\n") {
+                    $out .= '<div class="w-full h-0 basis-full my-1"></div>';
+                } else if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                    $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . htmlspecialchars($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . htmlspecialchars($validPinyins[$pIdx++]) . '</rt></ruby>';
+                } else if (preg_match('/[a-zA-Z0-9]/', $char)) {
+                    $out .= '<span class="mx-1 text-base font-black text-slate-900 dark:text-white">' . htmlspecialchars($char) . '</span>';
+                } else {
+                    $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . htmlspecialchars($char) . '</span><rt class="text-[11px] font-bold text-transparent mb-0.5 select-none">.</rt></ruby>';
+                }
             }
             return $out;
-        } else {
-            return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none"><span class="text-base font-black text-slate-900 dark:text-white">' . e($hanziStr) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($pinyinStr) . '</rt></ruby>';
         }
+
+        // Fallback for unaligned text
+        $fallbackHtml = '<div><div class="text-xs text-slate-500 mb-1 leading-none">' . htmlspecialchars($pinyinStr) . '</div><div class="text-base font-bold text-slate-800 dark:text-slate-100 tracking-widest">' . htmlspecialchars($hanziStr) . '</div></div>';
+        return $fallbackHtml;
     }
 }
 ?>
@@ -209,13 +274,27 @@ if (!function_exists('renderHskRubyText')) {
                                 </div>
 
                                 {{-- Passage Text (Instructions / Options reference block) --}}
-                                @if ($group->passage_text)
-                                    @php $isJson = str_starts_with(trim($group->passage_text), '{'); @endphp
-                                    @if ($isJson)
-                                        @php $exData = json_decode(trim($group->passage_text), true); @endphp
-                                        
-                                        @if(is_array($exData))
-                                            @if(isset($exData['q_html']) || isset($exData['q_pinyin']) || isset($exData['q_hanzi']))
+                                @php
+                                    $hasPassageText = !empty($group->passage_text);
+                                    $isListeningPart3 = ($sectionIndex == 0 && $groupIndex == 2);
+                                @endphp
+                                @if ($hasPassageText || $isListeningPart3)
+                                    @php
+                                        $isJson = $hasPassageText && str_starts_with(trim($group->passage_text), '{');
+                                        if ($isJson) {
+                                            $exData = json_decode(trim($group->passage_text), true);
+                                        } else {
+                                            $exData = [
+                                                'q_pinyin' => 'Nǐ hǎo ! qǐng wèn Zhāng lǎoshī zài ma ?',
+                                                'q_hanzi'  => '你好！请问张老师在吗？',
+                                                'a_pinyin' => 'Tā zài , qǐng jìn .',
+                                                'a_hanzi'  => ' coast 他在，请进。',
+                                                'a_letter' => 'C'
+                                            ];
+                                        }
+                                    @endphp
+                                    @if (is_array($exData))
+                                        @if(isset($exData['q_html']) || isset($exData['q_pinyin']) || isset($exData['q_hanzi']))
                                                 {{-- Type 1: Matching Q&A Example --}}
                                                 @php
                                                     $qContent = renderHskRubyText($exData['q_html'] ?? '', $exData['q_pinyin'] ?? '', $exData['q_hanzi'] ?? '');
@@ -253,44 +332,110 @@ if (!function_exists('renderHskRubyText')) {
                                                             </span>
                                                         </div>
                                                     </div>
+
+                                                    {{-- Options Bank A-F for Reading Part 3 (Q31-35) --}}
+                                                    @if($sectionIndex == 1 && ($groupIndex == 2 || !empty($exData['options'])))
+                                                        @php
+                                                            $p3Options = !empty($exData['options']) ? $exData['options'] : [
+                                                                ['letter' => 'A', 'pinyin' => 'Zhōngguó rén', 'hanzi' => '中国人'],
+                                                                ['letter' => 'B', 'pinyin' => '7 diǎn', 'hanzi' => '7点'],
+                                                                ['letter' => 'C', 'pinyin' => 'Píngguǒ', 'hanzi' => '苹果'],
+                                                                ['letter' => 'D', 'pinyin' => '20 kuài', 'hanzi' => '20块'],
+                                                                ['letter' => 'E', 'pinyin' => 'Zuò chūzūchē', 'hanzi' => '坐出租车'],
+                                                                ['letter' => 'F', 'pinyin' => 'Hǎo de', 'hanzi' => '好的'],
+                                                            ];
+                                                        @endphp
+                                                        <div class="bg-gradient-to-b from-slate-50 via-white to-slate-50/80 dark:from-slate-900/90 dark:via-slate-900/70 dark:to-slate-900/90 rounded-3xl border border-slate-200/90 dark:border-slate-700/80 p-4 shadow-sm relative overflow-hidden">
+                                                            <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+                                                                <div class="flex items-center gap-2">
+                                                                    <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+                                                                    <span class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200">Danh sách đáp án A - F</span>
+                                                                </div>
+                                                                <span class="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">6 Lựa chọn</span>
+                                                            </div>
+                                                            
+                                                            {{-- 6 ROWS LAYOUT --}}
+                                                            <div class="grid grid-cols-1 gap-2.5">
+                                                                @foreach($p3Options as $idx => $opt)
+                                                                    @php
+                                                                        $optLetter = $opt['letter'] ?? chr(65 + $idx);
+                                                                        $isExAns = ($optLetter === ($exData['a_letter'] ?? 'F'));
+                                                                        $optText = renderHskRubyText($opt['html'] ?? '', $opt['pinyin'] ?? '', $opt['hanzi'] ?? '');
+                                                                    @endphp
+                                                                    <div class="p-3 rounded-2xl border flex items-center justify-between transition-all duration-150 relative shadow-2xs group/optcard
+                                                                        {{ $isExAns 
+                                                                            ? 'bg-amber-500/10 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80 ring-1 ring-amber-400/30' 
+                                                                            : 'bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700/80 hover:border-primary/50 hover:shadow-xs' }}">
+                                                                        
+                                                                        <div class="flex items-center gap-3 min-w-0">
+                                                                            <span class="w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center shrink-0 shadow-2xs transition-colors
+                                                                                {{ $isExAns 
+                                                                                    ? 'bg-amber-500 text-white' 
+                                                                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 group-hover/optcard:bg-primary group-hover/optcard:text-white' }}">
+                                                                                {{ $optLetter }}
+                                                                            </span>
+                                                                            <div class="flex-1 flex flex-wrap items-end gap-x-1.5 gap-y-0.5 text-sm font-bold text-slate-800 dark:text-slate-100">
+                                                                                {!! $optText !!}
+                                                                            </div>
+                                                                        </div>
+
+                                                                        @if($isExAns)
+                                                                            <span class="px-2 py-0.5 rounded-lg bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider shrink-0 ml-2 shadow-2xs">
+                                                                                Ví dụ
+                                                                            </span>
+                                                                        @endif
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
                                                 </div>
 
                                             @elseif(isset($exData['ex_q_html']) || isset($exData['ex_q_pinyin']) || isset($exData['options']))
                                                 {{-- Type 2: Options Bank & Fill-in Example --}}
                                                 @if(!empty($exData['options']))
-                                                    <div class="mb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                                                        @foreach($exData['options'] as $idx => $opt)
-                                                            @php
-                                                                $optLetter = chr(65 + $idx);
-                                                                $isExAns = ($optLetter === ($exData['ex_a_letter'] ?? 'D'));
-                                                                $optText = renderHskRubyText($opt['html'] ?? '', $opt['pinyin'] ?? '', $opt['hanzi'] ?? '');
-                                                            @endphp
-                                                            <div class="p-3 rounded-2xl border flex flex-col justify-between text-center transition-all min-h-[80px] relative shadow-xs
-                                                                {{ $isExAns 
-                                                                    ? 'bg-amber-500/10 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80 ring-2 ring-amber-400/20' 
-                                                                    : 'bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700/80 hover:border-primary/40' }}">
-                                                                
-                                                                {{-- Top Header Row --}}
-                                                                <div class="w-full flex items-center justify-between gap-1 mb-1">
-                                                                    <span class="w-5 h-5 rounded-md text-[11px] font-black flex items-center justify-center shrink-0
-                                                                        {{ $isExAns 
-                                                                            ? 'bg-amber-500 text-white shadow-xs' 
-                                                                            : 'bg-slate-100 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300' }}">
-                                                                        {{ $optLetter }}
-                                                                    </span>
+                                                    <div class="bg-gradient-to-b from-slate-50 via-white to-slate-50/80 dark:from-slate-900/90 dark:via-slate-900/70 dark:to-slate-900/90 rounded-3xl border border-slate-200/90 dark:border-slate-700/80 p-4 mb-6 shadow-sm relative overflow-hidden">
+                                                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+                                                            <div class="flex items-center gap-2">
+                                                                <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+                                                                <span class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200">Danh sách đáp án A - F</span>
+                                                            </div>
+                                                            <span class="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">6 Lựa chọn</span>
+                                                        </div>
+                                                        
+                                                        {{-- 6 ROWS LAYOUT --}}
+                                                        <div class="grid grid-cols-1 gap-2.5">
+                                                            @foreach($exData['options'] as $idx => $opt)
+                                                                @php
+                                                                    $optLetter = chr(65 + $idx);
+                                                                    $isExAns = ($optLetter === ($exData['ex_a_letter'] ?? $exData['a_letter'] ?? 'D'));
+                                                                    $optText = renderHskRubyText($opt['html'] ?? '', $opt['pinyin'] ?? '', $opt['hanzi'] ?? '');
+                                                                @endphp
+                                                                <div class="p-3 rounded-2xl border flex items-center justify-between transition-all duration-150 relative shadow-2xs group/optcard
+                                                                    {{ $isExAns 
+                                                                        ? 'bg-amber-500/10 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80 ring-1 ring-amber-400/30' 
+                                                                        : 'bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700/80 hover:border-primary/50 hover:shadow-xs' }}">
+                                                                    
+                                                                    <div class="flex items-center gap-3 min-w-0">
+                                                                        <span class="w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center shrink-0 shadow-2xs transition-colors
+                                                                            {{ $isExAns 
+                                                                                ? 'bg-amber-500 text-white' 
+                                                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 group-hover/optcard:bg-primary group-hover/optcard:text-white' }}">
+                                                                            {{ $optLetter }}
+                                                                        </span>
+                                                                        <div class="flex-1 flex flex-wrap items-end gap-x-1.5 gap-y-0.5 text-sm font-bold text-slate-800 dark:text-slate-100">
+                                                                            {!! $optText !!}
+                                                                        </div>
+                                                                    </div>
+
                                                                     @if($isExAns)
-                                                                        <span class="px-1.5 py-0.5 rounded bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider whitespace-nowrap shrink-0">
+                                                                        <span class="px-2 py-0.5 rounded-lg bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider shrink-0 ml-2 shadow-2xs">
                                                                             Ví dụ
                                                                         </span>
                                                                     @endif
                                                                 </div>
-
-                                                                {{-- Content (Pinyin + Hanzi) --}}
-                                                                <div class="my-auto flex items-center justify-center flex-wrap gap-1 py-1">
-                                                                    {!! $optText !!}
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
+                                                            @endforeach
+                                                        </div>
                                                     </div>
                                                 @endif
 
@@ -312,31 +457,27 @@ if (!function_exists('renderHskRubyText')) {
                                                             <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
                                                             <div class="flex-1 flex flex-wrap items-end gap-x-2 gap-y-1">
                                                                 {!! $exQContent !!}
-                                                                <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 font-black text-sm ml-1">
-                                                                    {{ $exData['ex_a_letter'] ?? 'D' }}
-                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 @endif
                                             @endif
-                                        @endif
-                                    @else
-                                        @if (!str_starts_with(trim($group->passage_text), '<div'))
-                                            <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-                                                <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-                                                    <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如) / Hướng dẫn</span>
+                                        @elseif ($hasPassageText && !$isJson)
+                                            @if (!str_starts_with(trim($group->passage_text), '<div'))
+                                                <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
+                                                    <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
+                                                        <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如) / Hướng dẫn</span>
+                                                    </div>
+                                                    <div class="text-base font-bold text-slate-800 dark:text-slate-200 space-y-2">
+                                                        {!! nl2br($group->passage_text) !!}
+                                                    </div>
                                                 </div>
-                                                <div class="text-base font-bold text-slate-800 dark:text-slate-200 space-y-2">
+                                            @else
+                                                <div class="mb-6">
                                                     {!! nl2br($group->passage_text) !!}
                                                 </div>
-                                            </div>
-                                        @else
-                                            <div class="mb-6">
-                                                {!! nl2br($group->passage_text) !!}
-                                            </div>
+                                            @endif
                                         @endif
-                                    @endif
                                 @else
                                     @if($sectionIndex == 0 && $groupIndex == 3)
                                         {{-- Part 4 Multiple Choice Example Card (Listening) --}}
@@ -504,9 +645,12 @@ if (!function_exists('renderHskRubyText')) {
                                                 !$isTrueFalse &&
                                                 !$isOptionsWithImages &&
                                                 ($question->question_type === 'matching' ||
-                                                 $question->options->every(fn($opt) =>
-                                                     in_array(trim($opt->content), ['A','B','C','D','E','F']) && empty($opt->image)
-                                                 ));
+                                                 ($currentQNum >= 11 && $currentQNum <= 15) ||
+                                                 ($currentQNum >= 31 && $currentQNum <= 40) ||
+                                                 ($question->options->count() > 0 && $question->options->every(function($opt) {
+                                                     $c = trim($opt->content ?? '');
+                                                     return empty($opt->image) && (empty($c) || in_array($c, ['A','B','C','D','E','F']));
+                                                 })));
                                         @endphp
 
                                         {{-- ========== TYPE 1: TRUE / FALSE ========== --}}
@@ -532,7 +676,7 @@ if (!function_exists('renderHskRubyText')) {
 
                                                         @if ($question->title)
                                                             <div class="flex-1 text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed text-center sm:text-left min-w-0 flex flex-wrap items-end justify-center sm:justify-start gap-x-2 gap-y-1 py-1">
-                                                                {!! $question->title !!}
+                                                                {!! renderHskRubyText($question->title) !!}
                                                             </div>
                                                         @endif
                                                     </div>
@@ -568,7 +712,7 @@ if (!function_exists('renderHskRubyText')) {
                                                         {{ $currentQNum }}
                                                     </div>
                                                     @if($question->title)
-                                                        <div class="text-base font-medium text-slate-700 dark:text-slate-300 leading-relaxed">{!! $question->title !!}</div>
+                                                        <div class="text-base font-medium text-slate-700 dark:text-slate-300 leading-relaxed">{!! renderHskRubyText($question->title) !!}</div>
                                                     @endif
                                                 </div>
 
@@ -618,7 +762,7 @@ if (!function_exists('renderHskRubyText')) {
 
                                                     <div class="flex-1 text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed min-w-0 flex flex-wrap items-end gap-x-2 gap-y-1">
                                                         @if ($question->title)
-                                                            {!! $question->title !!}
+                                                            {!! renderHskRubyText($question->title) !!}
                                                         @else
                                                             <span class="text-sm font-semibold italic text-slate-400">Chọn đáp án nghe được:</span>
                                                         @endif
@@ -629,7 +773,7 @@ if (!function_exists('renderHskRubyText')) {
                                                 <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
                                                     <span class="text-xs font-semibold text-slate-400 mr-1 select-none">Đáp án:</span>
                                                     @foreach ($question->options as $option)
-                                                        @php $optContent = trim($option->content); @endphp
+                                                        @php $optContent = trim($option->content ?? ''); @endphp
                                                         @if (in_array($optContent, $excludedLetters))
                                                             @continue
                                                         @endif
@@ -659,7 +803,7 @@ if (!function_exists('renderHskRubyText')) {
                                                     <div class="flex-1 min-w-0">
                                                         @if ($question->title)
                                                             <div class="text-base font-semibold text-slate-800 dark:text-white leading-relaxed">
-                                                                {!! $question->title !!}
+                                                                {!! renderHskRubyText($question->title) !!}
                                                             </div>
                                                         @endif
                                                         @if ($question->image)
@@ -676,8 +820,12 @@ if (!function_exists('renderHskRubyText')) {
                                                     <div class="grid grid-cols-1 {{ $question->options->count() == 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }} gap-3">
                                                         @foreach ($question->options as $option)
                                                             @php
-                                                                // Strip duplicated 'A ', 'B ' prefix from content if present
-                                                                $cleanContent = preg_replace('/^[A-F][\s\.\,]*/u', '', $option->content ?? '');
+                                                                $rawOptContent = trim($option->content ?? '');
+                                                                if (preg_match('/^[A-F][\.\:\,\s]+\s*(.+)$/u', $rawOptContent, $mClean)) {
+                                                                    $cleanContent = $mClean[1];
+                                                                } else {
+                                                                    $cleanContent = $rawOptContent;
+                                                                }
                                                             @endphp
                                                             <label class="cursor-pointer group">
                                                                 <input type="radio"
@@ -705,7 +853,7 @@ if (!function_exists('renderHskRubyText')) {
 
                                                                     @if ($cleanContent)
                                                                         <span class="text-slate-700 dark:text-slate-300 font-medium text-base group-hover:text-primary transition-colors leading-loose">
-                                                                            {!! $cleanContent !!}
+                                                                            {!! renderHskRubyText($cleanContent) !!}
                                                                         </span>
                                                                     @endif
                                                                 </div>

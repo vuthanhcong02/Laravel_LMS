@@ -150,8 +150,8 @@
                                             </div>
                                         </template>
 
-                                        <!-- Text Options Bank (A-F for Reading Part 4) -->
-                                        <template x-if="section.skill_type === 'reading' && gIndex === 3">
+                                        <!-- Text Options Bank (A-F for Reading Part 3 & Part 4) -->
+                                        <template x-if="section.skill_type === 'reading' && (gIndex === 2 || gIndex === 3)">
                                             <div class="space-y-4 pt-2 border-t border-slate-200/60 dark:border-slate-700/50">
                                                 <div class="flex items-center justify-between">
                                                     <label class="block text-xs font-bold text-slate-500 uppercase">Bộ từ lựa chọn A-F (Điền vào chỗ trống)</label>
@@ -167,10 +167,10 @@
                                                             </div>
                                                             <div class="space-y-2">
                                                                 <div class="relative group/pinyin">
-                                                                    <input type="text" x-model="opt.pinyin" :id="'text-opt-pinyin-' + group.id + '-' + optIdx"
+                                                                    <textarea rows="2" x-model="opt.pinyin" :id="'text-opt-pinyin-' + group.id + '-' + optIdx"
                                                                         @input="opt.pinyin = convertPinyinToneNumbers(opt.pinyin); updatePart4Text(group)"
                                                                         placeholder="Pinyin"
-                                                                        class="w-full text-xs font-medium p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                                                        class="w-full text-xs font-medium p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white resize-y"></textarea>
                                                                     <div class="absolute right-0 top-full mt-1 z-10 flex flex-col gap-0.5 opacity-0 group-hover/pinyin:opacity-100 transition-opacity bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm hidden pointer-events-none group-focus-within/pinyin:flex group-focus-within/pinyin:opacity-100 group-focus-within/pinyin:pointer-events-auto">
                                                                         <template x-for="tone in ['ā','á','ǎ','à','a']" :key="tone">
                                                                             <button type="button" @mousedown.prevent="insertCharAtCursor(tone, opt, 'text-opt-pinyin-' + group.id + '-' + optIdx, 'pinyin'); updatePart4Text(group)"
@@ -178,9 +178,9 @@
                                                                         </template>
                                                                     </div>
                                                                 </div>
-                                                                <input type="text" x-model="opt.hanzi" @input="updatePart4Text(group)"
+                                                                <textarea rows="2" x-model="opt.hanzi" @input="updatePart4Text(group)"
                                                                     placeholder="Chữ Hán"
-                                                                    class="w-full text-sm font-bold p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-center">
+                                                                    class="w-full text-sm font-bold p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-center resize-y"></textarea>
                                                             </div>
                                                             <!-- Preview -->
                                                             <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-center items-center h-10" x-html="opt.html || ''">
@@ -388,15 +388,15 @@
                                                 </div>
                                             </template>
 
-                                            <!-- EXAMPLE CARD FOR READING PART 3 -->
-                                            <template x-if="section.skill_type === 'reading' && gIndex === 2">
+                                            <!-- EXAMPLE CARD FOR READING PART 3 & LISTENING PART 3 -->
+                                            <template x-if="(section.skill_type === 'reading' && gIndex === 2) || (section.skill_type === 'listening' && gIndex === 2)">
                                                 <div class="p-5 bg-amber-50/40 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-900/50 space-y-4 shadow-sm mb-4">
                                                     <div class="flex items-center justify-between border-b border-amber-200/60 dark:border-amber-900/50 pb-3">
                                                         <div class="flex items-center gap-3">
                                                             <span class="px-3 py-1 rounded-lg bg-amber-500 text-white text-xs font-black shadow-sm">
                                                                 Ví dụ (例如)
                                                             </span>
-                                                            <span class="text-xs font-bold text-amber-700 dark:text-amber-400">Chỉnh sửa Câu Ví dụ mẫu của Part 3 (Ghép Câu)</span>
+                                                            <span class="text-xs font-bold text-amber-700 dark:text-amber-400">Chỉnh sửa Câu Ví dụ mẫu của Part 3 (Ghép Câu Q&A)</span>
                                                         </div>
                                                         <span class="text-xs text-amber-600 font-bold uppercase">Mẫu Đề</span>
                                                     </div>
@@ -412,10 +412,10 @@
                                                                 <div>
                                                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Phiên âm Pinyin</label>
                                                                     <div class="relative flex items-center group/pinyin">
-                                                                        <input type="text" x-model="group._ex_q_pinyin" :id="'ex-q-pinyin-' + group.id"
+                                                                        <textarea rows="2" x-model="group._ex_q_pinyin" :id="'ex-q-pinyin-' + group.id"
                                                                             @input="group._ex_q_pinyin = convertPinyinToneNumbers(group._ex_q_pinyin); updateExampleText(group)"
                                                                             placeholder="Ví dụ: Nǐ hē shuǐ ma ?"
-                                                                            class="w-full text-sm font-medium p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                                                            class="w-full text-sm font-medium p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white resize-y"></textarea>
                                                                         <div class="absolute right-1.5 flex items-center gap-0.5 opacity-0 group-hover/pinyin:opacity-100 transition-opacity bg-white dark:bg-slate-900 px-1 py-1 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
                                                                             <template x-for="tone in ['ā','á','ǎ','à','a']" :key="tone">
                                                                                 <button type="button" @mousedown.prevent="insertCharAtCursor(tone, group, 'ex-q-pinyin-' + group.id, '_ex_q_pinyin')"
@@ -426,9 +426,9 @@
                                                                 </div>
                                                                 <div>
                                                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Chữ Hán</label>
-                                                                    <input type="text" x-model="group._ex_q_hanzi" @input="updateExampleText(group)"
+                                                                    <textarea rows="2" x-model="group._ex_q_hanzi" @input="updateExampleText(group)"
                                                                         placeholder="Ví dụ: 你喝水吗？"
-                                                                        class="w-full text-sm font-bold p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                                                        class="w-full text-sm font-bold p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white resize-y"></textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -448,10 +448,10 @@
                                                                 <div>
                                                                     <label class="block text-[10px] font-bold text-emerald-600/70 uppercase mb-1">Phiên âm Pinyin</label>
                                                                     <div class="relative flex items-center group/pinyin">
-                                                                        <input type="text" x-model="group._ex_a_pinyin" :id="'ex-a-pinyin-' + group.id"
+                                                                        <textarea rows="2" x-model="group._ex_a_pinyin" :id="'ex-a-pinyin-' + group.id"
                                                                             @input="group._ex_a_pinyin = convertPinyinToneNumbers(group._ex_a_pinyin); updateExampleText(group)"
                                                                             placeholder="Ví dụ: Hǎo de, xièxie!"
-                                                                            class="w-full text-sm font-medium p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                                                                            class="w-full text-sm font-medium p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white resize-y"></textarea>
                                                                         <div class="absolute right-1.5 flex items-center gap-0.5 opacity-0 group-hover/pinyin:opacity-100 transition-opacity bg-white dark:bg-slate-900 px-1 py-1 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
                                                                             <template x-for="tone in ['ā','á','ǎ','à','a']" :key="tone">
                                                                                 <button type="button" @mousedown.prevent="insertCharAtCursor(tone, group, 'ex-a-pinyin-' + group.id, '_ex_a_pinyin')"
@@ -462,9 +462,9 @@
                                                                 </div>
                                                                 <div>
                                                                     <label class="block text-[10px] font-bold text-emerald-600/70 uppercase mb-1">Chữ Hán</label>
-                                                                    <input type="text" x-model="group._ex_a_hanzi" @input="updateExampleText(group)"
+                                                                    <textarea rows="2" x-model="group._ex_a_hanzi" @input="updateExampleText(group)"
                                                                         placeholder="Ví dụ: 好的，谢谢！"
-                                                                        class="w-full text-sm font-bold p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                                                                        class="w-full text-sm font-bold p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white resize-y"></textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -575,10 +575,10 @@
                                                                 <div>
                                                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Phiên âm Pinyin</label>
                                                                     <div class="relative flex items-center group/pinyin">
-                                                                        <input type="text" x-model="group._ex_q_pinyin" :id="'ex4-q-pinyin-' + group.id"
+                                                                        <textarea rows="2" x-model="group._ex_q_pinyin" :id="'ex4-q-pinyin-' + group.id"
                                                                             @input="group._ex_q_pinyin = convertPinyinToneNumbers(group._ex_q_pinyin); updatePart4Text(group)"
                                                                             placeholder="Ví dụ: Nǐ jiào shénme"
-                                                                            class="w-full text-sm font-medium p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                                                            class="w-full text-sm font-medium p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white resize-y"></textarea>
                                                                         <div class="absolute right-1.5 flex items-center gap-0.5 opacity-0 group-hover/pinyin:opacity-100 transition-opacity bg-white dark:bg-slate-900 px-1 py-1 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
                                                                             <template x-for="tone in ['ā','á','ǎ','à','a']" :key="tone">
                                                                                 <button type="button" @mousedown.prevent="insertCharAtCursor(tone, group, 'ex4-q-pinyin-' + group.id, '_ex_q_pinyin')"
@@ -589,9 +589,9 @@
                                                                 </div>
                                                                 <div>
                                                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Chữ Hán (Dùng (   ) cho chỗ trống)</label>
-                                                                    <input type="text" x-model="group._ex_q_hanzi" @input="updatePart4Text(group)"
+                                                                    <textarea rows="2" x-model="group._ex_q_hanzi" @input="updatePart4Text(group)"
                                                                         placeholder="Ví dụ: 你叫什么 (   ) ？"
-                                                                        class="w-full text-sm font-bold p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                                                        class="w-full text-sm font-bold p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white resize-y"></textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -676,8 +676,8 @@
                                                         <!-- Question Content Inputs -->
                                                         <div :class="(!isSimpleLetterOptions(question) && (question.image || question.question_type === 'true_false' || (section.skill_type === 'reading' && gIndex < 2))) ? 'md:col-span-8 space-y-3' : 'md:col-span-12 space-y-3'">
                                                             
-                                                            <!-- Question Title / Text -->
-                                                            <template x-if="section.skill_type === 'reading' || (section.skill_type === 'listening' && gIndex >= 2) || (question.title !== null && question.title !== '')">
+                                                            <!-- Question Title / Text (Always editable for all question types) -->
+                                                            <template x-if="true">
                                                                 <div class="space-y-3 p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                                                                     <div class="flex items-center gap-2 mb-1">
                                                                         <span class="w-1.5 h-4 bg-primary rounded-full"></span>
@@ -686,14 +686,14 @@
                                                                     
                                                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                                         <div>
-                                                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Phiên âm Pinyin</label>
-                                                                            <div class="relative flex items-center group/pinyin">
-                                                                                <input type="text" x-model="question._pinyin" :id="'q-pinyin-input-' + question.id"
+                                                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Phiên âm Pinyin (Nhấn Enter để xuống dòng)</label>
+                                                                            <div class="relative flex items-start group/pinyin">
+                                                                                <textarea rows="2" x-model="question._pinyin" :id="'q-pinyin-input-' + question.id"
                                                                                     @input="question._pinyin = convertPinyinToneNumbers(question._pinyin); updateQuestionTitleFromInputs(question)"
-                                                                                    placeholder="Ví dụ: xie3 hoặc hen3 hao3"
-                                                                                    class="w-full text-sm font-medium p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner focus:ring-2 focus:ring-primary/20 transition-all">
+                                                                                    placeholder="Ví dụ: Nǚ: Nǐ hē shuǐ ma ?&#10;Nán: Hǎo de"
+                                                                                    class="w-full text-sm font-medium p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner focus:ring-2 focus:ring-primary/20 transition-all resize-y"></textarea>
                                                                                 <!-- Pinyin Tone Shortcuts -->
-                                                                                <div class="absolute right-1.5 flex items-center gap-0.5 opacity-0 group-hover/pinyin:opacity-100 transition-opacity bg-white dark:bg-slate-900 px-1 py-1 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
+                                                                                <div class="absolute right-1.5 top-1.5 flex items-center gap-0.5 opacity-0 group-hover/pinyin:opacity-100 transition-opacity bg-white dark:bg-slate-900 px-1 py-1 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
                                                                                     <template x-for="tone in ['ā','á','ǎ','à','a']" :key="tone">
                                                                                         <button type="button" @mousedown.prevent="insertCharAtCursor(tone, question, 'q-pinyin-input-' + question.id)"
                                                                                             class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-slate-600 hover:bg-slate-100 hover:text-primary transition-colors" x-text="tone"></button>
@@ -703,11 +703,11 @@
                                                                         </div>
                                                                         
                                                                         <div>
-                                                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Chữ Hán</label>
-                                                                            <input type="text" x-model="question._hanzi" 
+                                                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Chữ Hán (Nhấn Enter để xuống dòng)</label>
+                                                                            <textarea rows="2" x-model="question._hanzi" 
                                                                                 @input="updateQuestionTitleFromInputs(question)"
-                                                                                placeholder="Ví dụ: 写 hoặc 星期二"
-                                                                                class="w-full text-sm font-bold p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner focus:ring-2 focus:ring-primary/20 transition-all">
+                                                                                placeholder="Ví dụ: 女：你喝水吗？&#10;男：好的"
+                                                                                class="w-full text-sm font-bold p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner focus:ring-2 focus:ring-primary/20 transition-all resize-y"></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -858,10 +858,10 @@
                                                                                 <div>
                                                                                     <label class="block text-[11px] font-semibold text-slate-400 mb-1">Phiên âm Pinyin:</label>
                                                                                     <div class="relative flex items-center group/pinyin mb-2">
-                                                                                        <input type="text" x-model="option._pinyin" @click.stop :id="'opt-pinyin-input-' + option.id"
+                                                                                        <textarea rows="2" x-model="option._pinyin" @click.stop :id="'opt-pinyin-input-' + option.id"
                                                                                             @input="option._pinyin = convertPinyinToneNumbers(option._pinyin); updateOptionContentFromInputs(option)"
                                                                                             placeholder="Ví dụ: xie3 hoặc hen3 hao3"
-                                                                                            class="w-full text-sm font-medium p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner focus:ring-2 focus:ring-primary/20">
+                                                                                            class="w-full text-sm font-medium p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner focus:ring-2 focus:ring-primary/20 resize-y"></textarea>
                                                                                         <!-- Pinyin Tone Shortcuts -->
                                                                                         <div class="absolute right-1.5 flex items-center gap-0.5 opacity-0 group-hover/pinyin:opacity-100 transition-opacity bg-white dark:bg-slate-900 px-1 py-1 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
                                                                                             <template x-for="tone in ['ā','á','ǎ','à','a']" :key="tone">
@@ -872,9 +872,9 @@
                                                                                     </div>
 
                                                                                     <label class="block text-[11px] font-semibold text-slate-400 mb-1">Chữ Hán / Nội dung:</label>
-                                                                                    <input type="text" x-model="option._hanzi" @click.stop @input="updateOptionContentFromInputs(option)"
+                                                                                    <textarea rows="2" x-model="option._hanzi" @click.stop @input="updateOptionContentFromInputs(option)"
                                                                                         placeholder="Ví dụ: 写 hoặc 很好"
-                                                                                        class="w-full text-sm font-bold p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner">
+                                                                                        class="w-full text-sm font-bold p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-inner resize-y"></textarea>
                                                                                 </div>
                                                                             </div>
                                                                         </template>
@@ -1053,8 +1053,6 @@
                 },
                 parseContentToPinyinAndHanzi(obj, fieldName = 'title') {
                     if (!obj) return;
-                    obj._pinyin = obj._pinyin || '';
-                    obj._hanzi = obj._hanzi || '';
                     if (!obj[fieldName]) return;
 
                     const str = obj[fieldName];
@@ -1069,29 +1067,46 @@
                     // Pre-clean: strip leading A, B, C, D... prefix with optional space or dot
                     let cleanStr = str.replace(/^[A-F][\s\.]*/i, '').trim();
 
-                    if (cleanStr.includes('<ruby>') || cleanStr.includes('&lt;ruby&gt;')) {
-                        // Decode common HTML entities FIRST
-                        let decoded = cleanStr.replace(/&lt;/g, '<')
-                                              .replace(/&gt;/g, '>')
-                                              .replace(/&nbsp;/g, ' ')
-                                              .replace(/&amp;/g, '&');
-                                              
-                        const tmp = document.createElement('DIV');
-                        tmp.innerHTML = decoded;
-                        const rubies = tmp.querySelectorAll('ruby');
-                        let pinyins = [];
-                        let chars = [];
-                        rubies.forEach(r => {
-                            const rt = r.querySelector('rt');
-                            if (rt) {
-                                pinyins.push(rt.textContent.trim());
-                                rt.remove();
+                    // Decode HTML entities FIRST
+                    let decoded = cleanStr.replace(/&lt;/g, '<')
+                                          .replace(/&gt;/g, '>')
+                                          .replace(/&nbsp;/g, ' ')
+                                          .replace(/&amp;/g, '&');
+
+                    if (/<ruby[\s>]/i.test(decoded) || /<div class="text-xs/i.test(decoded)) {
+                        const lineHtmls = decoded.split(/<div class="w-full h-0 basis-full my-1"><\/div>/i);
+                        let pyLines = [];
+                        let hzLines = [];
+                        
+                        lineHtmls.forEach(lineHtml => {
+                            const lineTmp = document.createElement('DIV');
+                            lineTmp.innerHTML = lineHtml;
+                            
+                            if (lineTmp.querySelector('ruby')) {
+                                let pyLine = [];
+                                let hzLine = [];
+                                lineTmp.querySelectorAll('ruby').forEach(r => {
+                                    const rt = r.querySelector('rt');
+                                    if (rt) {
+                                        pyLine.push(rt.textContent.trim());
+                                        rt.remove();
+                                    }
+                                    const hanzi = (r.textContent || r.innerText || '').trim();
+                                    if (hanzi) hzLine.push(hanzi);
+                                });
+                                pyLines.push(pyLine.join(' '));
+                                hzLines.push(hzLine.join(''));
+                            } else if (lineTmp.querySelector('.text-xs') && lineTmp.querySelector('.text-base')) {
+                                pyLines.push(lineTmp.querySelector('.text-xs').textContent.trim());
+                                hzLines.push(lineTmp.querySelector('.text-base').textContent.trim());
+                            } else {
+                                pyLines.push('');
+                                hzLines.push(lineTmp.textContent.trim());
                             }
-                            const hanzi = (r.textContent || r.innerText || '').trim();
-                            if (hanzi) chars.push(hanzi);
                         });
-                        if (pinyins.length > 0) obj._pinyin = pinyins.join(' ');
-                        if (chars.length > 0) obj._hanzi = chars.join('');
+                        
+                        if (pyLines.length > 0) obj._pinyin = pyLines.join('\n');
+                        if (hzLines.length > 0) obj._hanzi = hzLines.join('\n');
                     } else {
                         const match = cleanStr.trim().match(/^([a-zA-ZāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙǕǗǙǛ’'\s]+)\s+([\u4e00-\u9fa5\s]+)$/);
                         if (match) {
@@ -1100,62 +1115,64 @@
                         } else if (/[\u4e00-\u9fa5]/.test(cleanStr)) {
                             obj._hanzi = cleanStr.trim();
                         } else {
-                            obj._pinyin = cleanStr.trim();
+                            if (!obj._pinyin && !obj._hanzi) {
+                                obj._pinyin = cleanStr.trim();
+                            }
                         }
                     }
                 },
                 updateOptionContentFromInputs(opt) {
                     if (!opt) return;
-                    const pinyinStr = (opt._pinyin || '').trim();
-                    const hanziStr = (opt._hanzi || '').trim().replace(/\s+/g, '');
+                    opt.content = this.buildRubyText(opt._pinyin, opt._hanzi);
+                },
+                buildRubyText(pinyinStr, hanziStr) {
+                    pinyinStr = (pinyinStr || '').trim();
+                    hanziStr = (hanziStr || '').trim();
+                    if (!pinyinStr && !hanziStr) return '';
+                    if (!pinyinStr) return hanziStr.replace(/\n/g, '<br>');
+                    if (!hanziStr) return pinyinStr.replace(/\n/g, '<br>');
 
-                    if (!pinyinStr && !hanziStr) {
-                        opt.content = '';
-                        return;
-                    }
-                    if (!pinyinStr) {
-                        opt.content = hanziStr;
-                        return;
-                    }
-                    if (!hanziStr) {
-                        opt.content = pinyinStr;
-                        return;
+                    if (pinyinStr.includes('\n') || hanziStr.includes('\n')) {
+                        const pyLines = pinyinStr.split('\n');
+                        const hzLines = hanziStr.split('\n');
+                        const maxLines = Math.max(pyLines.length, hzLines.length);
+                        const lines = [];
+                        for (let l = 0; l < maxLines; l++) {
+                            lines.push(this.buildRubyText(pyLines[l], hzLines[l]));
+                        }
+                        return lines.join('<div class="w-full h-0 basis-full my-1"></div>');
                     }
 
-                    const pinyins = pinyinStr.split(/\s+/);
-                    const chars = Array.from(hanziStr);
+                    const validPinyins = pinyinStr.match(/(?:[a-zA-Z]{1,3})?[aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜAEIOUÜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙǕǗǙǛ]+(?:ng|n|r)?/gi) || [];
+                    const chars = Array.from(hanziStr.replace(/[ \t]+/g, ''));
+                    
+                    const chineseCharCount = chars.filter(char => /[\u4e00-\u9fa5]/u.test(char)).length;
 
-                    if (pinyins.length === chars.length) {
-                        opt.content = chars.map((char, i) => 
-                            `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-xl font-black text-slate-900 dark:text-white">${char}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyins[i]}</rt></ruby>`
-                        ).join('');
-                    } else {
-                        opt.content = `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none"><span class="text-xl font-black text-slate-900 dark:text-white">${hanziStr}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyinStr}</rt></ruby>`;
+                    if (validPinyins.length === chineseCharCount && chineseCharCount > 0) {
+                        let out = '';
+                        let pIdx = 0;
+                        chars.forEach((char) => {
+                            if (char === "\n") {
+                                out += '<div class="w-full h-0 basis-full"></div>';
+                            } else if (/[\u4e00-\u9fa5]/.test(char)) {
+                                out += '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' + char + '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' + validPinyins[pIdx++] + '</rt></ruby>';
+                            } else if (/[a-zA-Z0-9]/.test(char)) {
+                                out += '<span class="mx-1 text-base font-black text-slate-900 dark:text-white">' + char + '</span>';
+                            } else {
+                                out += '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' + char + '</span><rt class="text-[11px] font-bold text-transparent mb-0.5 select-none">.</rt></ruby>';
+                            }
+                        });
+                        return out;
                     }
+
+                    // Fallback
+                    return '<div><div class="text-xs text-slate-500 mb-1 leading-none">' + pinyinStr + '</div><div class="text-base font-bold text-slate-800 dark:text-slate-100 tracking-widest">' + hanziStr + '</div></div>';
                 },
                 updateExampleText(group) {
                     if (!group) return;
                     
-                    const buildRuby = (pinyinStr, hanziStr) => {
-                        pinyinStr = (pinyinStr || '').trim();
-                        hanziStr = (hanziStr || '').trim().replace(/\s+/g, '');
-                        if (!pinyinStr && !hanziStr) return '';
-                        if (!pinyinStr) return hanziStr;
-                        if (!hanziStr) return pinyinStr;
-                        
-                        const pinyins = pinyinStr.split(/\s+/);
-                        const chars = Array.from(hanziStr);
-                        if (pinyins.length === chars.length) {
-                            return chars.map((char, i) => 
-                                `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-xl font-black text-slate-900 dark:text-white">${char}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyins[i]}</rt></ruby>`
-                            ).join('');
-                        } else {
-                            return `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none"><span class="text-xl font-black text-slate-900 dark:text-white">${hanziStr}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyinStr}</rt></ruby>`;
-                        }
-                    };
-
-                    const qHtml = buildRuby(group._ex_q_pinyin, group._ex_q_hanzi);
-                    const aHtml = buildRuby(group._ex_a_pinyin, group._ex_a_hanzi);
+                    const qHtml = this.buildRubyText(group._ex_q_pinyin, group._ex_q_hanzi);
+                    const aHtml = this.buildRubyText(group._ex_a_pinyin, group._ex_a_hanzi);
                     
                     group._ex_q_html = qHtml;
                     group._ex_a_html = aHtml;
@@ -1167,35 +1184,18 @@
                         a_pinyin: group._ex_a_pinyin || '',
                         a_hanzi: group._ex_a_hanzi || '',
                         q_html: qHtml,
-                        a_html: aHtml
+                        a_html: aHtml,
+                        options: group._text_options || []
                     });
                 },
                 updatePart4Text(group) {
                     if (!group) return;
-                    
-                    const buildRuby = (pinyinStr, hanziStr) => {
-                        pinyinStr = (pinyinStr || '').trim();
-                        hanziStr = (hanziStr || '').trim().replace(/\s+/g, '');
-                        if (!pinyinStr && !hanziStr) return '';
-                        if (!pinyinStr) return hanziStr;
-                        if (!hanziStr) return pinyinStr;
-                        
-                        const pinyins = pinyinStr.split(/\s+/);
-                        const chars = Array.from(hanziStr);
-                        if (pinyins.length === chars.length) {
-                            return chars.map((char, i) => 
-                                `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-xl font-black text-slate-900 dark:text-white">${char}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyins[i]}</rt></ruby>`
-                            ).join('');
-                        } else {
-                            return `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none"><span class="text-xl font-black text-slate-900 dark:text-white">${hanziStr}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyinStr}</rt></ruby>`;
-                        }
-                    };
 
                     (group._text_options || []).forEach(opt => {
-                        opt.html = buildRuby(opt.pinyin, opt.hanzi);
+                        opt.html = this.buildRubyText(opt.pinyin, opt.hanzi);
                     });
                     
-                    const qHtml = buildRuby(group._ex_q_pinyin, group._ex_q_hanzi);
+                    const qHtml = this.buildRubyText(group._ex_q_pinyin, group._ex_q_hanzi);
                     group._ex_q_html = qHtml;
                     
                     group.passage_text = JSON.stringify({
@@ -1208,32 +1208,7 @@
                 },
                 updateQuestionTitleFromInputs(q) {
                     if (!q) return;
-                    const pinyinStr = (q._pinyin || '').trim();
-                    const hanziStr = (q._hanzi || '').trim().replace(/\s+/g, '');
-
-                    if (!pinyinStr && !hanziStr) {
-                        q.title = '';
-                        return;
-                    }
-                    if (!pinyinStr) {
-                        q.title = hanziStr;
-                        return;
-                    }
-                    if (!hanziStr) {
-                        q.title = pinyinStr;
-                        return;
-                    }
-
-                    const pinyins = pinyinStr.split(/\s+/);
-                    const chars = Array.from(hanziStr);
-
-                    if (pinyins.length === chars.length) {
-                        q.title = chars.map((char, i) => 
-                            `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-xl font-black text-slate-900 dark:text-white">${char}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyins[i]}</rt></ruby>`
-                        ).join('');
-                    } else {
-                        q.title = `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none"><span class="text-xl font-black text-slate-900 dark:text-white">${hanziStr}</span><rt class="text-xs font-bold text-slate-500 mb-1">${pinyinStr}</rt></ruby>`;
-                    }
+                    q.title = this.buildRubyText(q._pinyin, q._hanzi);
                 },
                 insertCharAtCursor(char, question, inputId, fieldName = '_pinyin') {
                     const el = document.getElementById(inputId);
@@ -1262,25 +1237,44 @@
                     exam.sections.forEach(sec => {
                         const groups = sec.question_groups || sec.questionGroups || sec.groups || [];
                         groups.forEach((group, gIndex) => {
-                            if (sec.skill_type === 'reading' && gIndex === 2) {
+                            if ((sec.skill_type === 'reading' && gIndex === 2) || (sec.skill_type === 'listening' && gIndex === 2)) {
                                 if (group.passage_text && group.passage_text.startsWith('{')) {
                                     try {
                                         let parsed = JSON.parse(group.passage_text);
                                         group._ex_q_pinyin = parsed.q_pinyin || '';
                                         group._ex_q_hanzi = parsed.q_hanzi || '';
-                                        group._ex_a_letter = parsed.a_letter || 'F';
+                                        group._ex_a_letter = parsed.a_letter || (sec.skill_type === 'listening' ? 'C' : 'F');
                                         group._ex_a_pinyin = parsed.a_pinyin || '';
                                         group._ex_a_hanzi = parsed.a_hanzi || '';
                                         group._ex_q_html = parsed.q_html || '';
                                         group._ex_a_html = parsed.a_html || '';
+                                        group._text_options = parsed.options || [];
                                     } catch(e) {}
                                 }
                                 if (!group._ex_q_pinyin && !group._ex_q_hanzi) {
-                                    group._ex_q_pinyin = 'Nǐ hē shuǐ ma ?';
-                                    group._ex_q_hanzi = '你喝水吗？';
-                                    group._ex_a_letter = 'F';
-                                    group._ex_a_pinyin = 'Hǎo de , xiè xie !';
-                                    group._ex_a_hanzi = '好的，谢谢！';
+                                    if (sec.skill_type === 'listening') {
+                                        group._ex_q_pinyin = 'Nǐ hǎo ! qǐng wèn Zhāng lǎoshī zài ma ?';
+                                        group._ex_q_hanzi = '你好！请问张老师在吗？';
+                                        group._ex_a_letter = 'C';
+                                        group._ex_a_pinyin = 'Tā zài , qǐng jìn .';
+                                        group._ex_a_hanzi = ' coast 他在，请进。';
+                                    } else {
+                                        group._ex_q_pinyin = 'Nǐ hē shuǐ ma ?';
+                                        group._ex_q_hanzi = '你喝水吗？';
+                                        group._ex_a_letter = 'F';
+                                        group._ex_a_pinyin = 'Hǎo de , xiè xie !';
+                                        group._ex_a_hanzi = '好的，谢谢！';
+                                    }
+                                }
+                                if (sec.skill_type === 'reading' && (!group._text_options || group._text_options.length === 0)) {
+                                    group._text_options = [
+                                        {pinyin: 'Zhōngguó rén', hanzi: '中国人'},
+                                        {pinyin: '7 diǎn', hanzi: '7点'},
+                                        {pinyin: 'Píngguǒ', hanzi: '苹果'},
+                                        {pinyin: '20 kuài', hanzi: '20块'},
+                                        {pinyin: 'Zuò chūzūchē', hanzi: '坐出租车'},
+                                        {pinyin: 'Hǎo de', hanzi: '好的'}
+                                    ];
                                 }
                                 this.updateExampleText(group);
                             }
@@ -1335,7 +1329,13 @@
                     if (!question || !question.options) return '';
                     const correctOpt = question.options.find(o => o.is_correct);
                     if (!correctOpt) return 'Chưa chọn';
-                    return (correctOpt.content || 'Đã chọn').substring(0, 20);
+                    let raw = correctOpt.content || '';
+                    if (raw.includes('<ruby')) {
+                        const tmp = document.createElement('DIV');
+                        tmp.innerHTML = raw;
+                        raw = tmp.textContent || tmp.innerText || raw;
+                    }
+                    return raw.trim() || 'Đã chọn';
                 },
                 getImageUrl(path) {
                     if (!path) return '';
@@ -1444,7 +1444,7 @@
                 isSimpleLetterOptions(question) {
                     if (!question.options || question.options.length === 0) return false;
                     if (this.hasOptionImages(question)) return false;
-                    return question.options.every(opt => opt.content && opt.content.trim().length <= 3 && /^[A-Za-z0-9\s]+$/.test(opt.content.trim()));
+                    return question.question_type === 'matching' && question.options.every(opt => opt.content && /^[A-F]$/i.test(opt.content.trim()));
                 },
                 setCorrectOption(question, selectedOption) {
                     question.options.forEach(opt => {
