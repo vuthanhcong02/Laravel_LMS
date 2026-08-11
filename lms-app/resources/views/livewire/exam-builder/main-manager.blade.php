@@ -17,7 +17,7 @@
                 <div class="text-xs text-emerald-600 font-bold" wire:loading wire:target="save">
                     Đang lưu...
                 </div>
-                <button wire:click="save" wire:loading.attr="disabled"
+                <button type="button" wire:click="save" wire:loading.attr="disabled"
                     class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 flex items-center gap-2 disabled:opacity-50 transition-all active:scale-95 shrink-0">
                     <span class="material-symbols-outlined text-lg">save</span>
                     <span>Lưu Thay Đổi</span>
@@ -32,35 +32,6 @@
             
             <!-- Main Content Area (Scrolls independently) -->
             <div class="flex-1 overflow-y-auto h-full min-w-0 w-full space-y-8 pb-32 pr-2" style="scrollbar-width: thin;" id="main-editor-scroll">
-                
-                <!-- General Info Block -->
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-                    <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">info</span>
-                        Thông tin chung
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tên Đề thi</label>
-                            <input type="text" wire:model="exam.title"
-                                class="w-full p-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Thời gian (Phút)</label>
-                            <input type="number" wire:model="exam.duration"
-                                class="w-full p-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Trạng thái</label>
-                            <select wire:model="exam.is_published"
-                                class="w-full p-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold">
-                                <option value="1">Xuất bản (Hiển thị cho Học sinh)</option>
-                                <option value="0">Nháp (Ẩn)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Sections Builder -->
                 @foreach($sectionsConfig as $sectionId => $sectionData)
                     @php
@@ -77,7 +48,7 @@
                                     <p class="text-xs font-medium text-slate-500 mt-1">Quản lý các phần thi {{ strtolower($sectionData['name']) }}</p>
                                 </div>
                             </div>
-                            <button wire:click="toggleSection('{{ $sectionId }}')"
+                            <button type="button" wire:click="toggleSection('{{ $sectionId }}')"
                                 class="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 transition-colors">
                                 <span class="material-symbols-outlined">
                                     {{ in_array($sectionId, $expandedSections) ? 'expand_less' : 'expand_more' }}
@@ -121,7 +92,8 @@
                                         <h3 class="text-slate-500 font-bold">Chưa có phần thi nào</h3>
                                     </div>
                                 @else
-                                    <div class="space-y-4" x-data="{
+                                    <div class="space-y-4" wire:ignore.self x-data="{
+                                        activeGroupId: null,
                                         init() {
                                             if (typeof Sortable !== 'undefined') {
                                                 Sortable.create(this.$el, { 
@@ -139,16 +111,15 @@
                                         }
                                     }">
                                         @foreach($groups as $group)
-                                            <div wire:key="group-{{ $group->id }}" data-id="{{ $group->id }}" class="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-all {{ $editingGroupId == $group->id ? 'ring-2 ring-primary border-primary' : '' }}">
-                                                <div class="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/80" wire:click="toggleEditPart({{ $group->id }})">
+                                            <div id="part-{{ $group->id }}" wire:key="group-{{ $group->id }}" data-id="{{ $group->id }}" class="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-colors scroll-mt-24" :class="activeGroupId === {{ $group->id }} ? 'ring-2 ring-primary border-primary' : ''">
+                                                <div class="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/80" 
+                                                     @click="activeGroupId = activeGroupId === {{ $group->id }} ? null : {{ $group->id }}">
                                                     <div>
-                                                        <div x-data="{ editingTitle: false, title: '{{ addslashes($group->title) }}' }" class="flex items-center gap-2">
+                                                        <div wire:key="title-{{ $group->id }}" x-data="{ editingTitle: false, title: '{{ addslashes($group->title) }}' }" class="flex items-center gap-2">
                                                             <h3 x-show="!editingTitle" class="font-bold text-slate-800 dark:text-white flex items-center gap-2 cursor-pointer group/title" @click.stop="editingTitle = true">
                                                                 <span x-text="title"></span>
                                                                 <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover/title:text-primary transition-colors">edit</span>
-                                                                @if($editingGroupId == $group->id)
-                                                                    <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase">Đang sửa</span>
-                                                                @endif
+                                                                <span x-show="activeGroupId === {{ $group->id }}" x-cloak class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase">Đang sửa</span>
                                                             </h3>
                                                             <input x-show="editingTitle" x-cloak 
                                                                 x-model="title" 
@@ -166,13 +137,13 @@
                                                         <p class="text-xs text-slate-500 mt-1">Dạng: <span class="font-semibold text-primary">{{ $typeConfig['name'] ?? 'Không xác định' }}</span></p>
                                                     </div>
                                                     <div class="flex items-center gap-2">
-                                                        <button onclick="event.stopPropagation()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors drag-handle cursor-grab active:cursor-grabbing" title="Kéo để đổi thứ tự">
+                                                        <button type="button" onclick="event.stopPropagation()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors drag-handle cursor-grab active:cursor-grabbing" title="Kéo để đổi thứ tự">
                                                             <span class="material-symbols-outlined text-xl">drag_indicator</span>
                                                         </button>
-                                                        <button class="p-2 text-slate-400 hover:text-primary transition-colors" title="Chỉnh sửa chi tiết">
-                                                            <span class="material-symbols-outlined">{{ $editingGroupId == $group->id ? 'expand_less' : 'edit' }}</span>
+                                                        <button type="button" class="p-2 text-slate-400 hover:text-primary transition-colors" title="Chỉnh sửa chi tiết">
+                                                            <span class="material-symbols-outlined" x-text="activeGroupId === {{ $group->id }} ? 'expand_less' : 'edit'">edit</span>
                                                         </button>
-                                                        <button wire:click.stop="deletePart({{ $group->id }})" wire:confirm="Bạn có chắc chắn muốn xóa phần thi này và toàn bộ câu hỏi bên trong?"
+                                                        <button type="button" wire:click.stop="deletePart({{ $group->id }})" wire:confirm="Bạn có chắc chắn muốn xóa phần thi này và toàn bộ câu hỏi bên trong?"
                                                             class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Xóa">
                                                             <span class="material-symbols-outlined text-xl">delete</span>
                                                         </button>
@@ -180,10 +151,10 @@
                                                 </div>
 
                                                 <!-- Dynamic Component Area for Editing -->
-                                                @if($editingGroupId == $group->id && isset($typeConfig['component']))
-                                                    <div class="border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-6">
+                                                @if(isset($typeConfig['component']))
+                                                    <div x-show="activeGroupId === {{ $group->id }}" x-cloak class="border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-6">
                                                         @if($typeConfig['is_implemented'] ?? false)
-                                                            @livewire($typeConfig['component'], ['group' => $group], key('group-'.$group->id))
+                                                            <livewire:is :component="$typeConfig['component']" :group="$group" :key="'editor-'.$group->id" />
                                                         @else
                                                             <div class="text-center py-8 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-dashed border-amber-300 dark:border-amber-700/50">
                                                                 <span class="material-symbols-outlined text-4xl mb-2 opacity-50">construction</span>
@@ -199,7 +170,7 @@
                                 @endif
                                 
                                 <div class="flex justify-center relative">
-                                    <button wire:click="showAddPartDropdown('{{ $sectionId }}')"
+                                    <button type="button" wire:click="showAddPartDropdown('{{ $sectionId }}')"
                                         class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm font-bold text-sm text-primary hover:border-primary/50 transition-colors">
                                         <span class="material-symbols-outlined text-lg">{{ $addingPartToSection == $sectionId ? 'close' : 'add' }}</span>
                                         {{ $addingPartToSection == $sectionId ? 'Đóng' : 'Thêm Part mới' }}
@@ -210,7 +181,7 @@
                                             <div class="text-xs font-bold text-slate-400 uppercase px-3 py-2">Chọn Dạng Câu Hỏi</div>
                                             <div class="max-h-64 overflow-y-auto custom-scrollbar">
                                                 @foreach(collect($questionTypesConfig)->where('section', $sectionId)->where('is_implemented', true) as $qTypeId => $qType)
-                                                    <button wire:click="addPart('{{ $sectionId }}', '{{ $qTypeId }}')"
+                                                    <button type="button" wire:click="addPart('{{ $sectionId }}', '{{ $qTypeId }}')"
                                                         class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex flex-col gap-0.5">
                                                         <span class="font-bold text-sm text-slate-800 dark:text-white">{{ $qType['name'] }}</span>
                                                         <span class="text-[11px] text-slate-500 leading-tight">{{ $qType['description'] }}</span>
@@ -233,9 +204,48 @@
                         <h3 class="font-bold text-slate-800 dark:text-white text-sm">Điều hướng Builder</h3>
                         <p class="text-[11px] text-slate-500 mt-1">Cấu trúc nhanh của đề thi</p>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar">
-                        <!-- Navigation items will go here -->
-                        <p class="text-xs text-slate-400 text-center py-4">Đang xây dựng...</p>
+                    <div class="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+                        @foreach($sectionsConfig as $sectionId => $sectionData)
+                            @php
+                                $dbSection = $exam->sections->firstWhere('skill_type', $sectionId);
+                                $navGroups = $dbSection ? $dbSection->questionGroups->sortBy('order_index') : collect();
+                            @endphp
+                            @if($navGroups->count() > 0)
+                                <div class="space-y-2">
+                                    <h4 class="font-bold text-xs text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-sm text-{{ $sectionData['color'] ?? 'primary' }}">{{ $sectionData['icon'] }}</span>
+                                        {{ $sectionData['name'] }}
+                                    </h4>
+                                    <div class="pl-3 space-y-1 border-l-2 border-slate-100 dark:border-slate-800 ml-2">
+                                        @foreach($navGroups as $idx => $navGroup)
+                                            <a href="#" @click.prevent="
+                                                let target = document.getElementById('part-{{ $navGroup->id }}');
+                                                let container = document.getElementById('main-editor-scroll');
+                                                if (target && container) {
+                                                    let scrollPos = target.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+                                                    container.scrollTo({
+                                                        top: scrollPos - 24,
+                                                        behavior: 'smooth'
+                                                    });
+                                                }
+                                            " class="block px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-md transition-colors truncate">
+                                                <span class="font-bold text-slate-700 dark:text-slate-300 mr-1">{{ $idx + 1 }}.</span>
+                                                {{ $navGroup->title ?: 'Part ' . ($idx + 1) }}
+                                                <span class="text-[10px] text-slate-400 ml-1">({{ $navGroup->questions->count() }} câu)</span>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @php $hasAnyGroup = true; @endphp
+                            @endif
+                        @endforeach
+                        
+                        @if(!isset($hasAnyGroup))
+                            <div class="text-center py-6">
+                                <span class="material-symbols-outlined text-4xl text-slate-200 dark:text-slate-700 mb-2">inventory_2</span>
+                                <p class="text-xs text-slate-400">Chưa có dữ liệu</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </aside>

@@ -15,7 +15,7 @@
                         <div class="relative group border border-slate-200 dark:border-slate-700 rounded-lg p-1 bg-white dark:bg-slate-900">
                             <span class="absolute top-1 left-1 bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded font-bold z-10">{{ chr(65 + $idx) }}</span>
                             <img src="{{ hsk_storage_url($img) }}" class="w-full h-24 object-contain rounded">
-                            <button wire:click="removePassageImage({{ $idx }})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full hidden group-hover:flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-10">
+                            <button type="button" wire:click="removePassageImage({{ $idx }})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full hidden group-hover:flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-10">
                                 <span class="material-symbols-outlined text-sm">close</span>
                             </button>
                         </div>
@@ -54,7 +54,7 @@
                                 <input type="checkbox" wire:click="toggleExample({{ $question->id }})" {{ $question->is_example ? 'checked' : '' }} class="w-4 h-4 text-amber-500 bg-slate-100 border-slate-300 rounded focus:ring-amber-500">
                                 <span class="text-xs font-bold text-slate-500">Là câu Ví dụ</span>
                             </label>
-                            <button wire:click="deleteQuestion({{ $question->id }})" wire:confirm="Xóa câu này?" class="text-red-500 hover:text-red-600 transition-colors p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md">
+                            <button type="button" wire:click="deleteQuestion({{ $question->id }})" wire:confirm="Xóa câu này?" class="text-red-500 hover:text-red-600 transition-colors p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
                         </div>
@@ -81,11 +81,11 @@
         </div>
 
         <div class="flex items-center gap-3 mt-4">
-            <button wire:click="addQuestion" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm font-bold text-sm text-primary hover:border-primary/50 transition-colors">
+            <button type="button" wire:click="addQuestion" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm font-bold text-sm text-primary hover:border-primary/50 transition-colors">
                 <span class="material-symbols-outlined text-lg">add</span>
                 Thêm Câu hỏi
             </button>
-            <button wire:click="saveGroup" class="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg shadow-sm font-bold text-sm hover:bg-emerald-700 transition-colors">
+            <button type="button" wire:click="saveGroup" class="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg shadow-sm font-bold text-sm hover:bg-emerald-700 transition-colors">
                 <span class="material-symbols-outlined text-lg">save</span>
                 Lưu Part này
             </button>
