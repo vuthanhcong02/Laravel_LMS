@@ -34,9 +34,6 @@ class HskMockExamService
         ])->findOrFail($examId);
     }
 
-    /**
-     * Get user statistics
-     */
     public function getUserStats($userId)
     {
         $stats = [
@@ -45,13 +42,13 @@ class HskMockExamService
         ];
 
         if ($userId) {
-            $stats['completedExamsCount'] = HskMockExamResult::where('user_id', $userId)
+            $statsData = HskMockExamResult::where('user_id', $userId)
                 ->where('status', 'completed')
-                ->count();
+                ->selectRaw('COUNT(*) as count, MAX(total_score) as max_score')
+                ->first();
 
-            $stats['highestScore'] = HskMockExamResult::where('user_id', $userId)
-                ->where('status', 'completed')
-                ->max('total_score') ?? 0;
+            $stats['completedExamsCount'] = $statsData->count ?? 0;
+            $stats['highestScore'] = $statsData->max_score ?? 0;
         }
 
         return $stats;
