@@ -13,7 +13,7 @@ class HskMockExamSection extends Model
 
     public function mockExam()
     {
-        return $this->belongsTo(HskMockExam::class);
+        return $this->belongsTo(HskMockExam::class, 'hsk_mock_exam_id');
     }
 
     public function questionGroups()

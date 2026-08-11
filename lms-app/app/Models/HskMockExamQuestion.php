@@ -9,6 +9,10 @@ class HskMockExamQuestion extends Model
 {
     protected $guarded = [];
     
+    protected $casts = [
+        'is_example' => 'boolean',
+    ];
+    
     use HasFactory;
 
     public function group()

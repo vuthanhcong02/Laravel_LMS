@@ -1,0 +1,88 @@
+<div class="space-y-6">
+    {{-- Passage Text chung cho group --}}
+    <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Đoạn văn chung cho Part này (Passage Text)</label>
+        <textarea wire:model.defer="group.passage_text" rows="5"
+            placeholder="Nhập nội dung đoạn văn..."
+            class="w-full p-3 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-primary focus:border-primary"></textarea>
+    </div>
+
+    {{-- Danh sách câu hỏi --}}
+    <div>
+        <h4 class="text-sm font-black text-slate-600 dark:text-slate-300 uppercase tracking-wide mb-3">
+            Danh sách Câu hỏi ({{ $group->questions->count() }})
+        </h4>
+
+        @foreach($group->questions as $index => $question)
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-4" wire:key="q-{{ $question->id }}">
+                {{-- Header câu hỏi --}}
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 shrink-0 {{ $question->is_example ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 border-amber-200' : 'bg-white dark:bg-slate-700 text-slate-500 border-slate-200 dark:border-slate-600' }} rounded-lg border flex items-center justify-center font-black text-sm shadow-sm">
+                            {{ $question->is_example ? 'VD' : $index + 1 }}
+                        </div>
+                        <span class="font-bold text-slate-700 dark:text-slate-300 text-sm">Câu hỏi {{ $index + 1 }}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" wire:click="toggleExample({{ $question->id }})" {{ $question->is_example ? 'checked' : '' }} class="w-4 h-4 text-amber-500 bg-slate-100 border-slate-300 rounded focus:ring-amber-500">
+                            <span class="text-xs font-bold text-slate-500">Là câu Ví dụ</span>
+                        </label>
+                        <button wire:click="deleteQuestion({{ $question->id }})" wire:confirm="Xóa câu này?" class="text-red-500 hover:text-red-600 transition-colors p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md">
+                            <span class="material-symbols-outlined text-lg">delete</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Nội dung câu hỏi --}}
+                <div class="pl-11 space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nội dung câu hỏi</label>
+                        <textarea wire:model.defer="questionTitles.{{ $index }}" rows="2"
+                            placeholder="Ví dụ: 他们在谈论什么？"
+                            class="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-primary focus:border-primary"></textarea>
+                    </div>
+
+                    {{-- Các đáp án A, B, C, D --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2">Đáp án (A, B, C, D)</label>
+                        <div class="space-y-2">
+                            @foreach($question->options as $optIdx => $option)
+                                @php $optLabel = chr(65 + $optIdx); @endphp
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 shrink-0 rounded-lg {{ $correctAnswers[$question->id] ?? null == $option->id ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300' }} flex items-center justify-center font-black text-sm">
+                                        {{ $optLabel }}
+                                    </span>
+                                    <input type="text"
+                                        wire:model.defer="optionContents.{{ $option->id }}"
+                                        placeholder="Nội dung đáp án {{ $optLabel }}..."
+                                        class="flex-1 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-primary focus:border-primary px-3 py-1.5">
+                                    <label class="flex items-center gap-1.5 cursor-pointer shrink-0">
+                                        <input type="radio"
+                                            wire:model="correctAnswers.{{ $question->id }}"
+                                            value="{{ $option->id }}"
+                                            class="w-4 h-4 text-emerald-500 border-slate-300 focus:ring-emerald-500">
+                                        <span class="text-xs text-slate-500 font-bold">Đúng</span>
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+
+        {{-- Nút thêm câu + lưu --}}
+        <div class="flex items-center gap-3 mt-2">
+            <button wire:click="addQuestion" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm font-bold text-sm text-primary hover:border-primary/50 transition-colors">
+                <span class="material-symbols-outlined text-lg">add</span>
+                Thêm Câu hỏi
+            </button>
+            <button wire:click="saveGroup" class="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg shadow-sm font-bold text-sm hover:bg-emerald-700 transition-colors">
+                <span class="material-symbols-outlined text-lg">save</span>
+                Lưu Part này
+            </button>
+            <span class="text-xs text-emerald-600 font-bold" wire:loading wire:target="saveGroup">Đang lưu...</span>
+        </div>
+    </div>
+</div>
