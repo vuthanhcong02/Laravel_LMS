@@ -60,7 +60,7 @@
                         <option value="">Tất cả Cấp độ HSK</option>
                         @foreach($levels as $level)
                             <option value="{{ $level->level_code }}" {{ request('level') == $level->level_code ? 'selected' : '' }}>
-                                {{ $level->name }}
+                                {{ $level->title }}
                             </option>
                         @endforeach
                     </select>
@@ -92,7 +92,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
-                                            {{ $exam->hskLevel->name ?? 'HSK' }}
+                                            {{ $exam->hskLevel->title ?? 'HSK' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-center font-medium">
