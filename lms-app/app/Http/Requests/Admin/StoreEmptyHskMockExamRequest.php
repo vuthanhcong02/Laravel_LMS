@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreHskMockExamRequest extends FormRequest
+class StoreEmptyHskMockExamRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,9 @@ class StoreHskMockExamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'data_file' => 'required|file|mimes:json,txt,csv',
-            'media_files.*' => 'nullable|file|mimes:jpeg,png,jpg,mp3,wav'
+            'title' => 'required|string|max:255',
+            'level_code' => 'required|string',
+            'duration' => 'required|integer|min:1',
         ];
     }
 }

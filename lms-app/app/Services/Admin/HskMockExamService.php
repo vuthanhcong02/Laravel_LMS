@@ -255,4 +255,126 @@ class HskMockExamService
     {
         return $file->store('hsk_mock_exams/uploads', 'public');
     }
+
+    /**
+     * Create an empty exam structure
+     */
+    public function createEmptyExam(array $data, \App\Models\HskLevel $hskLevel): HskMockExam
+    {
+        $exam = HskMockExam::create([
+            'title' => $data['title'],
+            'hsk_level_id' => $hskLevel->id,
+            'duration' => $data['duration'],
+            'audio_file' => null,
+            'total_score' => 100,
+            'total_questions' => 0
+        ]);
+
+        $levelCode = $hskLevel->level_code;
+        $structure = config("hsk_structure.{$levelCode}", config('hsk_structure.default'));
+        
+        $orderSec = 1;
+        $globalQuestionOrder = 1;
+
+        foreach ($structure as $skill => $secData) {
+            $section = HskMockExamSection::create([
+                'hsk_mock_exam_id' => $exam->id,
+                'name' => $secData['name'],
+                'skill_type' => $skill,
+                'order_index' => $orderSec++
+            ]);
+
+            $groupOrder = 1;
+            foreach ($secData['parts'] as $partData) {
+                $group = HskMockExamQuestionGroup::create([
+                    'hsk_mock_exam_section_id' => $section->id,
+                    'title' => 'Part ' . $groupOrder,
+                    'group_type' => $partData['group_type'],
+                    'passage_text' => null,
+                    'order_index' => $groupOrder++
+                ]);
+
+                $qType = 'single_choice';
+                if (str_contains($partData['group_type'], 'true_false')) $qType = 'true_false';
+                if (str_contains($partData['group_type'], 'fill_in_blank')) $qType = 'fill_blank';
+                if (str_contains($partData['group_type'], 'matching')) $qType = 'matching';
+
+                for ($i = 0; $i < $partData['questions']; $i++) {
+                    HskMockExamQuestion::create([
+                        'hsk_mock_exam_group_id' => $group->id,
+                        'hsk_mock_exam_section_id' => $section->id,
+                        'question_type' => $qType,
+                        'title' => null,
+                        'points' => 1,
+                        'order_index' => $globalQuestionOrder++
+                    ]);
+                }
+            }
+        }
+
+        $exam->update(['total_questions' => $globalQuestionOrder - 1]);
+
+        return $exam;
+    }
+
+    /**
+     * Handle CSV parsing
+     */
+    public function parseCsvToData($filePath): array
+    {
+        $file = fopen($filePath, 'r');
+        $bom = fread($file, 3);
+        if ($bom != "\xEF\xBB\xBF") {
+            rewind($file);
+        }
+        $headers = fgetcsv($file);
+        
+        $examId = 'H99999';
+        $level = 1;
+        $sections = [];
+
+        while (($row = fgetcsv($file)) !== false) {
+            if (count($row) < count($headers)) continue;
+            
+            $rowAssoc = array_combine($headers, $row);
+            
+            $examId = $rowAssoc['exam_id'] ?: $examId;
+            $level = $rowAssoc['level'] ?: $level;
+            
+            $secName = $rowAssoc['section'];
+            $partName = $rowAssoc['part'];
+            
+            if (!isset($sections[$secName])) {
+                $sections[$secName] = ['section' => $secName, 'parts' => []];
+            }
+            if (!isset($sections[$secName]['parts'][$partName])) {
+                $sections[$secName]['parts'][$partName] = [
+                    'name' => 'Phần ' . $partName,
+                    'instructions' => $rowAssoc['passage_text'],
+                    'image' => $rowAssoc['passage_image'],
+                    'questions' => []
+                ];
+            }
+            
+            $options = !empty($rowAssoc['options']) ? explode('|', $rowAssoc['options']) : [];
+            
+            $sections[$secName]['parts'][$partName]['questions'][] = [
+                'type' => $rowAssoc['question_type'],
+                'question_text' => $rowAssoc['question_text'],
+                'options' => $options,
+                'correct_answer' => $rowAssoc['correct_answer'],
+                'image' => !empty($rowAssoc['question_image']) ? 'images/' . $rowAssoc['question_image'] : null,
+                'audio' => !empty($rowAssoc['question_audio']) ? 'audio/' . $rowAssoc['question_audio'] : null,
+            ];
+        }
+        fclose($file);
+        
+        $sectionsArray = [];
+        foreach ($sections as $sec) {
+            $sec['parts'] = array_values($sec['parts']);
+            $sectionsArray[] = $sec;
+        }
+
+        return ['exam_id' => $examId, 'level' => $level, 'sections' => $sectionsArray];
+    }
 }

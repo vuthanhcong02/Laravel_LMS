@@ -218,6 +218,12 @@
                                     </h4>
                                     <div class="pl-3 space-y-1 border-l-2 border-slate-100 dark:border-slate-800 ml-2">
                                         @foreach($navGroups as $idx => $navGroup)
+                                            @php
+                                                $qTypeName = $navGroup->title ?: 'Part ' . ($idx + 1);
+                                                if ($navGroup->group_type && isset(config('hsk_builder.question_types')[$navGroup->group_type])) {
+                                                    $qTypeName = config('hsk_builder.question_types')[$navGroup->group_type]['name'];
+                                                }
+                                            @endphp
                                             <a href="#" @click.prevent="
                                                 let target = document.getElementById('part-{{ $navGroup->id }}');
                                                 let container = document.getElementById('main-editor-scroll');
@@ -228,9 +234,9 @@
                                                         behavior: 'smooth'
                                                     });
                                                 }
-                                            " class="block px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-md transition-colors truncate">
+                                            " class="block px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-md transition-colors truncate" title="{{ $qTypeName }}">
                                                 <span class="font-bold text-slate-700 dark:text-slate-300 mr-1">{{ $idx + 1 }}.</span>
-                                                {{ $navGroup->title ?: 'Part ' . ($idx + 1) }}
+                                                {{ $qTypeName }}
                                                 <span class="text-[10px] text-slate-400 ml-1">({{ $navGroup->questions->count() }} câu)</span>
                                             </a>
                                         @endforeach

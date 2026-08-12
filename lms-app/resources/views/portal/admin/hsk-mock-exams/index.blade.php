@@ -28,10 +28,15 @@
                     <p class="text-sm text-slate-500 dark:text-slate-400">Danh sách các bộ đề thi thử HSK toàn hệ thống</p>
                 </div>
                 <div class="flex gap-3">
+                    <button x-data @click="$dispatch('open-create-empty-modal')"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                        <span class="material-symbols-outlined text-lg">add</span>
+                        Tạo đề trống
+                    </button>
                     <a href="{{ route('admin.hsk-mock-exams.create') }}"
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-all">
                         <span class="material-symbols-outlined text-lg">upload_file</span>
-                        Import / Tạo đề mới
+                        Import dữ liệu
                     </a>
                 </div>
             </div>
@@ -144,4 +149,65 @@
             </div>
         </div>
     </main>
+
+    <!-- Create Empty Exam Modal (Alpine JS) -->
+    <div x-data="{ open: false }"
+         @open-create-empty-modal.window="open = true"
+         x-show="open"
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+         style="display: none;">
+         
+        <div @click.away="open = false" x-show="open" x-transition.opacity.scale.95
+             class="bg-white dark:bg-slate-900 rounded-[2rem] w-full max-w-lg overflow-hidden border border-slate-100 dark:border-slate-800 shadow-2xl">
+            <div class="p-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3">
+                        <span class="material-symbols-outlined text-emerald-500">add_box</span>
+                        Tạo đề thi mới
+                    </h3>
+                    <p class="text-slate-500 text-sm font-bold mt-1">Đề thi trống theo cấu trúc chuẩn</p>
+                </div>
+                <button @click="open = false" class="size-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined text-slate-500 text-lg">close</span>
+                </button>
+            </div>
+
+            <form action="{{ route('admin.hsk-mock-exams.store-empty') }}" method="POST" class="p-8 space-y-5">
+                @csrf
+                
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Tên Đề Thi <span class="text-rose-500">*</span></label>
+                    <input type="text" name="title" required placeholder="VD: Đề thi HSK 3 - Bộ mới"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm font-semibold text-slate-800 dark:text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Cấp độ HSK <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <select name="level_code" required class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm font-semibold text-slate-800 dark:text-white appearance-none">
+                            <option value="">-- Chọn Cấp độ --</option>
+                            @foreach($levels as $level)
+                                <option value="{{ $level->level_code }}">{{ $level->title }}</option>
+                            @endforeach
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Thời gian làm bài (Phút) <span class="text-rose-500">*</span></label>
+                    <input type="number" name="duration" required value="40" min="1"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm font-semibold text-slate-800 dark:text-white">
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" @click="open = false" class="px-6 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors text-sm">Hủy bỏ</button>
+                    <button type="submit" class="px-6 py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all text-sm flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        Tạo Đề Thi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection

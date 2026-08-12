@@ -170,6 +170,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // ─── HSK Mock Exams ──────────────────────────────────────────────────
             Route::resource('admin/hsk-mock-exams', AdminHskMockExamController::class)->names('admin.hsk-mock-exams');
+            Route::post('admin/hsk-mock-exams/store-empty', [AdminHskMockExamController::class, 'storeEmpty'])->name('admin.hsk-mock-exams.store-empty');
+            Route::get('admin/hsk-mock-exams/download-template', [AdminHskMockExamController::class, 'downloadTemplate'])->name('admin.hsk-mock-exams.download-template');
             Route::get('admin/hsk-mock-exams/{hsk_mock_exam}/editor-data', [AdminHskMockExamController::class, 'getEditorData'])->name('admin.hsk-mock-exams.editor-data');
             Route::put('admin/hsk-mock-exams/{hsk_mock_exam}/editor-data', [AdminHskMockExamController::class, 'saveEditorData'])->name('admin.hsk-mock-exams.save-editor-data');
             Route::post('admin/hsk-mock-exams/upload-image', [AdminHskMockExamController::class, 'uploadImage'])->name('admin.hsk-mock-exams.upload-image');
