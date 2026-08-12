@@ -19,18 +19,7 @@
     $realQuestions = $group->questions->where('is_example', false)->sortBy('order_index');
 @endphp
 
-<div class="mb-4">
-    <div class="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-300">
-        <span class="material-symbols-outlined text-[18px]">edit_note</span>
-        <span class="tracking-wide uppercase">{{ $group->title ?? 'Part' }}</span>
-        @if($group->questions->count() > 0)
-            <span class="opacity-50 mx-1">|</span>
-            <span class="text-xs font-semibold">
-                {{ $group->questions->min('order_index') }} - {{ $group->questions->max('order_index') }}
-            </span>
-        @endif
-    </div>
-</div>
+
 
 @if(count($textOptions) > 0)
     {{-- Text Options Bank (A-F) --}}

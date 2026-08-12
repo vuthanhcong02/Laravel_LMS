@@ -15,19 +15,7 @@
     $exLetter = $exData['ex_a_letter'] ?? $exData['a_letter'] ?? 'D';
 @endphp
 
-{{-- Group Header --}}
-<div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-    <div class="flex items-center gap-3">
-        <span class="px-3.5 py-1.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary text-xs font-black uppercase tracking-wider">
-            {{ $group->title ?? 'Part ' . ($gIdx + 1) }}
-        </span>
-        @if($realQuestions->count() > 0)
-            <span class="text-sm font-black text-slate-800 dark:text-slate-200">
-                {{ $navQCount }} – {{ $navQCount + $realQuestions->count() - 1 }}
-            </span>
-        @endif
-    </div>
-</div>
+
 
 {{-- Options Bank (A-F) --}}
 @if(count($p3Options) > 0)

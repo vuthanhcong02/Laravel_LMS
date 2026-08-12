@@ -85,10 +85,11 @@
     </style>
 </head>
 
-<body class="bg-slate-50 dark:bg-[#131a1f] text-slate-900 dark:text-slate-100 h-screen overflow-hidden flex flex-col" x-data="examTimer">
+<body class="bg-slate-50 dark:bg-[#131a1f] text-slate-900 dark:text-slate-100 h-screen overflow-hidden flex flex-col"
+    x-data="examTimer" @answer-selected.window="selectAnswer($event.detail.qNum)">
 
     @php
-        $listeningAudio = $exam->sections->firstWhere('skill_type', 'listening')?->audio_file;
+        $listeningAudio = $exam->audio_file ?? $exam->sections->firstWhere('skill_type', 'listening')?->audio_file;
     @endphp
 
     {{-- ===== HEADER ===== --}}
@@ -105,16 +106,7 @@
                 <h1 class="font-bold text-slate-800 dark:text-white text-sm md:text-base truncate leading-tight">
                     Đề thi HSK {{ $level }} · {{ $exam->title }}
                 </h1>
-                <div class="flex items-center gap-2 mt-0.5">
-                    <div
-                        class="h-1.5 w-28 bg-slate-100 dark:bg-slate-700/60 rounded-full overflow-hidden hidden sm:block">
-                        <div id="progress-bar" class="h-full bg-primary rounded-full transition-all duration-300"
-                            style="width: 0%"></div>
-                    </div>
-                    <span class="text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:block">
-                        <span x-text="Object.keys(answers).length">0</span>/{{ $exam->total_questions ?? 40 }} câu
-                    </span>
-                </div>
+
             </div>
         </div>
 
@@ -125,7 +117,7 @@
                     class="w-full max-w-xs bg-slate-100 dark:bg-slate-800/80 rounded-xl px-3 py-1 border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[18px] shrink-0">volume_up</span>
                     <audio controls controlsList="nodownload" class="custom-audio w-full h-8">
-                        <source src="{{ Storage::url($listeningAudio) }}" type="audio/mpeg">
+                        <source src="{{ hsk_storage_url($listeningAudio) }}" type="audio/mpeg">
                     </audio>
                 </div>
             </div>
@@ -191,71 +183,75 @@
                 @php $qCount = 1; @endphp
                 @foreach ($exam->sections as $sectionIndex => $section)
                     @php
-                        $sectionRealQCount = $section->questionGroups->sum(fn($g) => $g->questions->where('is_example', false)->count());
-                        $validGroups = $section->questionGroups->filter(fn($g) => $g->questions->where('is_example', false)->count() > 0);
+                        $sectionRealQCount = $section->questionGroups->sum(
+                            fn($g) => $g->questions->where('is_example', false)->count(),
+                        );
+                        $validGroups = $section->questionGroups->filter(
+                            fn($g) => $g->questions->where('is_example', false)->count() > 0,
+                        );
                     @endphp
-                    
-                    @if($sectionRealQCount > 0)
-                    <div>
-                        {{-- Section Title Divider Banner --}}
-                        <div
-                            class="flex items-center justify-between gap-4 mb-8 p-4 md:p-5 rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-white shadow-md">
-                            <div class="flex items-center gap-3">
-                                <span
-                                    class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-lg">
-                                    {{ $sectionIndex + 1 }}
-                                </span>
-                                <div>
-                                    <h2 class="text-lg md:text-xl font-black uppercase tracking-wide">
-                                        {{ $section->name }}
-                                    </h2>
-                                    <p class="text-xs text-white/80 font-medium">
-                                        {{ $validGroups->count() }} phần bài tập •
-                                        {{ $sectionRealQCount }}
-                                        câu hỏi
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
 
-                        @foreach ($section->questionGroups as $gIdx => $group)
-                            @php
-                                $groupRealQCount = $group->questions->where('is_example', false)->count();
-                            @endphp
-                            
-                            @if($groupRealQCount > 0)
-                            @php
-                                $groupType = $group->group_type ?? 'default';
-
-                                // Logic to determine component path based on group type or context
-                                $componentPath = "portal.student.hsk-mock-exams.partials.groups.{$groupType}";
-                            @endphp
-
-                            <div class="mb-10">
-                                @if (view()->exists($componentPath))
-                                    @include($componentPath, [
-                                        'group' => $group,
-                                        'qCount' => $qCount,
-                                        'gIdx' => $gIdx,
-                                        'sectionIndex' => $sectionIndex,
-                                        'navQCount' => $qCount,
-                                    ])
-                                @else
-                                    <div class="p-4 bg-red-50 text-red-600 rounded-xl border border-red-200">
-                                        <h4 class="font-bold">Missing component for {{ $groupType }}</h4>
-                                        <p class="text-sm mt-1">Please create
-                                            <code>{{ str_replace('.', '/', $componentPath) }}.blade.php</code>.
+                    @if ($sectionRealQCount > 0)
+                        <div>
+                            {{-- Section Title Divider Banner --}}
+                            <div
+                                class="flex items-center justify-between gap-4 mb-8 p-4 md:p-5 rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-white shadow-md">
+                                <div class="flex items-center gap-3">
+                                    <span
+                                        class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-lg">
+                                        {{ $sectionIndex + 1 }}
+                                    </span>
+                                    <div>
+                                        <h2 class="text-lg md:text-xl font-black uppercase tracking-wide">
+                                            {{ $section->name }}
+                                        </h2>
+                                        <p class="text-xs text-white/80 font-medium">
+                                            {{ $validGroups->count() }} phần bài tập •
+                                            {{ $sectionRealQCount }}
+                                            câu hỏi
                                         </p>
                                     </div>
-                                @endif
+                                </div>
                             </div>
 
-                            @php
-                                $qCount += $groupRealQCount;
-                            @endphp
-                            @endif
-                        @endforeach
-                    </div>
+                            @foreach ($section->questionGroups as $gIdx => $group)
+                                @php
+                                    $groupRealQCount = $group->questions->where('is_example', false)->count();
+                                @endphp
+
+                                @if ($groupRealQCount > 0)
+                                    @php
+                                        $groupType = $group->group_type ?? 'default';
+
+                                        // Logic to determine component path based on group type or context
+                                        $componentPath = "portal.student.hsk-mock-exams.partials.groups.{$groupType}";
+                                    @endphp
+
+                                    <div class="mb-10">
+                                        @if (view()->exists($componentPath))
+                                            @include($componentPath, [
+                                                'group' => $group,
+                                                'qCount' => $qCount,
+                                                'gIdx' => $gIdx,
+                                                'sectionIndex' => $sectionIndex,
+                                                'navQCount' => $qCount,
+                                            ])
+                                        @else
+                                            <div class="p-4 bg-red-50 text-red-600 rounded-xl border border-red-200">
+                                                <h4 class="font-bold">Missing component for {{ $groupType }}</h4>
+                                                <p class="text-sm mt-1">Please create
+                                                    <code>{{ str_replace('.', '/', $componentPath) }}.blade.php</code>.
+                                                </p>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    @php
+                                        $qCount += $groupRealQCount;
+                                    @endphp
+                                @endif
+                            @endforeach
+                        </div>
                     @endif
                 @endforeach
 
@@ -284,12 +280,12 @@
                     <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
                         <span>Tiến độ làm bài</span>
                         <span class="font-bold text-primary">
-                            <span x-text="Object.keys(answers).length">0</span>/{{ $exam->total_questions ?? 40 }} câu
+                            <span id="sidebar-progress-text">0</span>/{{ $exam->total_questions ?? 40 }} câu
                         </span>
                     </div>
                     <div class="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div class="h-full bg-primary rounded-full transition-all duration-300"
-                            :style="`width: ${(Object.keys(answers).length / {{ $exam->total_questions ?? 40 }}) * 100}%`">
+                            id="sidebar-progress-bar" style="width: 0%">
                         </div>
                     </div>
                 </div>
@@ -300,47 +296,45 @@
                 @php $navQCount = 1; @endphp
                 @foreach ($exam->sections as $sectionIndex => $section)
                     @php
-                        $sectionRealQCount = $section->questionGroups->sum(fn($g) => $g->questions->where('is_example', false)->count());
+                        $sectionRealQCount = $section->questionGroups->sum(
+                            fn($g) => $g->questions->where('is_example', false)->count(),
+                        );
                     @endphp
-                    
-                    @if($sectionRealQCount > 0)
-                    <div>
-                        <div class="flex items-center gap-2 mb-2.5">
-                            <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
-                            <p
-                                class="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider leading-none">
-                                Phần {{ $sectionIndex + 1 }}: {{ $section->name }}
-                            </p>
-                        </div>
 
-                        @foreach ($section->questionGroups as $gIdx => $group)
-                            @php
-                                $realQCount = $group->questions->where('is_example', false)->count();
-                            @endphp
-                            
-                            @if ($realQCount > 0)
-                                @php
-                                    $firstQ = $navQCount;
-                                    $lastQ = $navQCount + $realQCount - 1;
-                                @endphp
+                    @if ($sectionRealQCount > 0)
+                        <div>
+                            <div class="flex items-center gap-2 mb-2.5">
+                                <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
                                 <p
-                                    class="text-[10px] font-bold text-slate-400/80 dark:text-slate-600 uppercase mb-1.5 pl-0.5">
-                                    {{ $group->title ?? 'Part ' . ($gIdx + 1) }} &middot; Câu
-                                    {{ $firstQ }}–{{ $lastQ }}
+                                    class="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider leading-none">
+                                    Phần {{ $sectionIndex + 1 }}: {{ $section->name }}
                                 </p>
-                                <div class="grid grid-cols-5 gap-1.5 mb-3">
-                                    @foreach ($group->questions->where('is_example', false) as $question)
-                                        @php $currentNavQNum = $navQCount++; @endphp
-                                        <button type="button" onclick="scrollToQuestion({{ $currentNavQNum }})"
-                                            id="nav-btn-{{ $currentNavQNum }}"
-                                            class="nav-btn-item w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border transition-all duration-150 hover:scale-105 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:text-primary">
-                                            {{ $currentNavQNum }}
-                                        </button>
-                                    @endforeach
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
+                            </div>
+
+                            @foreach ($section->questionGroups as $gIdx => $group)
+                                @php
+                                    $realQCount = $group->questions->where('is_example', false)->count();
+                                @endphp
+
+                                @if ($realQCount > 0)
+                                    @php
+                                        $firstQ = $navQCount;
+                                        $lastQ = $navQCount + $realQCount - 1;
+                                    @endphp
+
+                                    <div class="grid grid-cols-5 gap-1.5 mb-3">
+                                        @foreach ($group->questions->where('is_example', false) as $question)
+                                            @php $currentNavQNum = $navQCount++; @endphp
+                                            <button type="button" onclick="scrollToQuestion({{ $currentNavQNum }})"
+                                                id="nav-btn-{{ $currentNavQNum }}"
+                                                class="nav-btn-item w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border transition-all duration-150 hover:scale-105 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:text-primary">
+                                                {{ $currentNavQNum }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
                     @endif
                 @endforeach
             </div>
@@ -405,14 +399,13 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('examTimer', () => ({
                 timeRemaining: {{ $exam->duration }} * 60,
-                answers: {},
                 init() {
                     const timer = setInterval(() => {
                         if (this.timeRemaining > 0) {
                             this.timeRemaining--;
                         } else {
                             clearInterval(timer);
-                            this.autoSubmit();
+                            document.getElementById('exam-form').submit();
                         }
                     }, 1000);
                 },
@@ -421,25 +414,39 @@
                     const s = (seconds % 60).toString().padStart(2, '0');
                     return `${m}:${s}`;
                 },
-                selectAnswer(questionOrderIndex) {
-                    this.answers[questionOrderIndex] = true;
-                    const total = {{ $exam->total_questions ?? 40 }};
-                    const done = Object.keys(this.answers).length;
-                    const bar = document.getElementById('progress-bar');
-                    if (bar) bar.style.width = `${(done / total) * 100}%`;
-                },
                 autoSubmit() {
                     document.getElementById('exam-form').submit();
                 }
             }))
         });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.initTimer) {
-                window.initTimer({{ $exam->duration }});
+
+        // ===== Pure JS Progress Tracking =====
+        const _answeredSet = new Set();
+        const _totalQ = {{ $exam->total_questions ?? 40 }};
+
+        function updateSidebar(qNum) {
+            const btn = document.getElementById('nav-btn-' + qNum);
+            if (btn) {
+                btn.className = btn.className
+                    .replace(
+                        /bg-slate-50|dark:bg-slate-800|text-slate-600|dark:text-slate-400|border-slate-200|dark:border-slate-700/g,
+                        '')
+                    .trim();
+                btn.classList.add('bg-primary', 'border-primary', 'text-white');
             }
-        });
+
+            _answeredSet.add(qNum);
+            const done = _answeredSet.size;
+
+            const textEl = document.getElementById('sidebar-progress-text');
+            if (textEl) textEl.innerText = done;
+
+            const bar = document.getElementById('sidebar-progress-bar');
+            if (bar) bar.style.width = `${(done / _totalQ) * 100}%`;
+
+            const confirmEl = document.getElementById('confirm-answered');
+            if (confirmEl) confirmEl.innerText = done;
+        }
     </script>
 </body>
 

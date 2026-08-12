@@ -1,7 +1,7 @@
 // Mock Exam Student View Script
 
 // Mobile sidebar toggle
-window.toggleNavSidebar = function(forceState) {
+window.toggleNavSidebar = function (forceState) {
     const sidebar = document.getElementById('nav-sidebar');
     const overlay = document.getElementById('nav-overlay');
     const isMobile = window.innerWidth < 768;
@@ -23,7 +23,7 @@ window.toggleNavSidebar = function(forceState) {
     }
 }
 
-window.scrollToQuestion = function(qNum) {
+window.scrollToQuestion = function (qNum) {
     const el = document.getElementById('q-' + qNum);
     if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -34,7 +34,7 @@ window.scrollToQuestion = function(qNum) {
     if (window.innerWidth < 768) window.toggleNavSidebar(false);
 }
 
-window.confirmSubmit = function() {
+window.confirmSubmit = function () {
     const answered = document.querySelectorAll('input[type="radio"]:checked').length;
     document.getElementById('confirm-answered').textContent = answered;
     const modal = document.getElementById('confirm-modal');
@@ -42,7 +42,7 @@ window.confirmSubmit = function() {
     modal.classList.add('flex');
 }
 
-window.closeModal = function() {
+window.closeModal = function () {
     const modal = document.getElementById('confirm-modal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
@@ -51,7 +51,7 @@ window.closeModal = function() {
 document.addEventListener('DOMContentLoaded', () => {
     const confirmModal = document.getElementById('confirm-modal');
     if (confirmModal) {
-        confirmModal.addEventListener('click', function(e) {
+        confirmModal.addEventListener('click', function (e) {
             if (e.target === this) window.closeModal();
         });
     }
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 let currentAudio = null;
 let currentBtn = null;
 
-window.playAudio = function(url, btnElement) {
+window.playAudio = function (url, btnElement) {
     if (currentAudio && currentAudio.src.endsWith(url) && !currentAudio.paused) {
         currentAudio.pause();
         resetButton(btnElement);
@@ -97,32 +97,33 @@ function resetButton(btnElement) {
 }
 
 // Sidebar update logic
-window.updateSidebar = function(qNum) {
+window.updateSidebar = function (qNum) {
     const btn = document.getElementById('nav-btn-' + qNum);
     if (btn) {
         btn.classList.remove('bg-slate-50', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-400', 'border-slate-200', 'dark:border-slate-700');
         btn.classList.add('bg-primary', 'text-white', 'border-transparent', 'shadow-sm');
     }
-    
-    // Update progress bar
+
     const total = document.querySelectorAll('.nav-btn-item').length;
     const answered = document.querySelectorAll('.nav-btn-item.bg-primary').length;
-    const bar = document.getElementById('progress-bar');
-    if (bar) {
-        bar.style.width = `${(answered / total) * 100}%`;
-    }
+
+    const bar = document.getElementById('sidebar-progress-bar');
+    if (bar && total > 0) bar.style.width = `${(answered / total) * 100}%`;
+
+    const textEl = document.getElementById('sidebar-progress-text');
+    if (textEl) textEl.textContent = answered;
 }
 
 // Timer logic
 let timeRemaining = 0;
 let timerInterval = null;
 
-window.initTimer = function(durationInMinutes) {
+window.initTimer = function (durationInMinutes) {
     timeRemaining = durationInMinutes * 60;
     const display = document.getElementById('exam-timer-display');
-    
+
     if (!display) return;
-    
+
     timerInterval = setInterval(() => {
         if (timeRemaining > 0) {
             timeRemaining--;

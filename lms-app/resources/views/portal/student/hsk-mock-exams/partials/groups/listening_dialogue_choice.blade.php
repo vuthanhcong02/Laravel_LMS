@@ -4,28 +4,18 @@
 @endphp
 
 {{-- Group Header --}}
-<div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-    <div class="flex items-center gap-3">
-        <span class="px-3.5 py-1.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary text-xs font-black uppercase tracking-wider">
-            {{ $group->title ?? 'Part ' . ($gIdx + 1) }}
-        </span>
-        @if($realQuestions->count() > 0)
-            <span class="text-sm font-black text-slate-800 dark:text-slate-200">
-                {{ $navQCount }} – {{ $navQCount + $realQuestions->count() - 1 }}
-            </span>
-        @endif
+@if($group->passage_audio)
+<div class="flex flex-wrap items-end justify-end gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+    <div class="flex items-center gap-2">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wide mr-2">Audio Part</span>
+        <button type="button"
+                onclick="playAudio('{{ hsk_storage_url($group->passage_audio) }}', this)"
+                class="w-10 h-10 rounded-full bg-slate-100 hover:bg-primary/10 dark:bg-slate-800 dark:hover:bg-primary/20 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl">play_arrow</span>
+        </button>
     </div>
-    @if($group->passage_audio)
-        <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wide mr-2">Audio Part</span>
-            <button type="button"
-                    onclick="playAudio('{{ hsk_storage_url($group->passage_audio) }}', this)"
-                    class="w-10 h-10 rounded-full bg-slate-100 hover:bg-primary/10 dark:bg-slate-800 dark:hover:bg-primary/20 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center justify-center">
-                <span class="material-symbols-outlined text-xl">play_arrow</span>
-            </button>
-        </div>
-    @endif
 </div>
+@endif
 
 {{-- Example Block --}}
 @if($examples->count() > 0)
