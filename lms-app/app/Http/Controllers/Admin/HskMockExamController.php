@@ -177,6 +177,19 @@ class HskMockExamController extends Controller
     }
 
     /**
+     * Toggle exam publish status
+     */
+    public function togglePublish(HskMockExam $hskMockExam)
+    {
+        $hskMockExam->update([
+            'is_published' => !$hskMockExam->is_published
+        ]);
+
+        $statusStr = $hskMockExam->is_published ? 'xuất bản' : 'chuyển về bản nháp';
+        return back()->with('success', "Đã {$statusStr} đề thi thành công!");
+    }
+
+    /**
      * Alpine.js Editor interface
      */
     public function edit(HskMockExam $hskMockExam)

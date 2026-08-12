@@ -43,13 +43,17 @@
 
             <!-- Messages -->
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium">
+                <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)" 
+                    class="p-4 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium flex justify-between items-center">
                     {{ session('success') }}
+                    <button @click="show = false" class="text-emerald-500 hover:text-emerald-700"><span class="material-symbols-outlined text-sm">close</span></button>
                 </div>
             @endif
             @if(session('error'))
-                <div class="p-4 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-sm font-medium">
+                <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 5000)" 
+                    class="p-4 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-sm font-medium flex justify-between items-center">
                     {{ session('error') }}
+                    <button @click="show = false" class="text-rose-500 hover:text-rose-700"><span class="material-symbols-outlined text-sm">close</span></button>
                 </div>
             @endif
 
@@ -107,11 +111,17 @@
                                         {{ $exam->total_questions }} câu
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        @if($exam->is_published)
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30">Xuất bản</span>
-                                        @else
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 dark:bg-slate-800">Nháp</span>
-                                        @endif
+                                        <form action="{{ route('admin.hsk-mock-exams.toggle-publish', $exam->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="transition-all hover:scale-105">
+                                                @if($exam->is_published)
+                                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 ring-1 ring-emerald-200 shadow-sm">Xuất bản</span>
+                                                @else
+                                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 ring-1 ring-slate-200 shadow-sm">Nháp</span>
+                                                @endif
+                                            </button>
+                                        </form>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex items-center justify-end gap-2">

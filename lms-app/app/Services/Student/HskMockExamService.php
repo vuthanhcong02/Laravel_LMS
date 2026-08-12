@@ -13,7 +13,9 @@ class HskMockExamService
      */
     public function getHskLevels()
     {
-        return HskLevel::withCount('mockExams')->orderBy('level_code')->get();
+        return HskLevel::withCount(['mockExams' => function($q) {
+            $q->where('is_published', true);
+        }])->orderBy('level_code')->get();
     }
 
     /**
@@ -21,7 +23,11 @@ class HskMockExamService
      */
     public function getHskLevelWithMockExams($levelCode)
     {
-        return HskLevel::where('level_code', $levelCode)->with('mockExams')->firstOrFail();
+        return HskLevel::where('level_code', $levelCode)
+            ->with(['mockExams' => function($q) {
+                $q->where('is_published', true)->orderBy('id', 'desc');
+            }])
+            ->firstOrFail();
     }
 
     /**
@@ -29,9 +35,10 @@ class HskMockExamService
      */
     public function getExamForTaking($examId)
     {
-        return HskMockExam::with([
-            'sections.questionGroups.questions.options'
-        ])->findOrFail($examId);
+        return HskMockExam::where('is_published', true)
+            ->with([
+                'sections.questionGroups.questions.options'
+            ])->findOrFail($examId);
     }
 
     public function getUserStats($userId)
