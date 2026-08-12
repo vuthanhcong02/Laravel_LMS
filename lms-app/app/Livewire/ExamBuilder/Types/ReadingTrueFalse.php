@@ -37,6 +37,7 @@ class ReadingTrueFalse extends BaseQuestionEditor
 
     public function addQuestion()
     {
+        $this->saveGroupData();
         $maxOrder = $this->group->questions()->max('order_index') ?? 0;
         
         $question = $this->group->questions()->create([

@@ -85,7 +85,11 @@
     </style>
 </head>
 
-<body class="bg-slate-50 dark:bg-[#131a1f] text-slate-900 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+<body class="bg-slate-50 dark:bg-[#131a1f] text-slate-900 dark:text-slate-100 h-screen overflow-hidden flex flex-col" x-data="examTimer">
+
+    @php
+        $listeningAudio = $exam->sections->firstWhere('skill_type', 'listening')?->audio_file;
+    @endphp
 
     {{-- ===== HEADER ===== --}}
     <header
@@ -115,13 +119,13 @@
         </div>
 
         {{-- Center: Audio Player --}}
-        @if ($exam->audio_file)
+        @if ($listeningAudio)
             <div class="flex-1 flex justify-center px-4 hidden lg:flex">
                 <div
                     class="w-full max-w-xs bg-slate-100 dark:bg-slate-800/80 rounded-xl px-3 py-1 border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[18px] shrink-0">volume_up</span>
                     <audio controls controlsList="nodownload" class="custom-audio w-full h-8">
-                        <source src="{{ Storage::url($exam->audio_file) }}" type="audio/mpeg">
+                        <source src="{{ Storage::url($listeningAudio) }}" type="audio/mpeg">
                     </audio>
                 </div>
             </div>
@@ -160,7 +164,7 @@
     </header>
 
     {{-- Mobile / Tablet Sticky Audio Player Bar --}}
-    @if ($exam->audio_file)
+    @if ($listeningAudio)
         <div
             class="lg:hidden sticky top-16 z-20 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md text-white px-3.5 py-2 border-b border-slate-800 flex items-center justify-between gap-2.5 shadow-md">
             <div class="flex items-center gap-1.5 text-xs font-black text-amber-400 shrink-0">
@@ -168,7 +172,7 @@
                 <span class="hidden sm:inline">File nghe:</span>
             </div>
             <audio controls controlsList="nodownload" class="custom-audio w-full h-8 flex-1">
-                <source src="{{ Storage::url($exam->audio_file) }}" type="audio/mpeg">
+                <source src="{{ Storage::url($listeningAudio) }}" type="audio/mpeg">
             </audio>
         </div>
     @endif
@@ -186,6 +190,12 @@
 
                 @php $qCount = 1; @endphp
                 @foreach ($exam->sections as $sectionIndex => $section)
+                    @php
+                        $sectionRealQCount = $section->questionGroups->sum(fn($g) => $g->questions->where('is_example', false)->count());
+                        $validGroups = $section->questionGroups->filter(fn($g) => $g->questions->where('is_example', false)->count() > 0);
+                    @endphp
+                    
+                    @if($sectionRealQCount > 0)
                     <div>
                         {{-- Section Title Divider Banner --}}
                         <div
@@ -200,8 +210,8 @@
                                         {{ $section->name }}
                                     </h2>
                                     <p class="text-xs text-white/80 font-medium">
-                                        {{ $section->questionGroups->count() }} phần bài tập •
-                                        {{ $section->questionGroups->sum(fn($g) => $g->questions->where('is_example', false)->count()) }}
+                                        {{ $validGroups->count() }} phần bài tập •
+                                        {{ $sectionRealQCount }}
                                         câu hỏi
                                     </p>
                                 </div>
@@ -209,6 +219,11 @@
                         </div>
 
                         @foreach ($section->questionGroups as $gIdx => $group)
+                            @php
+                                $groupRealQCount = $group->questions->where('is_example', false)->count();
+                            @endphp
+                            
+                            @if($groupRealQCount > 0)
                             @php
                                 $groupType = $group->group_type ?? 'default';
 
@@ -236,10 +251,12 @@
                             </div>
 
                             @php
-                                $qCount += $group->questions->where('is_example', false)->count();
+                                $qCount += $groupRealQCount;
                             @endphp
+                            @endif
                         @endforeach
                     </div>
+                    @endif
                 @endforeach
 
             </div>
@@ -282,6 +299,11 @@
             <div class="flex-1 overflow-y-auto p-4 space-y-5">
                 @php $navQCount = 1; @endphp
                 @foreach ($exam->sections as $sectionIndex => $section)
+                    @php
+                        $sectionRealQCount = $section->questionGroups->sum(fn($g) => $g->questions->where('is_example', false)->count());
+                    @endphp
+                    
+                    @if($sectionRealQCount > 0)
                     <div>
                         <div class="flex items-center gap-2 mb-2.5">
                             <span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
@@ -292,10 +314,13 @@
                         </div>
 
                         @foreach ($section->questionGroups as $gIdx => $group)
-                            @if ($group->questions->count() > 0)
+                            @php
+                                $realQCount = $group->questions->where('is_example', false)->count();
+                            @endphp
+                            
+                            @if ($realQCount > 0)
                                 @php
                                     $firstQ = $navQCount;
-                                    $realQCount = $group->questions->where('is_example', false)->count();
                                     $lastQ = $navQCount + $realQCount - 1;
                                 @endphp
                                 <p
@@ -308,8 +333,7 @@
                                         @php $currentNavQNum = $navQCount++; @endphp
                                         <button type="button" onclick="scrollToQuestion({{ $currentNavQNum }})"
                                             id="nav-btn-{{ $currentNavQNum }}"
-                                            class="nav-btn-item w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border transition-all duration-150 hover:scale-105 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:text-primary"
-                                            class="w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border transition-all duration-150 hover:scale-105">
+                                            class="nav-btn-item w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border transition-all duration-150 hover:scale-105 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:text-primary">
                                             {{ $currentNavQNum }}
                                         </button>
                                     @endforeach
@@ -317,6 +341,7 @@
                             @endif
                         @endforeach
                     </div>
+                    @endif
                 @endforeach
             </div>
 

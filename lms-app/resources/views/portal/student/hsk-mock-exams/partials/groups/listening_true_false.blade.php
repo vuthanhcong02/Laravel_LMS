@@ -66,23 +66,7 @@
         </div>
     @endforeach
 </div>
-@elseif(count($passageImages) >= 2)
-<!-- Fallback to old passage_image style -->
-<div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-    <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-        <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-        <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-amber-100 dark:border-slate-700/80 shadow-xs">
-            <img src="{{ hsk_storage_url($passageImages[0]) }}" class="h-20 object-contain rounded-lg" alt="Ex 1">
-            <span class="w-10 h-10 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-xl shadow-xs">✓</span>
-        </div>
-        <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-amber-100 dark:border-slate-700/80 shadow-xs">
-            <img src="{{ hsk_storage_url($passageImages[1]) }}" class="h-20 object-contain rounded-lg" alt="Ex 2">
-            <span class="w-10 h-10 rounded-xl bg-rose-500 text-white font-black flex items-center justify-center text-xl shadow-xs">✕</span>
-        </div>
-    </div>
-</div>
+
 @endif
 
 {{-- Questions List --}}

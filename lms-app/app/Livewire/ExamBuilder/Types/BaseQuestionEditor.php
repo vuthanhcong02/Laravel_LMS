@@ -53,6 +53,10 @@ abstract class BaseQuestionEditor extends Component
             $q->orderBy('order_index');
         }]);
 
+        $this->questionTitles = [];
+        $this->questionIds = [];
+        $this->optionContents = [];
+
         foreach ($this->group->questions as $idx => $question) {
             $this->questionTitles[$idx] = $question->title ?? '';
             $this->questionIds[$idx] = $question->id;
@@ -65,6 +69,7 @@ abstract class BaseQuestionEditor extends Component
 
     public function toggleExample($questionId)
     {
+        $this->saveGroupData();
         $q = HskMockExamQuestion::find($questionId);
         if ($q) {
             $q->is_example = !$q->is_example;
@@ -73,16 +78,10 @@ abstract class BaseQuestionEditor extends Component
         }
     }
 
-    public function saveGroup()
+    protected function saveGroupData()
     {
-        $this->validate();
-        
         DB::transaction(function () {
             $this->group->save();
-            
-            // Debug: log to see what questionTitles was received
-            Log::info('[saveGroup] questionTitles received:', $this->questionTitles);
-            Log::info('[saveGroup] questionIds:', $this->questionIds);
             
             // Update questions
             foreach ($this->questionTitles as $idx => $title) {
@@ -91,12 +90,11 @@ abstract class BaseQuestionEditor extends Component
                 $question = $this->group->questions->firstWhere('id', $qId);
                 if ($question) {
                     $question->title = $title;
-                    $result = $question->save();
-                    Log::info("[saveGroup] Saved q{$qId} title='" . $title . "' result=" . ($result ? 'OK' : 'FAIL'));
+                    $question->save();
                 }
             }
             
-            // Update options without N+1 select queries
+            // Update options
             $allOptions = $this->group->questions->flatMap->options;
             foreach ($this->optionContents as $optId => $content) {
                 $opt = $allOptions->firstWhere('id', $optId);
@@ -106,13 +104,20 @@ abstract class BaseQuestionEditor extends Component
                 }
             }
         });
+    }
 
-        $this->dispatch('notify', msg: 'Group saved successfully!', type: 'success');
+    public function saveGroup()
+    {
+        $this->validate();
+        $this->saveGroupData();
+        
+        $this->dispatch('notify', msg: 'Lưu thành công!', type: 'success');
         $this->loadGroupData();
     }
 
     public function addQuestion()
     {
+        $this->saveGroupData();
         $maxOrder = $this->group->questions()->max('order_index') ?? 0;
         
         $this->group->questions()->create([
@@ -127,6 +132,7 @@ abstract class BaseQuestionEditor extends Component
 
     public function deleteQuestion($questionId)
     {
+        $this->saveGroupData();
         $q = HskMockExamQuestion::find($questionId);
         if ($q) {
             $q->delete();

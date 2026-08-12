@@ -11,17 +11,6 @@
         } else {
             $exData = $parsedEx;
         }
-    } else {
-        // Fallback options
-        $p3Options = [
-            ['letter' => 'A', 'pinyin' => 'Zhōngguó rén', 'hanzi' => '中国人'],
-            ['letter' => 'B', 'pinyin' => '7 diǎn', 'hanzi' => '7点'],
-            ['letter' => 'C', 'pinyin' => 'Píngguǒ', 'hanzi' => '苹果'],
-            ['letter' => 'D', 'pinyin' => '20 kuài', 'hanzi' => '20块'],
-            ['letter' => 'E', 'pinyin' => 'Zuò chūzūchē', 'hanzi' => '坐出租车'],
-            ['letter' => 'F', 'pinyin' => 'Hǎo de', 'hanzi' => '好的'],
-        ];
-        $exData = ['ex_a_letter' => 'D', 'a_letter' => 'D'];
     }
     $exLetter = $exData['ex_a_letter'] ?? $exData['a_letter'] ?? 'D';
 @endphp

@@ -63,35 +63,7 @@
         </div>
     @endforeach
 </div>
-@elseif(count($passageImages) >= 3)
-<!-- Fallback -->
-<div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6">
-    <div class="flex items-center justify-between font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-        <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-        <span class="text-xs font-bold text-emerald-600">Đáp án mẫu: A</span>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
-        <div class="flex flex-col items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border-2 border-emerald-500 shadow-xs">
-            <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-emerald-200 text-xs font-black">
-                <span class="px-2 py-0.5 rounded bg-emerald-600 text-white text-[11px]">A</span>
-                <span class="text-emerald-600 text-[11px]">✓ ĐÚNG</span>
-            </div>
-            <img src="{{ hsk_storage_url(trim($passageImages[0])) }}" class="h-24 object-contain rounded-lg" alt="Ex A">
-        </div>
-        <div class="flex flex-col items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 opacity-60">
-            <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-slate-100 text-xs font-black text-slate-500">
-                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 text-[11px]">B</span>
-            </div>
-            <img src="{{ hsk_storage_url(trim($passageImages[1])) }}" class="h-24 object-contain rounded-lg" alt="Ex B">
-        </div>
-        <div class="flex flex-col items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 opacity-60">
-            <div class="flex items-center justify-between w-full pb-1 mb-2 border-b border-slate-100 text-xs font-black text-slate-500">
-                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 text-[11px]">C</span>
-            </div>
-            <img src="{{ hsk_storage_url(trim($passageImages[2])) }}" class="h-24 object-contain rounded-lg" alt="Ex C">
-        </div>
-    </div>
-</div>
+
 @endif
 
 {{-- Questions List --}}

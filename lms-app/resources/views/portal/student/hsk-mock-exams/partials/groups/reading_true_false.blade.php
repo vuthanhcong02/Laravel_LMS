@@ -70,28 +70,7 @@
         </div>
     @endforeach
 </div>
-@elseif($exData)
-<div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 md:p-5 mb-6">
-    <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-4">
-        <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
-    </div>
-    
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-5 bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-amber-100 dark:border-amber-900/30">
-        <div class="flex flex-col sm:flex-row items-center gap-5">
-            <div class="w-24 h-24 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                <img src="https://via.placeholder.com/150?text=TV" class="w-full h-full object-cover" alt="Example">
-            </div>
-            <div class="text-center sm:text-left">
-                <div class="text-sm text-slate-500 mb-1 leading-none">{{ $exData['q_pinyin'] ?? '' }}</div>
-                <div class="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-widest">{{ $exData['q_hanzi'] ?? '' }}</div>
-            </div>
-        </div>
-        
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center border-2 border-rose-500 bg-rose-50 text-rose-500 font-black text-2xl shadow-xs">
-            ✕
-        </div>
-    </div>
-</div>
+
 @endif
 
 {{-- Questions List --}}
