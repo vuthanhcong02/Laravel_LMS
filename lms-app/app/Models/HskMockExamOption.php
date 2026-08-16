@@ -7,7 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class HskMockExamOption extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'hsk_mock_exam_question_id',
+        'content',
+        'pinyin',
+        'image',
+        'is_correct',
+        'order_index',
+    ];
     
     protected $casts = [
         'is_correct' => 'boolean',

@@ -7,7 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class HskMockExamSection extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'hsk_mock_exam_id',
+        'name',
+        'skill_type',
+        'description',
+        'audio_file',
+        'order_index',
+    ];
     
     use HasFactory;
 

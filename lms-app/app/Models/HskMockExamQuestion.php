@@ -7,7 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class HskMockExamQuestion extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'hsk_mock_exam_group_id',
+        'hsk_mock_exam_section_id',
+        'question_type',
+        'title',
+        'pinyin',
+        'image',
+        'audio_file',
+        'points',
+        'explanation',
+        'order_index',
+        'is_example',
+    ];
     
     protected $casts = [
         'is_example' => 'boolean',
@@ -23,5 +35,10 @@ class HskMockExamQuestion extends Model
     public function options()
     {
         return $this->hasMany(HskMockExamOption::class)->orderBy('order_index');
+    }
+
+    public function hskMockExamSection()
+    {
+        return $this->belongsTo(HskMockExamSection::class, 'hsk_mock_exam_section_id');
     }
 }
