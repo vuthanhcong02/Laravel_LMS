@@ -35,13 +35,11 @@
                         {{-- HSK 1 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 1]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-yellow-500/10 dark:hover:shadow-yellow-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            <div
-                                class="absolute top-0 left-0 w-full h-1 bg-yellow-500 opacity-80 group-hover:h-1.5 group-hover:opacity-100 transition-all shadow-[0_0_10px_rgba(234,179,8,0.5)]">
-                            </div>
+                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
-                                    <span class="text-xl font-black text-yellow-500">1</span>
+                                    <span class="text-xl font-black text-slate-700 dark:text-slate-300">1</span>
                                 </div>
                                 <span
                                     class="px-2.5 py-1 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 text-[10px] font-bold uppercase tracking-wider rounded-full">Cơ
@@ -52,7 +50,7 @@
                                 khả năng hiểu và sử dụng từ vựng tiếng Trung đơn giản nhất.</p>
                             <div
                                 class="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                                <span class="flex items-center gap-1.5 text-yellow-500"><span
+                                <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">library_books</span> {{ !empty($hskCounts['hsk1']) ? $hskCounts['hsk1'] . ' Đề' : 'Đang cập nhật' }}</span>
                                 <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">schedule</span> 40 Phút</span>
@@ -64,13 +62,11 @@
                         {{-- HSK 2 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 2]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-teal-500/10 dark:hover:shadow-teal-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            <div
-                                class="absolute top-0 left-0 w-full h-1 bg-teal-500 opacity-80 group-hover:h-1.5 group-hover:opacity-100 transition-all shadow-[0_0_10px_rgba(20,184,166,0.5)]">
-                            </div>
+                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
-                                    <span class="text-xl font-black text-teal-500">2</span>
+                                    <span class="text-xl font-black text-slate-700 dark:text-slate-300">2</span>
                                 </div>
                                 <span
                                     class="px-2.5 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-[10px] font-bold uppercase tracking-wider rounded-full">Sơ
@@ -81,7 +77,7 @@
                                 khả năng giao tiếp cơ bản trong các tình huống hàng ngày.</p>
                             <div
                                 class="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                                <span class="flex items-center gap-1.5 text-teal-500"><span
+                                <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">library_books</span> {{ !empty($hskCounts['hsk2']) ? $hskCounts['hsk2'] . ' Đề' : 'Đang cập nhật' }}</span>
                                 <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">schedule</span> 55 Phút</span>
@@ -93,13 +89,11 @@
                         {{-- HSK 3 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 3]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-red-500/10 dark:hover:shadow-red-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            <div
-                                class="absolute top-0 left-0 w-full h-1 bg-red-500 opacity-80 group-hover:h-1.5 group-hover:opacity-100 transition-all shadow-[0_0_10px_rgba(239,68,68,0.5)]">
-                            </div>
+                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
-                                    <span class="text-xl font-black text-red-500">3</span>
+                                    <span class="text-xl font-black text-slate-700 dark:text-slate-300">3</span>
                                 </div>
                                 <span
                                     class="px-2.5 py-1 bg-red-500/10 text-red-600 dark:text-red-400 text-[10px] font-bold uppercase tracking-wider rounded-full">Trung
@@ -110,7 +104,7 @@
                                 khả năng giao tiếp cơ bản trong học tập, công việc và đời sống.</p>
                             <div
                                 class="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                                <span class="flex items-center gap-1.5 text-red-500"><span
+                                <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">library_books</span> {{ !empty($hskCounts['hsk3']) ? $hskCounts['hsk3'] . ' Đề' : 'Đang cập nhật' }}</span>
                                 <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">schedule</span> 90 Phút</span>
@@ -122,13 +116,11 @@
                         {{-- HSK 4 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 4]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-purple-500/10 dark:hover:shadow-purple-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            <div
-                                class="absolute top-0 left-0 w-full h-1 bg-purple-500 opacity-80 group-hover:h-1.5 group-hover:opacity-100 transition-all shadow-[0_0_10px_rgba(168,85,247,0.5)]">
-                            </div>
+                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
-                                    <span class="text-xl font-black text-purple-500">4</span>
+                                    <span class="text-xl font-black text-slate-700 dark:text-slate-300">4</span>
                                 </div>
                                 <span
                                     class="px-2.5 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider rounded-full">Trung
@@ -139,7 +131,7 @@
                                 luận về nhiều chủ đề đa dạng và giao tiếp lưu loát với người bản xứ.</p>
                             <div
                                 class="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                                <span class="flex items-center gap-1.5 text-purple-500"><span
+                                <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">library_books</span> {{ !empty($hskCounts['hsk4']) ? $hskCounts['hsk4'] . ' Đề' : 'Đang cập nhật' }}</span>
                                 <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">schedule</span> 105 Phút</span>
@@ -151,13 +143,11 @@
                         {{-- HSK 5 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 5]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-pink-500/10 dark:hover:shadow-pink-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            <div
-                                class="absolute top-0 left-0 w-full h-1 bg-pink-500 opacity-80 group-hover:h-1.5 group-hover:opacity-100 transition-all shadow-[0_0_10px_rgba(236,72,153,0.5)]">
-                            </div>
+                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
-                                    <span class="text-xl font-black text-pink-500">5</span>
+                                    <span class="text-xl font-black text-slate-700 dark:text-slate-300">5</span>
                                 </div>
                                 <span
                                     class="px-2.5 py-1 bg-pink-500/10 text-pink-600 dark:text-pink-400 text-[10px] font-bold uppercase tracking-wider rounded-full">Cao
@@ -168,7 +158,7 @@
                                 tạp chí tiếng Trung, xem phim và diễn thuyết trôi chảy.</p>
                             <div
                                 class="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                                <span class="flex items-center gap-1.5 text-pink-500"><span
+                                <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">library_books</span> {{ !empty($hskCounts['hsk5']) ? $hskCounts['hsk5'] . ' Đề' : 'Đang cập nhật' }}</span>
                                 <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">schedule</span> 125 Phút</span>
@@ -180,13 +170,11 @@
                         {{-- HSK 6 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 6]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            <div
-                                class="absolute top-0 left-0 w-full h-1 bg-blue-500 opacity-80 group-hover:h-1.5 group-hover:opacity-100 transition-all shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                            </div>
+                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
-                                    <span class="text-xl font-black text-blue-500">6</span>
+                                    <span class="text-xl font-black text-slate-700 dark:text-slate-300">6</span>
                                 </div>
                                 <span
                                     class="px-2.5 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-full">Thành
@@ -197,7 +185,7 @@
                                 những gì nghe và đọc được, biểu đạt quan điểm lưu loát.</p>
                             <div
                                 class="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                                <span class="flex items-center gap-1.5 text-blue-500"><span
+                                <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">library_books</span> {{ !empty($hskCounts['hsk6']) ? $hskCounts['hsk6'] . ' Đề' : 'Đang cập nhật' }}</span>
                                 <span class="flex items-center gap-1.5"><span
                                         class="material-symbols-outlined text-[14px]">schedule</span> 140 Phút</span>
@@ -251,8 +239,8 @@
                                 <span class="material-symbols-outlined text-amber-500 text-[18px]">workspace_premium</span>
                                 Bảng Xếp Hạng
                             </h3>
-                            <form action="{{ route('student.hsk-mock-exams.index') }}" method="GET" class="m-0">
-                                <select name="leaderboard_level" onchange="this.form.submit()" class="text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none cursor-pointer focus:border-primary hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            
+                                <select id="leaderboard_level" name="leaderboard_level" onchange="fetchLeaderboard(this.value)" class="text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none cursor-pointer focus:border-primary hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                     <option value="all" {{ ($leaderboardLevel ?? 'all') == 'all' ? 'selected' : '' }}>Tất cả cấp độ</option>
                                     @if(isset($hskLevels))
                                         @foreach($hskLevels as $l)
@@ -260,52 +248,10 @@
                                         @endforeach
                                     @endif
                                 </select>
-                            </form>
                         </div>
 
-                        <div class="p-2 space-y-1">
-                            @if(isset($leaderboard) && $leaderboard->isNotEmpty())
-                                @foreach($leaderboard as $index => $result)
-                                    <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors {{ auth()->check() && auth()->id() == $result->user_id ? 'bg-primary/5 border border-primary/10' : '' }}">
-                                        @if($index == 0)
-                                            <div class="w-6 text-center font-black text-amber-500 text-sm">1</div>
-                                        @elseif($index == 1)
-                                            <div class="w-6 text-center font-black text-slate-400 text-sm">2</div>
-                                        @elseif($index == 2)
-                                            <div class="w-6 text-center font-black text-amber-700 text-sm">3</div>
-                                        @else
-                                            <div class="w-6 text-center font-bold text-slate-500 text-xs">{{ $index + 1 }}</div>
-                                        @endif
-                                        
-                                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex-shrink-0 border border-slate-300 dark:border-slate-600 flex items-center justify-center overflow-hidden">
-                                            @if($result->user && $result->user->avatar)
-                                                <img src="{{ Storage::url($result->user->avatar) }}" alt="{{ $result->user->name }}" class="w-full h-full object-cover">
-                                            @else
-                                                <span class="text-xs font-bold text-slate-500">{{ substr($result->user->name ?? '?', 0, 1) }}</span>
-                                            @endif
-                                        </div>
-                                        
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-bold {{ auth()->check() && auth()->id() == $result->user_id ? 'text-primary' : 'text-slate-800 dark:text-white' }} truncate">
-                                                {{ auth()->check() && auth()->id() == $result->user_id ? 'Bạn' : ($result->user->name ?? 'Người dùng') }}
-                                            </p>
-                                            <p class="text-[10px] text-slate-500 dark:text-slate-400">
-                                                {{ $result->mockExam && $result->mockExam->hskLevel ? strtoupper($result->mockExam->hskLevel->level_code) : 'HSK' }}
-                                            </p>
-                                        </div>
-                                        
-                                        <div class="text-right">
-                                            <p class="text-sm font-black {{ auth()->check() && auth()->id() == $result->user_id ? 'text-primary' : 'text-emerald-500' }}">
-                                                {{ $result->total_score }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="py-8 text-center">
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 italic">Chưa có ai hoàn thành đề thi nào.</p>
-                                </div>
-                            @endif
+                        <div id="leaderboard-container" class="p-2 space-y-1">
+                            @include('portal.student.hsk-mock-exams.leaderboard-list')
                         </div>
                     </div>
 
@@ -314,4 +260,29 @@
             </div>
         </div>
     </div>
+
+@push('scripts')
+<script>
+function fetchLeaderboard(level) {
+    const container = document.getElementById('leaderboard-container');
+    container.style.opacity = '0.5';
+    
+    fetch(`{{ route('student.hsk-mock-exams.index') }}?leaderboard_level=${level}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        container.innerHTML = html;
+        container.style.opacity = '1';
+    })
+    .catch(error => {
+        console.error('Error fetching leaderboard:', error);
+        container.style.opacity = '1';
+    });
+}
+</script>
+@endpush
+
 @endsection
