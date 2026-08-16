@@ -21,6 +21,7 @@ abstract class BaseQuestionEditor extends Component
     public $questionImages = [];
     public $optionImages = [];
     public $questionTitles = [];
+    public $questionExplanations = [];
     public $optionContents = [];
     public $questionIds = []; // Store [index => id] for mapping on save
 
@@ -31,6 +32,7 @@ abstract class BaseQuestionEditor extends Component
             'group.title' => 'nullable|string',
             'group.passage_text' => 'nullable|string',
             'questionTitles.*' => 'nullable|string',
+            'questionExplanations.*' => 'nullable|string',
             'optionContents.*' => 'nullable|string',
             'group.questions.*.is_example' => 'boolean',
             'group.questions.*.points' => 'nullable|numeric',
@@ -54,11 +56,13 @@ abstract class BaseQuestionEditor extends Component
         }]);
 
         $this->questionTitles = [];
+        $this->questionExplanations = [];
         $this->questionIds = [];
         $this->optionContents = [];
 
         foreach ($this->group->questions as $idx => $question) {
             $this->questionTitles[$idx] = $question->title ?? '';
+            $this->questionExplanations[$idx] = $question->explanation ?? '';
             $this->questionIds[$idx] = $question->id;
             
             foreach ($question->options as $option) {
@@ -90,6 +94,7 @@ abstract class BaseQuestionEditor extends Component
                 $question = $this->group->questions->firstWhere('id', $qId);
                 if ($question) {
                     $question->title = $title;
+                    $question->explanation = $this->questionExplanations[$idx] ?? null;
                     $question->save();
                 }
             }

@@ -53,6 +53,13 @@
                                 <option value="0">Sai (False)</option>
                             </select>
                         </div>
+                        
+                        <div class="mt-3">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Giải thích đáp án (Tuỳ chọn)</label>
+                            <textarea wire:model.defer="questionExplanations.{{ $index }}" rows="2"
+                                placeholder="Nhập giải thích cho câu hỏi này..."
+                                class="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-primary focus:border-primary px-3 py-2"></textarea>
+                        </div>
                     </div>
                 </div>
             @endforeach
