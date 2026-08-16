@@ -113,36 +113,44 @@ if (! function_exists('hsk_render_pinyin')) {
     {
         if (empty(trim($text ?? ''))) return '';
 
-        // Separate segments marked with manual overrides like {háng|行} or {hang2|行}
-        // For flexibility, we first normalize the text.
-        
-        $chars = mb_str_split($text);
-        
-        // Extract all Chinese characters to evaluate their pinyin in context (for polyphones)
-        $chineseChars = '';
-        foreach ($chars as $char) {
-            if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
-                $chineseChars .= $char;
-            }
-        }
-        $validPinyins = Pinyin::sentence($chineseChars)->toArray();
-        $pIdx = 0;
+        // Split by <br> tags to prevent parsing HTML tag characters individually
+        $lines = preg_split('/<br\s*\/?>/i', $text);
+        $renderedLines = [];
 
-        $html = '<div class="inline-flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom">';
-        
-        foreach ($chars as $char) {
-            if ($char === "\n") {
-                $html .= '<div class="w-full h-0 basis-full my-1"></div>';
-            } elseif (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
-                $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
-                $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($py) . '</rt></ruby>';
-            } elseif (trim($char) === '') {
-                $html .= '<span class="mx-1"> </span>';
-            } else {
-                $html .= '<span class="text-base font-bold text-slate-900 dark:text-white mt-auto self-end mb-[2px]">' . e($char) . '</span>';
+        foreach ($lines as $line) {
+            $chars = mb_str_split($line);
+            
+            // Extract all Chinese characters to evaluate their pinyin in context (for polyphones)
+            $chineseChars = '';
+            foreach ($chars as $char) {
+                if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                    $chineseChars .= $char;
+                }
             }
+            $validPinyins = [];
+            if (!empty($chineseChars)) {
+                $validPinyins = Pinyin::sentence($chineseChars)->toArray();
+            }
+            $pIdx = 0;
+
+            $html = '<div class="inline-flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom">';
+            
+            foreach ($chars as $char) {
+                if ($char === "\n") {
+                    $html .= '<div class="w-full h-0 basis-full my-1"></div>';
+                } elseif (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                    $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
+                    $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($py) . '</rt></ruby>';
+                } elseif (trim($char) === '') {
+                    $html .= '<span class="mx-1"> </span>';
+                } else {
+                    $html .= '<span class="text-base font-bold text-slate-900 dark:text-white mt-auto self-end mb-[2px]">' . e($char) . '</span>';
+                }
+            }
+            $html .= '</div>';
+            $renderedLines[] = $html;
         }
-        $html .= '</div>';
-        return $html;
+
+        return implode('<br/>', $renderedLines);
     }
 }

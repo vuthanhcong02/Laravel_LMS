@@ -88,6 +88,11 @@
 <body class="bg-slate-50 dark:bg-[#131a1f] text-slate-900 dark:text-slate-100 h-screen overflow-hidden flex flex-col"
     x-data="examTimer" @answer-selected.window="selectAnswer($event.detail.qNum)">
 
+    <form id="exam-form" onsubmit="this.querySelectorAll('button[type=submit]').forEach(b => b.disabled = true);"
+        action="{{ route('student.hsk-mock-exams.submit', ['level' => $level, 'uuid' => $result->uuid]) }}" method="POST"
+        class="h-full flex flex-col overflow-hidden">
+        @csrf
+
     @php
         $listeningAudio = $exam->audio_file ?? $exam->sections->firstWhere('skill_type', 'listening')?->audio_file;
     @endphp
@@ -98,7 +103,7 @@
 
         {{-- Left: Back & Exam Title --}}
         <div class="flex items-center gap-3 flex-1 min-w-0">
-            <button onclick="window.history.back()"
+            <button type="button" onclick="confirmExit()"
                 class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors shrink-0">
                 <span class="material-symbols-outlined text-[22px]">close</span>
             </button>
@@ -124,10 +129,7 @@
         @endif
 
         {{-- Right: Timer & Submit Button --}}
-        <form id="exam-form"
-            action="{{ route('student.hsk-mock-exams.submit', ['level' => $level, 'id' => $exam->id]) }}" method="POST"
-            class="flex items-center gap-3 flex-1 justify-end">
-            @csrf
+        <div class="flex items-center gap-3 flex-1 justify-end">
             {{-- Timer Badge --}}
             <div :class="timeRemaining <= 300 ?
                 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/50 text-rose-600 dark:text-rose-400 timer-warning' :
@@ -146,13 +148,8 @@
                     x-text="Object.keys(answers).length" x-show="Object.keys(answers).length > 0"></span>
             </button>
 
-            {{-- Submit button --}}
-            <button type="button" onclick="confirmSubmit()"
-                class="bg-primary hover:opacity-90 text-white font-bold py-2 px-4 rounded-xl shadow-sm transition-all duration-150 active:scale-95 flex items-center justify-center gap-1.5 text-sm whitespace-nowrap">
-                <span class="material-symbols-outlined text-[16px]">send</span>
-                <span class="hidden sm:inline">Nộp bài</span>
-            </button>
-        </form>
+
+        </div>
     </header>
 
     {{-- Mobile / Tablet Sticky Audio Player Bar --}}
@@ -272,7 +269,7 @@
                     <div class="flex items-center justify-between mb-0.5">
                         <h3 class="font-bold text-slate-800 dark:text-white text-sm">Bảng câu hỏi</h3>
                         {{-- Mobile close button --}}
-                        <button onclick="toggleNavSidebar()"
+                        <button type="button" onclick="toggleNavSidebar()"
                             class="md:hidden w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                             <span class="material-symbols-outlined text-[18px]">close</span>
                         </button>
@@ -381,11 +378,11 @@
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Sau khi nộp bài, hệ thống sẽ tính điểm và hiển
                 thị kết quả chi tiết.</p>
             <div class="flex gap-3">
-                <button onclick="closeModal()"
+                <button type="button" onclick="closeModal()"
                     class="flex-1 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                     Làm tiếp
                 </button>
-                <button onclick="document.getElementById('exam-form').submit()"
+                <button type="submit"
                     class="flex-1 py-2 rounded-xl bg-primary text-white font-bold text-sm hover:opacity-90 transition-opacity">
                     Nộp ngay
                 </button>
@@ -398,7 +395,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('examTimer', () => ({
-                timeRemaining: {{ $exam->duration }} * 60,
+                timeRemaining: {{ $timeRemaining }},
                 init() {
                     const timer = setInterval(() => {
                         if (this.timeRemaining > 0) {
@@ -447,7 +444,72 @@
             const confirmEl = document.getElementById('confirm-answered');
             if (confirmEl) confirmEl.innerText = done;
         }
+
+        function confirmExit() {
+            const modal = document.getElementById('exitModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        function closeExitModal() {
+            const modal = document.getElementById('exitModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmExitAction() {
+            // Remove beforeunload listener before redirecting
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.location.href = '{{ route("student.hsk-mock-exams.show", ["level" => $level]) }}';
+        }
+
+        const beforeUnloadHandler = function (e) {
+            // Check if form is submitting to avoid prompt
+            if (document.getElementById('exam-form').hasAttribute('data-submitting')) return;
+            
+            e.preventDefault();
+            e.returnValue = '';
+        };
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+        
+        document.getElementById('exam-form').addEventListener('submit', function() {
+            this.setAttribute('data-submitting', 'true');
+        });
     </script>
+    
+    {{-- Exit Confirm Modal --}}
+    <div id="exitModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="absolute inset-0" onclick="closeExitModal()"></div>
+        <div
+            class="bg-white dark:bg-[#1a2332] rounded-2xl shadow-xl p-6 max-w-sm w-full mx-4 border border-slate-200 dark:border-slate-700 relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500">
+                    <span class="material-symbols-outlined text-[22px]">logout</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Xác nhận thoát phòng thi</h3>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-300 mb-2">
+                Bạn có chắc chắn muốn thoát khỏi bài thi lúc này?
+            </p>
+            <p class="text-xs text-rose-500 mb-6 font-medium bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20">
+                Lưu ý: Thời gian làm bài vẫn tiếp tục đếm ngược. Nếu hết giờ mà bạn chưa nộp bài, kết quả thi này sẽ bị huỷ bỏ hoàn toàn.
+            </p>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeExitModal()"
+                    class="flex-1 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    Làm tiếp
+                </button>
+                <button type="button" onclick="confirmExitAction()"
+                    class="flex-1 py-2 rounded-xl bg-rose-500 text-white font-bold text-sm hover:opacity-90 transition-opacity">
+                    Đồng ý thoát
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    </form>
 </body>
 
 </html>

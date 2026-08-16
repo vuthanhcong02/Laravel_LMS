@@ -18,15 +18,11 @@
             </a>
 
             <div class="flex items-center gap-2">
-                <select class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm cursor-pointer">
+                <select id="exam-status-filter" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm cursor-pointer">
                     <option value="all">Tất cả đề thi</option>
                     <option value="completed">Đã hoàn thành</option>
                     <option value="uncompleted">Chưa làm</option>
                 </select>
-                <div class="relative">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-slate-400">search</span>
-                    <input type="text" placeholder="Tìm đề thi..." class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold rounded-xl pl-9 pr-4 py-2 w-full sm:w-64 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm placeholder:font-normal">
-                </div>
             </div>
         </div>
 
@@ -101,17 +97,32 @@
                     {{-- Exam Grid --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
                         @foreach($hskLevel->mockExams as $exam)
+                            @php
+                                $statusText = 'Chưa làm';
+                                $statusClass = 'bg-slate-100 dark:bg-slate-700 text-slate-500';
+                                $highestScore = null;
+                                $userResults = $exam->results;
+                                
+                                if ($userResults->isNotEmpty()) {
+                                    $completedResults = $userResults->where('status', 'completed');
+                                    if ($completedResults->isNotEmpty()) {
+                                        $statusText = 'Đã làm';
+                                        $statusClass = 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600';
+                                        $highestScore = $completedResults->max('total_score');
+                                    } elseif ($userResults->where('status', 'in_progress')->isNotEmpty()) {
+                                        $statusText = 'Đang làm';
+                                        $statusClass = 'bg-amber-100 dark:bg-amber-900/30 text-amber-600';
+                                    }
+                                }
+                            @endphp
                             {{-- Exam Card (Dynamic) --}}
-                            <div class="group bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex flex-col relative">
-                                <div class="absolute top-0 left-0 w-full h-1 bg-primary opacity-0 group-hover:opacity-100 transition-all"></div>
+                            <div class="exam-card group bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex flex-col relative" data-status="{{ $statusText === 'Đã làm' ? 'completed' : 'uncompleted' }}" data-title="{{ strtolower($exam->title) }}">
+                                
                                 
                                 <div class="p-5 flex-1 relative">
                                     <div class="flex justify-between items-start mb-3">
-                                        <div class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider rounded-full">
-                                            Chưa làm
-                                        </div>
-                                        <div class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 hover:text-amber-500 cursor-pointer transition-colors">
-                                            <span class="material-symbols-outlined text-[16px]">bookmark_border</span>
+                                        <div class="px-2.5 py-1 {{ $statusClass }} text-[10px] font-bold uppercase tracking-wider rounded-full">
+                                            {{ $statusText }}
                                         </div>
                                     </div>
                                     
@@ -123,23 +134,33 @@
                                             <span class="font-bold text-slate-700 dark:text-slate-300">{{ $exam->duration }} Phút</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">fact_check</span> Điểm tối đa</span>
-                                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ $exam->total_score }}</span>
+                                            @php
+                                                $lblCode = strtolower($level);
+                                                $maxPt = in_array($lblCode, ['1', '2']) ? 200 : 300;
+                                            @endphp
+                                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">fact_check</span> Điểm {{ $highestScore !== null ? 'cao nhất' : 'tối đa' }}</span>
+                                            <span class="font-bold text-slate-700 dark:text-slate-300">
+                                                @if($highestScore !== null)
+                                                    <span class="text-emerald-500">{{ $highestScore }}</span> / {{ $maxPt }}
+                                                @else
+                                                    {{ $maxPt }}
+                                                @endif
+                                            </span>
                                         </div>
                                         <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-700/50 mt-3">
                                             <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-slate-400">group</span> Lượt làm</span>
-                                            <span class="font-bold text-slate-500">{{ $exam->total_attempts ?? 0 }}</span>
+                                            <span class="font-bold text-slate-500">{{ $exam->results_count ?? 0 }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="p-3 border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/20">
                                     @auth
-                                        <a href="{{ route('student.hsk-mock-exams.take', ['level' => $level, 'id' => $exam->id]) }}" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                            <span class="material-symbols-outlined text-[18px]">play_circle</span> Bắt đầu thi
+                                        <a href="{{ route('student.hsk-mock-exams.start', ['level' => $level, 'id' => $exam->id]) }}" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                            <span class="material-symbols-outlined text-[18px]">play_circle</span> {{ $statusText === 'Đang làm' ? 'Làm tiếp' : ($statusText === 'Đã làm' ? 'Làm lại' : 'Bắt đầu thi') }}
                                         </a>
                                     @else
-                                        <button type="button" onclick="openLoginModal('{{ route('student.hsk-mock-exams.take', ['level' => $level, 'id' => $exam->id]) }}')" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                        <button type="button" onclick="openLoginModal('{{ route('student.hsk-mock-exams.start', ['level' => $level, 'id' => $exam->id]) }}')" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
                                             <span class="material-symbols-outlined text-[18px]">play_circle</span> Bắt đầu thi
                                         </button>
                                     @endauth
@@ -198,5 +219,32 @@
         document.getElementById('loginModalBtn').href = intendedUrl;
         document.getElementById('loginModal').classList.remove('hidden');
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelect = document.getElementById('exam-status-filter');
+        const cards = document.querySelectorAll('.exam-card');
+
+        function filterExams() {
+            const status = statusSelect.value;
+
+            cards.forEach(card => {
+                const cardStatus = card.getAttribute('data-status');
+
+                const matchStatus = status === 'all' || 
+                                    (status === 'completed' && cardStatus === 'completed') ||
+                                    (status === 'uncompleted' && cardStatus !== 'completed');
+
+                if (matchStatus) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        if(statusSelect) {
+            statusSelect.addEventListener('change', filterExams);
+        }
+    });
 </script>
 @endsection

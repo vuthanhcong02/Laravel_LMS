@@ -66,9 +66,11 @@ Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
-    // HSK Mock Exams (Take Exam)
-    Route::get('/thi-thu-hsk/{level}/bai-thi/{id}', [HskMockExamController::class, 'take'])->name('student.hsk-mock-exams.take');
-    Route::post('/thi-thu-hsk/{level}/bai-thi/{id}/submit', [HskMockExamController::class, 'submit'])->name('student.hsk-mock-exams.submit');
+    // HSK Mock Exams (Take Exam via Session UUID)
+    Route::get('/thi-thu-hsk/{level}/bai-thi/{id}', [HskMockExamController::class, 'startExam'])->name('student.hsk-mock-exams.start');
+    Route::get('/thi-thu-hsk/lam-bai/{uuid}', [HskMockExamController::class, 'takeExam'])->name('student.hsk-mock-exams.take');
+    Route::post('/thi-thu-hsk/lam-bai/{uuid}/submit', [HskMockExamController::class, 'submitExam'])->name('student.hsk-mock-exams.submit');
+    Route::get('/thi-thu-hsk/ket-qua/{uuid}', [HskMockExamController::class, 'showResult'])->name('student.hsk-mock-exams.result');
 
     // Shared profile
     Route::get('/ho-so-ca-nhan', [ProfileController::class, 'edit'])->name('profile.edit');

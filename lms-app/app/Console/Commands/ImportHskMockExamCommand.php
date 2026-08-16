@@ -202,18 +202,34 @@ class ImportHskMockExamCommand extends Command
                             'order_index' => $globalQuestionOrder++,
                         ]);
 
-                        $optionOrder = 1;
                         if (!empty($qData['options'])) {
-                            foreach ($qData['options'] as $optItem) {
+                            foreach ($qData['options'] as $idx => $optItem) {
                                 $optText = is_array($optItem) ? ($optItem['text'] ?? '') : (is_string($optItem) ? $optItem : '');
                                 $optImage = (is_array($optItem) && !empty($optItem['image'])) ? "hsk_mock_exams/{$examId}/" . $optItem['image'] : null;
                                 
+                                $isCorrect = false;
+                                if (isset($qData['correct_answer'])) {
+                                    $cleanCorrect = strtoupper(trim($qData['correct_answer']));
+                                    $optionLetter = chr(65 + $idx); // A, B, C, D...
+                                    
+                                    if ($cleanCorrect === $optionLetter) {
+                                        $isCorrect = true;
+                                    } elseif (strtoupper(trim($optText)) === $cleanCorrect) {
+                                        $isCorrect = true;
+                                    } else {
+                                        $firstChar = strtoupper(substr(trim($optText), 0, 1));
+                                        if ($firstChar === $cleanCorrect) {
+                                            $isCorrect = true;
+                                        }
+                                    }
+                                }
+
                                 HskMockExamOption::create([
                                     'hsk_mock_exam_question_id' => $question->id,
                                     'content' => $optText,
                                     'image' => $optImage,
-                                    'is_correct' => ($optText === ($qData['correct_answer'] ?? null)),
-                                    'order_index' => $optionOrder++,
+                                    'is_correct' => $isCorrect,
+                                    'order_index' => $idx + 1,
                                 ]);
                             }
                         }

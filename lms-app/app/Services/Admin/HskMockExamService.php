@@ -123,21 +123,29 @@ class HskMockExamService
                             'order_index' => $globalQuestionOrder++,
                         ]);
 
-                        $optionOrder = 1;
                         if (!empty($qData['options'])) {
-                            foreach ($qData['options'] as $optStr) {
+                            foreach ($qData['options'] as $idx => $optStr) {
                                 $isCorrect = false;
                                 if (isset($qData['correct_answer'])) {
-                                    $letter = strtoupper(substr(trim($optStr), 0, 1));
-                                    if ($letter === strtoupper(trim($qData['correct_answer']))) {
+                                    $cleanCorrect = strtoupper(trim($qData['correct_answer']));
+                                    $optionLetter = chr(65 + $idx); // A, B, C, D...
+                                    
+                                    if ($cleanCorrect === $optionLetter) {
                                         $isCorrect = true;
+                                    } elseif (strtoupper(trim($optStr)) === $cleanCorrect) {
+                                        $isCorrect = true;
+                                    } else {
+                                        $firstChar = strtoupper(substr(trim($optStr), 0, 1));
+                                        if ($firstChar === $cleanCorrect) {
+                                            $isCorrect = true;
+                                        }
                                     }
                                 }
                                 HskMockExamOption::create([
                                     'hsk_mock_exam_question_id' => $question->id,
                                     'content' => $optStr,
                                     'is_correct' => $isCorrect,
-                                    'order_index' => $optionOrder++,
+                                    'order_index' => $idx + 1,
                                 ]);
                             }
                         } elseif (isset($qData['correct_answer']) && in_array($qData['correct_answer'], ['√', '×'])) {
