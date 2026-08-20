@@ -63,6 +63,11 @@ jobs:
             docker compose -f docker-compose.prod.yml exec -T laravel \
               php artisan migrate --force
 
+            # Run database seeders
+            echo "🌱  Chạy database seeders..."
+            docker compose -f docker-compose.prod.yml exec -T laravel \
+              php artisan db:seed --force
+
             # Create symbolic link storage -> public/storage
             echo "🔗  Tạo storage link..."
             docker compose -f docker-compose.prod.yml exec -T laravel \
