@@ -27,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
             URL::forceScheme('https');
             request()->server->set('HTTPS', 'on');
+            request()->server->set('SERVER_PORT', 443);
         }
 
         // Configure custom user resolver for Laravel Pulse
