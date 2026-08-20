@@ -77,7 +77,7 @@ class MainManager extends Component
         );
 
         // 2. Create safe storage path: hsk_mock_exams/{exam_name}/audio
-        $safeExamName = Str::slug($this->exam->title);
+        $safeExamName = $this->exam->folder_name;
         $folderPath = "hsk_mock_exams/{$safeExamName}/audio";
         
         // 3. Save file to 'public' disk

@@ -23,7 +23,8 @@ class StoreHskMockExamRequest extends FormRequest
     {
         return [
             'data_file' => 'required|file|mimes:json,txt,csv',
-            'media_files.*' => 'nullable|file|mimes:jpeg,png,jpg,mp3,wav'
+            'media_files' => 'required|array',
+            'media_files.*' => 'required|file|mimes:jpeg,png,jpg,mp3,wav'
         ];
     }
 }

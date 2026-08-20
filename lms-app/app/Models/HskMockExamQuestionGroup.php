@@ -9,6 +9,8 @@ class HskMockExamQuestionGroup extends Model
 {
     protected $fillable = [
         'hsk_mock_exam_section_id',
+        'group_type',
+        'title',
         'passage_text',
         'passage_audio',
         'passage_image',

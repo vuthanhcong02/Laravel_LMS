@@ -64,13 +64,7 @@
                 <div class="w-9 h-9 shrink-0 rounded-xl bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-sm flex items-center justify-center">
                     {{ $currentQNum }}
                 </div>
-                @if($question->title)
-                    <div class="mt-1.5 mb-2">
-                        {!! hsk_render_pinyin(trim($question->title)) !!}
-                    </div>
-                @else
                     <p class="text-sm text-slate-400 italic mt-1.5">Câu hỏi âm thanh</p>
-                @endif
             </div>
 
             {{-- Các đáp án A, B, C --}}

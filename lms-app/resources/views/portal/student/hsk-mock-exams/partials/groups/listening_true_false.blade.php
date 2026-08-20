@@ -84,11 +84,7 @@
                         </div>
                     @endif
 
-                    @if ($question->title)
-                        <div class="flex-1 text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed text-center sm:text-left min-w-0 flex flex-wrap items-end justify-center sm:justify-start gap-x-2 gap-y-1 py-1">
-                            {!! renderHskRubyText($question->title) !!}
-                        </div>
-                    @endif
+
                 </div>
             </div>
 

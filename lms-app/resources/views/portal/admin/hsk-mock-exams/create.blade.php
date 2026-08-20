@@ -57,10 +57,10 @@
 
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-slate-900 dark:text-white">
-                        Kéo thả toàn bộ Phương tiện (Hình ảnh & Audio) <span class="text-slate-400 font-normal">(Tùy chọn)</span>
+                        Kéo thả toàn bộ Phương tiện (Hình ảnh & Audio) <span class="text-rose-500">*</span>
                     </label>
                     <div class="relative border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group text-center cursor-pointer overflow-hidden">
-                        <input type="file" name="media_files[]" accept="image/*,audio/*" multiple
+                        <input type="file" name="media_files[]" accept="image/*,audio/*" multiple required
                             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" id="mediaInput">
                         
                         <div class="flex flex-col items-center justify-center space-y-3 pointer-events-none">
@@ -74,6 +74,7 @@
                             <p id="mediaCount" class="text-xs font-bold text-primary hidden bg-primary/10 px-3 py-1 rounded-full"></p>
                         </div>
                     </div>
+                    <div id="mediaPreview" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 mt-4"></div>
                 </div>
 
                 <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
@@ -89,11 +90,46 @@
     </main>
     <script>
         document.getElementById('mediaInput').addEventListener('change', function(e) {
-            const count = e.target.files.length;
+            const files = e.target.files;
+            const count = files.length;
             const textElement = document.getElementById('mediaCount');
+            const previewContainer = document.getElementById('mediaPreview');
+            
+            previewContainer.innerHTML = '';
+            
             if (count > 0) {
                 textElement.textContent = `Đã chọn ${count} file`;
                 textElement.classList.remove('hidden');
+                
+                Array.from(files).forEach(file => {
+                    const div = document.createElement('div');
+                    div.className = 'relative group border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-800 flex flex-col items-center justify-center';
+                    
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.className = 'w-full h-16 object-contain rounded mb-1';
+                        div.appendChild(img);
+                    } else if (file.type.startsWith('audio/')) {
+                        const icon = document.createElement('span');
+                        icon.className = 'material-symbols-outlined text-4xl text-emerald-500 mb-1';
+                        icon.textContent = 'audio_file';
+                        div.appendChild(icon);
+                    } else {
+                        const icon = document.createElement('span');
+                        icon.className = 'material-symbols-outlined text-4xl text-slate-400 mb-1';
+                        icon.textContent = 'insert_drive_file';
+                        div.appendChild(icon);
+                    }
+                    
+                    const name = document.createElement('span');
+                    name.className = 'text-[10px] font-medium text-slate-500 truncate w-full text-center';
+                    name.textContent = file.name;
+                    name.title = file.name;
+                    div.appendChild(name);
+                    
+                    previewContainer.appendChild(div);
+                });
             } else {
                 textElement.classList.add('hidden');
             }

@@ -59,12 +59,12 @@ class ImportHskMockExamCommand extends Command
         $this->info("Parsing JSON...");
         $data = json_decode(File::get($jsonFile), true);
 
-        if (!$data || !isset($data['exam_id'])) {
-            $this->error("Invalid JSON format or missing exam_id");
+        $examId = $data['exam_id'] ?? $data['exam_code'] ?? null;
+        if (!$examId) {
+            $this->error("Invalid JSON format or missing exam_id/exam_code");
             return 1;
         }
 
-        $examId = $data['exam_id'];
         $levelCode = 'hsk' . ($data['level'] ?? 1);
         
         $hskLevel = HskLevel::where('level_code', $levelCode)->first();
@@ -147,10 +147,18 @@ class ImportHskMockExamCommand extends Command
             $globalQuestionOrder = 1;
 
             foreach ($data['sections'] as $sectionData) {
+                $rawSectionName = $sectionData['section'] ?? $sectionData['section_name'] ?? 'Unknown';
+                
+                $skillType = strtolower($rawSectionName);
+                if (str_contains($skillType, '听力') || str_contains($skillType, 'listening')) $skillType = 'listening';
+                elseif (str_contains($skillType, '阅读') || str_contains($skillType, 'reading')) $skillType = 'reading';
+                elseif (str_contains($skillType, '书写') || str_contains($skillType, 'writing')) $skillType = 'writing';
+                else $skillType = 'listening'; // default fallback
+
                 $section = HskMockExamSection::create([
                     'hsk_mock_exam_id' => $exam->id,
-                    'name' => ucfirst($sectionData['section']),
-                    'skill_type' => $sectionData['section'],
+                    'name' => ucfirst($rawSectionName),
+                    'skill_type' => $skillType,
                     'order_index' => $sectionOrder++,
                 ]);
 
@@ -171,9 +179,73 @@ class ImportHskMockExamCommand extends Command
                         $instructions = trim(preg_replace('/[\r\n]+/', "\n", $instructions));
                     }
 
+                    $firstQ = $partData['questions'][0] ?? null;
+                    $groupType = $partData['type'] ?? "{$skillType}_true_false"; // Default fallback
+                    
+                    if (empty($partData['type']) && $firstQ) {
+                        $qType = $firstQ['type'] ?? null;
+                        if (!$qType && isset($firstQ['options']) && count($firstQ['options']) == 2 && in_array('√', $firstQ['options'])) {
+                            $qType = 'true_false';
+                        }
+                        
+                        if ($skillType === 'listening') {
+                            if ($qType === 'true_false') {
+                                $groupType = 'listening_true_false';
+                            } else {
+                                $hasImageOption = false;
+                                if (!empty($firstQ['options']) && is_array($firstQ['options'][0]) && !empty($firstQ['options'][0]['image'])) {
+                                    $hasImageOption = true;
+                                }
+                                if ($hasImageOption) {
+                                    $groupType = 'listening_image_choice';
+                                } elseif (!empty($passageImage) || !empty($partData['images'])) {
+                                    $groupType = 'listening_matching_images';
+                                } else {
+                                    $groupType = 'listening_dialogue_choice';
+                                }
+                            }
+                        } elseif ($skillType === 'reading') {
+                            if ($qType === 'true_false') {
+                                $groupType = 'reading_true_false';
+                            } elseif (!empty($passageImage) || !empty($partData['images'])) {
+                                $groupType = 'reading_matching_sentences';
+                            } else {
+                                $groupType = 'reading_passage_choice';
+                            }
+                        } elseif ($skillType === 'writing') {
+                            $groupType = 'writing_sentence_building';
+                        }
+                    }
+
+                    // Build passage_text for shared option banks if AI output options in questions
+                    $passageText = null;
+                    if (in_array($groupType, ['reading_matching_sentences', 'reading_fill_in_blank'])) {
+                        $passageText = $partData['passage_text'] ?? null;
+                        if (!$passageText && $firstQ && !empty($firstQ['options']) && is_array($firstQ['options'])) {
+                            if (is_string($firstQ['options'][0]) && !in_array($firstQ['options'][0], ['√', '×', 'A', 'B', 'C', 'D', 'E', 'F'])) {
+                                $parsedOptions = [];
+                                foreach ($firstQ['options'] as $idx => $optString) {
+                                    $letter = chr(65 + $idx);
+                                    $text = trim(preg_replace('/^[A-F][\.\s]+/', '', $optString));
+                                    $parsedOptions[] = ['letter' => $letter, 'html' => $text, 'pinyin' => null, 'hanzi' => null];
+                                }
+                                $exAnswer = '';
+                                $exQ = collect($partData['questions'])->where('is_example', true)->first();
+                                if ($exQ && !empty($exQ['correct_answer'])) {
+                                    $exAnswer = $exQ['correct_answer'];
+                                }
+                                $passageText = json_encode(['options' => $parsedOptions, 'ex_a_letter' => $exAnswer]);
+                            }
+                        }
+                    }
+                    
+                    $partTitle = $partData['name'] ?? (isset($partData['part_number']) ? 'Phần ' . $partData['part_number'] : 'Part ' . $groupOrder);
+
                     $group = HskMockExamQuestionGroup::create([
                         'hsk_mock_exam_section_id' => $section->id,
-                        'passage_text' => $instructions,
+                        'group_type' => $groupType,
+                        'title' => $partTitle,
+                        'passage_text' => $passageText ?? $instructions,
                         'passage_image' => $passageImage,
                         'order_index' => $groupOrder++,
                     ]);
@@ -191,37 +263,48 @@ class ImportHskMockExamCommand extends Command
                             $audioPath = "hsk_mock_exams/{$examId}/" . $qData['audio'];
                         }
 
+                        $qType = $qData['type'] ?? null;
+                        if (!$qType && isset($qData['options']) && count($qData['options']) == 2 && in_array('√', $qData['options'])) {
+                            $qType = 'true_false';
+                        }
+
                         $question = HskMockExamQuestion::create([
                             'hsk_mock_exam_group_id' => $group->id,
                             'hsk_mock_exam_section_id' => $section->id,
-                            'question_type' => $this->mapQuestionType($qData['type']),
+                            'question_type' => $this->mapQuestionType($qType),
                             'title' => $qData['question_text'] ?? null,
                             'image' => $imagePath,
                             'audio_file' => $audioPath,
                             'points' => 1,
                             'order_index' => $globalQuestionOrder++,
+                            'is_example' => $qData['is_example'] ?? false,
                         ]);
 
                         if (!empty($qData['options'])) {
-                            foreach ($qData['options'] as $idx => $optItem) {
-                                $optText = is_array($optItem) ? ($optItem['text'] ?? '') : (is_string($optItem) ? $optItem : '');
-                                $optImage = (is_array($optItem) && !empty($optItem['image'])) ? "hsk_mock_exams/{$examId}/" . $optItem['image'] : null;
+                            foreach ($qData['options'] as $idx => $opt) {
+                                if (is_array($opt)) {
+                                    $optText = $opt['text'] ?? $opt['option_code'] ?? '';
+                                    $optImage = !empty($opt['image']) ? "hsk_mock_exams/{$examId}/" . $opt['image'] : null;
+                                } else {
+                                    $optText = $opt;
+                                    $optImage = null;
+                                }
                                 
                                 $isCorrect = false;
                                 if (isset($qData['correct_answer'])) {
-                                    $cleanCorrect = strtoupper(trim($qData['correct_answer']));
-                                    $optionLetter = chr(65 + $idx); // A, B, C, D...
-                                    
-                                    if ($cleanCorrect === $optionLetter) {
-                                        $isCorrect = true;
-                                    } elseif (strtoupper(trim($optText)) === $cleanCorrect) {
-                                        $isCorrect = true;
+                                    if (is_array($qData['correct_answer'])) {
+                                        $isCorrect = in_array(chr(65 + $idx), $qData['correct_answer']) || in_array($optText, $qData['correct_answer']);
                                     } else {
-                                        $firstChar = strtoupper(substr(trim($optText), 0, 1));
-                                        if ($firstChar === $cleanCorrect) {
-                                            $isCorrect = true;
-                                        }
+                                        $isCorrect = ($qData['correct_answer'] === chr(65 + $idx) || $qData['correct_answer'] == $optText);
                                     }
+                                }
+                                
+                                if (in_array($groupType, ['listening_dialogue_choice', 'listening_image_choice', 'reading_passage_choice'])) {
+                                    $optText = trim(preg_replace('/^[A-F][\.\s]+/', '', $optText));
+                                }
+                                
+                                if (in_array($groupType, ['reading_matching_sentences', 'reading_fill_in_blank']) && is_string($opt) && !in_array($opt, ['A', 'B', 'C', 'D', 'E', 'F'])) {
+                                    $optText = chr(65 + $idx);
                                 }
 
                                 HskMockExamOption::create([

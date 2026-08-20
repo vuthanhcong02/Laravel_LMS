@@ -38,7 +38,7 @@ class ListeningDialogueChoice extends BaseQuestionEditor
         $this->validate(['groupAudio' => 'nullable|file|mimes:mp3,wav,ogg,m4a|max:51200']);
         if (!$this->groupAudio) return;
 
-        $safeExamName = Str::slug($this->group->section->mockExam->title ?? 'mock-exam');
+        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
         $folderPath = "hsk_mock_exams/{$safeExamName}/audio";
         $path = $this->groupAudio->store($folderPath, 'public');
 

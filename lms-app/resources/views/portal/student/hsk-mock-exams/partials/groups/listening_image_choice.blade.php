@@ -69,9 +69,7 @@
                 <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">
                     {{ $currentQNum }}
                 </div>
-                @if($question->title)
-                    <div class="text-base font-medium text-slate-700 dark:text-slate-300 leading-relaxed">{!! renderHskRubyText($question->title) !!}</div>
-                @endif
+                <p class="text-sm text-slate-400 italic mt-1.5 ml-1">Câu hỏi âm thanh</p>
             </div>
 
             <div class="flex flex-col md:flex-row gap-5">

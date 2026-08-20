@@ -84,7 +84,7 @@ class ReadingMatchingSentences extends BaseQuestionEditor
             'newPassageImages.*' => 'image|max:2048',
         ]);
 
-        $safeExamName = Str::slug($this->group->section->mockExam->title ?? 'mock-exam');
+        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
         $folderPath = "hsk_mock_exams/{$safeExamName}/images";
         $currentImages = $this->group->passage_image ? explode(',', $this->group->passage_image) : [];
         

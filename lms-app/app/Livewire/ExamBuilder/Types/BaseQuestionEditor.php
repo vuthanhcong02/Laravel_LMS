@@ -150,7 +150,7 @@ abstract class BaseQuestionEditor extends Component
         $q = HskMockExamQuestion::find($questionId);
         if (!$q || !$file) return;
 
-        $safeExamName = Str::slug($this->group->section->mockExam->title ?? 'mock-exam');
+        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
         $folderPath = "hsk_mock_exams/{$safeExamName}/images";
         $path = $file->store($folderPath, 'public');
 
@@ -165,7 +165,7 @@ abstract class BaseQuestionEditor extends Component
         $opt = HskMockExamOption::find($optionId);
         if (!$opt || !$file) return;
 
-        $safeExamName = Str::slug($this->group->section->mockExam->title ?? 'mock-exam');
+        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
         $folderPath = "hsk_mock_exams/{$safeExamName}/images";
         $path = $file->store($folderPath, 'public');
 
