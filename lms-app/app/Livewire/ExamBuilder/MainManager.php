@@ -68,28 +68,36 @@ class MainManager extends Component
         }
     }
 
-    public function updatedSectionAudios($file, $sectionId)
+    public function updated($property, $value)
     {
-        // 1. Get section info
-        $section = $this->exam->sections()->firstOrCreate(
-            ['skill_type' => $sectionId],
-            ['order_index' => $this->exam->sections()->count() + 1, 'name' => config('hsk_builder.sections')[$sectionId]['name'] ?? 'Section']
-        );
+        if (str_starts_with($property, 'sectionAudios.')) {
+            $sectionId = str_replace('sectionAudios.', '', $property);
+            $file = $value;
 
-        // 2. Create safe storage path: hsk_mock_exams/{exam_name}/audio
-        $safeExamName = $this->exam->folder_name;
-        $folderPath = "hsk_mock_exams/{$safeExamName}/audio";
-        
-        // 3. Save file to 'public' disk
-        $path = $file->store($folderPath, 'public');
+            // 1. Get section info
+            $section = $this->exam->sections()->firstOrCreate(
+                ['skill_type' => $sectionId],
+                ['order_index' => $this->exam->sections()->count() + 1, 'name' => config('hsk_builder.sections')[$sectionId]['name'] ?? 'Section']
+            );
 
-        // 4. Save path to database
-        $section->update([
-            'audio_file' => $path
-        ]);
-        
-        // Reset variable after upload
-        unset($this->sectionAudios[$sectionId]);
+            // 2. Create safe storage path: hsk_mock_exams/{exam_name}/audio
+            $safeExamName = $this->exam->folder_name;
+            $folderPath = "hsk_mock_exams/{$safeExamName}/audio";
+            
+            // 3. Save file to 'public' disk
+            $path = $file->store($folderPath, 'public');
+
+            // 4. Save path to database
+            $section->update([
+                'audio_file' => $path
+            ]);
+            
+            // Reset variable after upload
+            unset($this->sectionAudios[$sectionId]);
+            
+            // Thông báo
+            $this->dispatch('notify', msg: 'Đã tải lên audio phần thi thành công!', type: 'success');
+        }
     }
 
     public function addPart($sectionId, $questionTypeId)
