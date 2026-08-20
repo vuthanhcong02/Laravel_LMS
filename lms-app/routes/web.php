@@ -17,12 +17,14 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\MonitoringController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\HskMockExamController as AdminHskMockExamController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PinyinController;
 use App\Http\Controllers\PinyinQuizController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Student\CourseController as StudentCourseController;
+use App\Http\Controllers\Student\HskMockExamController;
 use App\Http\Controllers\Student\StudentDashboardController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentQuizController;
@@ -33,6 +35,7 @@ use App\Http\Controllers\Teacher\QuizController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
 use App\Http\Controllers\Teacher\TeacherReportController;
+use App\Http\Controllers\Teacher\HskMockExamController as TeacherHskMockExamController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +44,7 @@ use Illuminate\Support\Facades\Route;
 
 // ─── Public pages ────────────────────────────────────────────────────────────
 Route::controller(PageController::class)->group(function () {
-    Route::get('/', function() {
+    Route::get('/', function () {
         return redirect()->route('home');
     });
     Route::get('/trang-chu', 'getViewHome')->name('home');
@@ -53,6 +56,8 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
+    Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
+    Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])
@@ -61,6 +66,11 @@ Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
+    // HSK Mock Exams (Take Exam via Session UUID)
+    Route::get('/thi-thu-hsk/{level}/bai-thi/{id}', [HskMockExamController::class, 'startExam'])->name('student.hsk-mock-exams.start');
+    Route::get('/thi-thu-hsk/lam-bai/{uuid}', [HskMockExamController::class, 'takeExam'])->name('student.hsk-mock-exams.take');
+    Route::post('/thi-thu-hsk/lam-bai/{uuid}/submit', [HskMockExamController::class, 'submitExam'])->name('student.hsk-mock-exams.submit');
+    Route::get('/thi-thu-hsk/ket-qua/{uuid}', [HskMockExamController::class, 'showResult'])->name('student.hsk-mock-exams.result');
 
     // Shared profile
     Route::get('/ho-so-ca-nhan', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -103,7 +113,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('student/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('student.assignments.show');
             Route::post('student/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('student.assignments.submit');
 
-            // Student Quizzes
             Route::get('student/quizzes', [StudentQuizController::class, 'index'])->name('student.quizzes.index');
             Route::get('student/quizzes/{quiz}', [StudentQuizController::class, 'show'])->name('student.quizzes.show');
             Route::post('student/quizzes/{quiz}/attempt', [StudentQuizController::class, 'attempt'])->name('student.quizzes.attempt');
@@ -160,6 +169,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('admin/backup/download/{filename}', [BackupController::class, 'download'])->name('admin.backup.download')->where('filename', '.+');
             Route::delete('admin/backup/{filename}', [BackupController::class, 'destroy'])->name('admin.backup.destroy')->where('filename', '.+');
             Route::get('admin/monitoring', [MonitoringController::class, 'index'])->name('admin.monitoring.index');
+
+            // ─── HSK Mock Exams ──────────────────────────────────────────────────
+            Route::resource('admin/hsk-mock-exams', AdminHskMockExamController::class)->names('admin.hsk-mock-exams');
+            Route::post('admin/hsk-mock-exams/store-empty', [AdminHskMockExamController::class, 'storeEmpty'])->name('admin.hsk-mock-exams.store-empty');
+            Route::patch('admin/hsk-mock-exams/{hsk_mock_exam}/toggle-publish', [AdminHskMockExamController::class, 'togglePublish'])->name('admin.hsk-mock-exams.toggle-publish');
+            Route::get('admin/hsk-mock-exams/download-template', [AdminHskMockExamController::class, 'downloadTemplate'])->name('admin.hsk-mock-exams.download-template');
+            Route::get('admin/hsk-mock-exams/{hsk_mock_exam}/editor-data', [AdminHskMockExamController::class, 'getEditorData'])->name('admin.hsk-mock-exams.editor-data');
+            Route::put('admin/hsk-mock-exams/{hsk_mock_exam}/editor-data', [AdminHskMockExamController::class, 'saveEditorData'])->name('admin.hsk-mock-exams.save-editor-data');
+            Route::post('admin/hsk-mock-exams/upload-image', [AdminHskMockExamController::class, 'uploadImage'])->name('admin.hsk-mock-exams.upload-image');
         });
 
         // ─── Teacher routes ───────────────────────────────────────────────────
@@ -209,6 +227,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('teacher/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
             Route::put('teacher/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');
             Route::put('teacher/profile/password', [TeacherProfileController::class, 'updatePassword'])->name('teacher.profile.updatePassword');
+
+            // ─── HSK Mock Exams ──────────────────────────────────────────────────
+            Route::resource('teacher/hsk-mock-exams', TeacherHskMockExamController::class)->names('teacher.hsk-mock-exams');
+            Route::get('teacher/hsk-mock-exams/{hsk_mock_exam}/editor-data', [TeacherHskMockExamController::class, 'getEditorData'])->name('teacher.hsk-mock-exams.editor-data');
+            Route::put('teacher/hsk-mock-exams/{hsk_mock_exam}/editor-data', [TeacherHskMockExamController::class, 'saveEditorData'])->name('teacher.hsk-mock-exams.save-editor-data');
+            Route::post('teacher/hsk-mock-exams/upload-image', [TeacherHskMockExamController::class, 'uploadImage'])->name('teacher.hsk-mock-exams.upload-image');
         });
 
         // Login / Logout (no auth needed)

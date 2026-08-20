@@ -107,21 +107,9 @@
                         href="{{ route('courses', ['level' => $level->id]) }}"
                         class="group cursor-pointer bg-white dark:bg-slate-900/60 rounded-2xl border border-slate-105 dark:border-slate-800/80 shadow-sm hover:shadow-xl hover:-translate-y-1.5 active:scale-95 transition-all duration-300 flex flex-col relative overflow-hidden block"
                     >
-                        <!-- Top Gradient glow bar -->
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r {{
-                            $level->color === 'emerald' ? 'from-yellow-400 to-amber-500' :
-                            ($level->color === 'cyan' ? 'from-teal-400 to-cyan-550' :
-                            ($level->color === 'blue' ? 'from-red-400 to-rose-500' :
-                            ($level->color === 'purple' ? 'from-purple-400 to-indigo-500' :
-                            ($level->color === 'rose' ? 'from-[#be185d] to-[#db2777]' :
-                            'from-blue-400 to-indigo-600'))))
-                        }}"></div>
 
                         <!-- Top Half: Full-width HSK Book Cover Header -->
                         <div class="w-full h-40 relative overflow-hidden border-b border-slate-100 dark:border-slate-800/60 transition-colors duration-300 {{ $level->cover_bg }}">
-                            <!-- Left Spine Highlight (Full Height) -->
-                            <div class="absolute left-0 top-0 bottom-0 w-3 opacity-90 shadow-sm {{ $level->spine_color }}"></div>
-                            
                             <!-- Book Typography content -->
                             <div class="pl-6 pr-4 py-4 flex flex-col justify-between h-full text-left">
                                 <div class="flex justify-between items-center">

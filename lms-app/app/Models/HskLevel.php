@@ -23,11 +23,21 @@ class HskLevel extends Model
         'duration',
         'spine_color',
         'cover_bg',
-        'number_color'
+        'number_color',
+        'exam_structure'
+    ];
+
+    protected $casts = [
+        'exam_structure' => 'array',
     ];
 
     public function lessons()
     {
         return $this->hasMany(HskLesson::class, 'hsk_level_id');
+    }
+
+    public function mockExams()
+    {
+        return $this->hasMany(HskMockExam::class, 'hsk_level_id');
     }
 }

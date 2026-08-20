@@ -28,6 +28,7 @@
         }
     </style>
     @stack('styles')
+    @livewireStyles
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display"
@@ -95,6 +96,7 @@
         </template>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
         window.togglePasswordVisibility = function(inputId, btn) {
             const input = document.getElementById(inputId);
@@ -110,6 +112,10 @@
         };
     </script>
 
+    <!-- Scripts -->
+    <script src="{{ asset('assets/js/alpine.min.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @livewireScripts
     @stack('scripts')
 </body>
 
