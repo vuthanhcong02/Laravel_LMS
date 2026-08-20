@@ -39,7 +39,14 @@ class HskMockExamService
         if ($zipRealPath) {
             $zip = new ZipArchive();
             if ($zip->open($zipRealPath) === true) {
-                $zip->extractTo($storagePath);
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $filename = $zip->getNameIndex($i);
+                    // Prevent Zip Slip / Path Traversal
+                    if (strpos($filename, '..') !== false || strpos($filename, '/') === 0 || strpos($filename, '\\') === 0) {
+                        continue;
+                    }
+                    $zip->extractTo($storagePath, $filename);
+                }
                 $zip->close();
             }
         }
@@ -289,6 +296,9 @@ class HskMockExamService
      */
     public function updateExamData(HskMockExam $hskMockExam, array $data): void
     {
+        // Pre-load all relationships into memory to avoid N+1 SELECT queries
+        $hskMockExam->load('sections.questionGroups.questions.options');
+
         DB::beginTransaction();
         try {
             $hskMockExam->update([
@@ -300,7 +310,8 @@ class HskMockExamService
             $totalQuestions = 0;
 
             foreach ($data['sections'] as $sectionData) {
-                $section = HskMockExamSection::findOrFail($sectionData['id']);
+                $section = $hskMockExam->sections->firstWhere('id', $sectionData['id']);
+                if (!$section) continue;
                 $section->update([
                     'name' => $sectionData['name'],
                 ]);
@@ -308,14 +319,16 @@ class HskMockExamService
                 $groups = $sectionData['question_groups'] ?? ($sectionData['questionGroups'] ?? ($sectionData['groups'] ?? []));
 
                 foreach ($groups as $groupData) {
-                    $group = HskMockExamQuestionGroup::findOrFail($groupData['id']);
+                    $group = $section->questionGroups->firstWhere('id', $groupData['id']);
+                    if (!$group) continue;
                     $group->update([
                         'passage_text' => $groupData['passage_text'] ?? null,
                         'passage_image' => $groupData['passage_image'] ?? null,
                     ]);
 
                     foreach ($groupData['questions'] as $questionData) {
-                        $question = HskMockExamQuestion::findOrFail($questionData['id']);
+                        $question = $group->questions->firstWhere('id', $questionData['id']);
+                        if (!$question) continue;
                         if (!$question->is_example) {
                             $totalQuestions++;
                         }
@@ -327,7 +340,8 @@ class HskMockExamService
 
                         if (!empty($questionData['options'])) {
                             foreach ($questionData['options'] as $optionData) {
-                                $option = HskMockExamOption::findOrFail($optionData['id']);
+                                $option = $question->options->firstWhere('id', $optionData['id']);
+                                if (!$option) continue;
                                 $option->update([
                                     'content' => $optionData['content'],
                                     'is_correct' => (bool)$optionData['is_correct'],
