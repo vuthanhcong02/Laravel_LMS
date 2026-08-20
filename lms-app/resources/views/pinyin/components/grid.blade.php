@@ -126,10 +126,20 @@
 
 <!-- Popup Modal for Tone Details & Vocabulary Examples -->
 <div x-show="currentPinyin" 
-     x-transition.opacity
      style="display: none;" 
-     class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-md p-4">
+     class="fixed inset-0 z-50 flex items-center justify-center p-4">
     
+    <!-- Backdrop -->
+    <div x-show="currentPinyin"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+
+    <!-- Modal Panel -->
     <div x-show="currentPinyin"
          @click.away="currentPinyin = null; selectedTone = null"
          x-transition:enter="transition ease-out duration-300"
@@ -138,7 +148,7 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 translate-y-8 scale-95"
-         class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 dark:border-slate-700 relative">
+         class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 dark:border-slate-700 relative z-10">
         
         <button @click="currentPinyin = null; selectedTone = null" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer transition-colors">
             <span class="material-symbols-outlined text-[18px]">close</span>
