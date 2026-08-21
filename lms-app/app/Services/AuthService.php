@@ -88,25 +88,25 @@ class AuthService
     public function handleCallbackSocial($request, $provider): RedirectResponse
     {
         if ($request->has('error')) {
-            return redirect('/login')->with('error', 'Bạn đã hủy đăng nhập ' . ucfirst($provider));
+            return redirect()->route('login')->with('error', 'Bạn đã hủy đăng nhập ' . ucfirst($provider));
         }
         try {
             $socialUser = Socialite::driver($provider)->user();
 
             if (! $socialUser || ! $socialUser->getId()) {
-                return redirect('/login')->with('error', 'Không lấy được thông tin từ ' . ucfirst($provider));
+                return redirect()->route('login')->with('error', 'Không lấy được thông tin từ ' . ucfirst($provider));
             }
 
             $email = $socialUser->getEmail();
             if (! $email) {
-                return redirect('/login')->with('error', 'Tài khoản ' . ucfirst($provider) . ' không có email.');
+                return redirect()->route('login')->with('error', 'Tài khoản ' . ucfirst($provider) . ' không có email.');
             }
 
             $user = User::where('email', $email)->first();
 
             if ($user) {
                 if ($user->provider !== $provider) {
-                    return redirect('/login')->with('error', 'Email này đã được sử dụng. Vui lòng đăng nhập bằng mật khẩu.');
+                    return redirect()->route('login')->with('error', 'Email này đã được sử dụng. Vui lòng đăng nhập bằng mật khẩu.');
                 }
             } else {
                 $avatar = $socialUser->getAvatar();
@@ -133,8 +133,8 @@ class AuthService
 
             return redirect()->intended(RouteServiceProvider::HOME);
         } catch (\Exception $e) {
-            Log::error('Social login error: ' . $e->getMessage());
-            return redirect('/login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
+            Log::error('Social login error: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
         }
     }
 

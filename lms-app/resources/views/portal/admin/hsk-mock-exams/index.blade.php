@@ -3,7 +3,7 @@
 @section('title', 'Quản lý Đề thi HSK - XiaoMu Admin')
 
 @section('header')
-    @if(request()->is('teacher*') || request()->is('portal/teacher*'))
+    @if(request()->is('teacher*') || auth()->user()->role === \App\Models\User::ROLE_TEACHER)
         @include('portal.teacher.layouts.header')
     @else
         @include('portal.admin.layouts.header')
@@ -11,7 +11,7 @@
 @endsection
 
 @section('sidebar')
-    @if(request()->is('teacher*') || request()->is('portal/teacher*'))
+    @if(request()->is('teacher*') || auth()->user()->role === \App\Models\User::ROLE_TEACHER)
         @include('portal.teacher.layouts.sidebar')
     @else
         @include('portal.admin.layouts.sidebar')
@@ -33,7 +33,7 @@
                         <span class="material-symbols-outlined text-lg">add</span>
                         Tạo đề trống
                     </button>
-                    <a href="{{ route('admin.hsk-mock-exams.create') }}"
+                    <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.create') }}"
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-all">
                         <span class="material-symbols-outlined text-lg">upload_file</span>
                         Import dữ liệu
@@ -59,7 +59,7 @@
 
             <!-- Filters -->
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-wrap gap-4 items-center justify-between shadow-sm">
-                <form action="{{ route('admin.hsk-mock-exams.index') }}" method="GET" class="flex flex-wrap gap-3 items-center flex-1">
+                <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index') }}" method="GET" class="flex flex-wrap gap-3 items-center flex-1">
                     <div class="relative flex-1 min-w-[200px]">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm tên đề thi..."
@@ -111,7 +111,7 @@
                                         {{ $exam->total_questions }} câu
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <form action="{{ route('admin.hsk-mock-exams.toggle-publish', $exam->id) }}" method="POST">
+                                        <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.toggle-publish', $exam->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit" class="transition-all hover:scale-105">
@@ -125,12 +125,12 @@
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex items-center justify-end gap-2">
-                                            <a href="{{ route('admin.hsk-mock-exams.edit', $exam->id) }}"
+                                            <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.edit', $exam->id) }}"
                                                 class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg dark:hover:bg-blue-950/40 transition-colors"
                                                 title="Sửa nội dung (Alpine Editor)">
                                                 <span class="material-symbols-outlined text-lg">edit</span>
                                             </a>
-                                            <form action="{{ route('admin.hsk-mock-exams.destroy', $exam->id) }}" method="POST"
+                                            <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.destroy', $exam->id) }}" method="POST"
                                                 onsubmit="return confirm('Bạn có chắc chắn muốn xóa đề thi này không?')">
                                                 @csrf
                                                 @method('DELETE')
@@ -182,7 +182,7 @@
                 </button>
             </div>
 
-            <form action="{{ route('admin.hsk-mock-exams.store-empty') }}" method="POST" class="p-8 space-y-5">
+            <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.store-empty') }}" method="POST" class="p-8 space-y-5">
                 @csrf
                 
                 <div>

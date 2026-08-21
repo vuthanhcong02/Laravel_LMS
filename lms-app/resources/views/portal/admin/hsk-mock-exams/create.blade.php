@@ -3,7 +3,7 @@
 @section('title', 'Import Đề thi HSK - XiaoMu Admin')
 
 @section('header')
-    @if(request()->is('teacher*') || request()->is('portal/teacher*'))
+    @if(request()->is('teacher*') || auth()->user()->role === \App\Models\User::ROLE_TEACHER)
         @include('portal.teacher.layouts.header')
     @else
         @include('portal.admin.layouts.header')
@@ -11,7 +11,7 @@
 @endsection
 
 @section('sidebar')
-    @if(request()->is('teacher*') || request()->is('portal/teacher*'))
+    @if(request()->is('teacher*') || auth()->user()->role === \App\Models\User::ROLE_TEACHER)
         @include('portal.teacher.layouts.sidebar')
     @else
         @include('portal.admin.layouts.sidebar')
@@ -22,7 +22,7 @@
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[800px] mx-auto space-y-6">
             <div class="flex items-center gap-4">
-                <a href="{{ route('admin.hsk-mock-exams.index') }}" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200">
+                <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index') }}" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200">
                     <span class="material-symbols-outlined text-lg">arrow_back</span>
                 </a>
                 <div>
@@ -37,7 +37,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.hsk-mock-exams.store') }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.store') }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                 @csrf
 
                 <div class="space-y-2">
@@ -47,7 +47,7 @@
                     <div class="flex gap-4 items-start">
                         <input type="file" name="data_file" accept=".json,.csv" required
                             class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 border border-slate-200 dark:border-slate-800 rounded-xl p-2 bg-slate-50 dark:bg-slate-800">
-                        <a href="{{ route('admin.hsk-mock-exams.download-template') }}" class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-all whitespace-nowrap">
+                        <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.download-template') }}" class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-all whitespace-nowrap">
                             <span class="material-symbols-outlined text-lg">download</span>
                             Tải file CSV Mẫu
                         </a>
@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
-                    <a href="{{ route('admin.hsk-mock-exams.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold text-sm text-slate-600 dark:text-slate-300">
+                    <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold text-sm text-slate-600 dark:text-slate-300">
                         Hủy
                     </a>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary/90">

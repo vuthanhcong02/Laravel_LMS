@@ -9,6 +9,7 @@ use App\Services\Admin\HskMockExamService;
 use App\Http\Requests\Admin\StoreHskMockExamRequest;
 use App\Http\Requests\Admin\UpdateHskMockExamEditorRequest;
 use App\Http\Requests\Admin\UploadHskMockExamImageRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -98,7 +99,7 @@ class HskMockExamController extends Controller
                 @unlink($zipRealPath);
             }
 
-            return redirect()->route('admin.hsk-mock-exams.index')->with(
+            return redirect()->route((auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index')->with(
                 'success',
                 "Imported exam {$result['exam_id']} successfully with {$result['total_questions']} questions!"
             );
@@ -170,7 +171,7 @@ class HskMockExamController extends Controller
             $hskLevel = HskLevel::where('level_code', $request->level_code)->firstOrFail();
             $exam = $this->hskMockExamService->createEmptyExam($request->validated(), $hskLevel);
 
-            return redirect()->route('admin.hsk-mock-exams.edit', $exam->id)->with('success', 'Đã tạo đề thi trống thành công!');
+            return redirect()->route((auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.edit', $exam->id)->with('success', 'Đã tạo đề thi trống thành công!');
         } catch (\Exception $e) {
             return back()->with('error', 'Lỗi khi tạo đề thi: ' . $e->getMessage());
         }
@@ -251,7 +252,7 @@ class HskMockExamController extends Controller
     public function destroy(HskMockExam $hskMockExam)
     {
         $hskMockExam->delete();
-        return redirect()->route('admin.hsk-mock-exams.index')->with('success', 'Exam deleted successfully!');
+        return redirect()->route((auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index')->with('success', 'Exam deleted successfully!');
     }
 
     /**
