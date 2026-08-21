@@ -65,7 +65,7 @@ Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'
     ->name('flashcards.remember');
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // HSK Mock Exams (Take Exam via Session UUID)
     Route::get('/thi-thu-hsk/{level}/bai-thi/{id}', [HskMockExamController::class, 'startExam'])->name('student.hsk-mock-exams.start');
     Route::get('/thi-thu-hsk/lam-bai/{uuid}', [HskMockExamController::class, 'takeExam'])->name('student.hsk-mock-exams.take');
@@ -230,6 +230,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // ─── HSK Mock Exams ──────────────────────────────────────────────────
             Route::resource('teacher/hsk-mock-exams', TeacherHskMockExamController::class)->names('teacher.hsk-mock-exams');
+            Route::post('teacher/hsk-mock-exams/store-empty', [TeacherHskMockExamController::class, 'storeEmpty'])->name('teacher.hsk-mock-exams.store-empty');
+            Route::patch('teacher/hsk-mock-exams/{hsk_mock_exam}/toggle-publish', [TeacherHskMockExamController::class, 'togglePublish'])->name('teacher.hsk-mock-exams.toggle-publish');
+            Route::get('teacher/hsk-mock-exams/download-template', [TeacherHskMockExamController::class, 'downloadTemplate'])->name('teacher.hsk-mock-exams.download-template');
             Route::get('teacher/hsk-mock-exams/{hsk_mock_exam}/editor-data', [TeacherHskMockExamController::class, 'getEditorData'])->name('teacher.hsk-mock-exams.editor-data');
             Route::put('teacher/hsk-mock-exams/{hsk_mock_exam}/editor-data', [TeacherHskMockExamController::class, 'saveEditorData'])->name('teacher.hsk-mock-exams.save-editor-data');
             Route::post('teacher/hsk-mock-exams/upload-image', [TeacherHskMockExamController::class, 'uploadImage'])->name('teacher.hsk-mock-exams.upload-image');

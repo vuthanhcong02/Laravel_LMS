@@ -3,7 +3,7 @@
     <div class="shrink-0 px-6 lg:px-8 py-5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-10 shadow-sm relative">
         <div class="max-w-[1400px] mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div class="flex items-center gap-4">
-                <a href="{{ request()->is('teacher*') ? route('teacher.hsk-mock-exams.index') : route('admin.hsk-mock-exams.index') }}"
+                <a href="{{ auth()->user()->role === \App\Models\User::ROLE_TEACHER ? route('teacher.hsk-mock-exams.index') : route('admin.hsk-mock-exams.index') }}"
                     class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
                     <span class="material-symbols-outlined text-lg">arrow_back</span>
                 </a>
