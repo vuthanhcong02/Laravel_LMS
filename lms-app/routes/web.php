@@ -58,6 +58,7 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
+    Route::view('/demo-ui', 'demo-sidebar');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])
