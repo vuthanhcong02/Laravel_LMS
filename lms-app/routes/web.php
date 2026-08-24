@@ -59,6 +59,17 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
     Route::view('/demo-ui', 'demo-sidebar');
+    Route::view('/demo-courses', 'demo-courses');
+    Route::view('/demo-course-detail', 'demo-course-detail');
+    Route::view('/demo-exams', 'demo-exams');
+    Route::view('/demo-exam-take', 'demo-exam-take');
+    Route::view('/demo-flashcards', 'demo-flashcards');
+    Route::view('/demo-pinyin-chart', 'demo-pinyin-chart');
+    Route::view('/demo-pinyin-practice', 'demo-pinyin-practice');
+    Route::view('/demo-etymology', 'demo-etymology');
+    Route::view('/demo-login', 'auth.login');
+    Route::view('/demo-register', 'auth.register');
+    Route::view('/demo-forgot-password', 'auth.forgot-password');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])
