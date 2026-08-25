@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 
 class AuthService
 {
@@ -132,6 +133,9 @@ class AuthService
             }
 
             return redirect()->intended(RouteServiceProvider::HOME);
+        } catch (InvalidStateException $e) {
+            Log::warning('Social login invalid state: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Phiên đăng nhập ' . ucfirst($provider) . ' đã hết hạn hoặc không hợp lệ. Vui lòng thử lại.');
         } catch (\Exception $e) {
             Log::error('Social login error: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->route('login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
