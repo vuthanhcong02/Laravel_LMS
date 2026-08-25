@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khóa học HSK - Tiếng Trung XiaoMu LMS</title>
+    <title>Khóa học HSK - Tiếng Trung XIAOMU LMS</title>
     <meta name="description" content="Khám phá các khóa học HSK từ sơ cấp HSK 1 đến cao cấp HSK 6.">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -61,9 +61,9 @@
             <!-- KHU VỰC LOGO THƯƠNG HIỆU -->
             <div class="h-20 flex items-center justify-between px-4 border-b border-[#e8e2d9] dark:border-[#262220] shrink-0">
                 <a href="{{ url('/demo-ui') }}" class="flex items-center gap-3 group min-w-0" :class="sidebarCollapsed ? 'justify-center w-full' : ''">
-                    <img src="{{ asset('logo.png') }}" alt="XiaoMu Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
+                    <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
                     <div x-show="!sidebarCollapsed" class="flex flex-col min-w-0 transition-opacity duration-200">
-                        <span class="font-bold text-base tracking-tight text-slate-900 dark:text-white leading-none">XiaoMu</span>
+                        <span class="font-bold text-base tracking-tight text-slate-900 dark:text-white leading-none">XIAOMU</span>
                         <span class="text-xs font-semibold text-[#e07a5f] dark:text-[#f4978e] tracking-wide mt-1 leading-none">Tiếng Trung LMS</span>
                     </div>
                 </a>

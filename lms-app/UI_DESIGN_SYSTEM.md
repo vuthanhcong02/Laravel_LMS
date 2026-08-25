@@ -6,7 +6,7 @@ Tài liệu quy chuẩn thiết kế UI/UX tổng quan (General Design System) �
 
 ## 1. Brand Identity & Header Rules (Nhận diện & Header)
 
-- **Logo thương hiệu**: Mascot Avatar tròn + Chữ `XiaoMu` (`font-bold`) + Subtitle `Tiếng Trung LMS` (`text-[#e07a5f] text-[11px]`).
+- **Logo thương hiệu**: Mascot Avatar tròn + Chữ `XIAOMU` (`font-bold`) + Subtitle `Tiếng Trung LMS` (`text-[#e07a5f] text-[11px]`).
 - **Quy chuẩn Khung Logo**: Sạch sẽ, **KHÔNG** thêm viền outer box, **KHÔNG** thêm chấm màu bên cạnh.
 - **Bộ chuyển đổi ngôn ngữ (Multi-language Dropdown)**:
   - Nút chuyển kèm cờ SVG Vector + Tên ngôn ngữ:

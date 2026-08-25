@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiếng Trung XiaoMu - Trang chủ</title>
+    <title>Tiếng Trung XIAOMU - Trang chủ</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Google Fonts: Inter + Noto Sans SC (Chữ Hán tự) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -140,10 +140,10 @@
             <!-- KHU VỰC LOGO THƯƠNG HIỆU -->
             <div class="h-20 flex items-center justify-between px-4 border-b border-[#e8e2d9] dark:border-[#262220] shrink-0">
                 <a href="{{ url('/demo-ui') }}" class="flex items-center gap-3 group min-w-0" :class="sidebarCollapsed ? 'justify-center w-full' : ''">
-                    <img src="{{ asset('logo.png') }}" alt="XiaoMu Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
+                    <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
 
                     <div x-show="!sidebarCollapsed" class="flex flex-col min-w-0 transition-opacity duration-200">
-                        <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">XiaoMu</span>
+                        <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">XIAOMU</span>
                         <span class="text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] tracking-wide mt-1 leading-none">
                             Tiếng Trung LMS
                         </span>
@@ -973,11 +973,11 @@
                             </div>
                         </div>
 
-                        <!-- Widget Kết nối Mạng xã hội XiaoMu (5 Nền tảng: FB, YT, Insta, TikTok, Zalo) -->
+                        <!-- Widget Kết nối Mạng xã hội XIAOMU (5 Nền tảng: FB, YT, Insta, TikTok, Zalo) -->
                         <div class="lms-card p-6 space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
-                                    <i class="fa-solid fa-globe text-[#e07a5f]"></i> Kết nối cùng XiaoMu
+                                    <i class="fa-solid fa-globe text-[#e07a5f]"></i> Kết nối cùng XIAOMU
                                 </h3>
                                 <span class="text-[10px] font-bold text-[#e07a5f] bg-[#fff2ee] dark:bg-slate-800 px-2 py-0.5 rounded">Cộng đồng</span>
                             </div>
@@ -1096,7 +1096,7 @@
                 <div class="overflow-hidden flex flex-col items-center gap-2.5">
                     
                     <!-- 1. Facebook -->
-                    <a href="https://facebook.com" target="_blank" class="w-10 h-10 rounded-full bg-[#1877f2] text-white flex items-center justify-center text-sm hover:scale-110 hover:shadow-lg hover:shadow-[#1877f2]/30 transition-all btn-tactile group relative" title="Facebook XiaoMu">
+                    <a href="https://facebook.com" target="_blank" class="w-10 h-10 rounded-full bg-[#1877f2] text-white flex items-center justify-center text-sm hover:scale-110 hover:shadow-lg hover:shadow-[#1877f2]/30 transition-all btn-tactile group relative" title="Facebook XIAOMU">
                         <i class="fa-brands fa-facebook-f"></i>
                         <span class="absolute right-14 px-3 py-1.5 rounded-xl bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-xl backdrop-blur-sm opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-200 whitespace-nowrap">Facebook Fanpage</span>
                     </a>
@@ -1108,7 +1108,7 @@
                     </a>
 
                     <!-- 3. Instagram -->
-                    <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-sm hover:scale-110 hover:shadow-lg hover:shadow-rose-500/30 transition-all btn-tactile group relative" title="Instagram XiaoMu">
+                    <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-sm hover:scale-110 hover:shadow-lg hover:shadow-rose-500/30 transition-all btn-tactile group relative" title="Instagram XIAOMU">
                         <i class="fa-brands fa-instagram"></i>
                         <span class="absolute right-14 px-3 py-1.5 rounded-xl bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-xl backdrop-blur-sm opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-200 whitespace-nowrap">Instagram Story</span>
                     </a>

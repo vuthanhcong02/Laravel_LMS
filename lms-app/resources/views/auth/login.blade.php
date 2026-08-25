@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - XiaoMu Tiếng Trung LMS</title>
+    <title>Đăng nhập - XIAOMU Tiếng Trung LMS</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Google Fonts: Inter + Noto Sans SC (Chữ Hán tự) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -71,9 +71,9 @@
     <header class="h-20 border-b border-[#e8e2d9] dark:border-[#262220] px-4 sm:px-8 flex items-center justify-between shrink-0 bg-white/80 dark:bg-[#141211]/80 backdrop-blur-md sticky top-0 z-30">
         <!-- Logo Mascot Thương hiệu -->
         <a href="{{ route('home') }}" class="flex items-center gap-3.5 group">
-            <img src="{{ asset('logo.png') }}" alt="XiaoMu Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
+            <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
             <div class="flex flex-col min-w-0">
-                <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">XiaoMu</span>
+                <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">XIAOMU</span>
                 <span class="text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] tracking-wide mt-1 leading-none">
                     Tiếng Trung LMS
                 </span>
@@ -179,7 +179,7 @@
                     </h1>
 
                     <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                        Hệ thống học từ vựng thông minh, bài thi thử HSK sát đề thật và cộng đồng luyện tập sôi nổi cùng XiaoMu.
+                        Hệ thống học từ vựng thông minh, bài thi thử HSK sát đề thật và cộng đồng luyện tập sôi nổi cùng XIAOMU.
                     </p>
                 </div>
 
@@ -213,7 +213,7 @@
                     <div class="text-center space-y-2">
                         <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Chào mừng quay lại! 👋</h2>
                         <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal">
-                            Đăng nhập tài khoản XiaoMu để tiếp tục chuỗi học tập
+                            Đăng nhập tài khoản XIAOMU để tiếp tục chuỗi học tập
                         </p>
                     </div>
 
