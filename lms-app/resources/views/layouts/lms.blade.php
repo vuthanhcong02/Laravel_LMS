@@ -1,24 +1,35 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full" :class="{ 'dark': darkMode }" x-data="{ 
+<html lang="vi" class="h-full" :class="{ 'dark': darkMode }" 
+      x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
+      x-data="{ 
     sidebarOpen: false, 
     sidebarCollapsed: false, 
-    isLoggedIn: true, 
+    isLoggedIn: {{ auth()->check() ? 'true' : 'false' }}, 
     langOpen: false, 
     currentLang: 'Việt Nam', 
-    darkMode: false,
+    darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
     socialDockExpanded: true,
     searchKeyword: '',
-    authModalOpen: false,
-    authModalTab: 'login',
+    authModalOpen: {{ ($errors->any() || session('status')) ? 'true' : 'false' }},
+    authModalTab: '{{ session('auth_tab') ?? (old('first_name') ? 'register' : 'login') }}',
     authEmail: '',
     authPassword: '',
-    authName: '',
+    authFirstName: '',
+    authLastName: '',
     authRemember: false,
     authShowPassword: false,
     authLoading: false,
     @yield('alpine-data') 
 }">
 <head>
+    <!-- Ngăn FOUC Dark Mode (Flash of Unstyled Content) -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Khóa học HSK - Tiếng Trung XIAOMU LMS')</title>

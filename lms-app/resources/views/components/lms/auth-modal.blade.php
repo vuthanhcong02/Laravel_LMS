@@ -1,4 +1,4 @@
-<!-- MODAL POPUP ĐĂNG NHẬP / ĐĂNG KÝ XIAOMU LMS -->
+<!-- MODAL POPUP ĐĂNG NHẬP / ĐĂNG KÝ / QUÊN MẬT KHẨU XIAOMU LMS -->
 <div x-show="authModalOpen" 
      x-cloak
      class="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
@@ -27,37 +27,57 @@
         
         <!-- Nút Đóng Modal (Góc trên phải) -->
         <button @click="authModalOpen = false" 
-                class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#f8f6f3] dark:bg-[#23201e] text-slate-400 hover:text-slate-700 dark:hover:text-white flex items-center justify-center text-xs transition-colors btn-tactile"
+                class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#f8f6f3] dark:bg-[#23201e] text-slate-400 hover:text-slate-700 dark:hover:text-white flex items-center justify-center text-xs transition-colors btn-tactile cursor-pointer"
                 title="Đóng">
             <i class="fa-solid fa-xmark text-sm"></i>
         </button>
 
         <!-- Brand Header Logo & Tiêu đề đầy đủ không bị cắt -->
-        <div class="flex flex-col items-center text-center pt-1 mb-6">
+        <div class="flex flex-col items-center text-center pt-1 mb-5">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#fff2ee] to-[#fdeae3] dark:from-[#2a221f] dark:to-[#1e1715] border border-[#fcdccf] dark:border-[#42271f] p-1.5 shadow-sm mb-3 flex items-center justify-center shrink-0">
                 <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-full h-full rounded-xl object-cover">
             </div>
             
             <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                <span x-text="authModalTab === 'login' ? 'Đăng nhập' : 'Tạo tài khoản mới'"></span> 
+                <span x-text="authModalTab === 'login' ? 'Đăng nhập' : (authModalTab === 'register' ? 'Tạo tài khoản mới' : 'Khôi phục mật khẩu')"></span> 
                 <span class="text-[#e07a5f]">XIAOMU</span>
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" 
-               x-text="authModalTab === 'login' ? 'Tiếp tục hành trình chinh phục tiếng Trung của bạn' : 'Bắt đầu lộ trình luyện thi HSK thông minh hôm nay'">
+               x-text="authModalTab === 'login' ? 'Tiếp tục hành trình chinh phục tiếng Trung của bạn' : (authModalTab === 'register' ? 'Bắt đầu lộ trình luyện thi HSK thông minh hôm nay' : 'Nhập email của bạn để nhận liên kết đặt lại mật khẩu')">
             </p>
         </div>
+
+        <!-- Thông báo thành công từ Session -->
+        @if (session('status'))
+            <div class="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-sm shrink-0"></i>
+                <span>{{ session('status') }}</span>
+            </div>
+        @endif
+
+        <!-- Thông báo lỗi Validation từ Laravel -->
+        @if($errors->any())
+            <div class="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-semibold space-y-1">
+                @foreach($errors->all() as $error)
+                    <p class="flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
 
         <!-- ======================= 1. FORM ĐĂNG NHẬP ======================= -->
         <div x-show="authModalTab === 'login'" class="space-y-4">
             
             <!-- Form Đăng nhập Email -->
-            <form @submit.prevent="authLoading = true; setTimeout(() => { isLoggedIn = true; authLoading = false; authModalOpen = false; }, 700)" class="space-y-3.5">
+            <form action="{{ route('login') }}" method="POST" class="space-y-3.5">
+                @csrf
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Địa chỉ Email</label>
                     <div class="relative">
                         <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input type="email" 
+                               name="email"
                                x-model="authEmail"
+                               value="{{ old('email') }}"
                                required
                                placeholder="name@example.com" 
                                class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
@@ -67,13 +87,16 @@
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Mật khẩu</label>
-                        <a href="{{ route('password.request') }}" class="text-[11px] font-semibold text-[#e07a5f] hover:underline">
+                        <button type="button" 
+                                @click="authModalTab = 'forgot'" 
+                                class="text-[11px] font-semibold text-[#e07a5f] hover:underline cursor-pointer">
                             Quên mật khẩu?
-                        </a>
+                        </button>
                     </div>
                     <div class="relative">
                         <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input :type="authShowPassword ? 'text' : 'password'" 
+                               name="password"
                                x-model="authPassword"
                                required
                                placeholder="Nhập mật khẩu..." 
@@ -81,14 +104,14 @@
                         <button type="button" 
                                 @click="authShowPassword = !authShowPassword" 
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs">
-                            <i class="fa-regular" :class="authShowPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            <i class="fa-regular pointer-events-none" :class="authShowPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                         </button>
                     </div>
                 </div>
 
                 <div class="flex items-center">
                     <label class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer select-none">
-                        <input type="checkbox" x-model="authRemember" class="rounded text-[#e07a5f] focus:ring-[#e07a5f]/20 border-slate-300 dark:border-slate-700 dark:bg-slate-800">
+                        <input type="checkbox" name="remember" x-model="authRemember" class="rounded text-[#e07a5f] focus:ring-[#e07a5f]/20 border-slate-300 dark:border-slate-700 dark:bg-slate-800">
                         <span>Ghi nhớ đăng nhập</span>
                     </label>
                 </div>
@@ -96,18 +119,15 @@
                 <!-- Nút Submit Đăng nhập -->
                 <button type="submit" 
                         class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center justify-center gap-2 cursor-pointer">
-                    <template x-if="authLoading">
-                        <i class="fa-solid fa-circle-notch animate-spin text-sm"></i>
-                    </template>
-                    <span x-text="authLoading ? 'Đang xử lý...' : 'Đăng nhập ngay'"></span>
+                    <span>Đăng nhập ngay</span>
                 </button>
             </form>
 
             <!-- Divider cân đối 2 bên -->
             <div class="flex items-center gap-3 my-4">
-                <div class="h-px bg-[#e8e2d9] dark:border-[#2d2926] dark:bg-[#2d2926] flex-1"></div>
+                <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
                 <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500">hoặc</span>
-                <div class="h-px bg-[#e8e2d9] dark:border-[#2d2926] dark:bg-[#2d2926] flex-1"></div>
+                <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
             </div>
 
             <!-- Đăng nhập bằng Google (Để ở dưới) -->
@@ -137,16 +157,28 @@
         <div x-show="authModalTab === 'register'" class="space-y-4" style="display: none;">
             
             <!-- Form Đăng ký Email -->
-            <form @submit.prevent="authLoading = true; setTimeout(() => { isLoggedIn = true; authLoading = false; authModalOpen = false; }, 700)" class="space-y-3">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Họ và tên</label>
-                    <div class="relative">
-                        <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <form action="{{ route('register') }}" method="POST" class="space-y-3">
+                @csrf
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Họ và tên đệm</label>
                         <input type="text" 
-                               x-model="authName"
+                               name="first_name"
+                               x-model="authFirstName"
+                               value="{{ old('first_name') }}"
                                required
-                               placeholder="Nguyễn Văn A" 
-                               class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
+                               placeholder="Nguyễn Văn" 
+                               class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Tên</label>
+                        <input type="text" 
+                               name="last_name"
+                               x-model="authLastName"
+                               value="{{ old('last_name') }}"
+                               required
+                               placeholder="An" 
+                               class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
                 </div>
 
@@ -155,7 +187,9 @@
                     <div class="relative">
                         <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input type="email" 
+                               name="email"
                                x-model="authEmail"
+                               value="{{ old('email') }}"
                                required
                                placeholder="name@example.com" 
                                class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
@@ -167,6 +201,7 @@
                     <div class="relative">
                         <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input :type="authShowPassword ? 'text' : 'password'" 
+                               name="password"
                                x-model="authPassword"
                                required
                                placeholder="Tối thiểu 8 ký tự..." 
@@ -174,7 +209,7 @@
                         <button type="button" 
                                 @click="authShowPassword = !authShowPassword" 
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs">
-                            <i class="fa-regular" :class="authShowPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            <i class="fa-regular pointer-events-none" :class="authShowPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                         </button>
                     </div>
                 </div>
@@ -189,18 +224,15 @@
                 <!-- Nút Submit Đăng ký -->
                 <button type="submit" 
                         class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center justify-center gap-2 cursor-pointer">
-                    <template x-if="authLoading">
-                        <i class="fa-solid fa-circle-notch animate-spin text-sm"></i>
-                    </template>
-                    <span x-text="authLoading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản miễn phí'"></span>
+                    <span>Tạo tài khoản miễn phí</span>
                 </button>
             </form>
 
             <!-- Divider cân đối 2 bên -->
             <div class="flex items-center gap-3 my-4">
-                <div class="h-px bg-[#e8e2d9] dark:border-[#2d2926] dark:bg-[#2d2926] flex-1"></div>
+                <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
                 <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500">hoặc</span>
-                <div class="h-px bg-[#e8e2d9] dark:border-[#2d2926] dark:bg-[#2d2926] flex-1"></div>
+                <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
             </div>
 
             <!-- Đăng ký nhanh với Google (Để ở dưới) -->
@@ -223,6 +255,93 @@
                         Đăng nhập ngay
                     </button>
                 </p>
+            </div>
+        </div>
+
+        <!-- ======================= 3. FORM QUÊN MẬT KHẨU ======================= -->
+        <div x-show="authModalTab === 'forgot'" class="space-y-4" style="display: none;"
+             x-data="{
+                forgotLoading: false,
+                forgotStatus: null,
+                forgotError: null,
+                async submitForgot() {
+                    if (this.forgotLoading) return;
+                    this.forgotLoading = true;
+                    this.forgotStatus = null;
+                    this.forgotError = null;
+                    try {
+                        const response = await fetch('{{ route('password.email') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ email: authEmail })
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            this.forgotStatus = data.status || 'Đã gửi liên kết khôi phục.';
+                        } else {
+                            this.forgotError = data.message || (data.errors && data.errors.email ? data.errors.email[0] : 'Có lỗi xảy ra.');
+                        }
+                    } catch (e) {
+                        this.forgotError = 'Lỗi kết nối mạng, vui lòng thử lại.';
+                    }
+                    this.forgotLoading = false;
+                }
+             }">
+            
+            <div class="p-3.5 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                <i class="fa-solid fa-circle-info text-[#e07a5f] mr-1"></i>
+                Vui lòng nhập địa chỉ email bạn đã sử dụng để đăng ký tài khoản. Hệ thống sẽ gửi một đường dẫn đặt lại mật khẩu an toàn tới hòm thư của bạn.
+            </div>
+
+            <!-- Thông báo thành công AJAX -->
+            <div x-show="forgotStatus" x-cloak class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-circle-check text-sm shrink-0"></i>
+                <span x-text="forgotStatus"></span>
+            </div>
+
+            <!-- Thông báo lỗi AJAX -->
+            <div x-show="forgotError" x-cloak class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center gap-1.5 transition-all">
+                <i class="fa-solid fa-circle-exclamation text-[10px] shrink-0"></i> 
+                <span x-text="forgotError"></span>
+            </div>
+
+            <!-- Form Gửi Email Khôi Phục -->
+            <form @submit.prevent="submitForgot" class="space-y-3.5">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Địa chỉ Email</label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="email" 
+                               x-model="authEmail"
+                               required
+                               placeholder="name@example.com" 
+                               class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all"
+                               :disabled="forgotLoading">
+                    </div>
+                </div>
+
+                <!-- Nút Submit Khôi phục -->
+                <button type="submit" 
+                        :disabled="forgotLoading"
+                        class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] disabled:from-slate-400 disabled:to-slate-500 text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center justify-center gap-2 cursor-pointer">
+                    <i x-show="!forgotLoading" class="fa-regular fa-paper-plane text-xs"></i>
+                    <i x-show="forgotLoading" class="fa-solid fa-spinner fa-spin text-xs" x-cloak></i>
+                    <span x-text="forgotLoading ? 'Đang gửi...' : 'Gửi liên kết khôi phục'"></span>
+                </button>
+            </form>
+
+            <!-- Nút Quay lại Đăng nhập -->
+            <div class="text-center pt-2 border-t border-[#e8e2d9] dark:border-[#2d2926]">
+                <button type="button" 
+                        @click="authModalTab = 'login'" 
+                        class="font-bold text-xs text-[#e07a5f] hover:underline cursor-pointer inline-flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>Quay lại Đăng nhập</span>
+                </button>
             </div>
         </div>
 

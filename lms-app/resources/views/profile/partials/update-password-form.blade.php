@@ -1,79 +1,139 @@
-<section>
-    <header>
-        <h2 class="font-heading text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1.5 sm:mb-2">
-            Đổi mật khẩu
-        </h2>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-6">
-            Đảm bảo tài khoản của bạn đang sử dụng mật khẩu dài, ngẫu nhiên để luôn được an toàn.
+<section x-data="passwordUpdateForm()">
+    <header class="mb-6">
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-[#e07a5f]"></i>
+            <span>{{ __('Đổi mật khẩu bảo vệ') }}</span>
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            {{ __('Đảm bảo tài khoản của bạn đang sử dụng mật khẩu mạnh, kết hợp chữ cái, số và ký tự đặc biệt để tối ưu bảo mật.') }}
         </p>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="space-y-4 sm:space-y-5">
+    <form id="passwordForm" @submit.prevent="submitPasswordForm" class="space-y-4">
         @csrf
         @method('put')
 
+        <!-- Ô Mật khẩu hiện tại -->
         <div>
-            <label for="update_password_current_password" class="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 sm:mb-2">Mật khẩu hiện tại</label>
-            <div class="relative flex items-center">
-                <input id="update_password_current_password" name="current_password" type="password" 
-                       class="w-full px-3.5 sm:px-4 pr-11 py-2.5 sm:py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-xs sm:text-sm text-slate-900 dark:text-white" 
+            <label for="update_password_current_password" class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Mật khẩu hiện tại') }}</label>
+            <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input id="update_password_current_password" 
+                       name="current_password" 
+                       :type="showCurrent ? 'text' : 'password'" 
+                       class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border @if($errors->updatePassword->get('current_password')) border-rose-500 @else border-[#e8e2d9] dark:border-[#2d2926] @endif rounded-xl pl-9 pr-10 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all font-medium" 
+                       placeholder="{{ __('Nhập mật khẩu đang sử dụng...') }}"
                        autocomplete="current-password" />
                 <button type="button" 
-                        onclick="togglePasswordVisibility('update_password_current_password', this)"
-                        class="absolute right-0 top-0 bottom-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
-                        aria-label="Hiện/ẩn mật khẩu">
-                    <span class="material-symbols-outlined text-[18px] sm:text-[20px] select-none">visibility</span>
+                        @click="showCurrent = !showCurrent"
+                        class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-pointer">
+                    <i class="fa-regular pointer-events-none" :class="showCurrent ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
             </div>
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+            <p x-show="errors.current_password" x-text="errors.current_password" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
         </div>
 
+        <!-- Ô Mật khẩu mới -->
         <div>
-            <label for="update_password_password" class="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 sm:mb-2">Mật khẩu mới</label>
-            <div class="relative flex items-center">
-                <input id="update_password_password" name="password" type="password" 
-                       class="w-full px-3.5 sm:px-4 pr-11 py-2.5 sm:py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-xs sm:text-sm text-slate-900 dark:text-white" 
+            <label for="update_password_password" class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Mật khẩu mới') }}</label>
+            <div class="relative">
+                <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input id="update_password_password" 
+                       name="password" 
+                       :type="showNew ? 'text' : 'password'" 
+                       class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border @if($errors->updatePassword->get('password')) border-rose-500 @else border-[#e8e2d9] dark:border-[#2d2926] @endif rounded-xl pl-9 pr-10 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all font-medium" 
+                       placeholder="{{ __('Tối thiểu 8 ký tự...') }}"
                        autocomplete="new-password" />
                 <button type="button" 
-                        onclick="togglePasswordVisibility('update_password_password', this)"
-                        class="absolute right-0 top-0 bottom-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
-                        aria-label="Hiện/ẩn mật khẩu">
-                    <span class="material-symbols-outlined text-[18px] sm:text-[20px] select-none">visibility</span>
+                        @click="showNew = !showNew"
+                        class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-pointer">
+                    <i class="fa-regular pointer-events-none" :class="showNew ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
             </div>
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+            <p x-show="errors.password" x-text="errors.password" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
         </div>
 
+        <!-- Ô Xác nhận mật khẩu mới -->
         <div>
-            <label for="update_password_password_confirmation" class="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 sm:mb-2">Xác nhận mật khẩu</label>
-            <div class="relative flex items-center">
-                <input id="update_password_password_confirmation" name="password_confirmation" type="password" 
-                       class="w-full px-3.5 sm:px-4 pr-11 py-2.5 sm:py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-xs sm:text-sm text-slate-900 dark:text-white" 
+            <label for="update_password_password_confirmation" class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Xác nhận mật khẩu mới') }}</label>
+            <div class="relative">
+                <i class="fa-solid fa-check-double absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input id="update_password_password_confirmation" 
+                       name="password_confirmation" 
+                       :type="showConfirm ? 'text' : 'password'" 
+                       class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border @if($errors->updatePassword->get('password_confirmation')) border-rose-500 @else border-[#e8e2d9] dark:border-[#2d2926] @endif rounded-xl pl-9 pr-10 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all font-medium" 
+                       placeholder="{{ __('Nhập lại mật khẩu mới...') }}"
                        autocomplete="new-password" />
                 <button type="button" 
-                        onclick="togglePasswordVisibility('update_password_password_confirmation', this)"
-                        class="absolute right-0 top-0 bottom-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
-                        aria-label="Hiện/ẩn mật khẩu">
-                    <span class="material-symbols-outlined text-[18px] sm:text-[20px] select-none">visibility</span>
+                        @click="showConfirm = !showConfirm"
+                        class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-pointer">
+                    <i class="fa-regular pointer-events-none" :class="showConfirm ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
             </div>
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+            <p x-show="errors.password_confirmation" x-text="errors.password_confirmation" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
         </div>
 
-        <div class="flex items-center gap-4 mt-6 sm:mt-8">
-            <button type="submit" 
-                    class="px-5 sm:px-6 py-2.5 sm:py-3 bg-primary text-white text-xs sm:text-sm font-bold rounded-lg hover:opacity-90 shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-base sm:text-lg">key</span>
-                Đổi mật khẩu
+        <!-- Nút Submit & Thông báo -->
+        <div class="flex items-center gap-3 pt-3 border-t border-[#e8e2d9] dark:border-[#2d2926]">
+            <button type="submit" :disabled="loading"
+                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center gap-2 cursor-pointer disabled:opacity-75">
+                <i x-show="!loading" class="fa-solid fa-lock text-xs"></i>
+                <i x-show="loading" class="fa-solid fa-spinner fa-spin text-xs" style="display: none;"></i>
+                <span x-text="loading ? '{{ __('Đang cập nhật...') }}' : '{{ __('Cập nhật mật khẩu') }}'">{{ __('Cập nhật mật khẩu') }}</span>
             </button>
 
-            @if (session('status') === 'password-updated')
-                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
-                   class="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-sm">check_circle</span>
-                    Đã lưu thành công.
-                </p>
-            @endif
+            <div x-show="successMessage" x-transition x-init="$watch('successMessage', val => { if (val) setTimeout(() => successMessage = '', 3000) })" style="display: none;"
+                 class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-900/50">
+                <i class="fa-solid fa-circle-check text-xs"></i>
+                <span x-text="successMessage"></span>
+            </div>
         </div>
     </form>
 </section>
+
+<script>
+    function passwordUpdateForm() {
+        return {
+            showCurrent: false, 
+            showNew: false, 
+            showConfirm: false,
+            loading: false,
+            errors: {},
+            successMessage: '',
+            async submitPasswordForm() {
+                this.loading = true;
+                this.errors = {};
+                this.successMessage = '';
+                
+                let form = document.getElementById('passwordForm');
+                let formData = new FormData(form);
+                
+                try {
+                    const response = await fetch('{{ route("password.update") }}', {
+                        method: 'POST', // Blade has @method('put') which adds _method=put to FormData
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        this.successMessage = data.message;
+                        form.reset();
+                    } else if (response.status === 422) {
+                        for (const key in data.errors) {
+                            this.errors[key] = data.errors[key][0];
+                        }
+                    }
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }
+    }
+</script>

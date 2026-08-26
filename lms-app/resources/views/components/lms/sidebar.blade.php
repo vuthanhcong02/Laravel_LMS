@@ -102,8 +102,11 @@
                             <span x-show="!sidebarCollapsed" class="truncate">Cài đặt tài khoản</span>
                         </a>
 
-                        <!-- Đăng xuất (Bám sát hình 1 - Chữ đỏ & Icon Đăng xuất) -->
-                        <button x-show="isLoggedIn" @click="isLoggedIn = false" class="group flex items-center gap-3 w-full rounded-xl text-sm text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Đăng xuất' : ''">
+                        <!-- Đăng xuất (Form POST chuẩn Laravel) -->
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                            @csrf
+                        </form>
+                        <button x-show="isLoggedIn" @click.prevent="document.getElementById('logout-form').submit()" class="group flex items-center gap-3 w-full rounded-xl text-sm text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium px-3.5 py-2.5 transition-all btn-tactile cursor-pointer" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Đăng xuất' : ''">
                             <i class="fa-solid fa-arrow-right-from-bracket text-red-500 text-base w-5 text-center shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate font-semibold">Đăng xuất</span>
                         </button>
@@ -125,18 +128,23 @@
             <!-- Chân trang Hồ sơ cá nhân (Ghim cố định shrink-0 ở đáy Sidebar) -->
             <div class="border-t border-[#e8e2d9] dark:border-[#262220] bg-[#faf6f2] dark:bg-slate-900/60 shrink-0 transition-all">
                 
-                <!-- TRẠNG THÁI 1: KHI ĐÃ ĐĂNG NHẬP (BÁM SÁT HÌNH 1) -->
-                <div x-show="isLoggedIn" class="p-3">
-                    <a href="#" class="flex items-center gap-3 min-w-0 group" :class="sidebarCollapsed ? 'justify-center' : ''">
+                <!-- TRẠNG THÁI 1: KHI ĐÃ ĐĂNG NHẬP -->
+                <div x-show="isLoggedIn" class="p-3"
+                     x-data="{ 
+                         userName: '{{ auth()->check() ? (auth()->user()->first_name . ' ' . auth()->user()->last_name) : 'Vũ Thành Công' }}',
+                         userAvatar: '{{ auth()->check() ? auth()->user()->avatar_url : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80' }}'
+                     }"
+                     @profile-updated.window="userName = $event.detail.name; userAvatar = $event.detail.avatar">
+                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 min-w-0 group" :class="sidebarCollapsed ? 'justify-center' : ''">
                         <!-- Avatar tròn có huy hiệu Lv.1 ở góc dưới -->
                         <div class="relative shrink-0">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 group-hover:border-[#e07a5f] transition-colors">
+                            <img :src="userAvatar" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 group-hover:border-[#e07a5f] transition-colors">
                             <span class="absolute -bottom-1 -right-1 bg-slate-800 dark:bg-slate-900 text-slate-200 text-[9px] font-bold px-1 py-0.2 rounded-full border border-slate-600 leading-none">Lv.1</span>
                         </div>
 
                         <div x-show="!sidebarCollapsed" class="truncate min-w-0">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-[#e07a5f] transition-colors">Vũ Thành Công</p>
-                            <p class="text-xs text-slate-400 font-medium truncate">Hồ sơ</p>
+                            <p class="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-[#e07a5f] transition-colors" x-text="userName"></p>
+                            <p class="text-xs text-slate-400 font-medium truncate">Hồ sơ cá nhân</p>
                         </div>
                     </a>
                 </div>
