@@ -391,9 +391,9 @@
                     foreach ($lessonData['practices'] as &$practice) {
                         if (isset($practice['sections'])) {
                             foreach ($practice['sections'] as &$section) {
-                                $section['section_han_html'] = !empty($section['section_han']) ? ($shouldShow ? Helper::renderHskRubyText($section['section_han']) : $section['section_han']) : '';
+                                $section['section_han_html'] = !empty($section['section_han']) ? ($shouldShow ? renderHskRubyText($section['section_han']) : $section['section_han']) : '';
                                 
-                                // Parse section_vi in PHP so we can apply Helper::renderHskRubyText if needed
+                                // Parse section_vi in PHP so we can apply renderHskRubyText if needed
                                 $text = $section['section_vi'] ?? '';
                                 $mainText = $text;
                                 $exampleHtml = '';
@@ -423,20 +423,20 @@
                                     $i = 0;
                                     foreach ($lines as $line) {
                                         if (preg_match('/^(A|B|C|D)\s*(.*)/i', $line, $matches)) {
-                                            $content = $shouldShow ? Helper::renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
+                                            $content = $shouldShow ? renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
                                             $htmlLines[] = '<div class="mt-1.5 flex items-start gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] flex items-center justify-center mt-0.5">' . $matches[1] . '</span><span class="flex-1">' . $content . '</span></div>';
                                         } else if (preg_match('/^(男\s*[:：]|女\s*[:：])(.*)/su', $line, $matches)) {
-                                            $speaker = $shouldShow ? Helper::renderHskRubyText($matches[1]) : htmlspecialchars($matches[1]);
-                                            $content = $shouldShow ? Helper::renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
+                                            $speaker = $shouldShow ? renderHskRubyText($matches[1]) : htmlspecialchars($matches[1]);
+                                            $content = $shouldShow ? renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
                                             $htmlLines[] = '<div class="mt-1.5"><span class="font-bold text-slate-700 dark:text-slate-200">' . $speaker . '</span>' . $content . '</div>';
                                         } else {
-                                            $content = $shouldShow ? Helper::renderHskRubyText($line) : htmlspecialchars($line);
+                                            $content = $shouldShow ? renderHskRubyText($line) : htmlspecialchars($line);
                                             $htmlLines[] = ($i === 0 ? '' : '<div class="mt-1">') . $content . ($i === 0 ? '' : '</div>');
                                         }
                                         $i++;
                                     }
                                     
-                                    $exHeaderHtml = $exHeader ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' . ($shouldShow ? Helper::renderHskRubyText($exHeader) : htmlspecialchars($exHeader)) . '</span>' : '';
+                                    $exHeaderHtml = $exHeader ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' . ($shouldShow ? renderHskRubyText($exHeader) : htmlspecialchars($exHeader)) . '</span>' : '';
                                     $exampleHtml = $exHeaderHtml . implode('', $htmlLines);
                                 }
 
@@ -449,14 +449,14 @@
                                 if ($shouldShow) {
                                     if (isset($section['questions'])) {
                                         foreach ($section['questions'] as &$q) {
-                                            $q['question_html'] = !empty($q['question']) ? Helper::renderHskRubyText($q['question']) : '';
+                                            $q['question_html'] = !empty($q['question']) ? renderHskRubyText($q['question']) : '';
                                             if (!empty($q['context'])) {
                                                 if (is_string($q['context'])) {
-                                                    $q['context_html'] = Helper::renderHskRubyText($q['context']);
+                                                    $q['context_html'] = renderHskRubyText($q['context']);
                                                 } else if (is_array($q['context'])) {
                                                     $q['context_html'] = [];
                                                     foreach ($q['context'] as $c) {
-                                                        $q['context_html'][] = Helper::renderHskRubyText($c);
+                                                        $q['context_html'][] = renderHskRubyText($c);
                                                     }
                                                 }
                                             }
@@ -465,11 +465,11 @@
                                                 if (is_array($qOpts)) {
                                                     foreach ($qOpts as &$opt) {
                                                     if (is_array($opt) && isset($opt['text'])) {
-                                                        $opt['html'] = Helper::renderHskRubyText($opt['text']);
+                                                        $opt['html'] = renderHskRubyText($opt['text']);
                                                     } else if (is_string($opt)) {
                                                         $opt = [
                                                             'text' => $opt,
-                                                            'html' => Helper::renderHskRubyText($opt)
+                                                            'html' => renderHskRubyText($opt)
                                                         ];
                                                     }
                                                     }
@@ -479,7 +479,7 @@
                                             if (!empty($q['items'])) {
                                                 foreach ($q['items'] as &$item) {
                                                     if (is_array($item) && isset($item['text'])) {
-                                                        $item['html'] = Helper::renderHskRubyText($item['text']);
+                                                        $item['html'] = renderHskRubyText($item['text']);
                                                     }
                                                 }
                                             }
@@ -491,7 +491,7 @@
                                                     if (is_string($seg)) {
                                                         $newSegments[] = [
                                                             'text' => $seg,
-                                                            'html' => Helper::renderHskRubyText($seg)
+                                                            'html' => renderHskRubyText($seg)
                                                         ];
                                                     } else {
                                                         $newSegments[] = $seg;
@@ -502,15 +502,15 @@
                                             }
                                             if (!empty($q['sub_questions'])) {
                                                 foreach ($q['sub_questions'] as &$sq) {
-                                                    $sq['question_html'] = !empty($sq['question']) ? Helper::renderHskRubyText($sq['question']) : '';
+                                                    $sq['question_html'] = !empty($sq['question']) ? renderHskRubyText($sq['question']) : '';
                                                     if (!empty($sq['options'])) {
                                                         foreach ($sq['options'] as &$opt) {
                                                             if (is_array($opt) && isset($opt['text'])) {
-                                                                $opt['html'] = Helper::renderHskRubyText($opt['text']);
+                                                                $opt['html'] = renderHskRubyText($opt['text']);
                                                             } else if (is_string($opt)) {
                                                                 $opt = [
                                                                     'text' => $opt,
-                                                                    'html' => Helper::renderHskRubyText($opt)
+                                                                    'html' => renderHskRubyText($opt)
                                                                 ];
                                                             }
                                                         }

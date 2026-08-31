@@ -68,33 +68,53 @@
                                     
                                     <!-- 1. Full-Width Sticky Control Bar (Sub-Tabs on Left + Audio Player on Right) -->
                                     <div class="bg-white dark:bg-[#181615] rounded-2xl border border-slate-200/80 dark:border-[#2d2926] p-3 sm:p-4 shadow-2xs sticky top-0 z-30 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 text-left before:content-[''] before:absolute before:-top-12 before:-left-1 before:-right-1 before:h-12 before:bg-[#f8f6f3] dark:before:bg-[#0e0c0b]">
-                                        <!-- Left: Sub-Tabs -->
-                                        <div class="flex gap-1 p-1 bg-slate-100 dark:bg-[#23201e] rounded-xl shrink-0">
-                                            <button 
-                                                type="button"
-                                                class="px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
-                                                :class="practiceTab === 'listening' ? 'bg-white dark:bg-[#2d2926] text-primary shadow-xs' : 'text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary-light'"
-                                                @click="practiceTab = 'listening'; practiceSectionIdx = 0"
-                                            >
-                                                <span class="material-symbols-outlined text-[16px]">headphones</span> {{ __('Phần Nghe') }}
-                                            </button>
-                                            <button 
-                                                type="button"
-                                                class="px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
-                                                :class="practiceTab === 'reading' ? 'bg-white dark:bg-[#2d2926] text-primary shadow-xs' : 'text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary-light'"
-                                                @click="practiceTab = 'reading'; practiceSectionIdx = 0"
-                                            >
-                                                <span class="material-symbols-outlined text-[16px]">menu_book</span> {{ __('Phần Đọc') }}
-                                            </button>
-                                            <button 
-                                                type="button"
-                                                class="px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
-                                                :class="practiceTab === 'writing' ? 'bg-white dark:bg-[#2d2926] text-primary shadow-xs' : 'text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary-light'"
-                                                @click="practiceTab = 'writing'; practiceSectionIdx = 0"
-                                                x-show="currentLesson?.practices?.find(p => p.type === 'writing')"
-                                            >
-                                                <span class="material-symbols-outlined text-[16px]">edit_document</span> {{ __('Phần Viết') }}
-                                            </button>
+                                        <!-- Left: Sub-Tabs & Pinyin Toggle -->
+                                        <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
+                                            <!-- Sub-Tabs -->
+                                            <div class="flex gap-1 p-1 bg-slate-100 dark:bg-[#23201e] rounded-xl shrink-0">
+                                                <button 
+                                                    type="button"
+                                                    class="px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                                                    :class="practiceTab === 'listening' ? 'bg-white dark:bg-[#2d2926] text-primary shadow-xs' : 'text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary-light'"
+                                                    @click="practiceTab = 'listening'; practiceSectionIdx = 0"
+                                                >
+                                                    <span class="material-symbols-outlined text-[16px]">headphones</span> {{ __('Phần Nghe') }}
+                                                </button>
+                                                <button 
+                                                    type="button"
+                                                    class="px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                                                    :class="practiceTab === 'reading' ? 'bg-white dark:bg-[#2d2926] text-primary shadow-xs' : 'text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary-light'"
+                                                    @click="practiceTab = 'reading'; practiceSectionIdx = 0"
+                                                >
+                                                    <span class="material-symbols-outlined text-[16px]">menu_book</span> {{ __('Phần Đọc') }}
+                                                </button>
+                                                <button 
+                                                    type="button"
+                                                    class="px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                                                    :class="practiceTab === 'writing' ? 'bg-white dark:bg-[#2d2926] text-primary shadow-xs' : 'text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary-light'"
+                                                    @click="practiceTab = 'writing'; practiceSectionIdx = 0"
+                                                    x-show="currentLesson?.practices?.find(p => p.type === 'writing')"
+                                                >
+                                                    <span class="material-symbols-outlined text-[16px]">edit_document</span> {{ __('Phần Viết') }}
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Pinyin Toggle (HSK 1, 2, 3 only) -->
+                                            <template x-if="currentLevelObj && ['hsk-1', 'hsk-2', 'hsk-3'].includes(currentLevelObj.slug)">
+                                                <div class="flex items-center gap-1.5 p-1 bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl shrink-0">
+                                                    <button 
+                                                        type="button"
+                                                        @click="shouldShowPinyin = !shouldShowPinyin"
+                                                        :class="shouldShowPinyin ? 'bg-white dark:bg-[#181615] text-[#e07a5f] font-bold shadow-xs' : 'text-slate-500 dark:text-slate-400 font-semibold hover:text-slate-700 dark:hover:text-slate-300'"
+                                                        class="px-3 py-1.5 rounded-lg text-xs transition-all btn-tactile flex items-center gap-1.5 shrink-0 cursor-pointer"
+                                                        title="{{ __('Bật/tắt hiển thị phiên âm Pinyin') }}"
+                                                    >
+                                                        <i class="fa-solid fa-eye" x-show="shouldShowPinyin"></i>
+                                                        <i class="fa-solid fa-eye-slash opacity-50" x-show="!shouldShowPinyin"></i>
+                                                        <span>Pinyin</span>
+                                                    </button>
+                                                </div>
+                                            </template>
                                         </div>
 
                                         <!-- Right: Sticky Audio Player (when on listening tab) -->
@@ -136,7 +156,7 @@
                                                                         <template x-if="sect.parsed_vi?.hasExample">
                                                                             <div class="space-y-2 mt-1">
                                                                                 <p class="text-primary dark:text-primary-light font-bold" x-text="sect.parsed_vi.mainText"></p>
-                                                                                <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" :class="shouldShowPinyin ? 'flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom' : ''" x-html="sect.parsed_vi.exampleHtml"></div>
+                                                                                <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" :class="shouldShowPinyin ? 'flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom' : ''" x-html="shouldShowPinyin ? sect.parsed_vi.exampleHtml : sect.parsed_vi.exampleHtmlRaw"></div>
                                                                             </div>
                                                                         </template>
                                                                     </div>
@@ -174,7 +194,7 @@
                                                                               <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-chinese text-[16px] leading-[2.5]">
                                                                                   <template x-for="(segment, idx) in quiz.parsed_context" :key="idx">
                                                                                       <span class="inline">
-                                                                                          <span x-html="segment"></span>
+                                                                                          <span x-html="(shouldShowPinyin && quiz.parsed_context_html && quiz.parsed_context_html[idx]) ? quiz.parsed_context_html[idx] : segment"></span>
                                                                                           <template x-if="idx < (quiz.sub_questions ? quiz.sub_questions.length : 0)">
                                                                                               <span 
                                                                                                   class="inline-flex items-center justify-center min-w-[80px] px-3 h-8 mx-1 border-b-2 font-bold text-sm align-middle cursor-pointer transition-all relative overflow-visible"
@@ -236,15 +256,10 @@
                                                                                       <div class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-loose flex-1">
                                                                                           <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
                                                                                               <span class="inline">
-                                                                                                  <span x-html="segment"></span>
+                                                                                                  <span x-html="(shouldShowPinyin && quiz.parsed_question_html && quiz.parsed_question_html[idx]) ? quiz.parsed_question_html[idx] : segment"></span>
                                                                                                   <template x-if="idx < quiz.parsed_question.length - 1">
                                                                                                       <span class="inline-block mx-2 align-middle">
-                                                                                                          <select 
-                                                                                                              class="bg-slate-50 dark:bg-slate-800 border text-base font-chinese py-1.5 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer disabled:opacity-70"
-                                                                                                              :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? 'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-500/50' : 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/30 dark:border-red-500/50') : 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-primary'"
-                                                                                                              x-model="quiz.selected_answers[idx]"
-                                                                                                              :disabled="quiz.answered"
-                                                                                                          >
+                                                                                                          <select class="bg-[#fcfaf7] dark:bg-[#23201e] border text-center text-xs sm:text-sm zh-text font-semibold py-1.5 px-3.5 rounded-xl shadow-2xs focus:ring-2 focus:ring-[#e07a5f]/30 min-w-[120px] sm:min-w-[140px] outline-none cursor-pointer disabled:opacity-70 transition-all" :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? \'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 font-bold\' : \'border-rose-500 text-rose-600 bg-rose-50 dark:bg-rose-950/30 font-bold\') : \'border-[#e8e2d9] dark:border-[#2d2926] text-slate-800 dark:text-slate-200 hover:border-[#e07a5f]\'" x-model="quiz.selected_answers[idx]" :disabled="quiz.answered">
                                                                                                               <option value="" disabled selected>Chọn...</option>
                                                                                                               <template x-for="(hint, hIdx) in (quiz.hints || quiz.options)" :key="hIdx">
                                                                                                                   <option :value="hIdx" x-text="(hint.pinyin && shouldShowPinyin) ? (hint.text || hint) + ' (' + hint.pinyin + ')' : (hint.text || hint)"></option>
@@ -263,9 +278,9 @@
                                                                                           <div class="font-chinese text-[16px] font-bold text-slate-800 dark:text-white leading-relaxed">
                                                                                               <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
                                                                                                   <span class="inline">
-                                                                                                      <span x-html="segment"></span>
+                                                                                                      <span x-html="(shouldShowPinyin && quiz.parsed_question_html && quiz.parsed_question_html[idx]) ? quiz.parsed_question_html[idx] : segment"></span>
                                                                                                       <template x-if="idx < quiz.parsed_question.length - 1">
-                                                                                                          <span class="inline-block mx-1 font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2 underline-offset-4" x-text="((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]?.text || ((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]"></span>
+                                                                                                          <span class="inline-flex items-end mx-1 font-bold border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 [&_span]:!text-emerald-600 dark:[&_span]:!text-emerald-400 [&_rt]:!text-emerald-500/80 dark:[&_rt]:!text-emerald-400/80" x-html="(shouldShowPinyin && ((quiz.hints || quiz.options)[quiz.correct[idx]]?.html)) ? ((quiz.hints || quiz.options)[quiz.correct[idx]].html) : (((quiz.hints || quiz.options)[quiz.correct[idx]]?.text) || (quiz.hints || quiz.options)[quiz.correct[idx]])"></span>
                                                                                                       </template>
                                                                                                   </span>
                                                                                               </template>
@@ -505,7 +520,7 @@
                                                   <template x-if="sect.parsed_vi?.hasExample">
                                                       <div class="space-y-2 mt-1">
                                                           <p class="text-primary dark:text-primary-light font-bold" x-text="sect.parsed_vi.mainText"></p>
-                                                          <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" :class="shouldShowPinyin ? 'flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom' : ''" x-html="sect.parsed_vi.exampleHtml"></div>
+                                                          <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" :class="shouldShowPinyin ? 'flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom' : ''" x-html="shouldShowPinyin ? sect.parsed_vi.exampleHtml : sect.parsed_vi.exampleHtmlRaw"></div>
                                                       </div>
                                                   </template>
                                               </div>
@@ -533,7 +548,7 @@
                                                                               <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-chinese text-[16px] leading-[2.5]">
                                                                                   <template x-for="(segment, idx) in quiz.parsed_context" :key="idx">
                                                                                       <span class="inline">
-                                                                                          <span x-html="segment"></span>
+                                                                                          <span x-html="(shouldShowPinyin && quiz.parsed_context_html && quiz.parsed_context_html[idx]) ? quiz.parsed_context_html[idx] : segment"></span>
                                                                                           <template x-if="idx < (quiz.sub_questions ? quiz.sub_questions.length : 0)">
                                                                                               <span 
                                                                                                   class="inline-flex items-center justify-center min-w-[80px] px-3 h-8 mx-1 border-b-2 font-bold text-sm align-middle cursor-pointer transition-all relative overflow-visible"
@@ -591,15 +606,10 @@
                                                                                       <div class="font-chinese text-[18px] font-bold text-slate-800 dark:text-white leading-loose flex-1">
                                                                                           <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
                                                                                               <span class="inline">
-                                                                                                  <span x-html="segment"></span>
+                                                                                                  <span x-html="(shouldShowPinyin && quiz.parsed_question_html && quiz.parsed_question_html[idx]) ? quiz.parsed_question_html[idx] : segment"></span>
                                                                                                   <template x-if="idx < quiz.parsed_question.length - 1">
                                                                                                       <span class="inline-block mx-2 align-middle">
-                                                                                                          <select 
-                                                                                                              class="bg-slate-50 dark:bg-slate-800 border text-base font-chinese py-1.5 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer disabled:opacity-70"
-                                                                                                              :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? 'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-500/50' : 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/30 dark:border-red-500/50') : 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-primary'"
-                                                                                                              x-model="quiz.selected_answers[idx]"
-                                                                                                              :disabled="quiz.answered"
-                                                                                                          >
+                                                                                                          <select class="bg-[#fcfaf7] dark:bg-[#23201e] border text-center text-xs sm:text-sm zh-text font-semibold py-1.5 px-3.5 rounded-xl shadow-2xs focus:ring-2 focus:ring-[#e07a5f]/30 min-w-[120px] sm:min-w-[140px] outline-none cursor-pointer disabled:opacity-70 transition-all" :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? \'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 font-bold\' : \'border-rose-500 text-rose-600 bg-rose-50 dark:bg-rose-950/30 font-bold\') : \'border-[#e8e2d9] dark:border-[#2d2926] text-slate-800 dark:text-slate-200 hover:border-[#e07a5f]\'" x-model="quiz.selected_answers[idx]" :disabled="quiz.answered">
                                                                                                               <option value="" disabled selected>Chọn...</option>
                                                                                                               <template x-for="(hint, hIdx) in (quiz.hints || quiz.options)" :key="hIdx">
                                                                                                                   <option :value="hIdx" x-text="(hint.pinyin && shouldShowPinyin) ? (hint.text || hint) + ' (' + hint.pinyin + ')' : (hint.text || hint)"></option>
@@ -618,9 +628,9 @@
                                                                                           <div class="font-chinese text-[16px] font-bold text-slate-800 dark:text-white leading-relaxed">
                                                                                               <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
                                                                                                   <span class="inline">
-                                                                                                      <span x-html="segment"></span>
+                                                                                                      <span x-html="(shouldShowPinyin && quiz.parsed_question_html && quiz.parsed_question_html[idx]) ? quiz.parsed_question_html[idx] : segment"></span>
                                                                                                       <template x-if="idx < quiz.parsed_question.length - 1">
-                                                                                                          <span class="inline-block mx-1 font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2 underline-offset-4" x-text="((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]?.text || ((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]"></span>
+                                                                                                          <span class="inline-flex items-end mx-1 font-bold border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 [&_span]:!text-emerald-600 dark:[&_span]:!text-emerald-400 [&_rt]:!text-emerald-500/80 dark:[&_rt]:!text-emerald-400/80" x-html="(shouldShowPinyin && ((quiz.hints || quiz.options)[quiz.correct[idx]]?.html)) ? ((quiz.hints || quiz.options)[quiz.correct[idx]].html) : (((quiz.hints || quiz.options)[quiz.correct[idx]]?.text) || (quiz.hints || quiz.options)[quiz.correct[idx]])"></span>
                                                                                                       </template>
                                                                                                   </span>
                                                                                               </template>
@@ -863,7 +873,7 @@
                                                                         <template x-if="sect.parsed_vi?.hasExample">
                                                                             <div class="space-y-2 mt-1">
                                                                                 <p class="text-primary dark:text-primary-light font-bold text-sm" x-text="sect.parsed_vi.mainText"></p>
-                                                                                <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" :class="shouldShowPinyin ? 'flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom' : ''" x-html="sect.parsed_vi.exampleHtml"></div>
+                                                                                <div class="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 leading-relaxed font-normal shadow-2xs" :class="shouldShowPinyin ? 'flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom' : ''" x-html="shouldShowPinyin ? sect.parsed_vi.exampleHtml : sect.parsed_vi.exampleHtmlRaw"></div>
                                                                             </div>
                                                                         </template>
                                                                     </div>
@@ -1010,21 +1020,21 @@
                                                                                             <template x-if="quiz.question_pinyin && shouldShowPinyin">
                                                                                                 <div class="text-xs text-[#e07a5f] font-mono font-medium tracking-wide" x-text="quiz.question_pinyin"></div>
                                                                                             </template>
-                                                                                            <div class="zh-text text-sm sm:text-base font-medium text-slate-800 dark:text-slate-100 leading-loose">
+                                                                                            <div class="zh-text text-sm sm:text-base font-medium text-slate-800 dark:text-slate-100 leading-loose flex-1 flex flex-wrap items-end gap-x-[1px] gap-y-2">
                                                                                                 <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
-                                                                                                    <span class="inline">
-                                                                                                        <span x-html="segment"></span>
+                                                                                                    <span class="inline-flex flex-wrap items-end gap-x-[1px]">
+                                                                                                        <span x-html="(shouldShowPinyin && quiz.parsed_question_html && quiz.parsed_question_html[idx]) ? quiz.parsed_question_html[idx] : segment"></span>
                                                                                                         <template x-if="idx < quiz.parsed_question.length - 1">
-                                                                                                            <span class="inline-block mx-1.5 align-middle">
+                                                                                                            <span class="inline-block mx-1.5 mb-0.5 align-bottom">
                                                                                                                 <select 
-                                                                                                                    class="bg-[#fcfaf7] dark:bg-[#23201e] border text-xs sm:text-sm zh-text font-medium py-1 px-2.5 rounded-lg shadow-2xs focus:ring-1 focus:ring-[#e07a5f] outline-none cursor-pointer disabled:opacity-70"
-                                                                                                                    :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? 'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30' : 'border-rose-500 text-rose-600 bg-rose-50 dark:bg-rose-950/30') : 'border-[#e8e2d9] dark:border-[#2d2926] text-slate-800 dark:text-slate-200 hover:border-[#e07a5f]'"
+                                                                                                                    class="appearance-none text-center font-chinese font-bold text-xs sm:text-sm py-1 px-3 rounded-xl shadow-2xs cursor-pointer outline-none transition-all duration-200 min-w-[85px] sm:min-w-[100px]"
+                                                                                                                    :class="quiz.answered ? (quiz.selected_answers[idx] == quiz.correct[idx] ? 'bg-emerald-500/15 border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-bold' : 'bg-rose-500/15 border-2 border-rose-500 text-rose-600 dark:text-rose-400 font-bold') : (quiz.selected_answers[idx] !== '' && quiz.selected_answers[idx] !== undefined && quiz.selected_answers[idx] !== null ? 'bg-[#fff2ee] dark:bg-[#2c221e] border-2 border-[#e07a5f] text-[#e07a5f] font-bold shadow-xs' : 'bg-[#fcfaf7] dark:bg-[#23201e] border-2 border-dashed border-[#e07a5f]/50 text-[#e07a5f] hover:border-[#e07a5f] hover:bg-[#fff2ee] dark:hover:bg-[#2c221e]')"
                                                                                                                     x-model="quiz.selected_answers[idx]"
                                                                                                                     :disabled="quiz.answered"
                                                                                                                 >
-                                                                                                                    <option value="" disabled selected>Chọn...</option>
+                                                                                                                    <option value="" disabled selected class="text-slate-400 font-normal"> ( ... ) </option>
                                                                                                                     <template x-for="(hint, hIdx) in (quiz.hints || quiz.options)" :key="hIdx">
-                                                                                                                        <option :value="hIdx" x-text="(hint.pinyin && shouldShowPinyin) ? (hint.text || hint) + ' (' + hint.pinyin + ')' : (hint.text || hint)"></option>
+                                                                                                                        <option :value="hIdx" class="text-slate-900 dark:text-slate-100 bg-white dark:bg-[#181615] font-chinese font-medium py-1" x-text="(hint.pinyin && shouldShowPinyin) ? (hint.text || hint) + ' (' + hint.pinyin + ')' : (hint.text || hint)"></option>
                                                                                                                     </template>
                                                                                                                 </select>
                                                                                                             </span>
@@ -1032,18 +1042,18 @@
                                                                                                     </span>
                                                                                                 </template>
                                                                                             </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    
-                                                                                    <template x-if="quiz.answered">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <template x-if="quiz.answered">
                                                                                         <div class="mt-4 p-4 rounded-xl border border-emerald-300 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20">
                                                                                             <div class="font-bold text-xs text-emerald-700 dark:text-emerald-400 mb-1.5">Đáp án chính xác:</div>
-                                                                                            <div class="zh-text text-sm sm:text-base font-medium text-slate-800 dark:text-white leading-relaxed">
+                                                                                            <div class="zh-text text-sm sm:text-base font-medium text-slate-800 dark:text-white leading-relaxed flex flex-wrap items-end gap-x-[1px] gap-y-2">
                                                                                                 <template x-for="(segment, idx) in quiz.parsed_question" :key="idx">
-                                                                                                    <span class="inline">
-                                                                                                        <span x-html="segment"></span>
+                                                                                                    <span class="inline-flex flex-wrap items-end gap-x-[1px]">
+                                                                                                        <span x-html="(shouldShowPinyin && quiz.parsed_question_html && quiz.parsed_question_html[idx]) ? quiz.parsed_question_html[idx] : segment"></span>
                                                                                                         <template x-if="idx < quiz.parsed_question.length - 1">
-                                                                                                            <span class="inline-block mx-1 font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2 underline-offset-4" x-text="((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]?.text || ((quiz.hints || quiz.options) || quiz.options)[quiz.correct[idx]]"></span>
+                                                                                                            <span class="inline-flex items-end mx-1 font-bold border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 [&_span]:!text-emerald-600 dark:[&_span]:!text-emerald-400 [&_rt]:!text-emerald-500/80 dark:[&_rt]:!text-emerald-400/80" x-html="(shouldShowPinyin && ((quiz.hints || quiz.options)[quiz.correct[idx]]?.html)) ? ((quiz.hints || quiz.options)[quiz.correct[idx]].html) : (((quiz.hints || quiz.options)[quiz.correct[idx]]?.text) || (quiz.hints || quiz.options)[quiz.correct[idx]])"></span>
                                                                                                         </template>
                                                                                                     </span>
                                                                                                 </template>
