@@ -52,6 +52,11 @@ Route::controller(PageController::class)->group(function () {
     Route::post('/lien-he', [ContactController::class, 'store'])->middleware('throttle:3,1')->name('contact.store');
     Route::get('/khoa-hoc', 'getViewCourses')->name('courses');
     Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
+
+    // V2 Routes
+    Route::get('/khoa-hoc-v2', 'getViewCoursesV2')->name('courses.v2');
+    Route::get('/khoa-hoc-v2/{levelSlug}', 'showCourseLevelV2')->name('courses.v2.level');
+    Route::get('/khoa-hoc-v2/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLessonV2')->name('courses.v2.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
     Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
@@ -258,3 +263,21 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/debug-db', function () {
+    $lesson = App\Models\Lesson::find(21);
+    $lesson->load('practices.sections.questions');
+    $out = "";
+    foreach ($lesson->practices as $practice) {
+        foreach ($practice->sections as $section) {
+            foreach ($section->questions as $q) {
+                if (!empty($q->question_segments)) {
+                    $out .= "Question ID: {$q->id}\n";
+                    $out .= "Type: " . gettype($q->question_segments) . "\n";
+                    $out .= "Value: " . json_encode($q->question_segments, JSON_UNESCAPED_UNICODE) . "\n\n";
+                }
+            }
+        }
+    }
+    return response($out)->header('Content-Type', 'text/plain');
+});

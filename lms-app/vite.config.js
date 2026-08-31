@@ -10,7 +10,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/dashboard.js',
                 'resources/js/contact.js',
-                'resources/js/mock-exam.js'
+                'resources/js/mock-exam.js',
+                'resources/js/vocab-games.js'
             ],
             refresh: true,
         }),

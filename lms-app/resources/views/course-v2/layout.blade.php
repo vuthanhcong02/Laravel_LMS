@@ -370,7 +370,8 @@
 
     
     <script>
-        window.alignPinyin = function(hanzi, pinyin, levelCode) {
+        window.alignPinyin = function(hanzi, pinyin, shouldShowPinyin = true) {
+            if (!shouldShowPinyin) return null;
             if (!hanzi || !pinyin) return null;
             
             const pArr = pinyin.trim().split(/\s+/).filter(Boolean);
@@ -383,14 +384,155 @@
     </script>
     <script>
         function hskApp() {
+            @php
+                $lessonData = $currentLesson ? $currentLesson->toArray() : null;
+                $shouldShow = $currentLevel ? hsk_should_show_pinyin($currentLevel) : true;
+                if ($lessonData && isset($lessonData['practices'])) {
+                    foreach ($lessonData['practices'] as &$practice) {
+                        if (isset($practice['sections'])) {
+                            foreach ($practice['sections'] as &$section) {
+                                $section['section_han_html'] = !empty($section['section_han']) ? ($shouldShow ? Helper::renderHskRubyText($section['section_han']) : $section['section_han']) : '';
+                                
+                                // Parse section_vi in PHP so we can apply Helper::renderHskRubyText if needed
+                                $text = $section['section_vi'] ?? '';
+                                $mainText = $text;
+                                $exampleHtml = '';
+                                $hasExample = false;
+                                $headerRx = '/(例如(?:\s*[\(（]?\s*Ví dụ\s*[\)）]?)?\s*[:：]?|Ví dụ\s*[:：]?)/i';
+                                $firstTagRx = '/(男\s*[:：]|女\s*[:：]| 问\s*[:：]|★|\s+[A-D]\s+|[\(（](?:ĐÚNG|SAI|✓|✕|v|x|√|N)[\)）])/i';
+
+                                if (preg_match($headerRx, $text, $hm, PREG_OFFSET_CAPTURE)) {
+                                    $mainText = trim(substr($text, 0, $hm[0][1]));
+                                    $exampleRaw = trim(substr($text, $hm[0][1]));
+                                    $hasExample = true;
+                                } else if (preg_match($firstTagRx, $text, $fm, PREG_OFFSET_CAPTURE)) {
+                                    $mainText = trim(substr($text, 0, $fm[0][1]));
+                                    $exampleRaw = trim(substr($text, $fm[0][1]));
+                                    $hasExample = true;
+                                }
+
+                                if ($hasExample) {
+                                    $exHeader = '';
+                                    if (preg_match($headerRx, $exampleRaw, $hm, PREG_OFFSET_CAPTURE) && $hm[0][1] == 0) {
+                                        $exHeader = trim(substr($exampleRaw, 0, strlen($hm[0][0])));
+                                        $exampleRaw = trim(substr($exampleRaw, strlen($hm[0][0])));
+                                    }
+                                    
+                                    $lines = array_filter(array_map('trim', explode("\n", $exampleRaw)));
+                                    $htmlLines = [];
+                                    $i = 0;
+                                    foreach ($lines as $line) {
+                                        if (preg_match('/^(A|B|C|D)\s*(.*)/i', $line, $matches)) {
+                                            $content = $shouldShow ? Helper::renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
+                                            $htmlLines[] = '<div class="mt-1.5 flex items-start gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] flex items-center justify-center mt-0.5">' . $matches[1] . '</span><span class="flex-1">' . $content . '</span></div>';
+                                        } else if (preg_match('/^(男\s*[:：]|女\s*[:：])(.*)/su', $line, $matches)) {
+                                            $speaker = $shouldShow ? Helper::renderHskRubyText($matches[1]) : htmlspecialchars($matches[1]);
+                                            $content = $shouldShow ? Helper::renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
+                                            $htmlLines[] = '<div class="mt-1.5"><span class="font-bold text-slate-700 dark:text-slate-200">' . $speaker . '</span>' . $content . '</div>';
+                                        } else {
+                                            $content = $shouldShow ? Helper::renderHskRubyText($line) : htmlspecialchars($line);
+                                            $htmlLines[] = ($i === 0 ? '' : '<div class="mt-1">') . $content . ($i === 0 ? '' : '</div>');
+                                        }
+                                        $i++;
+                                    }
+                                    
+                                    $exHeaderHtml = $exHeader ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' . ($shouldShow ? Helper::renderHskRubyText($exHeader) : htmlspecialchars($exHeader)) . '</span>' : '';
+                                    $exampleHtml = $exHeaderHtml . implode('', $htmlLines);
+                                }
+
+                                $section['parsed_vi'] = [
+                                    'mainText' => $mainText,
+                                    'hasExample' => $hasExample,
+                                    'exampleHtml' => $exampleHtml
+                                ];
+
+                                if ($shouldShow) {
+                                    if (isset($section['questions'])) {
+                                        foreach ($section['questions'] as &$q) {
+                                            $q['question_html'] = !empty($q['question']) ? Helper::renderHskRubyText($q['question']) : '';
+                                            if (!empty($q['context'])) {
+                                                if (is_string($q['context'])) {
+                                                    $q['context_html'] = Helper::renderHskRubyText($q['context']);
+                                                } else if (is_array($q['context'])) {
+                                                    $q['context_html'] = [];
+                                                    foreach ($q['context'] as $c) {
+                                                        $q['context_html'][] = Helper::renderHskRubyText($c);
+                                                    }
+                                                }
+                                            }
+                                            if (!empty($q['options'])) {
+                                                $qOpts = is_string($q['options']) ? json_decode($q['options'], true) : $q['options'];
+                                                if (is_array($qOpts)) {
+                                                    foreach ($qOpts as &$opt) {
+                                                    if (is_array($opt) && isset($opt['text'])) {
+                                                        $opt['html'] = Helper::renderHskRubyText($opt['text']);
+                                                    } else if (is_string($opt)) {
+                                                        $opt = [
+                                                            'text' => $opt,
+                                                            'html' => Helper::renderHskRubyText($opt)
+                                                        ];
+                                                    }
+                                                    }
+                                                    $q['options'] = $qOpts;
+                                                }
+                                            }
+                                            if (!empty($q['items'])) {
+                                                foreach ($q['items'] as &$item) {
+                                                    if (is_array($item) && isset($item['text'])) {
+                                                        $item['html'] = Helper::renderHskRubyText($item['text']);
+                                                    }
+                                                }
+                                            }
+                                            if (!empty($q['question_segments'])) {
+                                                $segments = is_string($q['question_segments']) ? json_decode($q['question_segments'], true) : $q['question_segments'];
+                                                $newSegments = [];
+                                                if (is_array($segments)) {
+                                                    foreach ($segments as $seg) {
+                                                    if (is_string($seg)) {
+                                                        $newSegments[] = [
+                                                            'text' => $seg,
+                                                            'html' => Helper::renderHskRubyText($seg)
+                                                        ];
+                                                    } else {
+                                                        $newSegments[] = $seg;
+                                                    }
+                                                    }
+                                                }
+                                                $q['question_segments'] = $newSegments;
+                                            }
+                                            if (!empty($q['sub_questions'])) {
+                                                foreach ($q['sub_questions'] as &$sq) {
+                                                    $sq['question_html'] = !empty($sq['question']) ? Helper::renderHskRubyText($sq['question']) : '';
+                                                    if (!empty($sq['options'])) {
+                                                        foreach ($sq['options'] as &$opt) {
+                                                            if (is_array($opt) && isset($opt['text'])) {
+                                                                $opt['html'] = Helper::renderHskRubyText($opt['text']);
+                                                            } else if (is_string($opt)) {
+                                                                $opt = [
+                                                                    'text' => $opt,
+                                                                    'html' => Helper::renderHskRubyText($opt)
+                                                                ];
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            @endphp
             return {
                 currentLevel: @json($currentLevel ? $currentLevel->id : null),
                 currentLevelObj: @json($currentLevel),
+                shouldShowPinyin: @json($shouldShow),
                 levelTitle: @json($currentLevel ? $currentLevel->title . ' - ' . $currentLevel->subtitle : ''),
                 levelStats: {},
-                currentLesson: @json($currentLesson),
+                currentLesson: @json($lessonData),
                 activeTab: @json($activeTab ?? 'tu-vung'),
-                shouldShowPinyin: true,
                 lessons: [],
                 hskLevels: @json($levels) || [],
                 
@@ -581,7 +723,7 @@
                                                 q.available_options = [];
                                                 if (q.options) {
                                                     q.options.forEach((opt, idx) => {
-                                                        q.available_options.push({ id: idx, text: opt.text || opt, used: false });
+                                                        q.available_options.push({ id: idx, text: opt.text || opt, pinyin: opt.pinyin, used: false });
                                                     });
                                                 }
                                             }
@@ -608,6 +750,25 @@
                                                     sq.selected_option = null; // For drag and drop
                                                     sq.answered = false;
                                                 });
+                                            }
+
+                                            // Xử lý reorder: convert question_segments sang array objects {id, text, html, pinyin}
+                                            if (q.ques_type === 'reorder' && q.question_segments) {
+                                                if (typeof q.question_segments === 'string') {
+                                                    try { q.question_segments = JSON.parse(q.question_segments); } catch(e) {}
+                                                }
+                                                if (!Array.isArray(q.question_segments) && typeof q.question_segments === 'object') {
+                                                    q.question_segments = Object.values(q.question_segments);
+                                                }
+                                                if (Array.isArray(q.question_segments)) {
+                                                    q.question_segments = q.question_segments.map(function(seg, idx) {
+                                                        if (typeof seg === 'string') {
+                                                            return { id: idx, text: seg, html: '', pinyin: '' };
+                                                        }
+                                                        return { id: idx, text: seg.text || '', html: seg.html || '', pinyin: seg.pinyin || '' };
+                                                    });
+                                                }
+                                                console.log('[DEBUG] reorder q.question_segments after map:', JSON.stringify(q.question_segments));
                                             }
                                         });
                                     }

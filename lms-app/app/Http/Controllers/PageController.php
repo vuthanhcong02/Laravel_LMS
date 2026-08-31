@@ -84,6 +84,66 @@ class PageController extends Controller
         return view('course.layout', compact('levels', 'currentLevel', 'currentLesson', 'activeTab'));
     }
 
+        public function getViewCoursesV2(Request $request)
+    {
+        $levels = HskLevel::with([
+            'lessons' => function ($query) {
+                $query->orderBy('lesson_number', 'asc');
+            }
+        ])->orderBy('id', 'asc')->get();
+
+        return view('course-v2.index', [
+            'levels' => $levels,
+            'currentLevel' => null,
+            'currentLesson' => null,
+            'activeTab' => null
+        ]);
+    }
+
+    public function showCourseLevelV2($levelSlug)
+    {
+        $levels = HskLevel::with([
+            'lessons' => function ($query) {
+                $query->orderBy('lesson_number', 'asc');
+            }
+        ])->orderBy('id', 'asc')->get();
+
+        $currentLevel = HskLevel::with([
+            'lessons' => function ($query) {
+                $query->orderBy('lesson_number', 'asc');
+            }
+        ])->where('slug', $levelSlug)->firstOrFail();
+
+        return view('course-v2.level', [
+            'levels' => $levels,
+            'currentLevel' => $currentLevel,
+            'currentLesson' => null,
+            'activeTab' => null
+        ]);
+    }
+
+    public function showCourseLessonV2($levelSlug, $lessonSlug, $tab = 'tu-vung')
+    {
+        $levels = HskLevel::with([
+            'lessons' => function ($query) {
+                $query->orderBy('lesson_number', 'asc');
+            }
+        ])->orderBy('id', 'asc')->get();
+
+        $currentLevel = HskLevel::where('slug', $levelSlug)->firstOrFail();
+
+        $currentLesson = HskLesson::with([
+            'vocabList',
+            'grammarList',
+            'dialogueSections.dialogues',
+            'practices.sections.questions'
+        ])->where('hsk_level_id', $currentLevel->id)->where('slug', $lessonSlug)->firstOrFail();
+
+        $activeTab = $tab;
+
+        return view('course-v2.show', compact('levels', 'currentLevel', 'currentLesson', 'activeTab'));
+    }
+
     public function getViewBlog()
     {
         $featuredBlog = Blog::with(['author', 'category'])

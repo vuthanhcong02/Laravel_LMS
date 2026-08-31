@@ -40,7 +40,7 @@ if (! function_exists('renderHskRubyText')) {
                         $hz = trim(strip_tags(preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $inner)));
                         
                         if (!empty($rt) && !empty($hz)) {
-                            return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($hz) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($rt) . '</rt></ruby>';
+                            return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($hz) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($rt) . '</rt></ruby>';
                         }
                         return e(strip_tags($m[0]));
                     }, $html);
@@ -66,7 +66,6 @@ if (! function_exists('renderHskRubyText')) {
             preg_match_all('/(?:[a-zA-Z]{1,3})?[aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜAEIOUÜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙǕǗǙǛ]+(?:ng|n|r)?/iu', $pinyinStr, $m);
             $validPinyins = $m[0] ?? [];
 
-            $hanziStr = preg_replace('/[ \t\r]+/u', '', $hanziStr);
             $chars = mb_str_split($hanziStr);
 
             $chineseCharCount = 0;
@@ -83,11 +82,11 @@ if (! function_exists('renderHskRubyText')) {
                     if ($char === "\n") {
                         $out .= '<div class="w-full h-0 basis-full my-1"></div>';
                     } else if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
-                        $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($validPinyins[$pIdx++]) . '</rt></ruby>';
-                    } else if (preg_match('/[a-zA-Z0-9]/', $char)) {
-                        $out .= '<span class="mx-1 text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span>';
+                        $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($validPinyins[$pIdx++]) . '</rt></ruby>';
+                    } else if (trim($char) === '') {
+                        $out .= '<span class="mx-1"> </span>';
                     } else {
-                        $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-transparent mb-0.5 select-none">.</rt></ruby>';
+                        $out .= '<span class="text-sm font-medium text-slate-800 dark:text-slate-100 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
                     }
                 }
                 return $out;
@@ -150,11 +149,11 @@ if (! function_exists('hsk_render_pinyin')) {
                         $html .= '<div class="w-full h-0 basis-full my-1"></div>';
                     } elseif (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
                         $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
-                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($py) . '</rt></ruby>';
+                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($py) . '</rt></ruby>';
                     } elseif (trim($char) === '') {
                         $html .= '<span class="mx-1"> </span>';
                     } else {
-                        $html .= '<span class="text-base font-bold text-slate-900 dark:text-white mt-auto self-end mb-[2px]">' . e($char) . '</span>';
+                        $html .= '<span class="text-sm font-medium text-slate-800 dark:text-slate-100 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
                     }
                 }
                 $html .= '</div>';
@@ -163,5 +162,16 @@ if (! function_exists('hsk_render_pinyin')) {
 
             return implode('<br/>', $renderedLines);
         });
+    }
+}
+
+if (! function_exists('hsk_should_show_pinyin')) {
+    function hsk_should_show_pinyin($level = null): bool
+    {
+        if (empty($level) || !isset($level->level_code)) {
+            return true;
+        }
+        $levelNum = (int) str_replace('hsk', '', strtolower($level->level_code));
+        return $levelNum < 4;
     }
 }

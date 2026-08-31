@@ -37,6 +37,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         :root { --brand-primary: #e07a5f; --brand-primary-hover: #c86349; --brand-bg: #f8f6f3; --card-border: #e8e2d9; }
@@ -128,9 +129,19 @@
             <!-- TOPBAR HEADER -->
             @include('components.lms.header')
 
+            @hasSection('sub-header')
+                <div class="px-4 sm:p-6 pb-0 sm:pb-0 pr-14 sm:pr-16 pt-4 shrink-0 bg-[#f8f6f3] dark:bg-[#0e0c0b] z-20 transition-all duration-300"
+                     :class="sidebarCollapsed ? 'px-4 sm:p-6 pl-4 sm:pl-6 pr-14 sm:pr-16 pb-0 sm:pb-0' : 'px-4 sm:p-6 pb-0 sm:pb-0 pr-14 sm:pr-16'">
+                    <div class="mx-auto max-w-6xl transition-all duration-300"
+                         :class="sidebarCollapsed ? 'max-w-7xl' : 'max-w-6xl'">
+                        @yield('sub-header')
+                    </div>
+                </div>
+            @endif
+
             <!-- Page Body -->
-            <div class="flex-1 overflow-y-auto no-scrollbar transition-all duration-300 space-y-6 p-4 sm:p-6 pr-14 sm:pr-16"
-                 :class="sidebarCollapsed ? 'p-4 sm:p-6 pl-4 sm:pl-6 pr-14 sm:pr-16' : 'p-4 sm:p-6 pr-14 sm:pr-16'">
+            <div class="flex-1 overflow-y-auto no-scrollbar transition-all duration-300 space-y-6 px-4 sm:px-6 pt-3 pb-6 pr-14 sm:pr-16"
+                 :class="sidebarCollapsed ? 'px-4 sm:px-6 pt-3 pb-6 pl-4 sm:pl-6 pr-14 sm:pr-16' : 'px-4 sm:px-6 pt-3 pb-6 pr-14 sm:pr-16'">
                 
                 <div class="mx-auto space-y-6 transition-all duration-300 max-w-6xl"
                      :class="sidebarCollapsed ? 'max-w-7xl' : 'max-w-6xl'">
@@ -199,6 +210,81 @@
 
     <!-- POPUP AUTH MODAL DÙNG CHUNG -->
     @include('components.lms.auth-modal')
+
+    <!-- Global Audio Player Logic for XIAOMU LMS -->
+    <script>
+        let currentGlobalAudio = null;
+
+        window.playWordAudio = function(word) {
+            if (!word) return;
+            let textToSpeak = String(word).trim();
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.85;
+                
+                let setVoiceAndSpeak = function() {
+                    let voices = window.speechSynthesis.getVoices();
+                    let zhVoice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh_CN' || v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+                    if (zhVoice) utterance.voice = zhVoice;
+                    window.speechSynthesis.speak(utterance);
+                };
+
+                if (window.speechSynthesis.getVoices().length > 0) {
+                    setVoiceAndSpeak();
+                } else {
+                    window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+        };
+
+        window.playAudio = function(urlOrText) {
+            if (!urlOrText) return;
+            
+            let val = String(urlOrText).trim();
+            // Check if it's a URL or audio path
+            if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/') || val.startsWith('storage/') || val.startsWith('audio/')) {
+                let src = val;
+                if (src.startsWith('audio/')) {
+                    src = '/storage/hsk_media/' + src;
+                } else if (src.startsWith('storage/')) {
+                    src = '/' + src;
+                }
+                
+                if (currentGlobalAudio) {
+                    currentGlobalAudio.pause();
+                    currentGlobalAudio.currentTime = 0;
+                }
+                
+                currentGlobalAudio = new Audio(src);
+                
+                let fallback = function() {
+                    try {
+                        let urlObj = new URL(src, window.location.origin);
+                        let word = urlObj.searchParams.get('audio') || urlObj.searchParams.get('text');
+                        if (word) {
+                            window.playWordAudio(decodeURIComponent(word));
+                            return;
+                        }
+                    } catch (err) {}
+                };
+
+                currentGlobalAudio.onerror = fallback;
+                let playPromise = currentGlobalAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(function(e) {
+                        console.warn('Audio playback error, falling back:', e);
+                        fallback();
+                    });
+                }
+            } else {
+                // Play text directly via SpeechSynthesis
+                window.playWordAudio(val);
+            }
+        };
+    </script>
 
     @yield('scripts')
 </body>

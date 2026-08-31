@@ -33,14 +33,20 @@
                     <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">Học tập</div>
                     <div class="space-y-1">
                         <!-- Trang chủ -->
-                        <a href="{{ url('/demo-ui') }}" class="flex items-center gap-3 rounded-xl text-sm nav-item-active px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Trang chủ' : ''">
-                            <i class="fa-solid fa-house text-base w-5 text-center shrink-0"></i>
+                        @php
+                            $isHomeActive = request()->routeIs('home') || request()->is('demo-ui');
+                        @endphp
+                        <a href="{{ url('/demo-ui') }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isHomeActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Trang chủ' : ''">
+                            <i class="fa-solid fa-house text-base w-5 text-center shrink-0 transition-colors {{ $isHomeActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Trang chủ</span>
                         </a>
 
                         <!-- Khóa học -->
-                        <a href="{{ url('/demo-courses') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Khóa học HSK' : ''">
-                            <i class="fa-solid fa-book-open text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
+                        @php
+                            $isCourseActive = request()->routeIs('courses.v2*') || request()->is('demo-courses');
+                        @endphp
+                        <a href="{{ route('courses.v2') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isCourseActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Khóa học HSK' : ''">
+                            <i class="fa-solid fa-book-open text-base w-5 text-center shrink-0 transition-colors {{ $isCourseActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Khóa học HSK</span>
                         </a>
 
