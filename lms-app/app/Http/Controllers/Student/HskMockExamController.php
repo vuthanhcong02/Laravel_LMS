@@ -26,18 +26,49 @@ class HskMockExamController extends Controller
         $completedExamsCount = $userStats['completedExamsCount'];
         $highestScore = $userStats['highestScore'];
 
+        $globalPassRate = $this->hskMockExamService->getGlobalPassRate();
+        $totalExamsCount = $this->hskMockExamService->getTotalExamsCount();
+        $totalAttempts = $this->hskMockExamService->getTotalAttempts();
+
         // Leaderboard (Top 10 highest scores overall or by level)
         $leaderboardLevel = $request->get('leaderboard_level');
         $leaderboardData = $this->hskMockExamService->getLeaderboard($leaderboardLevel, 10, $userId);
-        $leaderboard = $leaderboardData['topList'];
+        
+        $leaderboard = $leaderboardData['topList']->map(function ($result, $index) {
+            $levelCode = strtolower($result->mockExam->hskLevel->level_code ?? 'hsk1');
+            $badgeBg = 'bg-slate-100 text-slate-800 border-slate-200';
+            if (str_contains($levelCode, 'hsk1')) $badgeBg = 'bg-amber-100 text-amber-800 border-amber-200';
+            elseif (str_contains($levelCode, 'hsk2')) $badgeBg = 'bg-blue-100 text-blue-800 border-blue-200';
+            elseif (str_contains($levelCode, 'hsk3')) $badgeBg = 'bg-indigo-100 text-indigo-800 border-indigo-200';
+            elseif (str_contains($levelCode, 'hsk4')) $badgeBg = 'bg-purple-100 text-purple-800 border-purple-200';
+            elseif (str_contains($levelCode, 'hsk5')) $badgeBg = 'bg-rose-100 text-rose-800 border-rose-200';
+            elseif (str_contains($levelCode, 'hsk6')) $badgeBg = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+            $fullName = trim(($result->user->last_name ?? '') . ' ' . ($result->user->first_name ?? 'Người dùng'));
+            return [
+                'rank' => $index + 1,
+                'avatar' => $result->user->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($fullName),
+                'name' => $fullName,
+                'level' => strtoupper($levelCode),
+                'badgeBg' => $badgeBg,
+                'score' => $result->total_score . ' Điểm',
+                'time' => floor($result->duration_seconds / 60) . 'p ' . str_pad($result->duration_seconds % 60, 2, '0', STR_PAD_LEFT) . 's',
+            ];
+        })->values();
+
         $currentUserRank = $leaderboardData['currentUserRank'];
         $currentUserResult = $leaderboardData['currentUserResult'];
 
-        if ($request->ajax()) {
-            return view('portal.student.hsk-mock-exams.leaderboard-list', compact('leaderboard', 'currentUserRank', 'currentUserResult'))->render();
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'leaderboard' => $leaderboard,
+                'currentUserRank' => $currentUserRank,
+                'currentUserResult' => $currentUserResult,
+            ]);
         }
 
-        return view('portal.student.hsk-mock-exams.index', compact('hskLevels', 'completedExamsCount', 'highestScore', 'leaderboard', 'leaderboardLevel', 'currentUserRank', 'currentUserResult'));
+        return view('portal.student.hsk-mock-exams.index', compact('hskLevels', 'completedExamsCount', 'highestScore', 'globalPassRate', 'totalExamsCount', 'totalAttempts', 'leaderboard', 'leaderboardLevel', 'currentUserRank', 'currentUserResult'));
     }
 
     /**

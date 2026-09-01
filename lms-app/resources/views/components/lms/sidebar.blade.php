@@ -51,8 +51,11 @@
                         </a>
 
                         <!-- Luyện thi HSK -->
-                        <a href="{{ url('/demo-exams') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Luyện thi HSK' : ''">
-                            <i class="fa-solid fa-file-pen text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
+                        @php
+                            $isHskActive = request()->routeIs('student.hsk-mock-exams.*');
+                        @endphp
+                        <a href="{{ route('student.hsk-mock-exams.index') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isHskActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Luyện thi HSK' : ''">
+                            <i class="fa-solid fa-file-pen text-base w-5 text-center shrink-0 transition-colors {{ $isHskActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Luyện thi HSK</span>
                         </a>
 

@@ -624,18 +624,17 @@
                                 </a>
 
                                 <!-- TikTok -->
-                                <a href="https://tiktok.com" target="_blank" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile">
-                                    <div class="w-7 h-7 rounded-lg bg-black text-white flex items-center justify-center text-xs shrink-0">
+                                <a href="https://www.tiktok.com/@chiettuchuhan55" target="_blank" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile">
+                                    <div class="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center shrink-0">
                                         <i class="fa-brands fa-tiktok"></i>
                                     </div>
-                                    <div class="truncate">
+                                    <div class="min-w-0">
                                         <p class="text-xs font-bold text-slate-800 dark:text-white truncate">TikTok</p>
-                                        <p class="text-[10px] text-slate-400 truncate">Từ vựng 60s</p>
+                                        <p class="text-[10px] text-slate-500 truncate">Video học thuật 60s</p>
                                     </div>
                                 </a>
 
                                 <!-- Zalo Official -->
-                                <a href="https://zalo.me" target="_blank" class="col-span-2 flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile">
                                     <div class="w-7 h-7 rounded-lg bg-[#0068ff] text-white font-extrabold flex items-center justify-center text-[10px] shrink-0">
                                         Zalo
                                     </div>

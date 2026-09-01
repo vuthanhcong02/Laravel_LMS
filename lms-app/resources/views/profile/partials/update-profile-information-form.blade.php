@@ -60,7 +60,7 @@
                     <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     <input id="first_name" name="first_name" type="text" 
                            class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border @error('first_name') border-rose-500 @else border-[#e8e2d9] dark:border-[#2d2926] @enderror rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all font-medium" 
-                           value="{{ old('first_name', $user->first_name) }}" required autocomplete="given-name" placeholder="{{ __('Nguyễn Văn') }}" />
+                           value="{{ old('first_name', $user->first_name) }}" required autocomplete="given-name" placeholder="{{ __('Nhập họ và tên đệm') }}" />
                 </div>
                 <p x-show="errors.first_name" x-text="errors.first_name" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
             </div>
@@ -71,7 +71,7 @@
                     <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     <input id="last_name" name="last_name" type="text" 
                            class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border @error('last_name') border-rose-500 @else border-[#e8e2d9] dark:border-[#2d2926] @enderror rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all font-medium" 
-                           value="{{ old('last_name', $user->last_name) }}" required autocomplete="family-name" placeholder="{{ __('An') }}" />
+                           value="{{ old('last_name', $user->last_name) }}" required autocomplete="family-name" placeholder="{{ __('Nhập tên của bạn') }}" />
                 </div>
                 <p x-show="errors.last_name" x-text="errors.last_name" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
             </div>

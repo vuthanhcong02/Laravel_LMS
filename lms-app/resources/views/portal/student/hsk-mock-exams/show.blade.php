@@ -1,74 +1,264 @@
-@extends('layouts.app')
+@extends('layouts.lms')
 
-@section('title', __('HSK Cấp ' . $level . ' - Thi Thử'))
+@section('title', __('Danh sách đề thi') . ' ' . $hskLevel->title . ' - ' . __('Luyện thi HSK'))
 
-@section('breadcrumb', 'Danh sách đề thi HSK ' . $level)
-@section('breadcrumb_desc', 'Chọn đề thi phù hợp và bắt đầu kiểm tra năng lực của bạn. Hệ thống sẽ tự động chấm điểm và đưa ra phân tích sau khi bạn nộp bài.')
+@section('header-left')
+    <x-lms.breadcrumb :links="[
+        ['label' => __('Luyện thi HSK'), 'url' => route('student.hsk-mock-exams.index')],
+        ['label' => $hskLevel->title, 'url' => null]
+    ]" />
+@endsection
 
 @section('content')
-<div class="min-h-screen bg-slate-50 dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 font-sans relative pb-24 pt-8">
-    
-    <div class="max-w-7xl mx-auto px-6 space-y-8 relative z-10">
-        
-        {{-- Back Button & Filters --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <a href="{{ route('student.hsk-mock-exams.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-primary transition-colors bg-white dark:bg-slate-800/60 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 w-fit shadow-sm">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                Quay lại các cấp độ
-            </a>
+<div x-data="{ showStructureModal: false }" class="space-y-6">
+    <!-- Header & Navigation Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <a href="{{ route('student.hsk-mock-exams.index') }}" 
+           class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-[#e07a5f] bg-white dark:bg-[#181615] px-4 py-2.5 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-sm btn-tactile w-fit transition-colors">
+            <i class="fa-solid fa-arrow-left text-[11px]"></i>
+            <span>{{ __('Quay lại các cấp độ HSK') }}</span>
+        </a>
 
-            <div class="flex items-center gap-2">
-                <select id="exam-status-filter" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm cursor-pointer">
-                    <option value="all">Tất cả đề thi</option>
-                    <option value="completed">Đã hoàn thành</option>
-                    <option value="uncompleted">Chưa làm</option>
-                </select>
+        <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-semibold text-slate-500 shadow-sm">
+            <i class="fa-solid fa-book-open text-[#e07a5f]"></i>
+            <span>{{ __('Tổng cộng') }}: <strong class="text-slate-800 dark:text-white">{{ $hskLevel->mockExams->count() }}</strong> {{ __('Đề thi') }}</span>
+        </div>
+    </div>
+
+    <!-- Level Banner Card -->
+    <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-[#e07a5f]/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1.5">
+                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#e07a5f]/10 text-[#e07a5f] text-[11px] font-bold">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>{{ strtoupper($hskLevel->level_code) }}</span>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                    {{ $hskLevel->title }} - {{ $hskLevel->subtitle ?? __('Luyện thi tiêu chuẩn') }}
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
+                    {{ $hskLevel->description ?? __('Hệ thống đề thi thử HSK bám sát cấu trúc đề thi chính thức của Hanban, tự động chấm điểm và đánh giá chi tiết từng kỹ năng.') }}
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
+                <div class="px-4 py-2 rounded-xl bg-white dark:bg-[#25211e] border border-[#e8e2d9] dark:border-[#2d2926] text-center">
+                    <div class="text-[10px] text-slate-400 font-medium">{{ __('Thời gian làm bài') }}</div>
+                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">
+                        @php
+                            $lvl = strtolower($hskLevel->level_code);
+                            $durations = ['hsk1' => 40, 'hsk2' => 55, 'hsk3' => 90, 'hsk4' => 105, 'hsk5' => 125, 'hsk6' => 140];
+                            $testDuration = $durations[$lvl] ?? 40;
+                        @endphp
+                        {{ $testDuration }} {{ __('Phút') }}
+                    </div>
+                </div>
+                <div class="px-4 py-2 rounded-xl bg-white dark:bg-[#25211e] border border-[#e8e2d9] dark:border-[#2d2926] text-center">
+                    <div class="text-[10px] text-slate-400 font-medium">{{ __('Điểm tối đa') }}</div>
+                    <div class="text-sm font-bold text-[#e07a5f]">
+                        {{ in_array(strtolower($hskLevel->level_code), ['hsk1', 'hsk2']) ? '200' : '300' }} {{ __('Điểm') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content: Danh Sách Đề Thi Full Width Grid -->
+    <div class="space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+                <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-[#e07a5f]"></i>
+                    <span>{{ __('Danh sách đề thi') }} ({{ $hskLevel->mockExams->count() }})</span>
+                </h2>
+
+                <button @click="showStructureModal = true" 
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-[#e07a5f] hover:text-[#e07a5f] shadow-xs btn-tactile transition-all">
+                    <i class="fa-solid fa-circle-info text-[#e07a5f]"></i>
+                    <span>{{ __('Cấu trúc đề thi') }}</span>
+                </button>
             </div>
         </div>
 
-        {{-- 2-Column Layout: Structure Explanation (Left) & Exam List (Right) --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-12 gap-8">
-            
-            {{-- LEFT COLUMN: EXAM STRUCTURE --}}
-            <div class="lg:col-span-1 xl:col-span-4 space-y-6">
+        @if($hskLevel->mockExams->isEmpty())
+            <div class="lms-card p-12 text-center space-y-3 bg-[#faf8f5]/60 dark:bg-[#151413]/60 border-dashed border-[#dfd7cc] dark:border-[#38332f]">
+                <div class="w-16 h-16 mx-auto rounded-3xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800 dark:text-white">
+                    {{ __('Chưa có đề thi nào') }}
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                    {{ __('Hệ thống đang trong quá trình chuẩn bị và cập nhật bộ đề thi chuẩn cho cấp độ này. Vui lòng quay lại sau!') }}
+                </p>
+                <div class="pt-2">
+                    <a href="{{ route('student.hsk-mock-exams.index') }}" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile inline-flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                        <span>{{ __('Xem cấp độ khác') }}</span>
+                    </a>
+                </div>
+            </div>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                @foreach($hskLevel->mockExams as $exam)
+                    @php
+                        $userResults = $exam->results ?? collect();
+                        $statusBadge = '';
+                        $actionBtn = '<span>' . __('Vào thi') . '</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>';
+                        
+                        $highestResult = $userResults->where('status', 'completed')->sortByDesc('total_score')->first();
+                        $inProgressResult = $userResults->where('status', 'in_progress')->first();
+                        
+                        if ($highestResult) {
+                            $maxPt = in_array(strtolower($hskLevel->level_code), ['hsk1', 'hsk2']) ? 200 : 300;
+                            $statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1"><i class="fa-solid fa-medal text-[10px]"></i> ' . __('Đạt') . ': ' . $highestResult->total_score . '/' . $maxPt . '</span>';
+                            $actionBtn = '<span>' . __('Thi lại') . '</span> <i class="fa-solid fa-rotate-right text-[10px]"></i>';
+                        } elseif ($inProgressResult) {
+                            $statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin text-[10px]"></i> ' . __('Đang thi') . '</span>';
+                            $actionBtn = '<span>' . __('Tiếp tục thi') . '</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>';
+                        }
+                        
+                        $levelNumber = str_replace('hsk', '', strtolower($hskLevel->level_code));
+                        $actionUrl = route('student.hsk-mock-exams.start', ['level' => $levelNumber, 'id' => $exam->id]);
+                    @endphp
+
+                    <div class="lms-card p-5 space-y-4 flex flex-col justify-between group hover:border-[#e07a5f] hover:shadow-md transition-all duration-300">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                                    {{ strtoupper($hskLevel->level_code) }} • {{ __('Đề') }} {{ $exam->year ?? date('Y') }}
+                                </span>
+                                {!! $statusBadge !!}
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">
+                                {{ $exam->title }}
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                                {{ $exam->description ?? __('Đề thi chuẩn cấu trúc HSK mới nhất.') }}
+                            </p>
+
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
+                                    <div class="text-[10px] text-slate-400 font-medium">{{ __('Thời gian') }}</div>
+                                    <div class="font-bold text-slate-800 dark:text-slate-200">{{ $exam->duration }} {{ __('Phút') }}</div>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
+                                    <div class="text-[10px] text-slate-400 font-medium">{{ __('Số câu hỏi') }}</div>
+                                    <div class="font-bold text-slate-800 dark:text-slate-200">{{ $exam->total_questions ?? 0 }} {{ __('Câu') }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between">
+                            <span class="text-xs text-slate-400">
+                                <i class="fa-solid fa-users mr-1"></i>{{ number_format($exam->attempt_count ?? 0) }} {{ __('lượt làm') }}
+                            </span>
+
+                            @auth
+                                <a href="{{ $actionUrl }}" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-1.5 shadow-sm">
+                                    {!! $actionBtn !!}
+                                </a>
+                            @else
+                                <button type="button" @click.prevent="authModalOpen = true; authModalTab = 'login'" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-1.5 shadow-sm">
+                                    {!! $actionBtn !!}
+                                </button>
+                            @endauth
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
+    <!-- Modal Popup: Cấu Trúc Đề Thi HSK -->
+    <div x-show="showStructureModal" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         style="display: none;"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @keydown.escape.window="showStructureModal = false">
+        
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showStructureModal = false"></div>
+
+        <!-- Modal Box -->
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="relative w-full max-w-2xl bg-white dark:bg-[#181615] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-2xl overflow-hidden pointer-events-auto"
+                 @click.outside="showStructureModal = false">
                 
-                <div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm sticky top-24">
-                    <h3 class="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-2">
-                        <span class="material-symbols-outlined text-primary text-[22px]">info</span>
-                        Cấu trúc đề thi HSK {{ $level }}
-                    </h3>
-                    
-                    @if($hskLevel->exam_structure)
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between bg-[#fcfaf7] dark:bg-[#201d1b]">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-[#e07a5f]/10 text-[#e07a5f] flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                {{ __('Cấu trúc đề thi') }} {{ $hskLevel->title }}
+                            </h3>
+                            <p class="text-[11px] text-slate-400">
+                                {{ __('Tiêu chuẩn đánh giá năng lực Hán ngữ Hanban') }}
+                            </p>
+                        </div>
+                    </div>
+                    <button @click="showStructureModal = false" class="w-8 h-8 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] text-slate-400 hover:text-slate-700 dark:hover:text-white flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                    @if(!empty($hskLevel->exam_structure))
                         @php $structure = $hskLevel->exam_structure; @endphp
-                        @if(isset($structure['note']))
-                        <p class="text-sm font-medium text-slate-600 dark:text-slate-300 mb-6 bg-primary/5 p-3 rounded-xl border border-primary/10">
-                            {!! nl2br(e($structure['note'])) !!}
-                        </p>
+                        
+                        @if(!empty($structure['note']))
+                            <div class="text-xs text-slate-600 dark:text-slate-300 bg-[#fff7f4] dark:bg-[#221c19] p-4 rounded-2xl border border-[#fcdccf] dark:border-[#382620] leading-relaxed">
+                                <div class="font-bold text-[#e07a5f] mb-1 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-lightbulb"></i>
+                                    <span>{{ __('Lưu ý quan trọng') }}:</span>
+                                </div>
+                                {!! nl2br(e($structure['note'])) !!}
+                            </div>
                         @endif
 
-                        <div class="space-y-6">
+                        <div class="space-y-4">
                             @foreach($structure['sections'] ?? [] as $section)
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-slate-100 dark:border-slate-700/50 pb-2">
-                                        @if(stripos($section['title'], 'Nghe') !== false)
-                                            <span class="material-symbols-outlined text-sky-500 text-[18px]">headphones</span>
-                                        @elseif(stripos($section['title'], 'Đọc') !== false)
-                                            <span class="material-symbols-outlined text-amber-500 text-[18px]">menu_book</span>
-                                        @elseif(stripos($section['title'], 'Viết') !== false)
-                                            <span class="material-symbols-outlined text-emerald-500 text-[18px]">edit_document</span>
-                                        @else
-                                            <span class="material-symbols-outlined text-primary text-[18px]">quiz</span>
-                                        @endif
-                                        {{ $section['title'] }} ({{ $section['total_questions'] }} Câu)
-                                    </h4>
-                                    <div class="space-y-4">
+                                @php
+                                    $secTitle = $section['title'] ?? '';
+                                    $isListen = stripos($secTitle, 'Nghe') !== false;
+                                    $isRead = stripos($secTitle, 'Đọc') !== false;
+                                    $isWrite = stripos($secTitle, 'Viết') !== false;
+                                    
+                                    $secIcon = $isListen ? 'fa-headphones text-sky-500' : ($isRead ? 'fa-book-open text-amber-500' : ($isWrite ? 'fa-pen-to-square text-emerald-500' : 'fa-list-check text-[#e07a5f]'));
+                                @endphp
+                                <div class="space-y-2.5">
+                                    <div class="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-[#e8e2d9] dark:border-[#2d2926] pb-1.5">
+                                        <span class="flex items-center gap-2 text-sm">
+                                            <i class="fa-solid {{ $secIcon }}"></i>
+                                            <span>{{ $secTitle }}</span>
+                                        </span>
+                                        <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold px-2.5 py-0.5 rounded-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
+                                            {{ $section['total_questions'] ?? 0 }} {{ __('Câu') }} • {{ $section['total_score'] ?? 100 }} {{ __('Điểm') }}
+                                        </span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         @foreach($section['parts'] ?? [] as $part)
-                                            <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
-                                                <div class="flex justify-between items-center mb-1">
-                                                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ $part['name'] }}</span>
-                                                    <span class="text-[10px] font-bold bg-white dark:bg-slate-700 px-2 py-0.5 rounded text-slate-500">{{ $part['questions'] }} câu</span>
+                                            <div class="p-3 rounded-2xl bg-[#fcfaf7] dark:bg-[#1d1a18] border border-[#e8e2d9]/60 dark:border-[#2d2926]/60 text-xs space-y-1">
+                                                <div class="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
+                                                    <span>{{ $part['name'] }}</span>
+                                                    <span class="text-[10px] font-bold text-slate-500 bg-white dark:bg-[#25211e] px-2 py-0.5 rounded border border-[#e8e2d9] dark:border-[#2d2926]">
+                                                        {{ $part['questions'] }} {{ __('câu') }}
+                                                    </span>
                                                 </div>
-                                                <p class="text-xs text-slate-500 dark:text-slate-400">{{ $part['description'] }}</p>
+                                                <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                                                    {{ $part['description'] }}
+                                                </p>
                                             </div>
                                         @endforeach
                                     </div>
@@ -76,175 +266,21 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-sm text-slate-500 dark:text-slate-400 italic text-center py-10">Cấu trúc đề thi đang được cập nhật...</p>
+                        <div class="py-8 text-center text-xs text-slate-400">
+                            <i class="fa-solid fa-clock text-2xl mb-2 text-slate-300 dark:text-slate-600 block"></i>
+                            {{ __('Cấu trúc đề thi đang được cập nhật...') }}
+                        </div>
                     @endif
                 </div>
 
-            </div>
-
-            {{-- RIGHT COLUMN: EXAM LIST --}}
-            <div class="lg:col-span-2 xl:col-span-8 space-y-6">
-                
-                @if($hskLevel->mockExams->isEmpty())
-                    <div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-10 flex flex-col items-center justify-center text-center shadow-sm h-[400px]">
-                        <div class="w-20 h-20 bg-slate-50 dark:bg-slate-800/80 rounded-full flex items-center justify-center mb-4 border border-slate-100 dark:border-slate-700">
-                            <span class="material-symbols-outlined text-slate-300 dark:text-slate-500 text-4xl">inventory_2</span>
-                        </div>
-                        <h4 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Chưa có đề thi nào</h4>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 max-w-sm">Hệ thống đang cập nhật đề thi cho cấp độ này. Vui lòng quay lại sau nhé!</p>
-                    </div>
-                @else
-                    {{-- Exam Grid --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-                        @foreach($hskLevel->mockExams as $exam)
-                            @php
-                                $statusText = 'Chưa làm';
-                                $statusClass = 'bg-slate-100 dark:bg-slate-700 text-slate-500';
-                                $highestScore = null;
-                                $userResults = $exam->results;
-                                
-                                if ($userResults->isNotEmpty()) {
-                                    $completedResults = $userResults->where('status', 'completed');
-                                    if ($completedResults->isNotEmpty()) {
-                                        $statusText = 'Đã làm';
-                                        $statusClass = 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600';
-                                        $highestScore = $completedResults->max('total_score');
-                                    } elseif ($userResults->where('status', 'in_progress')->isNotEmpty()) {
-                                        $statusText = 'Đang làm';
-                                        $statusClass = 'bg-amber-100 dark:bg-amber-900/30 text-amber-600';
-                                    }
-                                }
-                            @endphp
-                            {{-- Exam Card (Dynamic) --}}
-                            <div class="exam-card group bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex flex-col relative" data-status="{{ $statusText === 'Đã làm' ? 'completed' : 'uncompleted' }}" data-title="{{ strtolower($exam->title) }}">
-                                
-                                
-                                <div class="p-5 flex-1 relative">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div class="px-2.5 py-1 {{ $statusClass }} text-[10px] font-bold uppercase tracking-wider rounded-full">
-                                            {{ $statusText }}
-                                        </div>
-                                    </div>
-                                    
-                                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2 group-hover:text-primary transition-colors">{{ $exam->title }}</h3>
-                                    
-                                    <div class="text-xs text-slate-500 dark:text-slate-400 space-y-2 mt-4 mb-2">
-                                        <div class="flex justify-between items-center">
-                                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">schedule</span> Thời gian</span>
-                                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ $exam->duration }} Phút</span>
-                                        </div>
-                                        <div class="flex justify-between items-center">
-                                            @php
-                                                $lblCode = strtolower($level);
-                                                $maxPt = in_array($lblCode, ['1', '2']) ? 200 : 300;
-                                            @endphp
-                                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">fact_check</span> Điểm {{ $highestScore !== null ? 'cao nhất' : 'tối đa' }}</span>
-                                            <span class="font-bold text-slate-700 dark:text-slate-300">
-                                                @if($highestScore !== null)
-                                                    <span class="text-emerald-500">{{ $highestScore }}</span> / {{ $maxPt }}
-                                                @else
-                                                    {{ $maxPt }}
-                                                @endif
-                                            </span>
-                                        </div>
-                                        <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-700/50 mt-3">
-                                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-slate-400">group</span> Lượt làm</span>
-                                            <span class="font-bold text-slate-500">{{ $exam->results_count ?? 0 }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="p-3 border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/20">
-                                    @auth
-                                        <a href="{{ route('student.hsk-mock-exams.start', ['level' => $level, 'id' => $exam->id]) }}" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                            <span class="material-symbols-outlined text-[18px]">play_circle</span> {{ $statusText === 'Đang làm' ? 'Làm tiếp' : ($statusText === 'Đã làm' ? 'Làm lại' : 'Bắt đầu thi') }}
-                                        </a>
-                                    @else
-                                        <button type="button" onclick="openLoginModal('{{ route('student.hsk-mock-exams.start', ['level' => $level, 'id' => $exam->id]) }}')" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                            <span class="material-symbols-outlined text-[18px]">play_circle</span> Bắt đầu thi
-                                        </button>
-                                    @endauth
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    </div>
-                @endif
-            </div>
-
-        </div>
-    </div>
-
-    {{-- Login Required Modal (Vanilla JS) --}}
-    <div id="loginModal" class="hidden relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="document.getElementById('loginModal').classList.add('hidden')"></div>
-
-        <div class="fixed inset-0 z-10 overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 pointer-events-none">
-                <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md pointer-events-auto border border-slate-200 dark:border-slate-700">
-                    <div class="px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 sm:mx-0 sm:h-10 sm:w-10">
-                                <span class="material-symbols-outlined text-slate-500 dark:text-slate-400">lock</span>
-                            </div>
-                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                <h3 class="text-lg font-semibold leading-6 text-slate-900 dark:text-white" id="modal-title">Đăng nhập để tiếp tục</h3>
-                                <div class="mt-2">
-                                    <p class="text-sm text-slate-500 dark:text-slate-400">
-                                        Bạn cần đăng nhập để làm bài thi và lưu lại kết quả. Quá trình này rất nhanh chóng.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                        <a id="loginModalBtn" href="{{ route('login') }}" class="inline-flex w-full justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 sm:ml-3 sm:w-auto">
-                            Đăng nhập
-                        </a>
-                        <button type="button" onclick="document.getElementById('loginModal').classList.add('hidden')" class="mt-3 inline-flex w-full justify-center rounded-lg bg-white dark:bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-900 dark:text-slate-200 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 sm:mt-0 sm:w-auto">
-                            Để sau
-                        </button>
-                    </div>
+                <!-- Modal Footer -->
+                <div class="px-6 py-3.5 border-t border-[#e8e2d9] dark:border-[#2d2926] bg-[#fcfaf7] dark:bg-[#201d1b] flex justify-end">
+                    <button @click="showStructureModal = false" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile shadow-sm">
+                        {{ __('Đã hiểu') }}
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function openLoginModal(intendedUrl) {
-        // Point the login button to the intended protected route
-        // This leverages Laravel's auth middleware to redirect back after login
-        document.getElementById('loginModalBtn').href = intendedUrl;
-        document.getElementById('loginModal').classList.remove('hidden');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusSelect = document.getElementById('exam-status-filter');
-        const cards = document.querySelectorAll('.exam-card');
-
-        function filterExams() {
-            const status = statusSelect.value;
-
-            cards.forEach(card => {
-                const cardStatus = card.getAttribute('data-status');
-
-                const matchStatus = status === 'all' || 
-                                    (status === 'completed' && cardStatus === 'completed') ||
-                                    (status === 'uncompleted' && cardStatus !== 'completed');
-
-                if (matchStatus) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        if(statusSelect) {
-            statusSelect.addEventListener('change', filterExams);
-        }
-    });
-</script>
 @endsection

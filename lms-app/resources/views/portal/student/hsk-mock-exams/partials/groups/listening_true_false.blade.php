@@ -7,15 +7,15 @@
     }
 @endphp
 
-{{-- Group Header --}}
+{{-- Group Header Audio --}}
 @if($group->passage_audio)
-<div class="flex flex-wrap items-end justify-end gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex flex-wrap items-end justify-end gap-3 mb-6 pb-4 border-b border-[#e8e2d9] dark:border-[#2d2926]">
     <div class="flex items-center gap-2">
-        <span class="text-xs font-bold text-slate-500 uppercase tracking-wide mr-2">Audio Part</span>
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wide mr-2">{{ __('Audio Phần thi') }}</span>
         <button type="button"
                 onclick="playAudio('{{ hsk_storage_url($group->passage_audio) }}', this)"
-                class="w-10 h-10 rounded-full bg-slate-100 hover:bg-primary/10 dark:bg-slate-800 dark:hover:bg-primary/20 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center justify-center">
-            <span class="material-symbols-outlined text-xl">play_arrow</span>
+                class="w-10 h-10 rounded-2xl bg-[#fff2ee] dark:bg-[#251d1a] border border-[#fcdccf] dark:border-[#42271f] text-[#e07a5f] hover:bg-[#e07a5f] hover:text-white transition-all flex items-center justify-center btn-tactile shadow-xs">
+            <i class="fa-solid fa-volume-high text-sm"></i>
         </button>
     </div>
 </div>
@@ -23,98 +23,87 @@
 
 {{-- Example Card --}}
 @if($examples->count() > 0)
-<div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 mb-6 space-y-3">
-    <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-sm mb-3">
-        <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-black">Ví dụ (例如)</span>
+<div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 space-y-4 shadow-xs">
+    <div class="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200 text-sm">
+        <span class="px-3 py-1 rounded-xl bg-amber-500 text-white text-xs font-bold">{{ __('Ví dụ (例如)') }}</span>
     </div>
     @foreach ($examples as $ex)
-        <div class="p-4 bg-white/60 dark:bg-slate-800/60 rounded-2xl border border-amber-200/50 dark:border-slate-700 shadow-sm space-y-4 opacity-80">
-            <div class="flex flex-col sm:flex-row items-center gap-6">
+        <div class="p-5 bg-white dark:bg-[#181615] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
                 @if($ex->image)
-                    <div class="w-28 h-28 rounded-2xl bg-slate-50 dark:bg-slate-900/50 p-2 border border-slate-100 dark:border-slate-800 flex items-center justify-center overflow-hidden">
-                        <img src="{{ hsk_storage_url($ex->image) }}" class="max-w-full max-h-full object-contain" alt="Ex">
+                    <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] p-2.5 border border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                        <img src="{{ hsk_storage_url($ex->image) }}" class="w-full h-full object-contain rounded-xl" alt="Ex">
                     </div>
                 @endif
-                <div class="flex-1 w-full">
-                    <div class="flex items-center justify-center gap-6">
-                        @foreach ($ex->options as $option)
-                            @php
-                                $isTrue = ($option->content === '√');
-                                $isCorrect = $option->is_correct;
-                                $iconColor = $isTrue ? 'text-emerald-500' : 'text-rose-500';
-                                $bgSelected = $isCorrect ? ($isTrue ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' : 'border-rose-500 bg-rose-50 dark:bg-rose-950/30') : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900';
-                            @endphp
-                            <div class="cursor-not-allowed">
-                                <div class="w-16 h-12 rounded-xl border-2 flex items-center justify-center {{ $bgSelected }}">
-                                    <span class="text-2xl font-black {{ $iconColor }}">{{ $option->content }}</span>
-                                </div>
-                            </div>
-                        @endforeach
+            </div>
+            <div class="flex items-center justify-center gap-3 shrink-0">
+                @foreach ($ex->options as $option)
+                    @php
+                        $isTrue = ($option->content === '√');
+                        $isCorrect = $option->is_correct;
+                        $iconColor = $isTrue ? 'text-emerald-500' : 'text-rose-500';
+                        $bgSelected = $isCorrect ? ($isTrue ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' : 'border-rose-500 bg-rose-50 dark:bg-rose-950/30') : 'border-[#e8e2d9] dark:border-[#2d2926] bg-[#f8f6f3] dark:bg-[#201d1b] opacity-60';
+                    @endphp
+                    <div class="cursor-not-allowed">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 flex items-center justify-center {{ $bgSelected }} shadow-xs">
+                            <span class="text-2xl font-bold {{ $iconColor }}">{{ $option->content }}</span>
+                        </div>
                     </div>
-                </div>
+                @endforeach
             </div>
         </div>
     @endforeach
 </div>
-
 @endif
 
 {{-- Questions List --}}
-<div class="space-y-3">
+<div class="space-y-4">
     @foreach ($realQuestions as $question)
         @php
             $currentQNum = $qCount++;
         @endphp
-        <div class="q-card scroll-mt-24 p-4 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-4"
-            id="q-{{ $currentQNum }}">
+        <div class="q-card scroll-mt-24 p-5 sm:p-6 bg-white dark:bg-[#181615] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5"
+             id="q-{{ $currentQNum }}">
 
-            <div class="flex items-start gap-4">
-                {{-- Question Number --}}
-                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+            {{-- Left: Question Number & Uniform Fixed Image --}}
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+                <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center shrink-0">
                     {{ $currentQNum }}
                 </div>
 
-                {{-- Image & Title Container --}}
-                <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start gap-4 min-w-0">
-                    @if ($question->image)
-                        <div class="shrink-0 bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-center">
-                            <img src="{{ hsk_storage_url($question->image) }}"
-                                class="max-h-28 max-w-[160px] object-contain rounded-lg"
-                                alt="Question {{ $currentQNum }}">
-                        </div>
-                    @endif
-
-
-                </div>
+                @if ($question->image)
+                    <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] p-2.5 border border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                        <img src="{{ hsk_storage_url($question->image) }}"
+                            class="w-full h-full object-contain rounded-xl"
+                            alt="Question {{ $currentQNum }}">
+                    </div>
+                @endif
             </div>
 
-            {{-- Audio & True/False Buttons --}}
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-slate-100 dark:border-slate-700/50">
-                <div class="w-full sm:w-auto">
-                    @if ($question->audio_file)
-                        <button type="button" 
-                                onclick="playAudio('{{ hsk_storage_url($question->audio_file) }}', this)"
-                                class="w-full sm:w-auto h-11 px-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined text-xl">volume_up</span>
-                            Nghe Audio
-                        </button>
-                    @endif
-                </div>
-                <div class="flex items-center justify-center gap-3 w-full sm:w-auto">
+            {{-- Right: Audio (if any) & True/False Buttons --}}
+            <div class="flex flex-col sm:flex-row items-center justify-end gap-3 w-full sm:w-auto shrink-0">
+                @if ($question->audio_file)
+                    <button type="button" 
+                            onclick="playAudio('{{ hsk_storage_url($question->audio_file) }}', this)"
+                            class="w-full sm:w-auto h-12 px-5 rounded-2xl bg-[#fff2ee] dark:bg-[#251d1a] border border-[#fcdccf] dark:border-[#42271f] text-[#e07a5f] font-bold text-xs hover:bg-[#e07a5f] hover:text-white transition-all flex items-center justify-center gap-2 btn-tactile shadow-xs">
+                        <i class="fa-solid fa-volume-high text-sm"></i>
+                        <span>{{ __('Nghe Audio') }}</span>
+                    </button>
+                @endif
+
+                <div class="flex items-center gap-3 w-full sm:w-auto">
                     @foreach ($question->options as $option)
                         @php
                             $isTrue = ($option->content === '√');
                             $iconColor = $isTrue ? 'text-emerald-500' : 'text-rose-500';
-                            $bgHover = $isTrue ? 'hover:bg-emerald-50 dark:hover:bg-emerald-950/30' : 'hover:bg-rose-50 dark:hover:bg-rose-950/30';
-                            $peerChecked = $isTrue ? 'peer-checked:border-emerald-500 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-950/30' : 'peer-checked:border-rose-500 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-950/30';
                         @endphp
-                        <label class="cursor-pointer group flex-1 sm:flex-none">
+                        <label class="cursor-pointer group block shrink-0">
                             <input type="radio" name="answers[{{ $question->id }}]"
                                 value="{{ $option->id }}"
                                 onchange="updateSidebar({{ $currentQNum }})"
                                 class="peer hidden">
-                            <div class="h-12 px-6 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center transition-all {{ $bgHover }} {{ $peerChecked }} hover:border-slate-300 dark:hover:border-slate-600">
-                                <span class="text-2xl font-black {{ $iconColor }}">{{ $option->content }}</span>
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#e8e2d9] dark:border-[#2d2926] bg-[#f8f6f3] dark:bg-[#201d1b] peer-checked:border-[#e07a5f] peer-checked:bg-[#fff5f2] dark:peer-checked:bg-[#2a201c] flex items-center justify-center transition-all hover:border-[#e07a5f]/50 btn-tactile shadow-xs">
+                                <span class="text-2xl font-bold {{ $iconColor }}">{{ $option->content }}</span>
                             </div>
                         </label>
                     @endforeach

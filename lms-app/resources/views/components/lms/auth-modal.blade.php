@@ -161,29 +161,29 @@
                 @csrf
                 <div class="grid grid-cols-2 gap-2.5">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Họ và tên đệm</label>
+                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Họ và tên đệm') }}</label>
                         <input type="text" 
                                name="first_name"
                                x-model="authFirstName"
                                value="{{ old('first_name') }}"
                                required
-                               placeholder="Nguyễn Văn" 
+                               placeholder="{{ __('Nhập họ và tên đệm') }}" 
                                class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Tên</label>
+                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Tên') }}</label>
                         <input type="text" 
                                name="last_name"
                                x-model="authLastName"
                                value="{{ old('last_name') }}"
                                required
-                               placeholder="An" 
+                               placeholder="{{ __('Nhập tên của bạn') }}" 
                                class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Địa chỉ Email</label>
+                    <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Địa chỉ Email') }}</label>
                     <div class="relative">
                         <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input type="email" 
@@ -191,20 +191,20 @@
                                x-model="authEmail"
                                value="{{ old('email') }}"
                                required
-                               placeholder="name@example.com" 
+                               placeholder="{{ __('Nhập địa chỉ email của bạn') }}" 
                                class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Mật khẩu</label>
+                    <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Mật khẩu') }}</label>
                     <div class="relative">
                         <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input :type="authShowPassword ? 'text' : 'password'" 
                                name="password"
                                x-model="authPassword"
                                required
-                               placeholder="Tối thiểu 8 ký tự..." 
+                               placeholder="{{ __('Nhập mật khẩu của bạn') }}" 
                                class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-10 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                         <button type="button" 
                                 @click="authShowPassword = !authShowPassword" 

@@ -658,7 +658,8 @@
                     <i class="fa-solid fa-book-open text-base"></i>
                     <span class="text-[10px] font-medium">Khóa học</span>
                 </a>
-                <a href="{{ url('/demo-exams') }}" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 dark:hover:text-white btn-tactile">
+                <!-- Menu Luyện thi HSK (Mobile) -->
+                <a href="{{ route('student.hsk-mock-exams.index') }}" class="flex flex-col items-center gap-0.5 {{ request()->routeIs('student.hsk-mock-exams.*') ? 'text-[#e07a5f]' : 'text-slate-400 hover:text-slate-700 dark:hover:text-white' }} btn-tactile">
                     <i class="fa-solid fa-file-pen text-base"></i>
                     <span class="text-[10px] font-medium">Luyện thi</span>
                 </a>
