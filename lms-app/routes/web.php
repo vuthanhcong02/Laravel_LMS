@@ -47,23 +47,26 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/', function () {
         return redirect()->route('home');
     });
-    Route::get('/trang-chu', 'getViewHome')->name('home');
+    // Old Home
+    Route::get('/trang-chu-old-v2', 'getViewHome')->name('home.old-v2');
     Route::get('/lien-he', [PageController::class, 'getViewContact'])->name('contact');
     Route::post('/lien-he', [ContactController::class, 'store'])->middleware('throttle:3,1')->name('contact.store');
-    Route::get('/khoa-hoc', 'getViewCourses')->name('courses');
-    Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
+    // Old Routes
+    Route::get('/khoa-hoc-old-v2', 'getViewCourses')->name('courses.old-v2');
+    Route::get('/khoa-hoc-old-v2/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.old-v2.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
 
-    // V2 Routes
-    Route::get('/khoa-hoc-v2', 'getViewCoursesV2')->name('courses.v2');
-    Route::get('/khoa-hoc-v2/{levelSlug}', 'showCourseLevelV2')->name('courses.v2.level');
-    Route::get('/khoa-hoc-v2/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLessonV2')->name('courses.v2.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
+    // V2 Routes (now main)
+    Route::get('/khoa-hoc', 'getViewCoursesV2')->name('courses');
+    Route::get('/khoa-hoc/{levelSlug}', 'showCourseLevelV2')->name('courses.level');
+    Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLessonV2')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
     Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
-    Route::view('/demo-ui', 'demo-sidebar');
+    // New Home
+    Route::get('/trang-chu', 'getDemoHome')->name('home');
     Route::view('/demo-courses', 'demo-courses');
     Route::view('/demo-course-detail', 'demo-course-detail');
     Route::view('/demo-exams', 'demo-exams');
@@ -72,9 +75,10 @@ Route::controller(PageController::class)->group(function () {
     Route::view('/demo-pinyin-chart', 'demo-pinyin-chart');
     Route::view('/demo-pinyin-practice', 'demo-pinyin-practice');
     Route::view('/demo-etymology', 'demo-etymology');
-    Route::view('/demo-login', 'auth.login');
-    Route::view('/demo-register', 'auth.register');
-    Route::view('/demo-forgot-password', 'auth.forgot-password');
+    Route::view('/login', 'auth.login');
+    Route::view('/register', 'auth.register');
+    Route::view('/forgot-password', 'auth.forgot-password');
+    Route::view('/reset-password', 'auth.reset-password');
 });
 
 Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])

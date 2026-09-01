@@ -8,7 +8,7 @@
             
             <!-- KHU VỰC LOGO THƯƠNG HIỆU -->
             <div class="h-20 flex items-center justify-between px-4 border-b border-[#e8e2d9] dark:border-[#262220] shrink-0">
-                <a href="{{ url('/demo-ui') }}" class="flex items-center gap-3 group min-w-0" :class="sidebarCollapsed ? 'justify-center w-full' : ''">
+                <a href="{{ route('home') }}" class="flex items-center gap-3 group min-w-0" :class="sidebarCollapsed ? 'justify-center w-full' : ''">
                     <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
 
                     <div x-show="!sidebarCollapsed" class="flex flex-col min-w-0 transition-opacity duration-200">
@@ -34,18 +34,18 @@
                     <div class="space-y-1">
                         <!-- Trang chủ -->
                         @php
-                            $isHomeActive = request()->routeIs('home') || request()->is('demo-ui');
+                            $isHomeActive = request()->routeIs('home');
                         @endphp
-                        <a href="{{ url('/demo-ui') }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isHomeActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Trang chủ' : ''">
+                        <a href="{{ route('home') }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isHomeActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Trang chủ' : ''">
                             <i class="fa-solid fa-house text-base w-5 text-center shrink-0 transition-colors {{ $isHomeActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Trang chủ</span>
                         </a>
 
                         <!-- Khóa học -->
                         @php
-                            $isCourseActive = request()->routeIs('courses.v2*') || request()->is('demo-courses');
+                            $isCourseActive = request()->routeIs('courses*') || request()->is('demo-courses');
                         @endphp
-                        <a href="{{ route('courses.v2') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isCourseActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Khóa học HSK' : ''">
+                        <a href="{{ route('courses') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isCourseActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Khóa học HSK' : ''">
                             <i class="fa-solid fa-book-open text-base w-5 text-center shrink-0 transition-colors {{ $isCourseActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Khóa học HSK</span>
                         </a>
@@ -78,11 +78,7 @@
                             <span x-show="!sidebarCollapsed" class="truncate">Luyện tập Pinyin</span>
                         </a>
 
-                        <!-- Góc chia sẻ (Blog) -->
-                        <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Góc chia sẻ' : ''">
-                            <i class="fa-solid fa-newspaper text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Góc chia sẻ</span>
-                        </a>
+
                     </div>
                 </div>
 
@@ -90,11 +86,11 @@
                 <div>
                     <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">Hệ thống</div>
                     <div class="space-y-1">
-                        <!-- Từ vựng của tôi (Bám sát hình 1) -->
+                        {{-- <!-- Từ vựng của tôi (Bám sát hình 1) -->
                         <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Từ vựng của tôi' : ''">
                             <i class="fa-solid fa-font text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Từ vựng của tôi</span>
-                        </a>
+                        </a> --}}
 
                         <!-- Liên hệ -->
                         <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-[#e07a5f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Liên hệ hỗ trợ' : ''">
@@ -102,11 +98,7 @@
                             <span x-show="!sidebarCollapsed" class="truncate">Liên hệ hỗ trợ</span>
                         </a>
 
-                        <!-- Cài đặt -->
-                        <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Cài đặt tài khoản' : ''">
-                            <i class="fa-solid fa-gear text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Cài đặt tài khoản</span>
-                        </a>
+
 
                         <!-- Đăng xuất (Form POST chuẩn Laravel) -->
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">

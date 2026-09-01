@@ -4,7 +4,7 @@
 
 @section('header-left')
     <x-lms.breadcrumb :links="[
-        ['label' => __('Khóa học HSK'), 'url' => route('courses.v2')],
+        ['label' => __('Khóa học HSK'), 'url' => route('courses')],
         ['label' => $currentLevel->title, 'url' => null]
     ]" />
 @endsection
@@ -13,7 +13,7 @@
     <div class="space-y-6">
         
         <!-- Nút Quay lại -->
-        <a href="{{ route('courses.v2') }}" class="inline-flex items-center gap-2 text-xs font-bold text-[#e07a5f] hover:text-[#c86349] transition-colors btn-tactile">
+        <a href="{{ route('courses') }}" class="inline-flex items-center gap-2 text-xs font-bold text-[#e07a5f] hover:text-[#c86349] transition-colors btn-tactile">
             <i class="fa-solid fa-arrow-left text-xs"></i> {{ __('Quay lại danh sách khóa học') }}
         </a>
 
@@ -65,7 +65,7 @@
                         $displayTitle = __('Đang cập nhật nội dung...');
                     }
                 @endphp
-                <a href="{{ route('courses.v2.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}"
+                <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}"
                     class="lms-card p-4 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center gap-3 group hover:border-[#e07a5f] transition-all cursor-pointer">
                     
                     <!-- Số thứ tự: w-10 h-10 rounded-full -->

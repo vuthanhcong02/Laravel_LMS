@@ -475,9 +475,9 @@
         <div class="flex items-center text-xs text-slate-500 font-semibold truncate">
             <a href="{{ route('home') }}" class="hover:text-[#e07a5f] transition-colors"><i class="fa-solid fa-house text-xs mr-1"></i>{{ __('Trang chủ') }}</a>
             <i class="fa-solid fa-chevron-right text-[9px] mx-2 text-slate-400"></i>
-            <a href="{{ route('courses.v2') }}" class="hover:text-[#e07a5f] transition-colors">{{ __('Khóa học') }}</a>
+            <a href="{{ route('courses') }}" class="hover:text-[#e07a5f] transition-colors">{{ __('Khóa học') }}</a>
             <i class="fa-solid fa-chevron-right text-[9px] mx-2 text-slate-400"></i>
-            <a href="{{ route('courses.v2.level', ['levelSlug' => $currentLevel->slug]) }}" class="hover:text-[#e07a5f] transition-colors">{{ $currentLevel->title }}</a>
+            <a href="{{ route('courses.level', ['levelSlug' => $currentLevel->slug]) }}" class="hover:text-[#e07a5f] transition-colors">{{ $currentLevel->title }}</a>
             <i class="fa-solid fa-chevron-right text-[9px] mx-2 text-slate-400"></i>
             <span class="text-slate-900 dark:text-white font-bold truncate">{{ __('Bài') }} {{ $currentLesson->lesson_number }}{{ $isDummyData ? '' : $displayTitleBreadcrumb }}</span>
         </div>
@@ -493,28 +493,28 @@
     <div class="lms-card p-2 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center justify-between gap-3 overflow-x-auto no-scrollbar shadow-xs">
         <div class="flex items-center gap-1.5">
             <!-- Tab 1: Từ vựng -->
-            <a href="{{ route('courses.v2.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'tu-vung']) }}" 
+            <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'tu-vung']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'tu-vung' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-list-ul text-xs"></i>
                 <span>{{ __('Từ vựng') }}</span>
             </a>
 
             <!-- Tab 2: Bài khóa -->
-            <a href="{{ route('courses.v2.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'hoi-thoai']) }}" 
+            <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'hoi-thoai']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'hoi-thoai' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-comments text-xs"></i>
                 <span>{{ __('Bài khóa') }}</span>
             </a>
 
             <!-- Tab 3: Ngữ pháp -->
-            <a href="{{ route('courses.v2.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'ngu-phap']) }}" 
+            <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'ngu-phap']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'ngu-phap' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-spell-check text-xs"></i>
                 <span>{{ __('Ngữ pháp') }}</span>
             </a>
 
             <!-- Tab 4: Luyện tập -->
-            <a href="{{ route('courses.v2.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}" 
+            <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'luyen-tap' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-pen-to-square text-xs"></i>
                 <span>{{ __('Luyện tập') }}</span>

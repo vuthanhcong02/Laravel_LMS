@@ -321,7 +321,7 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Thực hành làm bài tập củng cố để ghi nhớ quy tắc ngữ pháp lâu hơn.') }}</p>
                 </div>
             </div>
-            <a href="{{ route('courses.v2.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}" 
+            <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}" 
                class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-2 shrink-0 shadow-xs">
                 <i class="fa-solid fa-pen-to-square"></i>
                 <span>{{ __('Chuyển sang Luyện tập') }}</span>

@@ -86,9 +86,7 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold {{ $badgeStyle }}">
                                 {{ strtoupper($level->level_code) }} • {{ $levelSubBadge }}
                             </span>
-                            <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                                <i class="fa-solid fa-circle-check mr-1"></i>{{ __('Đã mở khóa') }}
-                            </span>
+
                         </div>
                         
                         <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">
@@ -99,7 +97,7 @@
                             {{ $level->subtitle ?? __('Lộ trình bài học chính khóa bám sát cấu trúc khung đề thi HSK.') }}
                         </p>
                         
-                        <div class="space-y-1.5 pt-1">
+                        {{-- <div class="space-y-1.5 pt-1">
                             <div class="flex justify-between text-xs font-semibold text-slate-500">
                                 <span>{{ __('Tiến độ học') }}</span>
                                 <span class="font-bold text-[#e07a5f]">0/{{ $level->lessons->count() }} {{ __('bài') }}</span>
@@ -107,7 +105,7 @@
                             <div class="w-full h-2 rounded-full bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] overflow-hidden">
                                 <div class="h-full rounded-full bg-gradient-to-r from-[#e07a5f] to-[#c86349]" style="width: 0%;"></div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between">
@@ -115,7 +113,7 @@
                             <span><i class="fa-regular fa-clock mr-1"></i>{{ $level->lessons->count() }} {{ __('bài') }}</span>
                             <span><i class="fa-solid fa-language mr-1"></i>{{ $level->vocab_count ?? 150 }} {{ __('từ') }}</span>
                         </div>
-                        <a href="{{ route('courses.v2.level', ['levelSlug' => $level->slug]) }}" 
+                        <a href="{{ route('courses.level', ['levelSlug' => $level->slug]) }}" 
                            class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-1.5 shadow-xs">
                             <span>{{ __('Vào học') }}</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </a>

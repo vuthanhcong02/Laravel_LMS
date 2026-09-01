@@ -10,7 +10,7 @@
     darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
     socialDockExpanded: true,
     searchKeyword: '',
-    authModalOpen: {{ ($errors->any() || session('status')) ? 'true' : 'false' }},
+    authModalOpen: {{ (auth()->guest() && ($errors->any() || session('status'))) ? 'true' : 'false' }},
     authModalTab: '{{ session('auth_tab') ?? (old('first_name') ? 'register' : 'login') }}',
     authEmail: '',
     authPassword: '',
@@ -172,33 +172,29 @@
                 <div class="social-dock-items">
                     
                     <!-- 1. Facebook -->
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#1877f2] text-white flex items-center justify-center text-xs hover:scale-110 hover:shadow-lg hover:shadow-[#1877f2]/30 transition-all btn-tactile group relative" title="Facebook XIAOMU">
+                    <a href="https://www.facebook.com/profile.php?id=61589009699142" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#1877f2] text-white flex items-center justify-center text-xs hover:scale-110 hover:shadow-lg hover:shadow-[#1877f2]/30 transition-all btn-tactile group relative" title="Facebook XIAOMU">
                         <i class="fa-brands fa-facebook-f"></i>
-                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">Facebook Fanpage</span>
+                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">Facebook</span>
                     </a>
 
                     <!-- 2. YouTube -->
-                    <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#FF0000] text-white flex items-center justify-center text-xs hover:scale-110 hover:shadow-lg hover:shadow-[#FF0000]/30 transition-all btn-tactile group relative" title="YouTube Bài giảng">
+                    <a href="https://www.youtube.com/@Chiettuchuhan" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#FF0000] text-white flex items-center justify-center text-xs hover:scale-110 hover:shadow-lg hover:shadow-[#FF0000]/30 transition-all btn-tactile group relative" title="YouTube Bài giảng">
                         <i class="fa-brands fa-youtube"></i>
-                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">Kênh YouTube Bài giảng</span>
+                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">YouTube</span>
                     </a>
 
-                    <!-- 3. Instagram -->
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-xs hover:scale-110 hover:shadow-lg hover:shadow-rose-500/30 transition-all btn-tactile group relative" title="Instagram XIAOMU">
-                        <i class="fa-brands fa-instagram"></i>
-                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">Instagram Story</span>
-                    </a>
+
 
                     <!-- 4. TikTok -->
-                    <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#111111] dark:bg-[#222222] text-white border border-slate-700/30 flex items-center justify-center text-xs hover:scale-110 hover:shadow-lg hover:shadow-black/40 transition-all btn-tactile group relative" title="TikTok Từ vựng 60s">
+                    <a href="https://www.tiktok.com/@chiettuchuhan55" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#111111] dark:bg-[#222222] text-white border border-slate-700/30 flex items-center justify-center text-xs hover:scale-110 hover:shadow-lg hover:shadow-black/40 transition-all btn-tactile group relative" title="TikTok Từ vựng 60s">
                         <i class="fa-brands fa-tiktok"></i>
-                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">TikTok Từ vựng 60s</span>
+                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">TikTok</span>
                     </a>
 
-                    <!-- 5. Zalo Official -->
-                    <a href="https://zalo.me" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#0068ff] text-white font-black text-[10px] tracking-tight flex items-center justify-center hover:scale-110 hover:shadow-lg hover:shadow-[#0068ff]/30 transition-all btn-tactile group relative" title="Zalo Official">
+                    <!-- 5. Zalo -->
+                    <a href="https://zalo.me/0395294739" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-[#0068ff] text-white font-black text-[10px] tracking-tight flex items-center justify-center hover:scale-110 hover:shadow-lg hover:shadow-[#0068ff]/30 transition-all btn-tactile group relative" title="Zalo">
                         <span>Zalo</span>
-                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">Zalo OA Hỗ trợ</span>
+                        <span class="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-[11px] font-bold shadow-lg backdrop-blur-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-150 whitespace-nowrap z-50">Zalo</span>
                     </a>
 
                 </div>
@@ -207,6 +203,29 @@
         </div>
     </div>
 
+    <!-- Global Toast Notification -->
+    @if(session('status') && auth()->check())
+    <div x-data="{ showToast: true }" x-show="showToast" 
+         x-init="setTimeout(() => showToast = false, 5000)"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-4"
+         class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] shadow-xl">
+        <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+            <p class="text-xs font-bold text-slate-800 dark:text-white">Thành công</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ session('status') }}</p>
+        </div>
+        <button @click="showToast = false" class="ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    </div>
+    @endif
 
     <!-- POPUP AUTH MODAL DÙNG CHUNG -->
     @include('components.lms.auth-modal')

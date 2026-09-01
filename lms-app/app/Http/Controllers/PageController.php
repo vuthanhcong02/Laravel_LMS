@@ -144,6 +144,12 @@ class PageController extends Controller
         return view('course-v2.show', compact('levels', 'currentLevel', 'currentLesson', 'activeTab'));
     }
 
+    public function getDemoHome()
+    {
+        $wordOfDay = HskVocabulary::inRandomOrder()->first();
+        return view('sidebar', compact('wordOfDay'));
+    }
+
     public function getViewBlog()
     {
         $featuredBlog = Blog::with(['author', 'category'])
