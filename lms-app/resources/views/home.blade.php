@@ -27,7 +27,7 @@
                                     <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs border border-white/15 text-white/90 text-xs font-semibold">
                                         {{ __('Chào mừng, bạn') }} 👋
                                     </div>
-                                    <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">
+                                    <h1 class="text-lg sm:text-xl font-bold text-white tracking-tight leading-snug">
                                         {{ __('Bắt đầu hành trình học tiếng Trung nào!') }}
                                     </h1>
                                     <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
