@@ -147,7 +147,7 @@ class PageController extends Controller
     public function getDemoHome()
     {
         $wordOfDay = HskVocabulary::inRandomOrder()->first();
-        return view('sidebar', compact('wordOfDay'));
+        return view('home', compact('wordOfDay'));
     }
 
     public function getViewBlog()

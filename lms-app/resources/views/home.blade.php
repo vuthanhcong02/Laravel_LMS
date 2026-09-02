@@ -22,26 +22,200 @@
                     <!-- Luồng nội dung chính (2 cột) -->
                     <div class="lg:col-span-2 space-y-8 animate-fade-in-up">
                         
-                        <!-- Banner Chào mừng -->
-                        <div class="lms-card p-6 sm:p-8 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
-                            <div class="absolute inset-0 shimmer-bg pointer-events-none opacity-50"></div>
+                        <!-- Banner Chào mừng (Meiday Inspired) -->
+                        <div class="lms-card p-6 sm:p-8 bg-gradient-to-br from-[#1c3848] via-[#1a3342] to-[#152834] text-white relative overflow-hidden group shadow-lg">
+                            <!-- Faint Watermark Chinese Character -->
+                            <div class="absolute right-4 -bottom-6 text-9xl font-extrabold text-white/5 pointer-events-none select-none zh-text">
+                                学
+                            </div>
+                            <div class="absolute inset-0 shimmer-bg pointer-events-none opacity-20"></div>
 
-                            <div class="flex items-center justify-between relative z-10">
+                            <div class="relative z-10 space-y-4 max-w-xl">
                                 <div class="space-y-2">
-                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] dark:text-[#f4978e] text-xs font-bold">
-                                        <i class="fa-solid fa-bullseye text-amber-500"></i> Mục tiêu hiện tại: HSK 5 Cao cấp
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs border border-white/15 text-white/90 text-xs font-semibold">
+                                        {{ __('Chào mừng, bạn') }} 👋
                                     </div>
-                                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                                        Chào {{ auth()->check() ? (auth()->user()->last_name ?? 'bạn') : 'bạn' }}, sẵn sàng luyện tiếng Trung hôm nay? 👋
+                                    <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">
+                                        {{ __('Bắt đầu hành trình học tiếng Trung nào!') }}
                                     </h1>
-                                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                                        Hoàn thành 1 bài thi thử và ôn tập 20 từ vựng để giữ vững chuỗi 14 ngày học liên tiếp!
+                                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                        {{ __('Chọn một lộ trình bên dưới và hoàn thành bài học đầu tiên để mở khoá chuỗi ngày của bạn.') }}
+                                    </p>
+                                </div>
+
+                                <!-- CTA Buttons in Banner -->
+                                <div class="flex flex-wrap items-center gap-3 pt-1">
+                                    <a href="{{ route('courses.level', ['levelSlug' => 'hsk-1']) }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-xl text-xs font-bold shadow-md transition-all btn-tactile">
+                                        <i class="fa-solid fa-play text-[10px]"></i> {{ __('Bắt đầu bài học đầu tiên') }}
+                                    </a>
+                                    <a href="#roadmap" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-bold transition-all btn-tactile">
+                                        <i class="fa-solid fa-bullseye text-[11px] text-amber-400"></i> {{ __('Chọn lộ trình phù hợp') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2 Thẻ Thống kê nhanh (Quick Stats / Teaser) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Card 1: Chuỗi ngày học -->
+                            <div class="lms-card p-5 flex items-center gap-4 hover:border-[#e07a5f]/50 transition-all">
+                                <div class="w-12 h-12 rounded-2xl bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] flex items-center justify-center text-xl shrink-0 shadow-xs">
+                                    <i class="fa-solid fa-fire animate-flame"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-baseline gap-1.5">
+                                        <span class="text-2xl font-bold text-slate-900 dark:text-white">0</span>
+                                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ __('Ngày liên tục') }}</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                                        {{ __('Học bài hôm nay để bắt đầu chuỗi!') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Tiến độ bài học -->
+                            <div class="lms-card p-5 flex items-center gap-4 hover:border-[#e07a5f]/50 transition-all">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0 shadow-xs">
+                                    <i class="fa-solid fa-book-open"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-baseline gap-1.5">
+                                        <span class="text-2xl font-bold text-slate-900 dark:text-white">0</span>
+                                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ __('Bài đã hoàn thành') }}</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                                        {{ __('Hàng trăm bài học đang chờ bạn') }}
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Nhiệm vụ hàng ngày -->
+                        <!-- Khối Gợi ý cho bạn (Bài học mở đầu) -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1 h-5 rounded-full bg-[#e07a5f]"></div>
+                                    <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+                                        {{ __('Gợi ý cho bạn') }}
+                                    </h2>
+                                </div>
+                                <a href="{{ route('courses') }}" class="text-xs font-semibold text-[#e07a5f] hover:underline inline-flex items-center gap-1">
+                                    {{ __('Xem tất cả') }} <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <!-- Card bài học mở đầu nổi bật -->
+                            <div class="lms-card p-5 sm:p-6 hover:shadow-md transition-all group border border-[#e8e2d9] dark:border-[#2d2926]">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                                    <!-- Badge / Thumbnail chữ Hán -->
+                                    <div class="w-full sm:w-36 h-28 sm:h-28 rounded-2xl bg-gradient-to-br from-[#e6f0f5] to-[#d6e6f0] dark:from-[#1b3240] dark:to-[#162833] flex flex-col items-center justify-center text-center p-3 shrink-0 border border-slate-200 dark:border-slate-700 shadow-xs">
+                                        <span class="text-3xl font-extrabold text-[#1c3848] dark:text-[#a0c4d8] zh-text tracking-wider">汉语</span>
+                                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">HSK 3.0 • Cấp 1 • Bài 1</span>
+                                    </div>
+
+                                    <!-- Thông tin bài học -->
+                                    <div class="flex-1 space-y-2 min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] uppercase tracking-wider">
+                                                {{ __('Bài học mở đầu') }}
+                                            </span>
+                                        </div>
+                                        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">
+                                            AI小语，你好!
+                                        </h3>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 font-normal">
+                                            Ai Xiaoyu, xin chào!
+                                        </p>
+                                        
+                                        <div class="pt-2 flex items-center justify-between">
+                                            <a href="{{ route('courses.level', ['levelSlug' => 'hsk-1']) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#244255] hover:bg-[#1a3342] dark:bg-[#e07a5f] dark:hover:bg-[#c86349] text-white rounded-xl text-xs font-bold transition-all btn-tactile shadow-xs">
+                                                <i class="fa-solid fa-play text-[10px]"></i> {{ __('Bắt đầu học') }}
+                                            </a>
+                                            <span class="text-xs text-slate-400 font-medium">12 {{ __('từ') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Khối Lộ trình của bạn -->
+                        <div id="roadmap" class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1 h-5 rounded-full bg-[#e07a5f]"></div>
+                                    <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+                                        {{ __('Lộ trình của bạn') }}
+                                    </h2>
+                                </div>
+                                <a href="{{ route('courses') }}" class="text-xs font-semibold text-[#e07a5f] hover:underline inline-flex items-center gap-1">
+                                    {{ __('Tất cả') }} <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <!-- HSK 1 -->
+                                <a href="{{ route('courses.level', ['levelSlug' => 'hsk-1']) }}" class="lms-card p-4 hover:border-[#e07a5f] transition-all group block">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-[#e07a5f] bg-[#fff2ee] dark:bg-[#2c221e] px-2 py-0.5 rounded">HSK 1</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-300 group-hover:text-[#e07a5f] group-hover:translate-x-0.5 transition-all"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">{{ __('Nhập môn căn bản') }}</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">150 {{ __('từ vựng') }} • 15 {{ __('bài') }}</p>
+                                </a>
+
+                                <!-- HSK 2 -->
+                                <a href="{{ route('courses.level', ['levelSlug' => 'hsk-2']) }}" class="lms-card p-4 hover:border-[#e07a5f] transition-all group block">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-[#e07a5f] bg-[#fff2ee] dark:bg-[#2c221e] px-2 py-0.5 rounded">HSK 2</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-300 group-hover:text-[#e07a5f] group-hover:translate-x-0.5 transition-all"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">{{ __('Giao tiếp đời sống') }}</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">300 {{ __('từ vựng') }} • 15 {{ __('bài') }}</p>
+                                </a>
+
+                                <!-- HSK 3 -->
+                                <a href="{{ route('courses.level', ['levelSlug' => 'hsk-3']) }}" class="lms-card p-4 hover:border-[#e07a5f] transition-all group block">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-[#e07a5f] bg-[#fff2ee] dark:bg-[#2c221e] px-2 py-0.5 rounded">HSK 3</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-300 group-hover:text-[#e07a5f] group-hover:translate-x-0.5 transition-all"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">{{ __('Sơ trung cấp') }}</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">600 {{ __('từ vựng') }} • 20 {{ __('bài') }}</p>
+                                </a>
+
+                                <!-- HSK 4 -->
+                                <a href="{{ route('courses.level', ['levelSlug' => 'hsk-4']) }}" class="lms-card p-4 hover:border-[#e07a5f] transition-all group block">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 px-2 py-0.5 rounded">HSK 4</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-300 group-hover:text-sky-500 group-hover:translate-x-0.5 transition-all"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">{{ __('Trung cấp vững vàng') }}</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">1200 {{ __('từ vựng') }} • 20 {{ __('bài') }}</p>
+                                </a>
+
+                                <!-- HSK 5 -->
+                                <a href="{{ route('courses.level', ['levelSlug' => 'hsk-5']) }}" class="lms-card p-4 hover:border-[#e07a5f] transition-all group block">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded">HSK 5</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">{{ __('Cao cấp thành thạo') }}</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">2500 {{ __('từ vựng') }} • 36 {{ __('bài') }}</p>
+                                </a>
+
+                                <!-- HSK 6 -->
+                                <a href="{{ route('courses.level', ['levelSlug' => 'hsk-6']) }}" class="lms-card p-4 hover:border-[#e07a5f] transition-all group block">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded">HSK 6</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">{{ __('Bậc thầy Hán ngữ') }}</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">5000+ {{ __('từ vựng') }} • Chuyên sâu</p>
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- <!-- Nhiệm vụ hàng ngày -->
                         <div class="lms-card p-6 space-y-4">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -95,9 +269,9 @@
                                     </a>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
-                        <!-- 📅 WIDGET 90 NGÀY GẦN NHẤT -->
+                        {{-- <!-- 📅 WIDGET 90 NGÀY GẦN NHẤT -->
                         <div x-data="{
                             selectedDay: {
                                 fullDateStr: 'Chủ Nhật, 23 tháng 8, 2026',
@@ -340,14 +514,14 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> --}}
 
                     </div>
 
                     <!-- 🏆 CỘT BẢNG XẾP HẠNG CHI TIẾT (BỘ LỌC CÙNG 1 DÒNG DUY NHẤT KHÔNG XUỐNG DÒNG) -->
                     <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.1s;">
                         
-                        <!-- CARD BẢNG XẾP HẠNG -->
+                        {{-- <!-- CARD BẢNG XẾP HẠNG -->
                         <div class="lms-card p-5 sm:p-6 space-y-4">
                             
                             <!-- Header Bảng xếp hạng -->
@@ -544,36 +718,62 @@
 
                             </div>
 
-                        </div>
+                        </div> --}}
 
                         <!-- Widget Thẻ từ vựng mỗi ngày -->
-                        <div x-data="{ playing: false }" class="lms-card p-6 space-y-3 relative group">
+                        <div x-data="{ 
+                            playing: false,
+                            playAudio() {
+                                if ('speechSynthesis' in window) {
+                                    window.speechSynthesis.cancel(); // Hủy các lượt đọc trước đó để tránh bị kẹt (fix lỗi chập chờn)
+                                    this.playing = true;
+                                    let utterance = new SpeechSynthesisUtterance('{{ $wordOfDay->word ?? '坚持' }}');
+                                    utterance.lang = 'zh-CN';
+                                    utterance.rate = 0.9; // Đọc chậm một chút cho dễ nghe
+                                    
+                                    utterance.onend = () => { this.playing = false; };
+                                    utterance.onerror = () => { this.playing = false; };
+                                    
+                                    // Fix lỗi rác bộ nhớ trên Chrome khiến TTS dừng giữa chừng
+                                    window.utterances = window.utterances || [];
+                                    window.utterances.push(utterance);
+                                    
+                                    window.speechSynthesis.speak(utterance);
+                                } else {
+                                    alert('Trình duyệt của bạn không hỗ trợ phát âm.');
+                                }
+                            }
+                        }" class="lms-card p-6 space-y-3 relative group">
                             <div class="flex items-center justify-between text-xs text-[#e07a5f] font-bold">
                                 <span>Từ vựng hôm nay</span>
-                                <span class="px-2 py-0.5 bg-[#fff2ee] dark:bg-slate-800 rounded text-[10px] font-bold">HSK 5</span>
+                                <span class="px-2 py-0.5 bg-[#fff2ee] dark:bg-slate-800 rounded text-[10px] font-bold">HSK {{ $wordOfDay->level ?? 5 }}</span>
                             </div>
 
                             <div class="py-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                 <div>
                                     <div class="flex items-baseline gap-3">
-                                        <span class="text-4xl font-extrabold text-slate-900 dark:text-white zh-text">坚持</span>
-                                        <span class="text-sm font-bold text-[#e07a5f]">jiān chí</span>
+                                        <span class="text-4xl font-extrabold text-slate-900 dark:text-white zh-text">{{ $wordOfDay->word ?? '坚持' }}</span>
+                                        <span class="text-sm font-bold text-[#e07a5f]">{{ $wordOfDay->pinyin ?? 'jiān chí' }}</span>
                                     </div>
-                                    <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1">Động từ: Kiên trì, giữ vững mục tiêu</p>
+                                    <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1">{{ $wordOfDay->meaning ?? 'Động từ: Kiên trì, giữ vững mục tiêu' }}</p>
                                 </div>
-                                <button @click="playing = true; setTimeout(() => playing = false, 1200)" class="w-10 h-10 rounded-full bg-[#fff2ee] dark:bg-slate-800 text-[#e07a5f] hover:bg-[#e07a5f] hover:text-white flex items-center justify-center transition-all btn-tactile shadow-xs" title="Nghe phát âm">
+                                <button @click="playAudio()" class="w-10 h-10 rounded-full bg-[#fff2ee] dark:bg-slate-800 text-[#e07a5f] hover:bg-[#e07a5f] hover:text-white flex items-center justify-center transition-all btn-tactile shadow-xs" title="Nghe phát âm">
                                     <i class="fa-solid" :class="playing ? 'fa-volume-high animate-bounce' : 'fa-volume-low'"></i>
                                 </button>
                             </div>
 
+                            @if(!empty($wordOfDay->example))
                             <div class="p-3.5 bg-[#faf6f2] dark:bg-slate-800/80 rounded-xl border border-[#e8e2d9] dark:border-slate-700 text-xs">
                                 <p class="text-slate-900 dark:text-white zh-text font-medium leading-relaxed">
-                                    例句: 只要坚持努力，就一定能通过 HSK 5 级考试。
+                                    例句: {{ $wordOfDay->example }}
                                 </p>
+                                @if(!empty($wordOfDay->example_meaning))
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-normal">
-                                    (Chỉ cần kiên trì nỗ lực thì nhất định sẽ đỗ HSK 5).
+                                    ({{ $wordOfDay->example_meaning }})
                                 </p>
+                                @endif
                             </div>
+                            @endif
                         </div>
 
                         <!-- Widget Kết nối Mạng xã hội XIAOMU (5 Nền tảng: FB, YT, Insta, TikTok, Zalo) -->
@@ -591,57 +791,35 @@
 
                             <div class="grid grid-cols-2 gap-2.5 pt-1">
                                 <!-- Facebook -->
-                                <a href="https://facebook.com" target="_blank" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile">
-                                    <div class="w-7 h-7 rounded-lg bg-[#1877f2] text-white flex items-center justify-center text-xs shrink-0">
+                                <a href="https://www.facebook.com/profile.php?id=61589009699142" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile group">
+                                    <div class="w-8 h-8 rounded-lg bg-[#1877f2] text-white flex items-center justify-center text-sm shadow-xs shrink-0 group-hover:scale-105 transition-transform">
                                         <i class="fa-brands fa-facebook-f"></i>
                                     </div>
-                                    <div class="truncate">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Facebook</p>
-                                        <p class="text-[10px] text-slate-400 truncate">120K Follow</p>
-                                    </div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-white truncate">Facebook</span>
                                 </a>
 
                                 <!-- YouTube -->
-                                <a href="https://youtube.com" target="_blank" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile">
-                                    <div class="w-7 h-7 rounded-lg bg-[#FF0000] text-white flex items-center justify-center text-xs shrink-0">
+                                <a href="https://www.youtube.com/@Chiettuchuhan" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile group">
+                                    <div class="w-8 h-8 rounded-lg bg-[#FF0000] text-white flex items-center justify-center text-sm shadow-xs shrink-0 group-hover:scale-105 transition-transform">
                                         <i class="fa-brands fa-youtube"></i>
                                     </div>
-                                    <div class="truncate">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-white truncate">YouTube</p>
-                                        <p class="text-[10px] text-slate-400 truncate">Bài giảng HSK</p>
-                                    </div>
-                                </a>
-
-                                <!-- Instagram -->
-                                <a href="https://instagram.com" target="_blank" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile">
-                                    <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-xs shrink-0">
-                                        <i class="fa-brands fa-instagram"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Instagram</p>
-                                        <p class="text-[10px] text-slate-400 truncate">Hình ảnh & Story</p>
-                                    </div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-white truncate">YouTube</span>
                                 </a>
 
                                 <!-- TikTok -->
-                                <a href="https://www.tiktok.com/@chiettuchuhan55" target="_blank" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile">
-                                    <div class="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center shrink-0">
+                                <a href="https://www.tiktok.com/@chiettuchuhan55" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile group">
+                                    <div class="w-8 h-8 rounded-lg bg-black text-white border border-slate-700/30 flex items-center justify-center text-sm shadow-xs shrink-0 group-hover:scale-105 transition-transform">
                                         <i class="fa-brands fa-tiktok"></i>
                                     </div>
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-white truncate">TikTok</p>
-                                        <p class="text-[10px] text-slate-500 truncate">Video học thuật 60s</p>
-                                    </div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-white truncate">TikTok</span>
                                 </a>
 
                                 <!-- Zalo Official -->
-                                    <div class="w-7 h-7 rounded-lg bg-[#0068ff] text-white font-extrabold flex items-center justify-center text-[10px] shrink-0">
+                                <a href="https://zalo.me/0395294739" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2a2624] hover:bg-[#fff2ee] dark:hover:bg-[#28201d] hover:border-[#fcdccf] transition-all btn-tactile group">
+                                    <div class="w-8 h-8 rounded-lg bg-[#0068ff] text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
                                         Zalo
                                     </div>
-                                    <div class="truncate">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Zalo Official Account</p>
-                                        <p class="text-[10px] text-slate-400 truncate">Hỗ trợ tư vấn & nhận tài liệu trực tiếp</p>
-                                    </div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-white truncate">Zalo</span>
                                 </a>
                             </div>
                         </div>
