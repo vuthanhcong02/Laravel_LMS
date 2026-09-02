@@ -45,7 +45,12 @@
 
                                 <!-- CTA Buttons in Banner -->
                                 <div class="flex flex-wrap items-center gap-3 pt-1">
-                                    <a href="{{ route('courses.level', ['levelSlug' => 'hsk-1']) }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-xl text-xs font-bold shadow-md transition-all btn-tactile">
+                                    @php
+                                        $lesson1Url = ($suggestedLesson && $suggestedLesson->slug) 
+                                            ? route('courses.lesson', ['levelSlug' => 'hsk-1', 'lessonSlug' => $suggestedLesson->slug]) 
+                                            : route('courses.level', ['levelSlug' => 'hsk-1']);
+                                    @endphp
+                                    <a href="{{ $lesson1Url }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-xl text-xs font-bold shadow-md transition-all btn-tactile">
                                         <i class="fa-solid fa-play text-[10px]"></i> {{ __('Bắt đầu bài học đầu tiên') }}
                                     </a>
                                     <a href="#roadmap" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-bold transition-all btn-tactile">
@@ -110,7 +115,9 @@
                                     <!-- Badge / Thumbnail chữ Hán -->
                                     <div class="w-full sm:w-36 h-28 sm:h-28 rounded-2xl bg-gradient-to-br from-[#e6f0f5] to-[#d6e6f0] dark:from-[#1b3240] dark:to-[#162833] flex flex-col items-center justify-center text-center p-3 shrink-0 border border-slate-200 dark:border-slate-700 shadow-xs">
                                         <span class="text-3xl font-extrabold text-[#1c3848] dark:text-[#a0c4d8] zh-text tracking-wider">汉语</span>
-                                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">HSK 3.0 • Cấp 1 • Bài 1</span>
+                                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">
+                                            HSK 3.0 • {{ __('Cấp 1') }} • {{ __('Bài') }} {{ $suggestedLesson->lesson_number ?? 1 }}
+                                        </span>
                                     </div>
 
                                     <!-- Thông tin bài học -->
@@ -119,19 +126,24 @@
                                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] uppercase tracking-wider">
                                                 {{ __('Bài học mở đầu') }}
                                             </span>
+                                            @if(!empty($suggestedLesson->code))
+                                                <span class="text-[11px] text-slate-400">• {{ $suggestedLesson->code }}</span>
+                                            @endif
                                         </div>
-                                        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">
-                                            AI小语，你好!
+                                        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug zh-text">
+                                            {{ $suggestedLesson->title ?? '你好！' }}
                                         </h3>
                                         <p class="text-xs text-slate-500 dark:text-slate-400 font-normal">
-                                            Ai Xiaoyu, xin chào!
+                                            {{ $suggestedLesson->translation ?? 'Xin chào!' }}
                                         </p>
                                         
                                         <div class="pt-2 flex items-center justify-between">
-                                            <a href="{{ route('courses.level', ['levelSlug' => 'hsk-1']) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#244255] hover:bg-[#1a3342] dark:bg-[#e07a5f] dark:hover:bg-[#c86349] text-white rounded-xl text-xs font-bold transition-all btn-tactile shadow-xs">
+                                            <a href="{{ $lesson1Url }}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#244255] hover:bg-[#1a3342] dark:bg-[#e07a5f] dark:hover:bg-[#c86349] text-white rounded-xl text-xs font-bold transition-all btn-tactile shadow-xs">
                                                 <i class="fa-solid fa-play text-[10px]"></i> {{ __('Bắt đầu học') }}
                                             </a>
-                                            <span class="text-xs text-slate-400 font-medium">12 {{ __('từ') }}</span>
+                                            <span class="text-xs text-slate-400 font-medium">
+                                                {{ $suggestedLesson->vocab_list_count ?? 11 }} {{ __('từ') }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

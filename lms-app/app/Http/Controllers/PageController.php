@@ -84,7 +84,7 @@ class PageController extends Controller
         return view('course.layout', compact('levels', 'currentLevel', 'currentLesson', 'activeTab'));
     }
 
-        public function getViewCoursesV2(Request $request)
+    public function getViewCoursesV2(Request $request)
     {
         $levels = HskLevel::with([
             'lessons' => function ($query) {
@@ -147,7 +147,15 @@ class PageController extends Controller
     public function getDemoHome()
     {
         $wordOfDay = HskVocabulary::inRandomOrder()->first();
-        return view('home', compact('wordOfDay'));
+
+        $suggestedLesson = HskLesson::withCount('vocabList')
+            ->whereHas('level', function ($query) {
+                $query->where('slug', 'hsk-1')->orWhere('level_code', 'hsk1');
+            })
+            ->where('lesson_number', 1)
+            ->first();
+
+        return view('home', compact('wordOfDay', 'suggestedLesson'));
     }
 
     public function getViewBlog()
