@@ -49,6 +49,7 @@
         .dark .lms-card:hover { border-color: #e07a5f; box-shadow: 0 10px 24px -6px rgba(224, 122, 95, 0.15); }
         .btn-tactile { transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .btn-tactile:active { transform: scale(0.96); }
+        button i, button svg, a i, a svg { pointer-events: none; }
         .nav-item-active { background-color: #fff2ee; color: #e07a5f; font-weight: 700; }
         .dark .nav-item-active { background-color: #2a221f; color: #f4978e; }
         .no-scrollbar::-webkit-scrollbar { display: none; }

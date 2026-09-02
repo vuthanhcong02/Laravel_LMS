@@ -16,7 +16,7 @@
                     <div x-show="!sidebarCollapsed" class="flex flex-col min-w-0 transition-opacity duration-200">
                         <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">XIAOMU</span>
                         <span class="text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] tracking-wide mt-1 leading-none">
-                            Tiếng Trung LMS
+                            {{ __('Tiếng Trung') }}
                         </span>
                     </div>
                 </a>
