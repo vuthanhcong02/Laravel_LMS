@@ -1,3 +1,6 @@
+@php
+    use App\Models\User;
+@endphp
 <aside class="fixed inset-y-0 left-0 z-50 bg-white dark:bg-[#141211] border-r border-[#e8e2d9] dark:border-[#262220] flex flex-col transition-all duration-300 ease-out lg:static shrink-0 h-screen overflow-hidden w-64"
                :class="{ 
                    'translate-x-0': sidebarOpen, 
@@ -6,7 +9,6 @@
                    'w-20': sidebarCollapsed 
                }">
             
-            <!-- KHU VỰC LOGO THƯƠNG HIỆU -->
             <div class="h-20 flex items-center justify-between px-4 border-b border-[#e8e2d9] dark:border-[#262220] shrink-0">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group min-w-0" :class="sidebarCollapsed ? 'justify-center w-full' : ''">
                     <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
@@ -19,20 +21,16 @@
                     </div>
                 </a>
 
-                <!-- Nút đóng trên Mobile -->
                 <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <!-- Menu chính (Tự co giãn scroll nội dung) -->
             <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-5 no-scrollbar">
                 
-                <!-- Nhóm Học tập -->
                 <div>
                     <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">Học tập</div>
                     <div class="space-y-1">
-                        <!-- Trang chủ -->
                         @php
                             $isHomeActive = request()->routeIs('home');
                         @endphp
@@ -41,7 +39,6 @@
                             <span x-show="!sidebarCollapsed" class="truncate">Trang chủ</span>
                         </a>
 
-                        <!-- Khóa học -->
                         @php
                             $isCourseActive = request()->routeIs('courses*') || request()->is('demo-courses');
                         @endphp
@@ -50,7 +47,6 @@
                             <span x-show="!sidebarCollapsed" class="truncate">Khóa học HSK</span>
                         </a>
 
-                        <!-- Luyện thi HSK -->
                         @php
                             $isHskActive = request()->routeIs('student.hsk-mock-exams.*');
                         @endphp
@@ -59,7 +55,6 @@
                             <span x-show="!sidebarCollapsed" class="truncate">Luyện thi HSK</span>
                         </a>
 
-                        <!-- Thẻ ghi nhớ -->
                         <a href="{{ url('/demo-flashcards') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Thẻ ghi nhớ' : ''">
                             <i class="fa-solid fa-layer-group text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Thẻ ghi nhớ</span>
@@ -69,41 +64,51 @@
                             <span x-show="!sidebarCollapsed" class="truncate">Chiết tự chữ Hán</span>
                         </a>
 
-                        <!-- Bảng phiên âm Pinyin -->
                         <a href="{{ url('/demo-pinyin-chart') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Bảng Pinyin' : ''">
                             <i class="fa-solid fa-table-cells text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Bảng Pinyin</span>
                         </a>
 
-                        <!-- Luyện tập Pinyin -->
                         <a href="{{ url('/demo-pinyin-practice') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Luyện tập Pinyin' : ''">
                             <i class="fa-solid fa-headset text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Luyện tập Pinyin</span>
                         </a>
 
-
                     </div>
                 </div>
 
-                <!-- Nhóm Cá nhân & Hệ thống (Bám sát thiết kế hình ảnh) -->
                 <div>
                     <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">Hệ thống</div>
                     <div class="space-y-1">
-                        {{-- <!-- Từ vựng của tôi (Bám sát hình 1) -->
-                        <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Từ vựng của tôi' : ''">
-                            <i class="fa-solid fa-font text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Từ vựng của tôi</span>
-                        </a> --}}
+                        @if(auth()->check() && auth()->user()->role !== User::ROLE_GUEST)
+                            @php
+                                $dashboardRoute = '#';
+                                $dashboardLabel = __('Bảng điều khiển');
+                                $userRole = auth()->user()->role;
+                                
+                                if ($userRole === User::ROLE_ADMIN) {
+                                    $dashboardRoute = route('admin.dashboard');
+                                    $dashboardLabel = __('Quản trị hệ thống');
+                                } elseif ($userRole === User::ROLE_TEACHER) {
+                                    $dashboardRoute = route('teacher.dashboard');
+                                    $dashboardLabel = __('Bảng điều khiển');
+                                } else {
+                                    $dashboardRoute = route('student.dashboard');
+                                    $dashboardLabel = __('Tiến độ học tập');
+                                }
+                                $isDashboardActive = request()->url() === $dashboardRoute;
+                            @endphp
+                            <a href="{{ $dashboardRoute }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isDashboardActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ $dashboardLabel }}' : ''">
+                                <i class="fa-solid fa-chart-pie text-base w-5 text-center shrink-0 transition-colors {{ $isDashboardActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
+                                <span x-show="!sidebarCollapsed" class="truncate">{{ $dashboardLabel }}</span>
+                            </a>
+                        @endif
 
-                        <!-- Liên hệ -->
                         <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-[#e07a5f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Liên hệ hỗ trợ' : ''">
                             <i class="fa-solid fa-envelope text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">Liên hệ hỗ trợ</span>
                         </a>
 
-
-
-                        <!-- Đăng xuất (Form POST chuẩn Laravel) -->
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                             @csrf
                         </form>

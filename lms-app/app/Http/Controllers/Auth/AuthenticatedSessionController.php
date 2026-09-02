@@ -38,8 +38,15 @@ class AuthenticatedSessionController extends Controller
         return $this->authService->handleLogout($request);
     }
 
-    public function redirect($provider)
+    public function redirect(Request $request, $provider)
     {
+        $previous = url()->previous();
+        if ($request->filled('redirect_to')) {
+            session(['social_login_redirect' => $request->redirect_to]);
+        } elseif ($previous && $previous !== route('login') && $previous !== url('/login') && $previous !== route('register') && $previous !== url('/register')) {
+            session(['social_login_redirect' => $previous]);
+        }
+
         return Socialite::driver($provider)->redirect();
     }
 

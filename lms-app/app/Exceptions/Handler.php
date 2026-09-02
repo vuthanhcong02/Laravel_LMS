@@ -28,7 +28,7 @@ class Handler extends ExceptionHandler
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang.'], 419);
             }
-            return redirect()->back()->withInput($request->except('_token'))->with('error', 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.');
+            return redirect()->route('home')->with('error', 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.');
         });
 
         $this->reportable(function (Throwable $e) {

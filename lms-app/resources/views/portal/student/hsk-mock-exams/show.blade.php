@@ -160,7 +160,7 @@
                                     {!! $actionBtn !!}
                                 </a>
                             @else
-                                <button type="button" @click.prevent="authModalOpen = true; authModalTab = 'login'" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-1.5 shadow-sm">
+                                <button type="button" @click.prevent="authModalOpen = true; authModalTab = 'login'; authRedirectUrl = '{{ $actionUrl }}'" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-1.5 shadow-sm">
                                     {!! $actionBtn !!}
                                 </button>
                             @endauth
