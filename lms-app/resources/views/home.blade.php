@@ -735,25 +735,68 @@
                         <!-- Widget Thẻ từ vựng mỗi ngày -->
                         <div x-data="{ 
                             playing: false,
+                            timer: null,
                             playAudio() {
-                                if ('speechSynthesis' in window) {
-                                    window.speechSynthesis.cancel(); // Hủy các lượt đọc trước đó để tránh bị kẹt (fix lỗi chập chờn)
-                                    this.playing = true;
-                                    let utterance = new SpeechSynthesisUtterance('{{ $wordOfDay->word ?? '坚持' }}');
-                                    utterance.lang = 'zh-CN';
-                                    utterance.rate = 0.9; // Đọc chậm một chút cho dễ nghe
-                                    
-                                    utterance.onend = () => { this.playing = false; };
-                                    utterance.onerror = () => { this.playing = false; };
-                                    
-                                    // Fix lỗi rác bộ nhớ trên Chrome khiến TTS dừng giữa chừng
-                                    window.utterances = window.utterances || [];
-                                    window.utterances.push(utterance);
-                                    
-                                    window.speechSynthesis.speak(utterance);
-                                } else {
-                                    alert('Trình duyệt của bạn không hỗ trợ phát âm.');
+                                if (!('speechSynthesis' in window)) {
+                                    alert('Trình duyệt không hỗ trợ phát âm.');
+                                    return;
                                 }
+
+                                const synth = window.speechSynthesis;
+                                const word = '{{ addslashes($wordOfDay->word ?? '坚持') }}';
+                                if (!word) return;
+
+                                // Xóa timer trước đó nếu người dùng click liên tục
+                                if (this.timer) {
+                                    clearTimeout(this.timer);
+                                    this.timer = null;
+                                }
+
+                                // Đánh thức synth nếu bị Chrome pause ngầm
+                                if (synth.paused) {
+                                    synth.resume();
+                                }
+
+                                // Hủy phát âm hiện tại
+                                synth.cancel();
+
+                                this.playing = true;
+
+                                // Chờ 60ms để Chrome dọn dẹp hàng đợi audio trước khi speak lượt mới
+                                this.timer = setTimeout(() => {
+                                    if (synth.paused) {
+                                        synth.resume();
+                                    }
+
+                                    const utterance = new SpeechSynthesisUtterance(word);
+                                    utterance.lang = 'zh-CN';
+                                    utterance.rate = 0.85;
+
+                                    // Gán giọng tiếng Trung phù hợp
+                                    const voices = synth.getVoices();
+                                    const zhVoice = voices.find(v => 
+                                        v.lang === 'zh-CN' || v.lang === 'zh_CN' || 
+                                        v.lang.startsWith('zh') || v.lang.startsWith('cmn')
+                                    );
+                                    if (zhVoice) {
+                                        utterance.voice = zhVoice;
+                                    }
+
+                                    utterance.onend = () => {
+                                        this.playing = false;
+                                        window._activeUtterance = null;
+                                    };
+
+                                    utterance.onerror = () => {
+                                        this.playing = false;
+                                        window._activeUtterance = null;
+                                    };
+
+                                    // Giữ biến toàn cục tránh Garbage Collector giải phóng sớm
+                                    window._activeUtterance = utterance;
+
+                                    synth.speak(utterance);
+                                }, 60);
                             }
                         }" class="lms-card p-6 space-y-3 relative group">
                             <div class="flex items-center justify-between text-xs text-[#e07a5f] font-bold">
@@ -769,8 +812,12 @@
                                     </div>
                                     <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1">{{ $wordOfDay->meaning ?? 'Động từ: Kiên trì, giữ vững mục tiêu' }}</p>
                                 </div>
-                                <button @click="playAudio()" class="w-10 h-10 rounded-full bg-[#fff2ee] dark:bg-slate-800 text-[#e07a5f] hover:bg-[#e07a5f] hover:text-white flex items-center justify-center transition-all btn-tactile shadow-xs" title="Nghe phát âm">
-                                    <i class="fa-solid" :class="playing ? 'fa-volume-high animate-bounce' : 'fa-volume-low'"></i>
+                                <button type="button" 
+                                    @click="playAudio()" 
+                                    class="w-11 h-11 rounded-full flex items-center justify-center transition-all btn-tactile shadow-xs shrink-0 cursor-pointer focus:outline-none select-none"
+                                    :class="playing ? 'bg-[#e07a5f] text-white ring-4 ring-[#e07a5f]/25 scale-105' : 'bg-[#fff2ee] dark:bg-slate-800 text-[#e07a5f] hover:bg-[#e07a5f] hover:text-white'" 
+                                    title="{{ __('Nghe phát âm') }}">
+                                    <i class="fa-solid fa-volume-high text-sm leading-none pointer-events-none select-none" :class="playing ? 'animate-pulse' : ''"></i>
                                 </button>
                             </div>
 

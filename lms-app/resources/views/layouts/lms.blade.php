@@ -233,29 +233,47 @@
     <!-- Global Audio Player Logic for XIAOMU LMS -->
     <script>
         let currentGlobalAudio = null;
+        let _globalSpeechTimer = null;
 
         window.playWordAudio = function(word) {
             if (!word) return;
             let textToSpeak = String(word).trim();
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                let utterance = new SpeechSynthesisUtterance(textToSpeak);
-                utterance.lang = 'zh-CN';
-                utterance.rate = 0.85;
-                
-                let setVoiceAndSpeak = function() {
-                    let voices = window.speechSynthesis.getVoices();
-                    let zhVoice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh_CN' || v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
-                    if (zhVoice) utterance.voice = zhVoice;
-                    window.speechSynthesis.speak(utterance);
-                };
-
-                if (window.speechSynthesis.getVoices().length > 0) {
-                    setVoiceAndSpeak();
-                } else {
-                    window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
-                    window.speechSynthesis.speak(utterance);
+                let synth = window.speechSynthesis;
+                if (synth.paused) {
+                    synth.resume();
                 }
+                synth.cancel();
+
+                if (_globalSpeechTimer) {
+                    clearTimeout(_globalSpeechTimer);
+                }
+
+                _globalSpeechTimer = setTimeout(function() {
+                    if (synth.paused) {
+                        synth.resume();
+                    }
+
+                    let utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    utterance.lang = 'zh-CN';
+                    utterance.rate = 0.85;
+                    
+                    let setVoiceAndSpeak = function() {
+                        let voices = synth.getVoices();
+                        let zhVoice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh_CN' || v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+                        if (zhVoice) utterance.voice = zhVoice;
+                        window._globalActiveUtterance = utterance;
+                        synth.speak(utterance);
+                    };
+
+                    if (synth.getVoices().length > 0) {
+                        setVoiceAndSpeak();
+                    } else {
+                        synth.onvoiceschanged = setVoiceAndSpeak;
+                        window._globalActiveUtterance = utterance;
+                        synth.speak(utterance);
+                    }
+                }, 60);
             }
         };
 
