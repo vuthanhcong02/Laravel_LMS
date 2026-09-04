@@ -21,3 +21,5 @@ if (!window.Alpine) {
 
     Alpine.start();
 }
+
+import './lms.js';

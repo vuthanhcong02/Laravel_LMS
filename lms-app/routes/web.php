@@ -72,7 +72,6 @@ Route::controller(PageController::class)->group(function () {
     Route::view('/demo-exams', 'demo-exams');
     Route::view('/demo-exam-take', 'demo-exam-take');
     Route::view('/demo-flashcards', 'demo-flashcards');
-    Route::view('/demo-pinyin-chart', 'demo-pinyin-chart');
     Route::view('/demo-pinyin-practice', 'demo-pinyin-practice');
     Route::view('/demo-etymology', 'demo-etymology');
     Route::view('/login', 'auth.login');

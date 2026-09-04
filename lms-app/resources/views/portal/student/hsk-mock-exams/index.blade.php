@@ -10,10 +10,6 @@
 
 @section('content')
 <div x-data="hskIndex()" class="space-y-6">
-    <script>
-        window.hskLeaderboardData = @json($leaderboard ?? []);
-    </script>
-    
     <!-- Banner Tiêu đề Trang -->
     <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
         <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-[#e07a5f]/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -333,4 +329,8 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.hskLeaderboardData = @json($leaderboard ?? []);
+</script>
 @endsection
