@@ -58,7 +58,6 @@ Route::controller(PageController::class)->group(function () {
     // V2 Routes (now main)
     Route::get('/khoa-hoc', 'getViewCoursesV2')->name('courses');
     Route::get('/khoa-hoc/{levelSlug}', 'showCourseLevelV2')->name('courses.level');
-    Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLessonV2')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
@@ -84,6 +83,11 @@ Route::controller(PageController::class)->group(function () {
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
+
+    // HSK Course Lesson (Học bài học chi tiết)
+    Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', [PageController::class, 'showCourseLessonV2'])
+        ->name('courses.lesson')
+        ->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
 
     // HSK Mock Exams (Take Exam via Session UUID)
     Route::get('/thi-thu-hsk/{level}/bai-thi/{id}', [HskMockExamController::class, 'startExam'])->name('student.hsk-mock-exams.start');

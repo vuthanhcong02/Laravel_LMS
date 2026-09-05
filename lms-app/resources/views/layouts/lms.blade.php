@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" class="h-full" :class="{ 'dark': darkMode }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
-    @open-auth-modal.window="authModalOpen = true; if ($event.detail && $event.detail.tab) authModalTab = $event.detail.tab;"
+    @open-auth-modal.window="authModalOpen = true; if ($event.detail && $event.detail.tab) authModalTab = $event.detail.tab; if ($event.detail && $event.detail.redirect) authRedirectUrl = $event.detail.redirect;"
     @open-contact-modal.window="contactModalOpen = true"
     x-data="{
     sidebarOpen: false,
@@ -13,6 +13,7 @@
     searchKeyword: '',
     authModalOpen: {{ auth()->guest() && ($errors->any() || session('status')) ? 'true' : 'false' }},
     authModalTab: '{{ session('auth_tab') ?? (old('first_name') ? 'register' : 'login') }}',
+    authRedirectUrl: '',
     contactModalOpen: false,
     authEmail: '',
     authPassword: '',

@@ -66,6 +66,9 @@
                     }
                 @endphp
                 <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}"
+                    @if(!auth()->check())
+                        @click.prevent="$dispatch('open-auth-modal', { redirect: '{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}' })"
+                    @endif
                     class="lms-card p-4 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center gap-3 group hover:border-[#e07a5f] transition-all cursor-pointer">
                     
                     <!-- Số thứ tự: w-10 h-10 rounded-full -->

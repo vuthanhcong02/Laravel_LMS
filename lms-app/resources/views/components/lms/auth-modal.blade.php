@@ -126,13 +126,9 @@
                 <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
             </div>
 
-            <form id="google-login-form" action="{{ route('socialite.redirect', 'google') }}" method="GET"
-                class="hidden">
-                <input type="hidden" id="google-login-redirect" name="redirect_to" value="">
-            </form>
-            <a href="#"
-                @click.prevent="document.getElementById('google-login-redirect').value = authRedirectUrl; document.getElementById('google-login-form').submit()"
-                class="w-full py-2.5 px-4 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] bg-white dark:bg-[#201d1b] hover:bg-[#f8f6f3] dark:hover:bg-[#2a2624] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-3 transition-all btn-tactile shadow-xs">
+            <!-- Nút đăng nhập với Google -->
+            <a :href="'{{ route('socialite.redirect', 'google') }}' + (authRedirectUrl ? '?redirect_to=' + encodeURIComponent(authRedirectUrl) : '')"
+                class="w-full py-2.5 px-4 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] bg-white dark:bg-[#201d1b] hover:bg-[#f8f6f3] dark:hover:bg-[#2a2624] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-3 transition-all btn-tactile shadow-xs cursor-pointer">
                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4"
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -143,15 +139,15 @@
                     <path fill="#EA4335"
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
-                <span>Tiếp tục với Google</span>
+                <span>{{ __('Tiếp tục với Google') }}</span>
             </a>
 
             <div class="text-center pt-2">
                 <p class="text-xs text-slate-500 dark:text-slate-400">
-                    Chưa có tài khoản?
+                    {{ __('Chưa có tài khoản?') }}
                     <button type="button" @click="authModalTab = 'register'"
                         class="font-bold text-[#e07a5f] hover:underline cursor-pointer">
-                        Đăng ký tài khoản
+                        {{ __('Đăng ký tài khoản') }}
                     </button>
                 </p>
             </div>
@@ -214,33 +210,28 @@
                     <input type="checkbox" required
                         class="mt-0.5 rounded text-[#e07a5f] focus:ring-[#e07a5f]/20 border-slate-300 dark:border-slate-700 dark:bg-slate-800">
                     <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight select-none">
-                        Tôi đồng ý với <a href="#" class="text-[#e07a5f] underline">Điều khoản dịch vụ</a> và <a
-                            href="#" class="text-[#e07a5f] underline">Chính sách bảo mật</a> của XIAOMU.
+                        {{ __('Tôi đồng ý với') }} <a href="#" class="text-[#e07a5f] underline">{{ __('Điều khoản dịch vụ') }}</a> {{ __('và') }} <a
+                            href="#" class="text-[#e07a5f] underline">{{ __('Chính sách bảo mật') }}</a> {{ __('của XIAOMU.') }}
                     </span>
                 </div>
 
                 <!-- Nút Submit Đăng ký -->
                 <button type="submit"
                     class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center justify-center gap-2 cursor-pointer">
-                    <span>Tạo tài khoản miễn phí</span>
+                    <span>{{ __('Tạo tài khoản miễn phí') }}</span>
                 </button>
             </form>
 
             <!-- Divider cân đối 2 bên -->
             <div class="flex items-center gap-3 my-4">
                 <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
-                <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500">hoặc</span>
+                <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500">{{ __('hoặc') }}</span>
                 <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
             </div>
 
             <!-- Đăng ký nhanh với Google (Để ở dưới) -->
-            <form id="google-register-form" action="{{ route('socialite.redirect', 'google') }}" method="GET"
-                class="hidden">
-                <input type="hidden" id="google-register-redirect" name="redirect_to" value="">
-            </form>
-            <a href="#"
-                @click.prevent="document.getElementById('google-register-redirect').value = authRedirectUrl; document.getElementById('google-register-form').submit()"
-                class="w-full py-2.5 px-4 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] bg-white dark:bg-[#201d1b] hover:bg-[#f8f6f3] dark:hover:bg-[#2a2624] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-3 transition-all btn-tactile shadow-xs">
+            <a :href="'{{ route('socialite.redirect', 'google') }}' + (authRedirectUrl ? '?redirect_to=' + encodeURIComponent(authRedirectUrl) : '')"
+                class="w-full py-2.5 px-4 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] bg-white dark:bg-[#201d1b] hover:bg-[#f8f6f3] dark:hover:bg-[#2a2624] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-3 transition-all btn-tactile shadow-xs cursor-pointer">
                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4"
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -251,7 +242,7 @@
                     <path fill="#EA4335"
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
-                <span>Đăng ký nhanh với Google</span>
+                <span>{{ __('Đăng ký nhanh với Google') }}</span>
             </a>
 
             <!-- Chuyển sang Đăng nhập -->

@@ -130,7 +130,11 @@
                                         </p>
                                         
                                         <div class="pt-2 flex items-center justify-between">
-                                            <a href="{{ $lesson1Url }}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#244255] hover:bg-[#1a3342] dark:bg-[#e07a5f] dark:hover:bg-[#c86349] text-white rounded-xl text-xs font-bold transition-all btn-tactile shadow-xs">
+                                            <a href="{{ $lesson1Url }}" 
+                                               @if(!auth()->check())
+                                                   @click.prevent="$dispatch('open-auth-modal', { redirect: '{{ $lesson1Url }}' })"
+                                               @endif
+                                               class="inline-flex items-center gap-2 px-4 py-2 bg-[#244255] hover:bg-[#1a3342] dark:bg-[#e07a5f] dark:hover:bg-[#c86349] text-white rounded-xl text-xs font-bold transition-all btn-tactile shadow-xs cursor-pointer">
                                                 <i class="fa-solid fa-play text-[10px]"></i> {{ __('Bắt đầu học') }}
                                             </a>
                                             <span class="text-xs text-slate-400 font-medium">
