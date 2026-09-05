@@ -16,7 +16,7 @@ class EnsureUserHasRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (! $request->user()) {
-            return redirect('login');
+            return redirect()->route('home');
         }
 
         if (! in_array($request->user()->role, $roles)) {

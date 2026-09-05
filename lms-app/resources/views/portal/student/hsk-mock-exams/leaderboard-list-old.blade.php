@@ -24,7 +24,6 @@
                     <div class="font-bold text-slate-400 text-xs">{{ $index + 1 }}</div>
                 </div>
             @endif
-            
             <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex-shrink-0 border border-slate-300 dark:border-slate-600 flex items-center justify-center overflow-hidden">
                 @if($result->user)
                     <img src="{{ $result->user->avatar_url }}" alt="{{ $result->user->first_name }} {{ $result->user->last_name }}" class="w-full h-full object-cover">
@@ -32,7 +31,6 @@
                     <span class="text-xs font-bold text-slate-500">?</span>
                 @endif
             </div>
-            
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-bold text-slate-800 dark:text-white truncate">
                     {{ auth()->check() && auth()->id() == $result->user_id ? 'Bạn' : (trim($result->user->first_name . ' ' . $result->user->last_name) ?: 'Người dùng') }}
@@ -41,7 +39,6 @@
                     {{ $result->mockExam && $result->mockExam->hskLevel ? strtoupper($result->mockExam->hskLevel->level_code) : 'HSK' }}
                 </p>
             </div>
-            
             <div class="text-right">
                 <p class="text-sm font-black text-slate-700 dark:text-slate-300">
                     {{ $result->total_score }}
@@ -53,7 +50,6 @@
             </div>
         </div>
     @endforeach
-
     @if(auth()->check() && isset($currentUserRank) && $currentUserRank > 10)
         <div class="flex justify-center my-1">
             <div class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 mx-1"></div>
@@ -64,7 +60,6 @@
             <div class="w-8 flex justify-center">
                 <div class="font-black text-primary text-xs">{{ $currentUserRank }}</div>
             </div>
-            
             <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex-shrink-0 border border-slate-300 dark:border-slate-600 flex items-center justify-center overflow-hidden">
                 @if($currentUserResult->user)
                     <img src="{{ $currentUserResult->user->avatar_url }}" alt="{{ $currentUserResult->user->first_name }} {{ $currentUserResult->user->last_name }}" class="w-full h-full object-cover">
@@ -72,14 +67,12 @@
                     <span class="text-xs font-bold text-slate-500">?</span>
                 @endif
             </div>
-            
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-bold text-slate-800 dark:text-white truncate">Bạn</p>
                 <p class="text-[10px] text-slate-500 dark:text-slate-400">
                     {{ $currentUserResult->mockExam && $currentUserResult->mockExam->hskLevel ? strtoupper($currentUserResult->mockExam->hskLevel->level_code) : 'HSK' }}
                 </p>
             </div>
-            
             <div class="text-right">
                 <p class="text-sm font-black text-slate-700 dark:text-slate-300">
                     {{ $currentUserResult->total_score }}

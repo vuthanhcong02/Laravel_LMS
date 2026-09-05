@@ -30,8 +30,17 @@ class AuthService
 
         $user = $request->user();
 
-        if ($user->role === User::ROLE_STUDENT) {
-            return redirect()->route('student.dashboard');
+        if (in_array($user->role, [User::ROLE_STUDENT, User::ROLE_GUEST])) {
+            $previous = url()->previous();
+            $default = $user->role === User::ROLE_GUEST ? route('home') : route('student.dashboard');
+
+            if ($request->filled('redirect_to')) {
+                $default = $request->redirect_to;
+            } elseif ($previous && $previous !== route('login') && $previous !== url('/login')) {
+                $default = $previous;
+            }
+
+            return redirect()->intended($default);
         }
 
         return redirect()->intended(RouteServiceProvider::HOME);
@@ -73,7 +82,14 @@ class AuthService
             event(new Registered($user));
             Auth::login($user);
 
-            return redirect(RouteServiceProvider::HOME);
+            $previous = url()->previous();
+            $default = RouteServiceProvider::HOME;
+            
+            if ($previous && $previous !== route('login') && $previous !== url('/login') && $previous !== route('register') && $previous !== url('/register')) {
+                $default = $previous;
+            }
+            
+            return redirect()->intended($default);
         } catch (\Exception $e) {
             Log::error('Registration error: ' . $e->getMessage());
             return redirect()->back()->withInput()->withErrors(['error' => 'Đăng ký thất bại. Vui lòng thử lại sau.']);
@@ -89,25 +105,25 @@ class AuthService
     public function handleCallbackSocial($request, $provider): RedirectResponse
     {
         if ($request->has('error')) {
-            return redirect()->route('login')->with('error', 'Bạn đã hủy đăng nhập ' . ucfirst($provider));
+            return redirect()->route('home')->with('error', 'Bạn đã hủy đăng nhập ' . ucfirst($provider));
         }
         try {
             $socialUser = Socialite::driver($provider)->user();
 
             if (! $socialUser || ! $socialUser->getId()) {
-                return redirect()->route('login')->with('error', 'Không lấy được thông tin từ ' . ucfirst($provider));
+                return redirect()->route('home')->with('error', 'Không lấy được thông tin từ ' . ucfirst($provider));
             }
 
             $email = $socialUser->getEmail();
             if (! $email) {
-                return redirect()->route('login')->with('error', 'Tài khoản ' . ucfirst($provider) . ' không có email.');
+                return redirect()->route('home')->with('error', 'Tài khoản ' . ucfirst($provider) . ' không có email.');
             }
 
             $user = User::where('email', $email)->first();
 
             if ($user) {
                 if ($user->provider !== $provider) {
-                    return redirect()->route('login')->with('error', 'Email này đã được sử dụng. Vui lòng đăng nhập bằng mật khẩu.');
+                    return redirect()->route('home')->with('error', 'Email này đã được sử dụng. Vui lòng đăng nhập bằng mật khẩu.');
                 }
             } else {
                 $avatar = $socialUser->getAvatar();
@@ -128,8 +144,12 @@ class AuthService
 
             Auth::login($user);
 
-            if ($user->role === User::ROLE_STUDENT) {
-                return redirect()->route('student.dashboard');
+            if (in_array($user->role, [User::ROLE_STUDENT, User::ROLE_GUEST])) {
+                $default = $user->role === User::ROLE_GUEST ? route('home') : route('student.dashboard');
+                if (session()->has('social_login_redirect')) {
+                    $default = session()->pull('social_login_redirect');
+                }
+                return redirect()->intended($default);
             }
 
             return redirect()->intended(RouteServiceProvider::HOME);
@@ -138,7 +158,7 @@ class AuthService
             return redirect()->route('login')->with('error', 'Phiên đăng nhập ' . ucfirst($provider) . ' đã hết hạn hoặc không hợp lệ. Vui lòng thử lại.');
         } catch (\Exception $e) {
             Log::error('Social login error: ' . $e->getMessage(), ['exception' => $e]);
-            return redirect()->route('login')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
+            return redirect()->route('home')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
         }
     }
 

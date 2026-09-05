@@ -28,11 +28,25 @@ class Handler extends ExceptionHandler
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang.'], 419);
             }
-            return redirect()->back()->withInput($request->except('_token'))->with('error', 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.');
+            return redirect()->route('home')->with('error', 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.');
         });
 
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    /**
+     * Convert an authentication exception into a response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Auth\AuthenticationException  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function unauthenticated($request, \Illuminate\Auth\AuthenticationException $exception)
+    {
+        return $request->expectsJson()
+            ? response()->json(['message' => $exception->getMessage()], 401)
+            : redirect()->guest(route('home'))->withErrors(['auth' => 'Vui lòng đăng nhập để truy cập nội dung này.']);
     }
 }

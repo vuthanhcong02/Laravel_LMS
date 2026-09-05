@@ -40,7 +40,7 @@ if (! function_exists('renderHskRubyText')) {
                         $hz = trim(strip_tags(preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $inner)));
                         
                         if (!empty($rt) && !empty($hz)) {
-                            return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($hz) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($rt) . '</rt></ruby>';
+                            return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($hz) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($rt) . '</rt></ruby>';
                         }
                         return e(strip_tags($m[0]));
                     }, $html);
@@ -66,7 +66,6 @@ if (! function_exists('renderHskRubyText')) {
             preg_match_all('/(?:[a-zA-Z]{1,3})?[aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜAEIOUÜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙǕǗǙǛ]+(?:ng|n|r)?/iu', $pinyinStr, $m);
             $validPinyins = $m[0] ?? [];
 
-            $hanziStr = preg_replace('/[ \t\r]+/u', '', $hanziStr);
             $chars = mb_str_split($hanziStr);
 
             $chineseCharCount = 0;
@@ -83,11 +82,11 @@ if (! function_exists('renderHskRubyText')) {
                     if ($char === "\n") {
                         $out .= '<div class="w-full h-0 basis-full my-1"></div>';
                     } else if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
-                        $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($validPinyins[$pIdx++]) . '</rt></ruby>';
-                    } else if (preg_match('/[a-zA-Z0-9]/', $char)) {
-                        $out .= '<span class="mx-1 text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span>';
+                        $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($validPinyins[$pIdx++]) . '</rt></ruby>';
+                    } else if (trim($char) === '') {
+                        $out .= '<span class="mx-1"> </span>';
                     } else {
-                        $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-transparent mb-0.5 select-none">.</rt></ruby>';
+                        $out .= '<span class="text-sm font-medium text-slate-800 dark:text-slate-100 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
                     }
                 }
                 return $out;
@@ -150,11 +149,11 @@ if (! function_exists('hsk_render_pinyin')) {
                         $html .= '<div class="w-full h-0 basis-full my-1"></div>';
                     } elseif (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
                         $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
-                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-base font-black text-slate-900 dark:text-white">' . e($char) . '</span><rt class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($py) . '</rt></ruby>';
+                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($py) . '</rt></ruby>';
                     } elseif (trim($char) === '') {
                         $html .= '<span class="mx-1"> </span>';
                     } else {
-                        $html .= '<span class="text-base font-bold text-slate-900 dark:text-white mt-auto self-end mb-[2px]">' . e($char) . '</span>';
+                        $html .= '<span class="text-sm font-medium text-slate-800 dark:text-slate-100 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
                     }
                 }
                 $html .= '</div>';
@@ -165,3 +164,153 @@ if (! function_exists('hsk_render_pinyin')) {
         });
     }
 }
+
+if (! function_exists('hsk_render_flashcard_ruby')) {
+    /**
+     * Render Chinese text with aligned Pinyin Ruby text above each Chinese character for Flashcards.
+     */
+    function hsk_render_flashcard_ruby(?string $text): string
+    {
+        if (empty(trim($text ?? ''))) return '';
+
+        $cacheKey = 'hsk_flashcard_ruby_' . md5($text);
+        return cache()->rememberForever($cacheKey, function () use ($text) {
+            $lines = preg_split('/<br\s*\/?>|\n/i', $text);
+            $renderedLines = [];
+
+            foreach ($lines as $line) {
+                $trimmedLine = trim($line);
+                if ($trimmedLine === '') {
+                    $renderedLines[] = '';
+                    continue;
+                }
+
+                $chars = mb_str_split($trimmedLine);
+                $chineseChars = '';
+                foreach ($chars as $char) {
+                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                        $chineseChars .= $char;
+                    }
+                }
+
+                $validPinyins = [];
+                if (!empty($chineseChars)) {
+                    $validPinyins = Pinyin::sentence($chineseChars)->toArray();
+                }
+                $pIdx = 0;
+
+                $html = '<div class="inline-flex flex-wrap items-end gap-x-[1.5px] gap-y-1.5 align-bottom leading-normal">';
+                foreach ($chars as $char) {
+                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                        $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
+                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1.5px]"><span class="text-sm sm:text-base font-bold zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] sm:text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] mb-1 select-none tracking-normal">' . e($py) . '</rt></ruby>';
+                    } elseif (trim($char) === '') {
+                        $html .= '<span class="mx-1"> </span>';
+                    } else {
+                        $html .= '<span class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
+                    }
+                }
+                $html .= '</div>';
+                $renderedLines[] = $html;
+            }
+
+            return implode("\n", $renderedLines);
+        });
+    }
+}
+
+if (! function_exists('hsk_should_show_pinyin')) {
+    function hsk_should_show_pinyin($level = null): bool
+    {
+        if (empty($level) || !isset($level->level_code)) {
+            return true;
+        }
+        $levelNum = (int) str_replace('hsk', '', strtolower($level->level_code));
+        return $levelNum < 4;
+    }
+}
+
+if (! function_exists('pinyin_tone_to_unicode')) {
+    /**
+     * Convert pinyin with tone numbers (e.g. bian1, mi4, gui4, lv3) to accurate Unicode characters with tone marks (biān, mì, guì, lǚ)
+     *
+     * @param string|null $pinyin
+     * @return string
+     */
+    function pinyin_tone_to_unicode(?string $pinyin): string
+    {
+        if (empty($pinyin)) {
+            return '';
+        }
+
+        $toneMap = [
+            'a' => ['ā', 'á', 'ǎ', 'à'], 'A' => ['Ā', 'Á', 'Ǎ', 'À'],
+            'e' => ['ē', 'é', 'ě', 'è'], 'E' => ['Ē', 'É', 'Ě', 'È'],
+            'i' => ['ī', 'í', 'ǐ', 'ì'], 'I' => ['Ī', 'Í', 'Ǐ', 'Ì'],
+            'o' => ['ō', 'ó', 'ǒ', 'ò'], 'O' => ['Ō', 'Ó', 'Ǒ', 'Ò'],
+            'u' => ['ū', 'ú', 'ǔ', 'ù'], 'U' => ['Ū', 'Ú', 'Ǔ', 'Ù'],
+            'ü' => ['ǖ', 'ǘ', 'ǚ', 'ǜ'], 'Ü' => ['Ǖ', 'Ǘ', 'Ǚ', 'Ǜ'],
+        ];
+
+        $str = trim($pinyin);
+        // Convert convention for 'ü' (u-umlaut): audio dataset uses 'uu' (nuu -> nü, luu -> lü) and 'v' (nv -> nü, lv -> lü)
+        $str = str_replace(['uue', 'uun', 'uu', 'UUE', 'UUN', 'UU'], ['üe', 'ün', 'ü', 'ÜE', 'ÜN', 'Ü'], $str);
+        $str = str_replace(['v', 'V'], ['ü', 'Ü'], $str);
+
+        if (!preg_match('/^(.*?)([1-5])$/', $str, $matches)) {
+            return $str;
+        }
+
+        $base = $matches[1];
+        $toneNum = (int) $matches[2] - 1;
+
+        if ($toneNum < 0 || $toneNum > 3) {
+            return $base;
+        }
+
+        $lowerBase = mb_strtolower($base);
+
+        // Rule 1: If vowel 'a' exists, place tone on 'a'
+        $idx = mb_strpos($lowerBase, 'a');
+        if ($idx !== false) {
+            $char = mb_substr($base, $idx, 1);
+            return mb_substr($base, 0, $idx) . $toneMap[$char][$toneNum] . mb_substr($base, $idx + 1);
+        }
+
+        // Rule 2: If vowel 'e' exists, place tone on 'e'
+        $idx = mb_strpos($lowerBase, 'e');
+        if ($idx !== false) {
+            $char = mb_substr($base, $idx, 1);
+            return mb_substr($base, 0, $idx) . $toneMap[$char][$toneNum] . mb_substr($base, $idx + 1);
+        }
+
+        // Rule 3: If 'ou' exists, place tone on 'o'
+        $idx = mb_strpos($lowerBase, 'ou');
+        if ($idx !== false) {
+            $char = mb_substr($base, $idx, 1);
+            return mb_substr($base, 0, $idx) . $toneMap[$char][$toneNum] . mb_substr($base, $idx + 1);
+        }
+
+        // Rule 4: For other cases (ui, iu, ü...), place tone on the last vowel
+        $vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+        $lastVowelIdx = -1;
+        $chars = mb_str_split($base);
+
+        foreach ($chars as $i => $c) {
+            if (in_array(mb_strtolower($c), $vowels, true)) {
+                $lastVowelIdx = $i;
+            }
+        }
+
+        if ($lastVowelIdx !== -1) {
+            $char = $chars[$lastVowelIdx];
+            if (isset($toneMap[$char])) {
+                $chars[$lastVowelIdx] = $toneMap[$char][$toneNum];
+                return implode('', $chars);
+            }
+        }
+
+        return $base;
+    }
+}
+
