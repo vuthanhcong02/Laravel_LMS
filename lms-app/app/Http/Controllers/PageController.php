@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use App\Models\HskLesson;
-use App\Models\HskVocabulary;
 use App\Models\HskLevel;
+use App\Models\HskVocabulary;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Overtrue\Pinyin\Pinyin;
 
 class PageController extends Controller
 {
@@ -173,44 +177,107 @@ class PageController extends Controller
         return view('blog', compact('featuredBlog', 'blogs'));
     }
 
-    public function getViewFlashcards()
+    /**
+     * Display the flashcards study view.
+     */
+    public function getViewFlashcards(): View
     {
-        $query = HskVocabulary::where('hsk_version', '3.0')
-            ->select('id', 'word', 'pinyin', 'meaning', 'meaning_en', 'level', 'topic', 'example', 'example_meaning');
+        $allVocabularies = HskVocabulary::where('hsk_version', '3.0')
+            ->select('id', 'word', 'pinyin', 'meaning', 'meaning_en', 'level', 'example', 'example_meaning')
+            ->get();
 
-        // If user is logged in, filter out already learned vocabularies
-        if (auth()->check()) {
-            $query->whereDoesntHave('usersWhoRemembered', function ($q) {
-                $q->where('user_id', auth()->id());
-            });
-        }
-
-        $allVocabularies = $query->get();
+        /** @var User $user */
+        $user = auth()->user();
+        $rememberedIds = $user ? $user->rememberedVocabularies()->pluck('hsk_vocabularies.id')->toArray() : [];
 
         $vocabularies = $allVocabularies->groupBy('level');
 
-        $topics = $allVocabularies->whereNotNull('topic')->groupBy('topic');
-
-        return view('flashcard', compact('vocabularies', 'topics'));
+        return view('flashcard', compact('vocabularies', 'rememberedIds'));
     }
 
     /**
      * Save learned vocabulary to database.
      */
-    public function rememberVocabulary(Request $request)
+    public function rememberVocabulary(Request $request): JsonResponse
     {
         $request->validate([
             'vocabulary_id' => 'required|exists:hsk_vocabularies,id',
         ]);
 
-        // Associate vocabulary with user in pivot table
-        /** @var \App\Models\User $user */
+        /** @var User|null $user */
         $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'require_login' => true,
+                'message' => __('Vui lòng đăng nhập để lưu tiến độ học tập vào tài khoản.')
+            ], 401);
+        }
+
+        // Associate vocabulary with user in pivot table
         $user->rememberedVocabularies()->syncWithoutDetaching($request->vocabulary_id);
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã lưu trạng thái học của từ vựng thành công.'
+            'message' => __('Đã lưu trạng thái học của từ vựng thành công.')
+        ]);
+    }
+
+    /**
+     * Remove vocabulary from learned list (move back to study list).
+     */
+    public function unrememberVocabulary(Request $request): JsonResponse
+    {
+        $request->validate([
+            'vocabulary_id' => 'required|exists:hsk_vocabularies,id',
+        ]);
+
+        /** @var User|null $user */
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'require_login' => true,
+                'message' => __('Vui lòng đăng nhập để thực hiện thao tác này.')
+            ], 401);
+        }
+
+        $user->rememberedVocabularies()->detach($request->vocabulary_id);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Đã chuyển từ vựng về danh sách đang học.')
+        ]);
+    }
+
+    /**
+     * Reset learned vocabulary progress for a specific HSK level.
+     */
+    public function resetVocabularyProgress(Request $request): JsonResponse
+    {
+        $request->validate([
+            'level' => 'required|integer|min:1|max:9',
+        ]);
+
+        /** @var User|null $user */
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'require_login' => true,
+                'message' => __('Vui lòng đăng nhập để thực hiện thao tác này.')
+            ], 401);
+        }
+
+        $vocabIds = HskVocabulary::where('hsk_version', '3.0')
+            ->where('level', $request->level)
+            ->pluck('id');
+
+        $user->rememberedVocabularies()->detach($vocabIds);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Đã đặt lại tiến độ học tập thành công.')
         ]);
     }
 }

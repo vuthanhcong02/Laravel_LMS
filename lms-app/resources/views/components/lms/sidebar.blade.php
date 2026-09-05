@@ -63,8 +63,11 @@
                             <span x-show="!sidebarCollapsed" class="truncate">{{ __('Khóa học HSK') }}</span>
                         </a>
 
-                        <a href="{{ url('/demo-flashcards') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Thẻ ghi nhớ') }}' : ''">
-                            <i class="fa-solid fa-layer-group text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
+                        @php
+                            $isFlashcardsActive = request()->routeIs('flashcards*') || request()->is('the-ghi-nho*') || request()->is('demo-flashcards');
+                        @endphp
+                        <a href="{{ route('flashcards') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isFlashcardsActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Thẻ ghi nhớ') }}' : ''">
+                            <i class="fa-solid fa-layer-group text-base w-5 text-center shrink-0 transition-colors {{ $isFlashcardsActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">{{ __('Thẻ ghi nhớ') }}</span>
                         </a>
 

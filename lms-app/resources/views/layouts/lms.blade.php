@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full" :class="{ 'dark': darkMode }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))" x-data="{
+<html lang="vi" class="h-full" :class="{ 'dark': darkMode }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
+    @open-auth-modal.window="authModalOpen = true; if ($event.detail && $event.detail.tab) authModalTab = $event.detail.tab;"
+    x-data="{
     sidebarOpen: false,
     sidebarCollapsed: false,
     isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},

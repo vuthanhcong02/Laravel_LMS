@@ -165,6 +165,60 @@ if (! function_exists('hsk_render_pinyin')) {
     }
 }
 
+if (! function_exists('hsk_render_flashcard_ruby')) {
+    /**
+     * Render Chinese text with aligned Pinyin Ruby text above each Chinese character for Flashcards.
+     */
+    function hsk_render_flashcard_ruby(?string $text): string
+    {
+        if (empty(trim($text ?? ''))) return '';
+
+        $cacheKey = 'hsk_flashcard_ruby_' . md5($text);
+        return cache()->rememberForever($cacheKey, function () use ($text) {
+            $lines = preg_split('/<br\s*\/?>|\n/i', $text);
+            $renderedLines = [];
+
+            foreach ($lines as $line) {
+                $trimmedLine = trim($line);
+                if ($trimmedLine === '') {
+                    $renderedLines[] = '';
+                    continue;
+                }
+
+                $chars = mb_str_split($trimmedLine);
+                $chineseChars = '';
+                foreach ($chars as $char) {
+                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                        $chineseChars .= $char;
+                    }
+                }
+
+                $validPinyins = [];
+                if (!empty($chineseChars)) {
+                    $validPinyins = Pinyin::sentence($chineseChars)->toArray();
+                }
+                $pIdx = 0;
+
+                $html = '<div class="inline-flex flex-wrap items-end gap-x-[1.5px] gap-y-1.5 align-bottom leading-normal">';
+                foreach ($chars as $char) {
+                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                        $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
+                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1.5px]"><span class="text-sm sm:text-base font-bold zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] sm:text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] mb-1 select-none tracking-normal">' . e($py) . '</rt></ruby>';
+                    } elseif (trim($char) === '') {
+                        $html .= '<span class="mx-1"> </span>';
+                    } else {
+                        $html .= '<span class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
+                    }
+                }
+                $html .= '</div>';
+                $renderedLines[] = $html;
+            }
+
+            return implode("\n", $renderedLines);
+        });
+    }
+}
+
 if (! function_exists('hsk_should_show_pinyin')) {
     function hsk_should_show_pinyin($level = null): bool
     {

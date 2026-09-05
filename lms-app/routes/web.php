@@ -60,13 +60,16 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/khoa-hoc/{levelSlug}', 'showCourseLevelV2')->name('courses.level');
     Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLessonV2')->name('courses.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
-    Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
     // New Home
     Route::get('/trang-chu', 'getDemoHome')->name('home');
+    Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
+    Route::post('/flashcards/remember', 'rememberVocabulary')->name('flashcards.remember');
+    Route::post('/flashcards/unremember', 'unrememberVocabulary')->name('flashcards.unremember');
+    Route::post('/flashcards/reset', 'resetVocabularyProgress')->name('flashcards.reset');
     Route::view('/demo-courses', 'demo-courses');
     Route::view('/demo-course-detail', 'demo-course-detail');
     Route::view('/demo-exams', 'demo-exams');
@@ -79,12 +82,9 @@ Route::controller(PageController::class)->group(function () {
     Route::view('/reset-password', 'auth.reset-password');
 });
 
-Route::post('/flashcards/remember', [PageController::class, 'rememberVocabulary'])
-    ->middleware('auth')
-    ->name('flashcards.remember');
-
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
+
     // HSK Mock Exams (Take Exam via Session UUID)
     Route::get('/thi-thu-hsk/{level}/bai-thi/{id}', [HskMockExamController::class, 'startExam'])->name('student.hsk-mock-exams.start');
     Route::get('/thi-thu-hsk/lam-bai/{uuid}', [HskMockExamController::class, 'takeExam'])->name('student.hsk-mock-exams.take');
