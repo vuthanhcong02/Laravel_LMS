@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" class="h-full" :class="{ 'dark': darkMode }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
     @open-auth-modal.window="authModalOpen = true; if ($event.detail && $event.detail.tab) authModalTab = $event.detail.tab;"
+    @open-contact-modal.window="contactModalOpen = true"
     x-data="{
     sidebarOpen: false,
     sidebarCollapsed: false,
@@ -12,6 +13,7 @@
     searchKeyword: '',
     authModalOpen: {{ auth()->guest() && ($errors->any() || session('status')) ? 'true' : 'false' }},
     authModalTab: '{{ session('auth_tab') ?? (old('first_name') ? 'register' : 'login') }}',
+    contactModalOpen: false,
     authEmail: '',
     authPassword: '',
     authFirstName: '',
@@ -201,6 +203,7 @@
     @endif
 
     @include('components.lms.auth-modal')
+    @include('components.lms.contact-modal')
 
     @yield('scripts')
 </body>

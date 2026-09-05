@@ -109,10 +109,13 @@
                             </a>
                         @endif
 
-                        <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-[#e07a5f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Liên hệ hỗ trợ') }}' : ''">
-                            <i class="fa-solid fa-envelope text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
+                        <button type="button" @click="contactModalOpen = true"
+                                class="group flex items-center gap-3 w-full text-left rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-[#e07a5f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile cursor-pointer"
+                                :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'"
+                                :title="sidebarCollapsed ? '{{ __('Liên hệ hỗ trợ') }}' : ''">
+                            <i class="fa-solid fa-headset text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">{{ __('Liên hệ hỗ trợ') }}</span>
-                        </a>
+                        </button>
 
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                             @csrf
