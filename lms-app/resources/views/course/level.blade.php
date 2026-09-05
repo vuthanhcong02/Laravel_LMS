@@ -1,23 +1,16 @@
 @extends('layouts.lms')
-
 @section('title', $currentLevel->title . ' - ' . __('Tiếng Trung XIAOMU LMS'))
-
 @section('header-left')
     <x-lms.breadcrumb :breadcrumbs="[
         ['name' => __('Khóa học'), 'url' => route('courses')],
         ['name' => $currentLevel->title, 'url' => null]
     ]" />
 @endsection
-
 @section('content')
     <div class="space-y-6">
-        
-        <!-- Nút Quay lại -->
         <a href="{{ route('courses') }}" class="inline-flex items-center gap-2 text-xs font-bold text-[#e07a5f] hover:text-[#c86349] transition-colors btn-tactile">
             <i class="fa-solid fa-arrow-left text-xs"></i> {{ __('Quay lại danh sách khóa học') }}
         </a>
-
-        <!-- Banner Tiêu đề Level -->
         @php
             $badgeColorClass = '';
             if ($currentLevel->color === 'emerald') $badgeColorClass = 'bg-[#f59e0b] text-slate-950';
@@ -29,7 +22,6 @@
         @endphp
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3.5">
-                <!-- Badge HSK1 chuẩn text-xs font-bold -->
                 <div class="w-10 h-10 rounded-xl {{ $badgeColorClass }} font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
                     {{ strtoupper($currentLevel->level_code) }}
                 </div>
@@ -42,7 +34,6 @@
                     </p>
                 </div>
             </div>
-
             <div class="flex items-center gap-2 shrink-0">
                 <span class="px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-xs font-bold text-[#e07a5f] dark:text-[#f4978e]">
                     {{ $currentLevel->lessons_count }} {{ __('Bài học') }}
@@ -52,29 +43,22 @@
                 </span>
             </div>
         </div>
-
-        <!-- Danh sách các Thẻ Bài học -->
         <div class="space-y-3">
             @forelse($currentLevel->lessons as $lesson)
                 @php
                     $isDummyData = ($lesson->title === 'Bài ' . $lesson->lesson_number);
                     $displayTitle = preg_replace('/^Bài\s+\d+[:\-]?\s*/i', '', $lesson->title);
                     $displayTitle = empty(trim($displayTitle)) ? $lesson->title : $displayTitle;
-
                     if ($isDummyData) {
                         $displayTitle = __('Đang cập nhật nội dung...');
                     }
                 @endphp
                 <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $lesson->slug]) }}"
                     class="lms-card p-4 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center justify-between gap-4 group hover:border-[#e07a5f] transition-all cursor-pointer block">
-                    
                     <div class="flex items-center gap-4 min-w-0">
-                        <!-- Số thứ tự: text-xs font-bold font-mono -->
                         <div class="w-8 h-8 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-400 dark:text-slate-500 font-bold text-xs flex items-center justify-center font-mono shrink-0 group-hover:text-[#e07a5f] group-hover:border-[#e07a5f]/40 transition-colors">
                             {{ str_pad($lesson->lesson_number, 2, '0', STR_PAD_LEFT) }}
                         </div>
-
-                        <!-- Tiêu đề Bài học: Mã bài text-xs, Tiêu đề text-base font-bold, Subtitle text-xs -->
                         <div class="min-w-0">
                             <div class="flex items-center gap-2 mb-0.5">
                                 <span class="text-xs font-semibold text-[#e07a5f] uppercase tracking-wider">{{ __('Mã bài') }}: {{ $lesson->code }}</span>
@@ -90,14 +74,11 @@
                             </p>
                         </div>
                     </div>
-
-                    <!-- Nút Play Tròn w-8 h-8 -->
                     <div class="shrink-0">
                         <div class="w-8 h-8 rounded-full bg-[#f59e0b] hover:bg-[#d97706] text-slate-950 flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 btn-tactile">
                             <i class="fa-solid fa-play ml-0.5 text-[11px]"></i>
                         </div>
                     </div>
-
                 </a>
             @empty
                 <div class="lms-card p-8 text-center text-slate-500 dark:text-slate-400">
@@ -106,6 +87,5 @@
                 </div>
             @endforelse
         </div>
-
     </div>
 @endsection

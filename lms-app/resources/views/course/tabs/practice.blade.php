@@ -9,10 +9,8 @@
                                     <p class="text-xs text-slate-500 max-w-md font-medium leading-relaxed">Nội dung thực hành cho bài học này đang được biên soạn và sẽ sớm ra mắt. Vui lòng quay lại sau.</p>
                                 </div>
                             </template>
-
                             <template x-if="currentLesson?.practices && currentLesson?.practices.length > 0">
                                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 text-left">
-                                    
                                     <!-- Practice Main Content (Left column) -->
                                     <div class="lg:col-span-3">
                                         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150/80 dark:border-slate-800/80 p-5 shadow-sm flex flex-col relative">
@@ -27,7 +25,6 @@
             segments = Object.values(segments);
         }
         if (!Array.isArray(segments)) return [];
-        
         return segments.map(function(item, idx) {
             var text = (typeof item === 'string') ? item : (item && item.text ? item.text : '');
             var html = (typeof item === 'object' && item !== null) ? (item.html || '') : '';
@@ -36,7 +33,6 @@
         });
     };
 </script>
-
                                         <!-- Header & Tabs -->
                                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 dark:border-slate-800/60 pb-5 mb-5 text-left">
                                             <div class="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
@@ -63,9 +59,7 @@
                                                     <span class="material-symbols-outlined text-[18px]">edit_document</span> Phần Viết
                                                 </button>
                                             </div>
-
                                         </div>
-
                                         <!-- Listening Tab Content -->
                                         <div x-show="practiceTab === 'listening'" x-transition class="space-y-6 pb-10">
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'listening')">
@@ -85,7 +79,6 @@
                                                             <audio controls class="w-full h-9 rounded-lg" :src="'/storage/hsk_media/' + currentLesson?.practices?.find(p => p.type === 'listening')?.audio_path"></audio>
                                                         </div>
                                                     </template>
-
                                                     <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === 'listening')?.sections || [])" :key="sIdx">
                                                         <div class="space-y-4 scroll-mt-[160px]" :id="'practice-' + 'listening' + '-section-' + sIdx">
                                                             <div class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-805/60 border-l-4 border-l-primary">
@@ -118,17 +111,14 @@
                                                                     <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
                                                                 </div>
                                                             </template>
-
                                                     <div class="flex flex-col gap-4">
                                                         <template x-for="(quiz, qIdx) in sect.questions" :key="qIdx">
                                                                                                                                                                                                                                                                                                                                     <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-105 dark:border-slate-800 p-5 rounded-2xl space-y-4 text-left">
-                                                                      
                                                                       <template x-if="quiz.image_path">
                                                                           <div class="mb-4 text-center border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-800/50 p-2 flex justify-center">
                                                                               <img :src="'/storage/hsk_media/' + quiz.image_path" class="max-h-64 object-contain rounded-lg">
                                                                           </div>
                                                                       </template>
-
                                                                       <template x-if="quiz.ques_type === 'fill_blank_dropdrag'">
                                                                           <div class="space-y-6">
                                                                               <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-chinese text-[16px] leading-[2.5]">
@@ -144,7 +134,6 @@
                                                                                               >
                                                                                                   <span x-show="!quiz.sub_questions[idx].selected_option" x-text="'(' + (quiz.sub_questions[idx].ques_id || (idx + 24)) + ') Kéo vào đây'" class="opacity-50 text-[11px] uppercase tracking-wider"></span>
                                                                                                   <span x-show="quiz.sub_questions[idx].selected_option" x-text="quiz.sub_questions[idx].selected_option" class="font-chinese text-base"></span>
-                                                                                                  
                                                                                                   <template x-if="quiz.sub_questions[idx].selected_option && !quiz.sub_questions[idx].answered">
                                                                                                       <button @click.stop="startDrag({dataTransfer:{setData:()=>{}}}, quiz.sub_questions[idx].selected_option, idx); onDrop({preventDefault:()=>{}}, quiz, 'pool')" class="absolute -top-2 -right-2 w-5 h-5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 shadow-sm transition-all">
                                                                                                           <span class="material-symbols-outlined text-[12px]">close</span>
@@ -155,7 +144,6 @@
                                                                                       </span>
                                                                                   </template>
                                                                               </div>
-                                                                              
                                                                               <!-- Draggable Options Pool -->
                                                                               <div class="p-4 bg-slate-100 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[80px]"
                                                                                    @dragover.prevent=""
@@ -177,11 +165,8 @@
                                                                                       </div>
                                                                                   </div>
                                                                               </div>
-
                                                                           </div>
                                                                       </template>
-
-                                                                      
                                                                       <template x-if="quiz.ques_type === 'fill_blank_dropdown'">
                                                                           <div class="space-y-4">
                                                                               <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl">
@@ -212,7 +197,6 @@
                                                                                           </template>
                                                                                       </div>
                                                                                   </div>
-                                                                                  
                                                                                   <template x-if="quiz.answered">
                                                                                       <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
                                                                                           <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án chính xác:</div>
@@ -237,13 +221,11 @@
                                                                               </div>
                                                                           </div>
                                                                       </template>
-
                                                                       <template x-if="quiz.ques_type !== 'fill_blank_dropdrag' && quiz.ques_type !== 'fill_blank_dropdown'">
                                                                           <div class="space-y-4">
                                                                               <template x-if="quiz.context">
                                                                                   <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl mb-4 text-slate-700 dark:text-slate-300 font-chinese text-base leading-relaxed" x-text="quiz.context"></div>
                                                                               </template>
-                                                                              
                                                                               <template x-if="!quiz.sub_questions || quiz.sub_questions.length === 0">
                                                                                   <div>
                                                                                       <h5 class="text-sm font-extrabold text-slate-800 dark:text-white flex items-start gap-2">
@@ -269,7 +251,6 @@
                                                                                                 </div>
                                                                                             </template>
                                                                                       </h5>
-
                                                                                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                                                                                           <template x-for="(opt, oIdx) in quiz.options" :key="oIdx">
                                                                                               <button 
@@ -323,10 +304,8 @@
                                                                                               </button>
                                                                                           </template>
                                                                                       </div>
-
                                                                                   </div>
                                                                               </template>
-                                                                              
                                                                               <template x-if="quiz.sub_questions && quiz.sub_questions.length > 0">
                                                                                   <div class="space-y-4">
                                                                                       <template x-for="(sq, sqIdx) in quiz.sub_questions" :key="sqIdx">
@@ -335,7 +314,6 @@
                                                                                                   <span class="shrink-0 text-primary" x-text="'Câu ' + (sq.ques_id || (sqIdx + 1)) + '.'"></span>
                                                                                                   <span x-text="sq.question" class="font-chinese text-[15px]"></span>
                                                                                               </h6>
-                                                                                              
                                                                                               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                                                                   <template x-for="(opt, oIdx) in sq.options" :key="oIdx">
                                                                                                       <button 
@@ -386,7 +364,6 @@
                                                                                                       </button>
                                                                                                   </template>
                                                                                               </div>
-
                                                                                           </div>
                                                                                       </template>
                                                                                   </div>
@@ -395,7 +372,6 @@
                                                                       </template>
                                                                   </div>
                                                                 </template>
-                                                                
                                                                 <!-- Global Check / Retry Button Bar -->
                                                                 <div class="flex justify-center items-center gap-3 mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
                                                                      x-show="sect.questions && sect.questions.length > 0">
@@ -422,7 +398,6 @@
                                                 </div>
                                             </template>
                                         </div>
-
                                         <!-- Reading Tab Content -->
                                         <div x-show="practiceTab === 'reading'" x-transition class="space-y-6 pt-2 pb-10">
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'reading')">
@@ -445,23 +420,19 @@
                                                                      </div>
                                                                  </template>
                                                             </div>
-
                                                             <template x-if="sect.image_path">
                                                                 <div class="my-4 text-center border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 flex justify-center shadow-sm">
                                                                     <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
                                                                 </div>
                                                             </template>
-
                                                             <div class="flex flex-col gap-4">
                                                                 <template x-for="(quiz, qIdx) in sect.questions" :key="qIdx">
                                                                                                                                                                                                                                                                                                                                             <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-105 dark:border-slate-800 p-5 rounded-2xl space-y-4 text-left">
-                                                                      
                                                                       <template x-if="quiz.image_path">
                                                                           <div class="mb-4 text-center border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-800/50 p-2 flex justify-center">
                                                                               <img :src="'/storage/hsk_media/' + quiz.image_path" class="max-h-64 object-contain rounded-lg">
                                                                           </div>
                                                                       </template>
-
                                                                       <template x-if="quiz.ques_type === 'fill_blank_dropdrag'">
                                                                           <div class="space-y-6">
                                                                               <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-chinese text-[16px] leading-[2.5]">
@@ -477,7 +448,6 @@
                                                                                               >
                                                                                                   <span x-show="!quiz.sub_questions[idx].selected_option" x-text="'(' + (quiz.sub_questions[idx].ques_id || (idx + 24)) + ') Kéo vào đây'" class="opacity-50 text-[11px] uppercase tracking-wider"></span>
                                                                                                   <span x-show="quiz.sub_questions[idx].selected_option" x-text="quiz.sub_questions[idx].selected_option" class="font-chinese text-base"></span>
-                                                                                                  
                                                                                                   <template x-if="quiz.sub_questions[idx].selected_option && !quiz.sub_questions[idx].answered">
                                                                                                       <button @click.stop="startDrag({dataTransfer:{setData:()=>{}}}, quiz.sub_questions[idx].selected_option, idx); onDrop({preventDefault:()=>{}}, quiz, 'pool')" class="absolute -top-2 -right-2 w-5 h-5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 shadow-sm transition-all">
                                                                                                           <span class="material-symbols-outlined text-[12px]">close</span>
@@ -488,7 +458,6 @@
                                                                                       </span>
                                                                                   </template>
                                                                               </div>
-                                                                              
                                                                               <!-- Draggable Options Pool -->
                                                                               <div class="p-4 bg-slate-100 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[80px]"
                                                                                    @dragover.prevent=""
@@ -510,11 +479,8 @@
                                                                                       </div>
                                                                                   </div>
                                                                               </div>
-
                                                                           </div>
                                                                       </template>
-
-                                                                      
                                                                       <template x-if="quiz.ques_type === 'fill_blank_dropdown'">
                                                                           <div class="space-y-4">
                                                                               <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl">
@@ -545,7 +511,6 @@
                                                                                           </template>
                                                                                       </div>
                                                                                   </div>
-                                                                                  
                                                                                   <template x-if="quiz.answered">
                                                                                       <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
                                                                                           <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án chính xác:</div>
@@ -570,13 +535,11 @@
                                                                               </div>
                                                                           </div>
                                                                       </template>
-
                                                                       <template x-if="quiz.ques_type !== 'fill_blank_dropdrag' && quiz.ques_type !== 'fill_blank_dropdown'">
                                                                           <div class="space-y-4">
                                                                               <template x-if="quiz.context">
                                                                                   <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl mb-4 text-slate-700 dark:text-slate-300 font-chinese text-base leading-relaxed" x-text="quiz.context"></div>
                                                                               </template>
-                                                                              
                                                                               <template x-if="!quiz.sub_questions || quiz.sub_questions.length === 0">
                                                                                   <div>
                                                                                       <h5 class="text-sm font-extrabold text-slate-800 dark:text-white flex items-start gap-2">
@@ -602,7 +565,6 @@
                                                                                                 </div>
                                                                                             </template>
                                                                                       </h5>
-
                                                                                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                                                                                           <template x-for="(opt, oIdx) in quiz.options" :key="oIdx">
                                                                                               <button 
@@ -656,10 +618,8 @@
                                                                                               </button>
                                                                                           </template>
                                                                                       </div>
-
                                                                                   </div>
                                                                               </template>
-                                                                              
                                                                               <template x-if="quiz.sub_questions && quiz.sub_questions.length > 0">
                                                                                   <div class="space-y-4">
                                                                                       <template x-for="(sq, sqIdx) in quiz.sub_questions" :key="sqIdx">
@@ -668,7 +628,6 @@
                                                                                                   <span class="shrink-0 text-primary" x-text="'Câu ' + (sq.ques_id || (sqIdx + 1)) + '.'"></span>
                                                                                                   <span x-text="sq.question" class="font-chinese text-[15px]"></span>
                                                                                               </h6>
-                                                                                              
                                                                                               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                                                                   <template x-for="(opt, oIdx) in sq.options" :key="oIdx">
                                                                                                       <button 
@@ -719,7 +678,6 @@
                                                                                                       </button>
                                                                                                   </template>
                                                                                               </div>
-
                                                                                           </div>
                                                                                       </template>
                                                                                   </div>
@@ -728,7 +686,6 @@
                                                                       </template>
                                                                   </div>
                                                                 </template>
-                                                                
                                                                 <!-- Global Check / Retry Button Bar -->
                                                                 <div class="flex justify-center items-center gap-3 mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
                                                                      x-show="sect.questions && sect.questions.length > 0">
@@ -755,7 +712,6 @@
                                                 </div>
                                             </template>
                                         </div>
-
                                         <div x-show="practiceTab === 'writing'" x-transition class="space-y-6 pt-2 pb-10" style="display: none;">
                                             <template x-if="currentLesson?.practices?.find(p => p.type === 'writing')?.sections?.length === 0">
                                                 <div class="text-center py-10 text-slate-500">Chưa có bài tập Viết</div>
@@ -781,17 +737,14 @@
                                                                     </div>
                                                                 </template>
                                                             </div>
-
                                                             <template x-if="sect.image_path">
                                                                 <div class="my-4 text-center border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 flex justify-center shadow-sm">
                                                                     <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
                                                                 </div>
                                                             </template>
-
                                                             <div class="flex flex-col gap-4">
                                                                 <template x-for="(quiz, qIdx) in sect.questions" :key="qIdx">
                                                                     <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl shadow-sm mb-4">
-                                                                        
                                                                         <!-- REORDER DUOLINGO LAYOUT -->
                                                                         <template x-if="quiz.ques_type === 'reorder'">
                                                                             <div 
@@ -809,7 +762,6 @@
                                                                                         }));
                                                                                     })(),
                                                                                     selected: [],
-                                                                                    
                                                                                     selectItem(index) {
                                                                                         if(quiz.answered) return;
                                                                                         const item = this.available[index];
@@ -817,7 +769,6 @@
                                                                                         this.selected.push(item);
                                                                                         this.updateAnswer();
                                                                                     },
-                                                                                    
                                                                                     unselectItem(index) {
                                                                                         if(quiz.answered) return;
                                                                                         const item = this.selected[index];
@@ -826,7 +777,6 @@
                                                                                         this.available.sort((a, b) => a.id - b.id);
                                                                                         this.updateAnswer();
                                                                                     },
-                                                                                    
                                                                                     updateAnswer() {
                                                                                         quiz.userAnswer = this.selected.map(item => item.text).join('');
                                                                                         if(quiz.userAnswer.length > 0) {
@@ -846,7 +796,6 @@
                                                                                         Sắp xếp các từ sau thành câu hoàn chỉnh
                                                                                     </div>
                                                                                 </div>
-
                                                                                 <!-- Available Segments -->
                                                                                 <div class="flex flex-wrap gap-3 mb-6 min-h-[50px] p-2 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-slate-100 dark:border-slate-800/50">
                                                                                     <template x-for="(item, i) in available" :key="item.id">
@@ -865,18 +814,15 @@
                                                                                         </div>
                                                                                     </template>
                                                                                 </div>
-
                                                                                 <!-- Selected Segments (Answer area) -->
                                                                                 <div class="w-full bg-slate-50 dark:bg-slate-800/40 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-4 min-h-[120px] mb-6 flex flex-wrap gap-3 items-start content-start transition-colors"
                                                                                      :class="quiz.answered ? (quiz.userAnswer === quiz.correct_answer ? 'border-emerald-400 bg-emerald-50/50' : 'border-rose-400 bg-rose-50/50') : 'hover:border-sky-300 dark:hover:border-sky-700/50'">
-                                                                                    
                                                                                     <template x-if="selected.length === 0">
                                                                                         <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 text-sm font-medium py-6 gap-2">
                                                                                             <span class="material-symbols-outlined text-3xl opacity-50">touch_app</span>
                                                                                             Nhấn vào các từ bên trên để ghép thành câu
                                                                                         </div>
                                                                                     </template>
-
                                                                                     <template x-for="(item, i) in selected" :key="item.id">
                                                                                         <button 
                                                                                             type="button"
@@ -888,7 +834,6 @@
                                                                                         ></button>
                                                                                     </template>
                                                                                 </div>
-
                                                                                 <template x-if="quiz.answered">
                                                                                     <div class="mt-4 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20 mb-6 shadow-sm">
                                                                                         <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-1.5">
@@ -903,12 +848,9 @@
                                                                                         </template>
                                                                                     </div>
                                                                                 </template>
-
                                                                             </div>
                                                                         </template>
-
                                                                         <!-- NORMAL VERTICAL LAYOUT (for paragraph etc) -->
-                                                                        
                                                                       <template x-if="quiz.ques_type === 'fill_blank_dropdown'">
                                                                           <div class="space-y-4">
                                                                               <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl">
@@ -939,7 +881,6 @@
                                                                                           </template>
                                                                                       </div>
                                                                                   </div>
-                                                                                  
                                                                                   <template x-if="quiz.answered">
                                                                                       <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
                                                                                           <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án chính xác:</div>
@@ -964,7 +905,6 @@
                                                                               </div>
                                                                           </div>
                                                                       </template>
-
                                                                         <template x-if="quiz.ques_type !== 'reorder' && quiz.ques_type !== 'fill_blank_dropdown'">
                                                                             <div class="p-6">
                                                                                 <div class="flex items-start gap-3 mb-2">
@@ -994,7 +934,6 @@
                                                                                         </template>
                                                                                     </div>
                                                                                 </div>
-
                                                                                 <div class="mt-4">
                                                                                     <textarea 
                                                                                         class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[16px] font-chinese text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none min-h-[120px]"
@@ -1004,7 +943,6 @@
                                                                                         @input="if(quiz.userAnswer.trim().length > 0) quiz.selected = 1; else quiz.selected = null;"
                                                                                     ></textarea>
                                                                                 </div>
-
                                                                                 <template x-if="quiz.answered">
                                                                                     <div class="mt-4 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20">
                                                                                         <div class="font-bold text-sm text-emerald-700 dark:text-emerald-400 mb-2">Đáp án tham khảo:</div>
@@ -1017,12 +955,10 @@
                                                                                         </template>
                                                                                     </div>
                                                                                 </template>
-
                                                                             </div>
                                                                         </template>
                                                                     </div>
                                                                 </template>
-                                                                
                                                                 <!-- Global Check / Retry Button Bar -->
                                                                 <div class="flex justify-center items-center gap-3 mt-8 mb-10 pt-8 border-t border-slate-200 dark:border-slate-700 w-full" 
                                                                      x-show="sect.questions && sect.questions.length > 0">
@@ -1050,9 +986,7 @@
                                             </template>
                                         </div>
                                         </div>
-
                                     </div>
-
                                     <!-- Navigation Sidebar (Right column) -->
                                     <div class="lg:col-span-1 space-y-4 sticky top-[140px] md:top-[160px] self-start max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar">
                                         <!-- Sidebar List -->
@@ -1061,7 +995,6 @@
                                                 <span class="material-symbols-outlined text-[18px] text-primary">route</span>
                                                 <span>Điều hướng bài tập</span>
                                             </h5>
-
                                             <div class="flex flex-col space-y-1 relative before:content-[''] before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-slate-100 dark:before:bg-slate-800">
                                                 <template x-for="(sect, sIdx) in (currentLesson?.practices?.find(p => p.type === practiceTab)?.sections || [])" :key="sIdx">
                                                     <button 
@@ -1086,30 +1019,23 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </template>
                         </div>
-
                         <script>
                             window.parseSectionVi = function(text) {
                                 if (!text) return { mainText: '', hasExample: false, exampleHtml: '' };
-
                                 // === BƯỚC 1: Tìm điểm bắt đầu của ví dụ ===
                                 const headerRx = /(例如(?:\s*[\(（]?\s*Ví dụ\s*[\)）]?)?\s*[:：]?|Ví dụ\s*[:：]?)/i;
                                 const firstTagRx = /(男\s*[:：]|女\s*[:：]|问\s*[:：]|★|\s+[A-D]\s+|[\(（](?:ĐÚNG|SAI|✓|✕|v|x|√|N)[\)）])/i;
-
                                 const headerMatch = text.match(headerRx);
                                 const firstTagMatch = text.match(firstTagRx);
-
                                 // Không có gì đặc biệt
                                 if (!headerMatch && !firstTagMatch) {
                                     return { mainText: text, hasExample: false, exampleHtml: '' };
                                 }
-
                                 let mainText = '';
                                 let exampleRaw = text;
-
                                 if (headerMatch) {
                                     mainText = text.substring(0, headerMatch.index).trim();
                                     exampleRaw = text.substring(headerMatch.index).trim();
@@ -1117,7 +1043,6 @@
                                     mainText = text.substring(0, firstTagMatch.index).trim();
                                     exampleRaw = text.substring(firstTagMatch.index).trim();
                                 }
-
                                 // === BƯỚC 2: Tách 例如 header ra khỏi phần nội dung ví dụ ===
                                 let exHeader = '';
                                 let exBody = exampleRaw;
@@ -1126,11 +1051,9 @@
                                     exHeader = exampleRaw.substring(0, hm.index + hm[0].length).trim();
                                     exBody = exampleRaw.substring(hm.index + hm[0].length).trim();
                                 }
-
                                 // === BƯỚC 3: Xử lý tách dòng trên PLAIN TEXT (exBody) trước khi chèn HTML ===
                                 // Tách tại: 女：/男：, 问：, ★, A/B/C/D đứng trước nội dung, (ĐÚNG)/(SAI)
                                 let parts = [exBody];
-
                                 // Tách theo lượt thoại nhân vật và câu hỏi
                                 let splitRx = /(女\s*[:：]|男\s*[:：]|问\s*[:：]|★)/g;
                                 let combined = exBody;
@@ -1139,52 +1062,42 @@
                                 combined = combined.replace(/(.)(\s*)(问\s*[:：])/g, '$1\n$3');
                                 combined = combined.replace(/(.)(\s*)(★)/g, '$1\n$3');
                                 combined = combined.replace(/\s+([A-D])\s+/g, '\n$1 ');
-
                                 // Tách các dòng
                                 const lines = combined.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-
                                 // === BƯỚC 4: Render từng dòng thành HTML ===
                                 let htmlLines = lines.map((line, i) => {
                                     // Đánh dấu (ĐÚNG)/(SAI)/(✓)/(✕)
                                     line = line
                                         .replace(/([\(（](?:ĐÚNG|✓|v|√)[\)）])/gi, '<span class="inline-block bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold px-2 py-0.5 rounded-md text-xs ml-1">$1</span>')
                                         .replace(/([\(（](?:SAI|✕|x|N)[\)）])/gi, '<span class="inline-block bg-red-500/15 text-red-600 dark:text-red-400 font-extrabold px-2 py-0.5 rounded-md text-xs ml-1">$1</span>');
-
                                     // Đáp án A / B / C / D đứng đầu dòng
                                     const answerMatch = line.match(/^([A-D])\s+(.*)/s);
                                     if (answerMatch) {
                                         return '<div class="flex items-start gap-2 mt-1.5"><span class="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-extrabold text-slate-700 dark:text-slate-200">' + answerMatch[1] + '</span><span>' + answerMatch[2] + '</span></div>';
                                     }
-
                                     // Câu hỏi 问：
                                     const wenMatch = line.match(/^(问\s*[:：])(.*)/s);
                                     if (wenMatch) {
                                         return '<div class="mt-2"><span class="font-bold text-primary">' + wenMatch[1] + '</span>' + wenMatch[2] + '</div>';
                                     }
-
                                     // Ngôi sao ★
                                     const starMatch = line.match(/^(★\s*)(.*)/s);
                                     if (starMatch) {
                                         return '<div class="mt-1.5"><span class="text-amber-500 font-bold">★</span> ' + starMatch[2] + '</div>';
                                     }
-
                                     // Lượt thoại 女：/男：
                                     const dialogMatch = line.match(/^(女\s*[:：]|男\s*[:：])(.*)/s);
                                     if (dialogMatch) {
                                         return '<div class="mt-1.5"><span class="font-bold text-slate-700 dark:text-slate-200">' + dialogMatch[1] + '</span>' + dialogMatch[2] + '</div>';
                                     }
-
                                     // Dòng thường (phần đầu tiên sau 例如)
                                     return (i === 0 ? '' : '<div class="mt-1">') + line + (i === 0 ? '' : '</div>');
                                 });
-
                                 // === BƯỚC 5: Ghép badge 例如 + nội dung ===
                                 let exHeaderHtml = exHeader
                                     ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' + exHeader + '</span>'
                                     : '';
-
                                 const formattedBody = exHeaderHtml + htmlLines.join('');
-
                                 return {
                                     mainText: mainText || '',
                                     hasExample: true,
@@ -1192,5 +1105,3 @@
                                 };
                             };
                         </script>
-
-

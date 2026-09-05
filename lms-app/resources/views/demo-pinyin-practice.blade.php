@@ -1,7 +1,5 @@
 @extends('layouts.lms')
-
 @section('title', 'Luyện nghe & Nhận diện Pinyin - Tiếng Trung XIAOMU LMS')
-
 @section('alpine-data')
     score: 80, 
     currentQuestion: 1, 
@@ -13,7 +11,6 @@
         { pinyin: 'xièxie', hanzi: '谢谢', options: ['xièxie', 'xiēxie', 'xiěxie', 'xièxiē'], correct: 0 }
     ],
 @endsection
-
 @section('header-left')
     <div class="relative w-full">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -21,9 +18,7 @@
         <span class="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold bg-white dark:bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">⌘K</span>
     </div>
 @endsection
-
 @section('content')
-    <!-- Banner Tiêu đề Trang (Bám sát Demo-UI) -->
     <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
             <div class="space-y-1.5">
@@ -39,7 +34,6 @@
             </div>
         </div>
     </div>
-
     <!-- Progress Bar & Score -->
     <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -48,24 +42,19 @@
                 <div class="h-full rounded-full bg-[#e07a5f]" style="width: 10%;"></div>
             </div>
         </div>
-
         <div class="px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold">
             <i class="fa-solid fa-trophy mr-1"></i>Điểm: <span x-text="score">80</span>
         </div>
     </div>
-
     <!-- Practice Question Card -->
     <div class="lms-card p-6 sm:p-8 space-y-6 text-center">
         <div class="space-y-3">
             <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">Nghe mẫu phát âm</div>
-            
             <button onclick="alert('Đang phát đoạn âm Pinyin bài luyện tập...')" class="w-20 h-20 rounded-full bg-gradient-to-br from-[#e07a5f] to-[#c86349] text-white text-2xl flex items-center justify-center btn-tactile shadow-lg shadow-[#e07a5f]/30 mx-auto hover:scale-105">
                 <i class="fa-solid fa-volume-high animate-pulse"></i>
             </button>
-
             <div class="text-2xl font-bold zh-text text-slate-900 dark:text-white pt-2">你好</div>
         </div>
-
         <div class="grid grid-cols-2 gap-4 max-w-md mx-auto pt-2">
             <template x-for="(opt, idx) in questions[0].options" :key="idx">
                 <button @click="selectedAnswer = idx; isAnswered = true" :class="selectedAnswer === idx ? (idx === 0 ? 'bg-emerald-600 text-white font-bold border-emerald-600' : 'bg-red-500 text-white font-bold border-red-500') : 'bg-[#f8f6f3] dark:bg-[#201d1b] text-slate-800 dark:text-slate-200 border-[#e8e2d9] dark:border-[#2d2926]'" class="p-4 rounded-2xl border text-base font-bold btn-tactile shadow-xs flex items-center justify-center gap-2">

@@ -1,20 +1,16 @@
 @extends('layouts.lms')
-
 @section('title')
 {{ $currentLesson ? $currentLesson->title : ($currentLevel ? $currentLevel->title : 'Khóa học HSK') }} - XIAOMU LMS
 @endsection
-
 @section('custom-css')
     ruby { font-size: 1.1em; }
     rt { font-size: 0.55em; color: #e07a5f; font-weight: 600; text-align: center; }
-
     /* 3D Card Flip Animation */
     .perspective-1000 { perspective: 1000px; }
     .transform-style-3d { transform-style: preserve-3d; }
     .backface-hidden { backface-visibility: hidden; }
     .rotate-y-180 { transform: rotateY(180deg); }
 @endsection
-
 @section('alpine-data')
 @php
                 $lessonData = $currentLesson ? $currentLesson->toArray() : null;
@@ -24,7 +20,6 @@
                         if (isset($practice['sections'])) {
                             foreach ($practice['sections'] as &$section) {
                                 $section['section_han_html'] = !empty($section['section_han']) ? ($shouldShow ? renderHskRubyText($section['section_han']) : $section['section_han']) : '';
-                                
                                 // Parse section_vi in PHP so we can apply renderHskRubyText if needed
                                 $text = $section['section_vi'] ?? '';
                                 $mainText = $text;
@@ -32,7 +27,6 @@
                                 $hasExample = false;
                                 $headerRx = '/(例如(?:\s*[\(（]?\s*Ví dụ\s*[\)）]?)?\s*[:：]?|Ví dụ\s*[:：]?)/iu';
                                 $firstTagRx = '/(男\s*[:：]|女\s*[:：]| 问\s*[:：]|★|\s+[A-D]\s+|[\(（](?:ĐÚNG|SAI|✓|✕|v|x|√|N)[\)）])/iu';
-
                                 if (preg_match($headerRx, $text, $hm, PREG_OFFSET_CAPTURE)) {
                                     $mainText = trim(substr($text, 0, $hm[0][1]));
                                     $exampleRaw = trim(substr($text, $hm[0][1]));
@@ -42,18 +36,15 @@
                                     $exampleRaw = trim(substr($text, $fm[0][1]));
                                     $hasExample = true;
                                 }
-
                                 if ($hasExample) {
                                     $exHeader = '';
                                     if (preg_match($headerRx, $exampleRaw, $hm, PREG_OFFSET_CAPTURE) && $hm[0][1] == 0) {
                                         $exHeader = trim(substr($exampleRaw, 0, strlen($hm[0][0])));
                                         $exampleRaw = trim(substr($exampleRaw, strlen($hm[0][0])));
                                     }
-                                    
                                     // Remove any invalid UTF-8 characters that might render as 
                                     $exHeader = str_replace("ï¿½", '', mb_convert_encoding($exHeader, 'UTF-8', 'UTF-8'));
                                     $exampleRaw = str_replace("ï¿½", '', mb_convert_encoding($exampleRaw, 'UTF-8', 'UTF-8'));
-                                    
                                     $lines = array_filter(array_map('trim', explode("\n", $exampleRaw)));
                                     $htmlLines = [];
                                     $htmlLinesRaw = [];
@@ -62,59 +53,47 @@
                                         if (preg_match('/^(A|B|C|D)\s*(.*)/iu', $line, $matches)) {
                                             $contentPinyin = $shouldShow ? renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
                                             $contentRaw = htmlspecialchars($matches[2]);
-                                            
                                             $prefix = '<div class="mt-1.5 flex items-start gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] flex items-center justify-center mt-0.5">' . $matches[1] . '</span><span class="flex-1">';
                                             $suffix = '</span></div>';
-                                            
                                             $htmlLines[] = $prefix . $contentPinyin . $suffix;
                                             $htmlLinesRaw[] = $prefix . $contentRaw . $suffix;
                                         } else if (preg_match('/^(男\s*[:：]|女\s*[:：])(.*)/su', $line, $matches)) {
                                             $speakerPinyin = $shouldShow ? renderHskRubyText($matches[1]) : htmlspecialchars($matches[1]);
                                             $contentPinyin = $shouldShow ? renderHskRubyText($matches[2]) : htmlspecialchars($matches[2]);
-                                            
                                             $speakerRaw = htmlspecialchars($matches[1]);
                                             $contentRaw = htmlspecialchars($matches[2]);
-                                            
                                             $prefix = '<div class="mt-1.5"><span class="font-bold text-slate-700 dark:text-slate-200">';
                                             $mid = '</span>';
                                             $suffix = '</div>';
-                                            
                                             $htmlLines[] = $prefix . $speakerPinyin . $mid . $contentPinyin . $suffix;
                                             $htmlLinesRaw[] = $prefix . $speakerRaw . $mid . $contentRaw . $suffix;
                                         } else {
                                             $contentPinyin = $shouldShow ? renderHskRubyText($line) : htmlspecialchars($line);
                                             $contentRaw = htmlspecialchars($line);
-                                            
                                             $prefix = ($i === 0 ? '' : '<div class="mt-1">');
                                             $suffix = ($i === 0 ? '' : '</div>');
-                                            
                                             $htmlLines[] = $prefix . $contentPinyin . $suffix;
                                             $htmlLinesRaw[] = $prefix . $contentRaw . $suffix;
                                         }
                                         $i++;
                                     }
-                                    
                                     $exHeaderHtml = $exHeader ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' . ($shouldShow ? renderHskRubyText($exHeader) : htmlspecialchars($exHeader)) . '</span>' : '';
                                     $exHeaderHtmlRaw = $exHeader ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' . htmlspecialchars($exHeader) . '</span>' : '';
-                                    
                                     $exampleHtml = $exHeaderHtml . implode('', $htmlLines);
                                     $exampleHtmlRaw = $exHeaderHtmlRaw . implode('', $htmlLinesRaw);
                                 } else {
                                     $exampleHtmlRaw = '';
                                 }
-
                                 $section['parsed_vi'] = [
                                     'mainText' => $mainText,
                                     'hasExample' => $hasExample,
                                     'exampleHtml' => $exampleHtml,
                                     'exampleHtmlRaw' => $exampleHtmlRaw ?? ''
                                 ];
-
                                 if ($shouldShow) {
                                     if (isset($section['questions'])) {
                                         foreach ($section['questions'] as &$q) {
                                             $q['question_html'] = !empty($q['question']) ? renderHskRubyText($q['question']) : '';
-                                            
                                             // Xử lý segment câu hỏi cho dạng điền từ (fill_blank_dropdown / fill_blank)
                                             if (!empty($q['question'])) {
                                                 $delim = str_contains($q['question'], '{{blank}}') ? '{{blank}}' : null;
@@ -128,7 +107,6 @@
                                                     $q['parsed_question_raw'] = $rawSegs;
                                                 }
                                             }
-
                                             if (!empty($q['context'])) {
                                                 if (is_string($q['context'])) {
                                                     $q['context_html'] = renderHskRubyText($q['context']);
@@ -250,7 +228,6 @@
                     }
                 }
             @endphp
-
     activeTab: '{{ $activeTab }}', 
     vocabSubView: 'table', 
     fcMode: 'flashcard', 
@@ -260,7 +237,6 @@
     practiceSectionIdx: 0,
     socialDockExpanded: true, 
     shouldShowPinyin: @json($shouldShow),
-    
     // Thêm currentLesson data vào Alpine context
     @if(isset($currentLesson) && $currentLesson)
     currentLessonId: {{ $currentLesson->id }},
@@ -269,11 +245,9 @@
     currentLessonId: null,
     vocabularies: [],
     @endif
-
     // Hỗ trợ component cũ
     currentLesson: {{ Js::from($lessonData) }},
     currentLevelObj: {{ Js::from($currentLevel) }},
-
     // Các hàm cho tab luyện tập
     isSectionFullyAnswered(questions) {
         if (!questions || !questions.length) return false;
@@ -294,7 +268,6 @@
             return q.selected !== undefined && q.selected !== null;
         });
     },
-
     getSectionAnsweredProgress(questions) {
         if (!questions || !questions.length) return { answered: 0, total: 0 };
         let total = 0;
@@ -322,7 +295,6 @@
         });
         return { answered, total };
     },
-
     checkAllSection(questions) {
         if (!questions) return;
         questions.forEach(q => {
@@ -334,7 +306,6 @@
             }
         });
     },
-
     resetSection(questions) {
         if (!questions) return;
         questions.forEach(q => {
@@ -351,7 +322,6 @@
             }
         });
     },
-
     initPracticeData() {
         if (this.currentLesson && this.currentLesson.practices) {
             this.currentLesson.practices.forEach(practice => {
@@ -361,7 +331,6 @@
                             sec.questions.forEach(q => {
                                 q.selected = null;
                                 q.answered = false;
-                                
                                 if (q.ques_type === 'fill_blank_dropdrag') {
                                     if (q.context && q.context.includes('@{{blank}}')) {
                                         q.parsed_context = q.context.split('@{{blank}}');
@@ -375,7 +344,6 @@
                                         });
                                     }
                                 }
-                                
                                 if (q.ques_type === 'fill_blank_dropdown') {
                                     if (q.parsed_question_raw && Array.isArray(q.parsed_question_raw)) {
                                         q.parsed_question = q.parsed_question_raw;
@@ -390,7 +358,6 @@
                                     if (typeof q.correct === 'string') try { q.correct = JSON.parse(q.correct); } catch(e){}
                                     if (typeof q.correct_answer === 'string' && q.correct_answer.startsWith('[')) try { q.correct = JSON.parse(q.correct_answer); } catch(e){}
                                 }
-                                
                                 if (q.sub_questions && Array.isArray(q.sub_questions)) {
                                     q.sub_questions.forEach(sq => {
                                         sq.selected = null;
@@ -405,17 +372,14 @@
             });
         }
     },
-
     draggedItemText: null,
     draggedSource: null,
-    
     startDrag(event, text, source) {
         this.draggedItemText = text;
         this.draggedSource = source;
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('text/plain', text);
     },
-    
     onDrop(event, quiz, targetIndex) {
         event.preventDefault();
         if (!this.draggedItemText) return;
@@ -446,7 +410,6 @@
         this.draggedSource = null;
     }
 @endsection
-
 @section('scripts')
 <script>
     window.alignPinyin = function(hanzi, pinyin, levelCode) {
@@ -460,7 +423,6 @@
     };
 </script>
 @endsection
-
 @section('header-left')
     @if(isset($currentLevel) && isset($currentLesson))
         @php
@@ -483,45 +445,33 @@
         </div>
     @endif
 @endsection
-
 @section('header-right')
     <!-- Empty to hide language selector in detail page -->
 @endsection
-
 @section('sub-header')
-    <!-- THANH 4 TAB CHÍNH KHÓA HỌC -->
     <div class="lms-card p-2 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center justify-between gap-3 overflow-x-auto no-scrollbar shadow-xs">
         <div class="flex items-center gap-1.5">
-            <!-- Tab 1: Từ vựng -->
             <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'tu-vung']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'tu-vung' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-list-ul text-xs"></i>
                 <span>{{ __('Từ vựng') }}</span>
             </a>
-
-            <!-- Tab 2: Bài khóa -->
             <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'hoi-thoai']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'hoi-thoai' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-comments text-xs"></i>
                 <span>{{ __('Bài khóa') }}</span>
             </a>
-
-            <!-- Tab 3: Ngữ pháp -->
             <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'ngu-phap']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'ngu-phap' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-spell-check text-xs"></i>
                 <span>{{ __('Ngữ pháp') }}</span>
             </a>
-
-            <!-- Tab 4: Luyện tập -->
             <a href="{{ route('courses.lesson', ['levelSlug' => $currentLevel->slug, 'lessonSlug' => $currentLesson->slug, 'tab' => 'luyen-tap']) }}" 
                     class="px-4 py-2 rounded-xl text-xs transition-all btn-tactile flex items-center gap-2 {{ $activeTab === 'luyen-tap' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-semibold' }}">
                 <i class="fa-solid fa-pen-to-square text-xs"></i>
                 <span>{{ __('Luyện tập') }}</span>
             </a>
         </div>
-
-        <!-- Sub-Toggle Switcher trong Tab Từ vựng -->
         <div x-show="activeTab === 'tu-vung'" style="display: none;" class="flex items-center gap-1 p-1 bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl shrink-0 overflow-x-auto no-scrollbar max-w-full">
             <button @click="vocabSubView = 'table';" 
                     :class="vocabSubView === 'table' ? 'bg-white dark:bg-[#181615] text-[#e07a5f] font-bold shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-semibold'" 
@@ -556,7 +506,6 @@
         </div>
     </div>
 @endsection
-
 @section('content')
     <div class="space-y-4">
         <!-- TAB CONTENT -->

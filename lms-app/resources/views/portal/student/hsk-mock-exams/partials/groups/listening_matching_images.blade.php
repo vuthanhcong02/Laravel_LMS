@@ -6,7 +6,6 @@
         $passageImages = explode(',', $group->passage_image);
     }
     $imgLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
-    
     // Attempt to parse passage_text for example letter, fallback to C
     $exLetter = 'C';
     if ($group->passage_text && str_starts_with(trim($group->passage_text), '{')) {
@@ -14,7 +13,6 @@
         $exLetter = $parsedEx['a_letter'] ?? $parsedEx['ex_a_letter'] ?? 'C';
     }
 @endphp
-
 {{-- Group Header Audio --}}
 @if($group->passage_audio)
 <div class="flex flex-wrap items-end justify-end gap-3 mb-6 pb-4 border-b border-[#e8e2d9] dark:border-[#2d2926]">
@@ -28,7 +26,6 @@
     </div>
 </div>
 @endif
-
 @if(count($passageImages) > 0)
     {{-- Example Card --}}
     <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 shadow-xs">
@@ -48,7 +45,6 @@
             </div>
         @endif
     </div>
-
     {{-- Images Grid --}}
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-8">
         @foreach($passageImages as $idx => $img)
@@ -70,7 +66,6 @@
         @endforeach
     </div>
 @endif
-
 {{-- Questions List for Part 3 --}}
 <div class="space-y-4">
     @foreach ($realQuestions as $question)
@@ -79,7 +74,6 @@
         @endphp
         <div class="q-card scroll-mt-24 bg-white dark:bg-[#181615] p-5 sm:p-6 rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-col md:flex-row gap-4 md:gap-6 md:items-center justify-between"
              id="q-{{ $currentQNum }}">
-             
             <div class="flex items-center gap-4 min-w-[200px]">
                 <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center shrink-0">
                     {{ $currentQNum }}
@@ -93,7 +87,6 @@
                     </button>
                 @endif
             </div>
-            
             <div class="flex-1 flex flex-wrap items-center gap-2.5 md:justify-end">
                 @foreach($imgLabels as $letter)
                     @if($letter === $exLetter) @continue @endif

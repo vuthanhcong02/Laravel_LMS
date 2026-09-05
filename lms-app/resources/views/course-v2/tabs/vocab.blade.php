@@ -34,10 +34,8 @@
         return 'bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30';
     };
 @endphp
-
 <div class="space-y-4">
     <!-- ===================================================================== -->
-    <!-- VIEW 1: BẢNG TỪ VỰNG (DEFAULT TABLE VIEW) -->
     <!-- ===================================================================== -->
     <div x-show="vocabSubView === 'table'" class="space-y-4">
         <!-- Header Card -->
@@ -51,12 +49,10 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400 font-normal">{{ __('Ghi nhớ và luyện phát âm các từ vựng mới của bài học.') }}</p>
                 </div>
             </div>
-            
             <div class="text-xs font-bold text-slate-500 dark:text-slate-400 bg-[#fcfaf7] dark:bg-[#23201e] px-3 py-1.5 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926]">
                 <span class="text-[#e07a5f]">{{ $currentLesson && $currentLesson->vocabList ? $currentLesson->vocabList->count() : 0 }}</span> {{ __('từ vựng') }}
             </div>
         </div>
-
         <!-- Table Card -->
         <div class="lms-card bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl overflow-hidden shadow-2xs">
             <div class="overflow-x-auto">
@@ -112,26 +108,17 @@
             </div>
         </div>
     </div>
-
     <!-- ===================================================================== -->
-    <!-- VIEW 2: HỌC FLASHCARD (FLASHCARD VIEW) -->
     <!-- ===================================================================== -->
     @include('course-v2.components.games.flashcard')
-
     <!-- ===================================================================== -->
-    <!-- VIEW 3: GAME NỐI TỪ (WORD MATCHING GAME) -->
     <!-- ===================================================================== -->
     @include('course-v2.components.games.match')
-
     <!-- ===================================================================== -->
-    <!-- VIEW 4: TRẮC NGHIỆM TỪ VỰNG (VOCAB QUIZ) -->
     <!-- ===================================================================== -->
     @include('course-v2.components.games.quiz')
-
     <!-- ===================================================================== -->
-    <!-- VIEW 5: LUYỆN GÕ PHÍM (VOCAB TYPING PRACTICE) -->
     <!-- ===================================================================== -->
     @include('course-v2.components.games.typing')
 </div>
-
 @vite('resources/js/vocab-games.js')

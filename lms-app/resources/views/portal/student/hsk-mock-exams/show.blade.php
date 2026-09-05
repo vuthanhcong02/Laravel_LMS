@@ -1,14 +1,11 @@
 @extends('layouts.lms')
-
 @section('title', __('Danh sách đề thi') . ' ' . $hskLevel->title . ' - ' . __('Luyện thi HSK'))
-
 @section('header-left')
     <x-lms.breadcrumb :links="[
         ['label' => __('Luyện thi HSK'), 'url' => route('student.hsk-mock-exams.index')],
         ['label' => $hskLevel->title, 'url' => null]
     ]" />
 @endsection
-
 @section('content')
 <div x-data="{ showStructureModal: false }" class="space-y-6">
     <!-- Header & Navigation Bar -->
@@ -18,13 +15,11 @@
             <i class="fa-solid fa-arrow-left text-[11px]"></i>
             <span>{{ __('Quay lại các cấp độ HSK') }}</span>
         </a>
-
         <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-semibold text-slate-500 shadow-sm">
             <i class="fa-solid fa-book-open text-[#e07a5f]"></i>
             <span>{{ __('Tổng cộng') }}: <strong class="text-slate-800 dark:text-white">{{ $hskLevel->mockExams->count() }}</strong> {{ __('Đề thi') }}</span>
         </div>
     </div>
-
     <!-- Level Banner Card -->
     <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden">
         <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-[#e07a5f]/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -41,7 +36,6 @@
                     {{ $hskLevel->description ?? __('Hệ thống đề thi thử HSK bám sát cấu trúc đề thi chính thức của Hanban, tự động chấm điểm và đánh giá chi tiết từng kỹ năng.') }}
                 </p>
             </div>
-
             <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
                 <div class="px-4 py-2 rounded-xl bg-white dark:bg-[#25211e] border border-[#e8e2d9] dark:border-[#2d2926] text-center">
                     <div class="text-[10px] text-slate-400 font-medium">{{ __('Thời gian làm bài') }}</div>
@@ -63,8 +57,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Main Content: Danh Sách Đề Thi Full Width Grid -->
     <div class="space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-3">
             <div class="flex items-center gap-3">
@@ -72,7 +64,6 @@
                     <i class="fa-solid fa-list-check text-[#e07a5f]"></i>
                     <span>{{ __('Danh sách đề thi') }} ({{ $hskLevel->mockExams->count() }})</span>
                 </h2>
-
                 <button @click="showStructureModal = true" 
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-[#e07a5f] hover:text-[#e07a5f] shadow-xs btn-tactile transition-all">
                     <i class="fa-solid fa-circle-info text-[#e07a5f]"></i>
@@ -80,7 +71,6 @@
                 </button>
             </div>
         </div>
-
         @if($hskLevel->mockExams->isEmpty())
             <div class="lms-card p-12 text-center space-y-3 bg-[#faf8f5]/60 dark:bg-[#151413]/60 border-dashed border-[#dfd7cc] dark:border-[#38332f]">
                 <div class="w-16 h-16 mx-auto rounded-3xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl">
@@ -106,10 +96,8 @@
                         $userResults = $exam->results ?? collect();
                         $statusBadge = '';
                         $actionBtn = '<span>' . __('Vào thi') . '</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>';
-                        
                         $highestResult = $userResults->where('status', 'completed')->sortByDesc('total_score')->first();
                         $inProgressResult = $userResults->where('status', 'in_progress')->first();
-                        
                         if ($highestResult) {
                             $maxPt = in_array(strtolower($hskLevel->level_code), ['hsk1', 'hsk2']) ? 200 : 300;
                             $statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1"><i class="fa-solid fa-medal text-[10px]"></i> ' . __('Đạt') . ': ' . $highestResult->total_score . '/' . $maxPt . '</span>';
@@ -118,11 +106,9 @@
                             $statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin text-[10px]"></i> ' . __('Đang thi') . '</span>';
                             $actionBtn = '<span>' . __('Tiếp tục thi') . '</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>';
                         }
-                        
                         $levelNumber = str_replace('hsk', '', strtolower($hskLevel->level_code));
                         $actionUrl = route('student.hsk-mock-exams.start', ['level' => $levelNumber, 'id' => $exam->id]);
                     @endphp
-
                     <div class="lms-card p-5 space-y-4 flex flex-col justify-between group hover:border-[#e07a5f] hover:shadow-md transition-all duration-300">
                         <div class="space-y-3">
                             <div class="flex items-center justify-between">
@@ -137,7 +123,6 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                                 {{ $exam->description ?? __('Đề thi chuẩn cấu trúc HSK mới nhất.') }}
                             </p>
-
                             <div class="grid grid-cols-2 gap-2 text-xs">
                                 <div class="p-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
                                     <div class="text-[10px] text-slate-400 font-medium">{{ __('Thời gian') }}</div>
@@ -149,12 +134,10 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between">
                             <span class="text-xs text-slate-400">
                                 <i class="fa-solid fa-users mr-1"></i>{{ number_format($exam->attempt_count ?? 0) }} {{ __('lượt làm') }}
                             </span>
-
                             @auth
                                 <a href="{{ $actionUrl }}" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-1.5 shadow-sm">
                                     {!! $actionBtn !!}
@@ -170,8 +153,6 @@
             </div>
         @endif
     </div>
-
-    <!-- Modal Popup: Cấu Trúc Đề Thi HSK -->
     <div x-show="showStructureModal" 
          class="fixed inset-0 z-50 overflow-y-auto" 
          style="display: none;"
@@ -182,15 +163,12 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          @keydown.escape.window="showStructureModal = false">
-        
         <!-- Backdrop -->
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showStructureModal = false"></div>
-
         <!-- Modal Box -->
         <div class="flex min-h-full items-center justify-center p-4">
             <div class="relative w-full max-w-2xl bg-white dark:bg-[#181615] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-2xl overflow-hidden pointer-events-auto"
                  @click.outside="showStructureModal = false">
-                
                 <!-- Modal Header -->
                 <div class="px-6 py-4 border-b border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between bg-[#fcfaf7] dark:bg-[#201d1b]">
                     <div class="flex items-center gap-2.5">
@@ -210,12 +188,10 @@
                         <i class="fa-solid fa-xmark text-sm"></i>
                     </button>
                 </div>
-
                 <!-- Modal Body -->
                 <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     @if(!empty($hskLevel->exam_structure))
                         @php $structure = $hskLevel->exam_structure; @endphp
-                        
                         @if(!empty($structure['note']))
                             <div class="text-xs text-slate-600 dark:text-slate-300 bg-[#fff7f4] dark:bg-[#221c19] p-4 rounded-2xl border border-[#fcdccf] dark:border-[#382620] leading-relaxed">
                                 <div class="font-bold text-[#e07a5f] mb-1 flex items-center gap-1.5">
@@ -225,7 +201,6 @@
                                 {!! nl2br(e($structure['note'])) !!}
                             </div>
                         @endif
-
                         <div class="space-y-4">
                             @foreach($structure['sections'] ?? [] as $section)
                                 @php
@@ -233,7 +208,6 @@
                                     $isListen = stripos($secTitle, 'Nghe') !== false;
                                     $isRead = stripos($secTitle, 'Đọc') !== false;
                                     $isWrite = stripos($secTitle, 'Viết') !== false;
-                                    
                                     $secIcon = $isListen ? 'fa-headphones text-sky-500' : ($isRead ? 'fa-book-open text-amber-500' : ($isWrite ? 'fa-pen-to-square text-emerald-500' : 'fa-list-check text-[#e07a5f]'));
                                 @endphp
                                 <div class="space-y-2.5">
@@ -246,7 +220,6 @@
                                             {{ $section['total_questions'] ?? 0 }} {{ __('Câu') }} • {{ $section['total_score'] ?? 100 }} {{ __('Điểm') }}
                                         </span>
                                     </div>
-
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         @foreach($section['parts'] ?? [] as $part)
                                             <div class="p-3 rounded-2xl bg-[#fcfaf7] dark:bg-[#1d1a18] border border-[#e8e2d9]/60 dark:border-[#2d2926]/60 text-xs space-y-1">
@@ -272,7 +245,6 @@
                         </div>
                     @endif
                 </div>
-
                 <!-- Modal Footer -->
                 <div class="px-6 py-3.5 border-t border-[#e8e2d9] dark:border-[#2d2926] bg-[#fcfaf7] dark:bg-[#201d1b] flex justify-end">
                     <button @click="showStructureModal = false" class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile shadow-sm">

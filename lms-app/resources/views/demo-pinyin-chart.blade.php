@@ -1,7 +1,5 @@
 @extends('layouts.lms')
-
 @section('title', 'Bảng Phiên âm Pinyin - Tiếng Trung XIAOMU LMS')
-
 @section('alpine-data')
     selectedInitial: 'b',
     selectedFinal: 'a',
@@ -10,7 +8,6 @@
     initials: ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'j', 'q', 'x', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's'],
     finals: ['a', 'o', 'e', 'i', 'u', 'ü', 'ai', 'ei', 'ao', 'ou', 'an', 'en', 'ang', 'eng', 'ong'],
 @endsection
-
 @section('header-left')
     <div class="relative w-full">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -20,9 +17,7 @@
             class="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold bg-white dark:bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">⌘K</span>
     </div>
 @endsection
-
 @section('content')
-    <!-- Banner Tiêu đề Trang (Bám sát Demo-UI) -->
     <div
         class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
@@ -40,7 +35,6 @@
             </div>
         </div>
     </div>
-
     <!-- Pronunciation Preview Card -->
     <div
         class="lms-card p-5 bg-gradient-to-r from-white via-[#fff8f5] to-white dark:from-[#181615] dark:via-[#241d1a] dark:to-[#181615] flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -60,13 +54,11 @@
                 <p class="text-xs text-slate-500">Giữ giọng cao bằng phẳng (55) • Hướng dẫn: Mở rộng khẩu hình</p>
             </div>
         </div>
-
         <button onclick="alert('Đang phát âm Pinyin mẫu chuẩn')"
             class="px-5 py-3 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] text-white font-bold text-xs btn-tactile shadow-md flex items-center gap-2 shrink-0">
             <i class="fa-solid fa-volume-high"></i> <span>Phát âm mẫu</span>
         </button>
     </div>
-
     <!-- 4 Tones Selection Bar -->
     <div class="lms-card p-5 space-y-3">
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Chọn Thanh điệu (声调)</h3>
@@ -101,7 +93,6 @@
             </button>
         </div>
     </div>
-
     <!-- Initials Selector Grid -->
     <div class="lms-card p-5 space-y-3">
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">1. Thanh mẫu (声母 - 21 Phụ âm)</h3>
@@ -116,7 +107,6 @@
             </template>
         </div>
     </div>
-
     <!-- Finals Selector Grid -->
     <div class="lms-card p-5 space-y-3">
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">2. Vận mẫu (韵母 - Nguyên âm)</h3>

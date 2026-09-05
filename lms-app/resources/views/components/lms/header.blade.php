@@ -6,12 +6,10 @@
         <button type="button" @click="sidebarCollapsed = !sidebarCollapsed" class="hidden lg:flex p-2.5 rounded-xl border border-[#e8e2d9] dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 btn-tactile cursor-pointer select-none" title="{{ __('Thu gọn / Mở rộng Sidebar Navigation') }}">
             <i class="fa-solid text-base transition-transform duration-300 pointer-events-none select-none" :class="sidebarCollapsed ? 'fa-indent rotate-180 text-[#e07a5f]' : 'fa-bars-staggered'"></i>
         </button>
-
         @hasSection('header-left')
             @yield('header-left')
         @endif
     </div>
-
     <div class="flex items-center gap-3 sm:gap-4 shrink-0">
         @hasSection('header-right')
             @yield('header-right')
@@ -46,14 +44,7 @@
                     </button> --}}
                 </div>
             </div>
-
-            {{-- <!-- Streak Badge -->
-            <div class="hidden sm:flex items-center gap-1.5 bg-[#fff2ee] dark:bg-[#251d1a] border border-[#fcdccf] dark:border-[#42271f] px-3 py-1.5 rounded-xl shadow-xs">
-                <i class="fa-solid fa-fire text-[#e07a5f] text-sm animate-pulse"></i>
-                <span class="text-xs font-bold text-[#e07a5f] dark:text-[#f4978e]">14 Ngày học</span>
-            </div> --}}
         @endif
-
         <!-- Dark Mode Switch -->
         <button @click="darkMode = !darkMode" class="w-9 h-9 rounded-xl border border-[#e8e2d9] dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center text-xs transition-colors btn-tactile cursor-pointer">
             <i class="fa-solid pointer-events-none" :class="darkMode ? 'fa-sun text-amber-400' : 'fa-moon text-slate-600'"></i>

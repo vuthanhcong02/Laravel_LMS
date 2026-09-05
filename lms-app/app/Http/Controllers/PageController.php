@@ -40,23 +40,21 @@ class PageController extends Controller
         return view('roadmap');
     }
 
-    public function getViewCourses(Request $request)
+    private function getLevelsWithLessons()
     {
-        $levels = HskLevel::with([
+        return HskLevel::with([
             'lessons' => function ($query) {
                 $query->orderBy('lesson_number', 'asc');
             }
         ])->orderBy('id', 'asc')->get();
+    }
+
+    public function getViewCourses(Request $request)
+    {
+        $levels = $this->getLevelsWithLessons();
 
         $levelId = $request->query('level');
-        $currentLevel = null;
-        if ($levelId) {
-            $currentLevel = HskLevel::with([
-                'lessons' => function ($query) {
-                    $query->orderBy('lesson_number', 'asc');
-                }
-            ])->find($levelId);
-        }
+        $currentLevel = $levelId ? $levels->firstWhere('id', $levelId) : null;
 
         return view('course.layout', [
             'levels' => $levels,
@@ -68,13 +66,10 @@ class PageController extends Controller
 
     public function showCourseLesson($levelSlug, $lessonSlug, $tab = 'tu-vung')
     {
-        $levels = HskLevel::with([
-            'lessons' => function ($query) {
-                $query->orderBy('lesson_number', 'asc');
-            }
-        ])->orderBy('id', 'asc')->get();
+        $levels = $this->getLevelsWithLessons();
 
-        $currentLevel = HskLevel::where('slug', $levelSlug)->firstOrFail();
+        $currentLevel = $levels->firstWhere('slug', $levelSlug);
+        if (!$currentLevel) abort(404);
 
         $currentLesson = HskLesson::with([
             'vocabList',
@@ -90,11 +85,7 @@ class PageController extends Controller
 
     public function getViewCoursesV2(Request $request)
     {
-        $levels = HskLevel::with([
-            'lessons' => function ($query) {
-                $query->orderBy('lesson_number', 'asc');
-            }
-        ])->orderBy('id', 'asc')->get();
+        $levels = $this->getLevelsWithLessons();
 
         return view('course-v2.index', [
             'levels' => $levels,
@@ -106,17 +97,10 @@ class PageController extends Controller
 
     public function showCourseLevelV2($levelSlug)
     {
-        $levels = HskLevel::with([
-            'lessons' => function ($query) {
-                $query->orderBy('lesson_number', 'asc');
-            }
-        ])->orderBy('id', 'asc')->get();
+        $levels = $this->getLevelsWithLessons();
 
-        $currentLevel = HskLevel::with([
-            'lessons' => function ($query) {
-                $query->orderBy('lesson_number', 'asc');
-            }
-        ])->where('slug', $levelSlug)->firstOrFail();
+        $currentLevel = $levels->firstWhere('slug', $levelSlug);
+        if (!$currentLevel) abort(404);
 
         return view('course-v2.level', [
             'levels' => $levels,
@@ -128,13 +112,10 @@ class PageController extends Controller
 
     public function showCourseLessonV2($levelSlug, $lessonSlug, $tab = 'tu-vung')
     {
-        $levels = HskLevel::with([
-            'lessons' => function ($query) {
-                $query->orderBy('lesson_number', 'asc');
-            }
-        ])->orderBy('id', 'asc')->get();
+        $levels = $this->getLevelsWithLessons();
 
-        $currentLevel = HskLevel::where('slug', $levelSlug)->firstOrFail();
+        $currentLevel = $levels->firstWhere('slug', $levelSlug);
+        if (!$currentLevel) abort(404);
 
         $currentLesson = HskLesson::with([
             'vocabList',

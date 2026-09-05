@@ -4,7 +4,6 @@
      x-cloak
      style="display: none;" 
      class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-    
     <!-- Backdrop -->
     <div x-show="showGuideModal"
          x-transition:enter="transition ease-out duration-200"
@@ -14,7 +13,6 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
-
     <!-- Modal Panel -->
     <div x-show="showGuideModal"
          @click.away="showGuideModal = false"
@@ -25,7 +23,6 @@
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
          class="lms-card max-w-2xl w-full p-5 sm:p-6 border border-[#e8e2d9] dark:border-[#2d2926] relative max-h-[85vh] flex flex-col z-10 shadow-2xl space-y-4 hover:transform-none">
-        
         <!-- Header -->
         <div class="flex items-center justify-between pb-3 border-b border-[#e8e2d9] dark:border-[#2d2926] shrink-0">
             <div class="flex items-center gap-3">
@@ -47,10 +44,8 @@
                 <i class="fa-solid fa-xmark text-sm pointer-events-none"></i>
             </button>
         </div>
-
         <!-- Body with Custom Tabs & Scrollable Content -->
         <div class="overflow-y-auto pr-1 flex-1 space-y-5 no-scrollbar" x-data="{ activeGroup: 'labial' }">
-            
             <!-- Group Tabs Navigation (1 Single Row with horizontal scroll) -->
             <div class="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 no-scrollbar border-b border-[#e8e2d9]/60 dark:border-[#2d2926]">
                 <button type="button" @click="activeGroup = 'labial'" 
@@ -84,14 +79,11 @@
                     {{ __('Đầu Lưỡi Thẳng (z, c, s)') }}
                 </button>
             </div>
-
-            <!-- Tab Content 1: Âm Môi (b, p, m, f) -->
             <div x-show="activeGroup === 'labial'" class="space-y-4">
                 <div class="flex flex-col items-center p-3 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
                     <img src="/images/pinyin/labial.png" alt="Sơ đồ khẩu hình Âm Môi Bilabial (b, p, m)" class="w-44 h-44 object-contain bg-white rounded-xl p-2 shadow-xs border border-slate-200 dark:border-slate-700 mb-2" />
                     <span class="text-[11px] font-bold text-[#e07a5f]">Sơ đồ vị trí khép môi IPA (Bilabial Articulation)</span>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-[#e07a5f] text-white font-bold text-base flex items-center justify-center shadow-xs shrink-0">b</span>
@@ -104,7 +96,6 @@
                         <strong>Khẩu hình:</strong> Mím nhẹ hai môi, chặn luồng hơi lại rồi mở nhẹ hai môi cho hơi thoát ra tự nhiên. Không đẩy luồng hơi mạnh.
                     </p>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#fff7f4] dark:bg-[#241d1a] border border-[#fcdccf] dark:border-[#4a2e26] space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -121,14 +112,11 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Tab Content 2: Đầu Lưỡi (d, t, n, l) -->
             <div x-show="activeGroup === 'alveolar'" class="space-y-4">
                 <div class="flex flex-col items-center p-3 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
                     <img src="/images/pinyin/alveolar.png" alt="Sơ đồ khẩu hình Đầu Lưỡi Alveolar (d, t, n, l)" class="w-44 h-44 object-contain bg-white rounded-xl p-2 shadow-xs border border-slate-200 dark:border-slate-700 mb-2" />
                     <span class="text-[11px] font-bold text-[#e07a5f]">Sơ đồ vị trí chạm chân răng trên IPA (Alveolar Articulation)</span>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-[#e07a5f] text-white font-bold text-base flex items-center justify-center shadow-xs shrink-0">d</span>
@@ -141,7 +129,6 @@
                         <strong>Khẩu hình:</strong> Đầu lưỡi chạm vào chân răng trên, chặn hơi lại rồi bật nhẹ đầu lưỡi xuống. Không đẩy hơi mạnh.
                     </p>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#fff7f4] dark:bg-[#241d1a] border border-[#fcdccf] dark:border-[#4a2e26] space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -158,14 +145,11 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Tab Content 3: Cuống Lưỡi (g, k, h) -->
             <div x-show="activeGroup === 'velar'" class="space-y-4">
                 <div class="flex flex-col items-center p-3 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
                     <img src="/images/pinyin/velar.png" alt="Sơ đồ khẩu hình Cuống Lưỡi Velar (g, k, h)" class="w-44 h-44 object-contain bg-white rounded-xl p-2 shadow-xs border border-slate-200 dark:border-slate-700 mb-2" />
                     <span class="text-[11px] font-bold text-[#e07a5f]">Sơ đồ vị trí áp cuống lưỡi IPA (Velar Articulation)</span>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-[#e07a5f] text-white font-bold text-base flex items-center justify-center shadow-xs shrink-0">g</span>
@@ -178,7 +162,6 @@
                         <strong>Khẩu hình:</strong> Cuống lưỡi thụt về sau áp sát ngạc mềm (vòm miệng mềm), luồng hơi bị chặn lại rồi hạ cuống lưỡi xuống nhẹ nhàng.
                     </p>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#fff7f4] dark:bg-[#241d1a] border border-[#fcdccf] dark:border-[#4a2e26] space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -195,14 +178,11 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Tab Content 4: Mặt Lưỡi (j, q, x) -->
             <div x-show="activeGroup === 'palatal'" class="space-y-4">
                 <div class="flex flex-col items-center p-3 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
                     <img src="/images/pinyin/palatal.png" alt="Sơ đồ khẩu hình Mặt Lưỡi Palatal (j, q, x)" class="w-44 h-44 object-contain bg-white rounded-xl p-2 shadow-xs border border-slate-200 dark:border-slate-700 mb-2" />
                     <span class="text-[11px] font-bold text-[#e07a5f]">Sơ đồ vị trí nâng mặt lưỡi IPA (Palatal Articulation)</span>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-[#e07a5f] text-white font-bold text-base flex items-center justify-center shadow-xs shrink-0">j</span>
@@ -215,7 +195,6 @@
                         <strong>Khẩu hình:</strong> Mặt trước lưỡi nâng cao áp sát vòm miệng cứng, luồng hơi ngắt lại rồi mở nhẹ ra. Hai khóe miệng hơi kéo sang 2 bên như đang mỉm cười.
                     </p>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#fff7f4] dark:bg-[#241d1a] border border-[#fcdccf] dark:border-[#4a2e26] space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -232,14 +211,11 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Tab Content 5: Uốn Lưỡi (zh, ch, sh, r) -->
             <div x-show="activeGroup === 'retroflex'" class="space-y-4">
                 <div class="flex flex-col items-center p-3 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
                     <img src="/images/pinyin/retroflex.png" alt="Sơ đồ uốn lưỡi Retroflex (zh, ch, sh, r)" class="w-44 h-44 object-contain bg-white rounded-xl p-2 shadow-xs border border-slate-200 dark:border-slate-700 mb-2" />
                     <span class="text-[11px] font-bold text-[#e07a5f]">Sơ đồ vị trí uốn lưỡi IPA (Retroflex Articulation)</span>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2">
                     <div class="flex items-center gap-3">
                         <span class="w-10 h-8 rounded-lg bg-[#e07a5f] text-white font-bold text-sm flex items-center justify-center shadow-xs shrink-0">zh</span>
@@ -252,7 +228,6 @@
                         <strong>Khẩu hình:</strong> <strong>Uốn cong đầu lưỡi lên trên</strong> áp sát vòm miệng cứng (ngạc cứng), thả nhẹ đầu lưỡi cho hơi thoát ra. Không đẩy luồng hơi mạnh.
                     </p>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#fff7f4] dark:bg-[#241d1a] border border-[#fcdccf] dark:border-[#4a2e26] space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -269,14 +244,11 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Tab Content 6: Đầu Lưỡi Thẳng (z, c, s) -->
             <div x-show="activeGroup === 'dental'" class="space-y-4">
                 <div class="flex flex-col items-center p-3 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">
                     <img src="/images/pinyin/dental.png" alt="Sơ đồ khẩu hình Đầu Lưỡi Thẳng Dental (z, c, s)" class="w-44 h-44 object-contain bg-white rounded-xl p-2 shadow-xs border border-slate-200 dark:border-slate-700 mb-2" />
                     <span class="text-[11px] font-bold text-[#e07a5f]">Sơ đồ vị trí đầu lưỡi thẳng ép sát răng (Dental Articulation)</span>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-[#e07a5f] text-white font-bold text-base flex items-center justify-center shadow-xs shrink-0">z</span>
@@ -289,7 +261,6 @@
                         <strong>Khẩu hình:</strong> Đầu lưỡi duỗi thẳng áp vào mặt sau răng trên/dưới. Hai răng mím nhẹ sát nhau.
                     </p>
                 </div>
-
                 <div class="p-3.5 rounded-xl bg-[#fff7f4] dark:bg-[#241d1a] border border-[#fcdccf] dark:border-[#4a2e26] space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -306,9 +277,7 @@
                     </p>
                 </div>
             </div>
-
         </div>
-
     </div>
 </div>
 </template>

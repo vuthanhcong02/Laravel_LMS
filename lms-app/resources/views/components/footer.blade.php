@@ -1,8 +1,6 @@
 <footer class="bg-slate-900 py-16 text-slate-400 mt-36">
     <div class="mx-auto max-w-7xl px-6">
         <div class="grid gap-12 lg:grid-cols-4">
-
-            {{-- Cột 1: Logo + mô tả + social --}}
             <div class="flex flex-col gap-6 lg:col-span-1">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 w-fit group">
                     <div
@@ -45,7 +43,6 @@
                     </a>
                 </div>
             </div>
-
             <div>
                 <h4 class="mb-5 font-bold text-white text-sm uppercase tracking-widest">Khám phá</h4>
                 <ul class="flex flex-col gap-3 text-sm">
@@ -86,7 +83,6 @@
                     </li>
                 </ul>
             </div>
-
             <div>
                 <h4 class="mb-5 font-bold text-white text-sm uppercase tracking-widest">Lộ trình HSK</h4>
                 <ul class="flex flex-col gap-3 text-sm">
@@ -140,8 +136,6 @@
                     </li>
                 </ul>
             </div>
-
-            {{-- Cột 4: Liên hệ --}}
             <div>
                 <h4 class="mb-5 font-bold text-white text-sm uppercase tracking-widest">Liên hệ</h4>
                 <ul class="flex flex-col gap-4 text-sm">
@@ -159,9 +153,7 @@
                     </li>
                 </ul>
             </div>
-
         </div>
-
         {{-- Bottom bar --}}
         <div
             class="mt-14 border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">

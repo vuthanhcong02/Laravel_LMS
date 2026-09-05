@@ -1,5 +1,4 @@
 @props(['links' => []])
-
 <div {{ $attributes->merge(['class' => 'flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400']) }}>
     @foreach ($links as $link)
         @if (!$loop->last)

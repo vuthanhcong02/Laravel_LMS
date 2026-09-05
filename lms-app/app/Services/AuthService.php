@@ -31,7 +31,7 @@ class AuthService
 
         if (in_array($user->role, [User::ROLE_STUDENT, User::ROLE_GUEST])) {
             $previous = url()->previous();
-            $default = route('student.dashboard');
+            $default = $user->role === User::ROLE_GUEST ? route('home') : route('student.dashboard');
 
             if ($request->filled('redirect_to')) {
                 $default = $request->redirect_to;
@@ -144,7 +144,7 @@ class AuthService
             Auth::login($user);
 
             if (in_array($user->role, [User::ROLE_STUDENT, User::ROLE_GUEST])) {
-                $default = route('student.dashboard');
+                $default = $user->role === User::ROLE_GUEST ? route('home') : route('student.dashboard');
                 if (session()->has('social_login_redirect')) {
                     $default = session()->pull('social_login_redirect');
                 }

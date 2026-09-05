@@ -8,12 +8,9 @@
             {{ __('Đảm bảo tài khoản của bạn đang sử dụng mật khẩu mạnh, kết hợp chữ cái, số và ký tự đặc biệt để tối ưu bảo mật.') }}
         </p>
     </header>
-
     <form id="passwordForm" @submit.prevent="submitPasswordForm" class="space-y-4">
         @csrf
         @method('put')
-
-        <!-- Ô Mật khẩu hiện tại -->
         <div>
             <label for="update_password_current_password" class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Mật khẩu hiện tại') }}</label>
             <div class="relative">
@@ -32,8 +29,6 @@
             </div>
             <p x-show="errors.current_password" x-text="errors.current_password" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
         </div>
-
-        <!-- Ô Mật khẩu mới -->
         <div>
             <label for="update_password_password" class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Mật khẩu mới') }}</label>
             <div class="relative">
@@ -52,8 +47,6 @@
             </div>
             <p x-show="errors.password" x-text="errors.password" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
         </div>
-
-        <!-- Ô Xác nhận mật khẩu mới -->
         <div>
             <label for="update_password_password_confirmation" class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Xác nhận mật khẩu mới') }}</label>
             <div class="relative">
@@ -72,8 +65,6 @@
             </div>
             <p x-show="errors.password_confirmation" x-text="errors.password_confirmation" class="text-[11px] font-semibold text-rose-500 mt-1" style="display: none;"></p>
         </div>
-
-        <!-- Nút Submit & Thông báo -->
         <div class="flex items-center gap-3 pt-3 border-t border-[#e8e2d9] dark:border-[#2d2926]">
             <button type="submit" :disabled="loading"
                     class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center gap-2 cursor-pointer disabled:opacity-75">
@@ -81,7 +72,6 @@
                 <i x-show="loading" class="fa-solid fa-spinner fa-spin text-xs" style="display: none;"></i>
                 <span x-text="loading ? '{{ __('Đang cập nhật...') }}' : '{{ __('Cập nhật mật khẩu') }}'">{{ __('Cập nhật mật khẩu') }}</span>
             </button>
-
             <div x-show="successMessage" x-transition x-init="$watch('successMessage', val => { if (val) setTimeout(() => successMessage = '', 3000) })" style="display: none;"
                  class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-900/50">
                 <i class="fa-solid fa-circle-check text-xs"></i>
@@ -90,7 +80,6 @@
         </div>
     </form>
 </section>
-
 <script>
     function passwordUpdateForm() {
         return {
@@ -104,10 +93,8 @@
                 this.loading = true;
                 this.errors = {};
                 this.successMessage = '';
-                
                 let form = document.getElementById('passwordForm');
                 let formData = new FormData(form);
-                
                 try {
                     const response = await fetch('{{ route("password.update") }}', {
                         method: 'POST', // Blade has @method('put') which adds _method=put to FormData
@@ -117,9 +104,7 @@
                         },
                         body: formData
                     });
-                    
                     const data = await response.json();
-                    
                     if (response.ok && data.success) {
                         this.successMessage = data.message;
                         form.reset();

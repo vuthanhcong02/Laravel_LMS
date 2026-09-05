@@ -5,7 +5,6 @@
         </div>
         <h3 class="text-lg font-extrabold text-green-600 dark:text-green-400">Nối từ</h3>
     </div>
-    
     <!-- Game Switcher Buttons -->
     <div class="flex items-center justify-center gap-1.5 mb-6 bg-slate-100/60 dark:bg-slate-800/60 p-1.5 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md">
         <button @click="viewMode = 'flashcard'" class="px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 font-semibold text-xs sm:text-sm hover:bg-white dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-1.5">
@@ -21,7 +20,6 @@
             <span class="material-symbols-outlined text-[16px]">keyboard</span> Luyện gõ
         </button>
     </div>
-
     <!-- Match Game UI -->
     <div class="w-full max-w-4xl bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl rounded-2xl p-5 md:p-6 border border-white/60 dark:border-slate-700/60 shadow-sm">
         <!-- Progress Header -->
@@ -38,7 +36,6 @@
                 TRANG <span class="text-slate-700 dark:text-slate-300 ml-1" x-text="currentPage + 1"></span>
             </div>
         </div>
-
         <!-- The 2 Columns -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <!-- Left Column: Words -->
@@ -58,7 +55,6 @@
                     </button>
                 </template>
             </div>
-
             <!-- Right Column: Meanings -->
             <div class="flex flex-col gap-2.5">
                 <template x-for="(item, index) in currentRightWords" :key="'right-'+item.id">
@@ -88,7 +84,6 @@
                 </template>
             </div>
         </div>
-
         <!-- Success Message when page is done -->
         <div x-show="isPageComplete" x-transition:enter="transition ease-out duration-500 delay-300" x-transition:enter-start="opacity-0 translate-y-8 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100" class="mt-8 flex flex-col items-center justify-center gap-3">
             <div class="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-500 mb-1">

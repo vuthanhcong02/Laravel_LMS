@@ -1,108 +1,83 @@
 @extends('layouts.app')
-
 @section('title', 'Trang chủ — XiaoMu Chinese')
-
 @push('styles')
     <style>
         /* ==== HERO CARD ANIMATIONS ==== */
-
         @keyframes float {
-
             0%,
             100% {
                 transform: translateY(0px);
             }
-
             50% {
                 transform: translateY(-10px);
             }
         }
-
         @keyframes float-alt {
-
             0%,
             100% {
                 transform: translateY(0px);
             }
-
             50% {
                 transform: translateY(8px);
             }
         }
-
         @keyframes shimmer-glow {
-
             0%,
             100% {
                 text-shadow: 0 0 0px transparent;
             }
-
             50% {
                 text-shadow: 0 0 24px rgba(232, 146, 122, 0.45);
             }
         }
-
         @keyframes spin-very-slow {
             from {
                 transform: rotate(6deg) translateX(3px) translateY(2px);
             }
-
             to {
                 transform: rotate(9deg) translateX(3px) translateY(2px);
             }
         }
-
         @keyframes spin-very-slow-reverse {
             from {
                 transform: rotate(-3deg) translateX(-2px);
             }
-
             to {
                 transform: rotate(-5deg) translateX(-2px);
             }
         }
-
         @keyframes ping-soft {
             0% {
                 transform: scale(1);
                 opacity: 1;
             }
-
             70% {
                 transform: scale(1.4);
                 opacity: 0;
             }
-
             100% {
                 transform: scale(1.4);
                 opacity: 0;
             }
         }
-
         .animate-float {
             animation: float 4s ease-in-out infinite;
         }
-
         .animate-float-alt {
             animation: float-alt 3.5s ease-in-out infinite;
         }
-
         .animate-float-badge2 {
             animation: float 5s ease-in-out infinite 1s;
         }
-
         .animate-shimmer-glow {
             animation: shimmer-glow 3s ease-in-out infinite;
         }
-
         .animate-deco-1 {
             animation: spin-very-slow 6s ease-in-out infinite alternate;
         }
-
         .animate-deco-2 {
             animation: spin-very-slow-reverse 5s ease-in-out infinite alternate;
         }
-
         .animate-ping-soft::before {
             content: '';
             position: absolute;
@@ -114,9 +89,7 @@
         }
     </style>
 @endpush
-
 @section('content')
-
     {{-- ===== HERO SECTION ===== --}}
     <section
         class="relative overflow-hidden bg-gradient-to-br from-primary/8 via-white to-rose-50/40 dark:from-primary/10 dark:via-background-dark dark:to-background-dark py-20 lg:py-28">
@@ -125,10 +98,8 @@
             data-speed="0.15"></div>
         <div class="parallax-slow pointer-events-none absolute -left-40 bottom-0 h-80 w-80 rounded-full bg-rose-300/15 blur-[60px]"
             data-speed="0.25"></div>
-
         <div class="relative mx-auto max-w-7xl px-6">
             <div class="grid items-center gap-16 lg:grid-cols-2">
-
                 {{-- Left: Text Content --}}
                 <div class="flex flex-col gap-7">
                     {{-- Badge --}}
@@ -136,7 +107,6 @@
                         class="reveal reveal-fade-up inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:bg-primary/15">
                         <span>✦</span> Học tiếng Trung cùng XiaoMu
                     </div>
-
                     {{-- Headline --}}
                     <h1
                         class="reveal reveal-fade-up stagger-delay-1 font-display text-4xl font-black leading-[1.1] tracking-tight text-slate-900 dark:text-white lg:text-5xl xl:text-6xl">
@@ -154,7 +124,6 @@
                             </svg>
                         </span>
                     </h1>
-
                     {{-- Description --}}
                     <p
                         class="reveal reveal-fade-up stagger-delay-2 max-w-lg text-base leading-relaxed text-slate-500 dark:text-slate-400 lg:text-lg">
@@ -162,7 +131,6 @@
                             1→6</strong>, kết hợp flashcard thông minh và bài thi thử chuẩn quốc tế — giúp bạn giao tiếp tự
                         tin trong <strong class="font-semibold text-slate-700 dark:text-slate-200">90 ngày</strong>.
                     </p>
-
                     {{-- CTA Buttons --}}
                     <div class="reveal reveal-fade-up stagger-delay-3 flex flex-wrap items-center gap-4">
                         @guest
@@ -189,7 +157,6 @@
                             </a>
                         @endguest
                     </div>
-
                     {{-- Social proof --}}
                     <div
                         class="reveal reveal-fade-up stagger-delay-4 flex flex-wrap items-center gap-6 border-t border-slate-100 pt-6 dark:border-slate-800">
@@ -216,10 +183,8 @@
                             <span class="text-sm font-bold text-slate-800 dark:text-white">4.9</span>
                             <span class="text-xs text-slate-400">/5</span>
                         </div>
-
                     </div>
                 </div>
-
                 {{-- Right: Visual Card Stack --}}
                 <div class="reveal reveal-zoom stagger-delay-2 relative flex justify-center lg:justify-end">
                     <div class="relative w-full max-w-sm">
@@ -230,7 +195,6 @@
                         <div
                             class="animate-deco-2 absolute inset-0 rounded-3xl border border-rose-200/50 bg-rose-50/50 -rotate-3 -translate-x-2 dark:bg-rose-900/10">
                         </div>
-
                         {{-- Main Card --}}
                         <div
                             class="animate-float relative rounded-3xl bg-white p-6 shadow-2xl shadow-primary/15 dark:bg-slate-800/90 dark:shadow-primary/10">
@@ -246,7 +210,6 @@
                                     <span class="material-symbols-outlined text-[20px] text-primary">local_library</span>
                                 </div>
                             </div>
-
                             {{-- Flashcard preview --}}
                             <div
                                 class="mb-5 rounded-2xl bg-gradient-to-br from-primary/10 via-rose-50 to-amber-50/50 p-5 text-center dark:from-primary/15 dark:via-slate-700/50 dark:to-slate-700/30">
@@ -254,7 +217,6 @@
                                 <p class="mt-1 text-sm font-medium text-primary">jiā rén</p>
                                 <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Gia đình / Người thân</p>
                             </div>
-
                             {{-- Quick actions --}}
                             <div class="mt-4 grid grid-cols-3 gap-2">
                                 <div
@@ -276,7 +238,6 @@
                                 </div>
                             </div>
                         </div>
-
                         {{-- Floating badge 1 --}}
                         <div
                             class="animate-float-alt reveal reveal-fade-up stagger-delay-5 absolute -left-8 -bottom-6 flex items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
@@ -290,7 +251,6 @@
                                 <p class="text-[10px] text-slate-400">Nguyễn Thị Thủy Tiên. — 2 phút trước</p>
                             </div>
                         </div>
-
                         {{-- Floating badge 2 --}}
                         <div
                             class="animate-float-badge2 reveal reveal-fade-right stagger-delay-6 absolute -right-6 top-8 rounded-2xl bg-white px-4 py-3 shadow-xl dark:bg-slate-800">
@@ -303,7 +263,6 @@
             </div>
         </div>
     </section>
-
     {{-- ===== STATS BAR ===== --}}
     <section class="border-y border-primary/10 bg-white py-10 dark:bg-slate-900/50">
         <div class="mx-auto max-w-5xl px-6">
@@ -323,7 +282,6 @@
             </div>
         </div>
     </section>
-
     {{-- ===== COURSES SECTION ===== --}}
     <section class="py-20 dark:bg-background-dark">
         <div class="mx-auto max-w-7xl px-6">
@@ -342,9 +300,7 @@
                     trên XiaoMu.
                 </p>
             </div>
-
             <div class="grid gap-6 md:grid-cols-3">
-
                 {{-- Card 1: Flashcard --}}
                 <div
                     class="reveal reveal-fade-up stagger-delay-1 group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 dark:border-slate-700/50 dark:bg-slate-800/70">
@@ -377,8 +333,6 @@
                         </a>
                     </div>
                 </div>
-
-                {{-- Card 2: Giáo trình HSK --}}
                 <div
                     class="reveal reveal-fade-up stagger-delay-2 group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 dark:border-slate-700/50 dark:bg-slate-800/70">
                     <div
@@ -412,8 +366,6 @@
                         </a>
                     </div>
                 </div>
-
-                {{-- Card 3: Thi thử HSK --}}
                 <div
                     class="reveal reveal-fade-up stagger-delay-3 group flex flex-col rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 dark:border-slate-700/50 dark:bg-slate-800/70">
                     <div
@@ -447,12 +399,9 @@
                         </a>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
-
-
     {{-- ===== FEATURES SECTION ===== --}}
     <section class="py-20 bg-gradient-to-b from-slate-50/80 to-white dark:from-slate-900/50 dark:to-background-dark">
         <div class="mx-auto max-w-7xl px-6">
@@ -466,7 +415,6 @@
                     Học tiếng Trung <span class="text-primary">thông minh hơn</span>
                 </h2>
             </div>
-
             <div class="grid gap-6 md:grid-cols-3">
                 @foreach ([
             ['icon' => 'route', 'title' => 'Lộ trình cá nhân hóa', 'desc' => 'Từ HSK 1 đến HSK 6, hệ thống tự động đề xuất bài học phù hợp với tốc độ tiếp thu của từng người.'],
@@ -490,48 +438,7 @@
             </div>
         </div>
     </section>
-
     {{-- ===== TESTIMONIALS SECTION ===== --}}
-    {{-- <section class="py-20 dark:bg-background-dark">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="mb-14 text-center">
-                <span
-                    class="reveal reveal-fade-up inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:bg-primary/15">
-                    <span class="material-symbols-outlined text-[14px]">reviews</span> Học viên nói gì
-                </span>
-                <h2
-                    class="reveal reveal-fade-up stagger-delay-1 font-display mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                    Hàng nghìn học viên <span class="text-primary">tin tưởng</span>
-                </h2>
-            </div>
-
-            <div class="grid gap-6 md:grid-cols-3">
-                @foreach ([['name' => 'Nguyễn Thu Hà', 'role' => 'Nhân viên xuất nhập khẩu', 'review' => 'Sau 3 tháng học với XiaoMu, mình đã đạt HSK 4 với điểm 285/300. Phương pháp flashcard và thi thử của app cực kỳ hiệu quả!', 'rating' => 5, 'initials' => 'NH'], ['name' => 'Trần Minh Khoa', 'role' => 'Sinh viên Đại học Ngoại thương', 'review' => 'App duy nhất mình thấy có bộ đề thi HSK thực sự giống đề thi thật. Giao diện đẹp, dễ dùng, lộ trình rõ ràng. Highly recommend!', 'rating' => 5, 'initials' => 'MK'], ['name' => 'Lê Bảo Châu', 'role' => 'Dịch thuật tự do', 'review' => 'Tính năng nhận diện phát âm giúp mình sửa được lỗi thanh điệu mà học mãi không sửa được. Giờ giao tiếp tự nhiên hơn rất nhiều!', 'rating' => 5, 'initials' => 'BC']] as $idx => $t)
-                    <div
-                        class="reveal reveal-zoom stagger-delay-{{ $idx + 1 }} flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700/50 dark:bg-slate-800/70">
-                        <div class="flex gap-0.5 text-amber-400 text-sm">
-                            @for ($i = 0; $i < $t['rating']; $i++)
-                                ★
-                            @endfor
-                        </div>
-                        <p class="flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">"{{ $t['review'] }}"
-                        </p>
-                        <div class="flex items-center gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
-                                {{ $t['initials'] }}
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-800 dark:text-white">{{ $t['name'] }}</p>
-                                <p class="text-xs text-slate-400">{{ $t['role'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section> --}}
-
     {{-- ===== BLOG PREVIEW ===== --}}
     <section class="py-20 bg-slate-50/80 dark:bg-slate-900/50">
         <div class="mx-auto max-w-7xl px-6">
@@ -550,7 +457,6 @@
                     Xem tất cả <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </a>
             </div>
-
             @if (isset($latestBlogs) && $latestBlogs->isNotEmpty())
                 <div class="grid gap-6 md:grid-cols-3">
                     @foreach ($latestBlogs as $idx => $blog)
@@ -585,7 +491,6 @@
                     @endforeach
                 </div>
             @else
-                {{-- Empty state khi chưa có bài viết ở trang chủ --}}
                 <div class="reveal reveal-fade-up p-8 rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-center max-w-lg mx-auto flex flex-col items-center">
                     <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                         <span class="material-symbols-outlined text-2xl">newspaper</span>
@@ -599,7 +504,6 @@
             @endif
         </div>
     </section>
-
     {{-- ===== NEWSLETTER / CTA ===== --}}
     <section class="relative overflow-hidden py-24">
         {{-- Gradient background --}}
@@ -608,7 +512,6 @@
         <div class="absolute inset-0 opacity-10"
             style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 24px 24px;">
         </div>
-
         <div class="relative mx-auto max-w-3xl px-6 text-center">
             <span
                 class="reveal reveal-fade-up inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
@@ -622,7 +525,6 @@
                 Để lại email — chúng tôi sẽ gửi lộ trình học <strong class="font-bold text-white">hoàn toàn miễn
                     phí</strong> phù hợp với mục tiêu của bạn.
             </p>
-
             <div x-data="ctaConsultationForm()" class="mt-8 max-w-md mx-auto">
                 <form x-show="!submitted" @submit.prevent="submitForm"
                     class="reveal reveal-fade-up stagger-delay-3 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -639,7 +541,6 @@
                             class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
                     </button>
                 </form>
-
                 <div x-show="submitted" x-transition:enter="transition ease-out duration-300 transform"
                     x-transition:enter-start="opacity-0 translate-y-3 scale-95"
                     x-transition:enter-end="opacity-100 translate-y-0 scale-100" style="display:none"
@@ -656,7 +557,6 @@
                         </p>
                     </div>
                 </div>
-
                 <div x-show="errorMsg" x-transition:enter="transition ease-out duration-300 transform"
                     x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
                     style="display:none"
@@ -670,7 +570,6 @@
             </p>
         </div>
     </section>
-
     <script>
         function ctaConsultationForm() {
             return {

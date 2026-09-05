@@ -1,28 +1,23 @@
 @extends('layouts.app')
-
 @section('title', 'Giáo trình chuẩn HSK')
 @section('breadcrumb', 'Giáo trình chuẩn HSK')
 @section('breadcrumb_desc', 'Hệ thống bài học tự do và bài giảng chi tiết bám sát bộ sách Giáo trình chuẩn HSK 1 - HSK 6.')
 @section('hide_default_breadcrumb', true)
-
 @section('content')
     <div x-data="hskApp()">
         <!-- Dynamic Dark Banner with Built-in Breadcrumb -->
         <section class="w-full py-12 md:py-16 relative overflow-hidden bg-gradient-to-r from-slate-950 via-[#1A2B3C] to-slate-950 border-b border-primary/20 transition-all duration-300">
             <!-- Grid Pattern Overlay (SaaS Coordinates) -->
             <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] opacity-80 pointer-events-none"></div>
-
             <!-- Soft Blur Orbs for background depth -->
             <div class="absolute right-[-10%] top-[-20%] w-[350px] h-[350px] bg-primary/30 rounded-xl blur-[120px] pointer-events-none"></div>
             <div class="absolute left-[30%] bottom-[-50%] w-[250px] h-[250px] bg-indigo-500/20 rounded-xl blur-[100px] pointer-events-none"></div>
-
             <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-start gap-4">
                 <!-- Interactive Status Badge -->
                 <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-primary/10 border border-primary/30 text-[9px] font-black text-primary uppercase tracking-widest shadow-sm">
                     <span class="h-1.5 w-1.5 rounded-xl bg-primary animate-pulse"></span>
                     <span>Học tập & Rèn luyện</span>
                 </div>
-
                 <!-- Glassmorphism Dynamic Breadcrumb Navigation -->
                 <nav aria-label="Breadcrumb" class="hidden sm:block">
                     <ol class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-950/60 border border-white/20 backdrop-blur-md text-[11px] md:text-xs text-white font-semibold font-sans">
@@ -64,25 +59,21 @@
                         @endif
                     </ol>
                 </nav>
-
                 <!-- Main Banner Title & Dynamic Subtitle -->
                 <div class="flex flex-col gap-2 mt-1">
                     <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight drop-shadow-sm font-poppins leading-none">
                         @yield('breadcrumb')
                     </h1>
-                    
                     <p class="text-xs md:text-sm text-slate-300 font-medium max-w-2xl leading-relaxed mt-1 opacity-95">
                         @yield('breadcrumb_desc')
                     </p>
                 </div>
             </div>
         </section>
-
     <!-- Consolidated max-w-5xl viewport container for unified width and zero layout shifts -->
     <main 
         class="max-w-6xl mx-auto px-6 pt-4 pb-16 md:pt-4 flex-1 flex flex-col w-full"
     >
-
         <!-- State 1: Level Grid View (Unified width context) -->
         @if(!$currentLevel)
         <div x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
@@ -99,7 +90,6 @@
                     Hệ thống giáo trình chuẩn hóa từ HSK 1 đến HSK 6 với lộ trình bài bản, tinh gọn và hiệu quả.
                 </p>
             </div>
-
             <!-- Levels Grid (3 Columns matching user design) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($levels as $level)
@@ -107,7 +97,6 @@
                         href="{{ route('courses', ['level' => $level->id]) }}"
                         class="group cursor-pointer bg-white dark:bg-slate-900/60 rounded-2xl border border-slate-105 dark:border-slate-800/80 shadow-sm hover:shadow-xl hover:-translate-y-1.5 active:scale-95 transition-all duration-300 flex flex-col relative overflow-hidden block"
                     >
-
                         <!-- Top Half: Full-width HSK Book Cover Header -->
                         <div class="w-full h-40 relative overflow-hidden border-b border-slate-100 dark:border-slate-800/60 transition-colors duration-300 {{ $level->cover_bg }}">
                             <!-- Book Typography content -->
@@ -116,20 +105,17 @@
                                     <span class="text-[8px] font-black tracking-widest text-slate-450 uppercase">STANDARD COURSE</span>
                                     <span class="text-[9px] font-black px-2 py-0.5 rounded bg-slate-950/5 dark:bg-white/5 text-slate-400 dark:text-slate-550 uppercase tracking-wider">HSK</span>
                                 </div>
-                                
                                 <div class="my-auto py-1">
                                     <div class="flex items-baseline gap-1.5">
                                         <span class="text-5xl font-black tracking-tighter uppercase {{ $level->number_color }}">{{ strtoupper($level->level_code) }}</span>
                                         <span class="text-xs font-black text-slate-400 uppercase tracking-widest">LEVEL</span>
                                     </div>
                                 </div>
-                                
                                 <div class="text-[8px] font-black text-slate-400 leading-tight uppercase tracking-wider">
                                     GIÁO TRÌNH CHUẨN HSK
                                 </div>
                             </div>
                         </div>
-
                         <!-- Bottom Half: Content Info -->
                         <div class="p-5 flex flex-col flex-1 text-left">
                             <div class="flex justify-between items-center mb-3">
@@ -145,10 +131,8 @@
                                 >{{ $level->title }}</span>
                                 <span class="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Miễn phí</span>
                             </div>
-
                             <h3 class="text-lg font-extrabold text-slate-800 dark:text-white leading-snug mb-1 group-hover:text-primary transition-colors duration-200">{{ $level->subtitle }}</h3>
                             <p class="text-xs text-slate-555 dark:text-slate-400 leading-relaxed mb-4 line-clamp-2">{{ $level->description }}</p>
-
                             <!-- Key Metrics Grid -->
                             <div class="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 dark:border-slate-805/60 mt-auto">
                                 <div>
@@ -160,7 +144,6 @@
                                     <span class="text-xs font-black text-slate-800 dark:text-slate-205">{{ $level->vocab_count }}</span>
                                 </div>
                             </div>
-
                             <!-- Learn Now Arrow link -->
                             <div class="mt-4 flex justify-end">
                                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 group-hover:text-primary transition-colors duration-200">
@@ -174,11 +157,8 @@
             </div>
         </div>
         @elseif($currentLevel && !$currentLesson)
-
         <!-- State 2: Detailed Lesson List View -->
         <div x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
-
-
             @php
                 $color = $currentLevel->color;
                 $accentClass = $color === 'emerald' ? 'bg-[#eab308]' :
@@ -192,7 +172,6 @@
                                ($color === 'purple' ? 'bg-primary hover:bg-primary/90' :
                                ($color === 'rose' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-600 hover:bg-amber-700'))));
             @endphp
-
             <!-- Curriclum Banner Hero -->
             <div class="p-4 sm:p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 mb-6 sm:mb-8 text-left">
                 <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 self-stretch sm:self-auto">
@@ -206,14 +185,12 @@
                         <p class="text-[11px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 mt-0.5 truncate sm:whitespace-normal">Lộ trình bài học chính khóa bám sát cấu trúc khung</p>
                     </div>
                 </div>
-
                 <!-- Stats Badges -->
                 <div class="flex flex-wrap gap-2 sm:self-auto self-stretch shrink-0">
                     <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->lessons_count }} Bài học</span>
                     <span class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">{{ $currentLevel->vocab_count }} Từ vựng</span>
                 </div>
             </div>
-
             <!-- Curriculum Roadmap -->
             <div class="flex flex-col gap-4 sm:gap-5 text-left">
                 @foreach($currentLevel->lessons as $lesson)
@@ -227,7 +204,6 @@
                             <span 
                                 class="text-2xl sm:text-3xl font-black text-slate-200 dark:text-slate-800 group-hover:text-primary/40 select-none w-8 sm:w-12 text-center shrink-0 transition-colors" 
                             >{{ $lesson->lesson_number < 10 ? '0' . $lesson->lesson_number : $lesson->lesson_number }}</span>
-                            
                             <div class="min-w-0 flex-1">
                                 <span class="text-[9px] font-black text-primary dark:text-primary-light uppercase tracking-wider block mb-0.5">Mã bài: <span>{{ $lesson->code }}</span></span>
                                 <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
@@ -237,7 +213,6 @@
                                         $displayTitle = preg_replace('/^Bài\s+\d+[:\-]?\s*/i', '', $lesson->title);
                                         // Nếu sau khi xóa mà chuỗi rỗng (trường hợp title chỉ có "Bài 1"), thì lấy lại title gốc
                                         $displayTitle = empty(trim($displayTitle)) ? $lesson->title : $displayTitle;
-
                                         if ($isDummyData) {
                                             $displayTitle = 'Đang cập nhật nội dung...';
                                         }
@@ -250,7 +225,6 @@
                                 <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-semibold truncate">{{ $isDummyData ? 'Vui lòng quay lại sau' : $lesson->translation }}</p>
                             </div>
                         </div>
-
                         <!-- Start Play Indicator Icon -->
                         <div 
                             class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-white shadow-xs group-hover:shadow-md group-hover:scale-105 transition-all duration-200 flex items-center justify-center shrink-0 {{ $buttonClass }}"
@@ -262,22 +236,17 @@
             </div>
         </div>
         @elseif($currentLevel && $currentLesson)
-
         <!-- State 3: Lesson View -->
         <div x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex-1 flex flex-col">
-            
             <div class="space-y-3 flex-1 flex flex-col">
-
                 <!-- Toolbar: Tab Navigation & Action Button -->
                     <div class="sticky top-[76px] sm:top-[86px] z-40 -mx-6 sm:mx-0 px-6 sm:px-0 flex flex-col xl:flex-row xl:items-center transition-all duration-500"
                          x-data="{ isStuck: false }"
                          @scroll.window="isStuck = window.scrollY > 300"
                          :class="[activeTab === 'luyen-tap' ? 'w-full lg:w-[calc(75%-0.375rem)]' : 'w-full', isStuck ? 'p-2 sm:p-3 sm:px-3 border-y sm:border bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/60 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] gap-3 xl:gap-0 sm:rounded-b-2xl' : 'p-1.5 sm:p-1.5 sm:px-2 border-y sm:border bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-700/60 shadow-sm gap-4 xl:gap-0 sm:rounded-2xl']">
-                         
                         <!-- Left Side: Context & Navigation (Expands when scrolled) -->
                         <div class="hidden lg:flex items-center overflow-hidden transition-all duration-500 origin-left" 
                              :class="isStuck ? 'max-w-[600px] pr-4 opacity-100' : 'max-w-0 pr-0 opacity-0 pointer-events-none'">
-                             
                              <nav aria-label="Breadcrumb" class="w-max shrink-0 transition-transform duration-500 origin-left"
                                   :class="isStuck ? 'scale-100' : 'scale-95'">
                                  <ol class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-[10px] xl:text-[11px] text-slate-600 dark:text-slate-300 font-semibold font-sans whitespace-nowrap">
@@ -317,7 +286,6 @@
                                  </ol>
                              </nav>
                         </div>
-
                         <!-- Center/Left: Pill Tab Navigation -->
                         <div class="flex-shrink-0 z-10 transition-all duration-300 w-full xl:w-auto overflow-x-auto no-scrollbar">
                             <div class="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 transition-all duration-300 w-full sm:w-auto">
@@ -347,9 +315,7 @@
                                 </a>
                             </div>
                         </div>
-
                     </div>
-
                     <!-- Tabs Content Panels -->
                     <div class="mt-2 flex-1 flex flex-col">
                         @if($activeTab === 'tu-vung')
@@ -367,13 +333,10 @@
         @endif
     </main>
     </div>
-
-    
     <script>
         window.alignPinyin = function(hanzi, pinyin, shouldShowPinyin = true) {
             if (!shouldShowPinyin) return null;
             if (!hanzi || !pinyin) return null;
-            
             const pArr = pinyin.trim().split(/\s+/).filter(Boolean);
             const hArr = hanzi.replace(/\s+/g, '').split('');
             if (pArr.length > 0 && pArr.length === hArr.length) {
@@ -392,7 +355,6 @@
                         if (isset($practice['sections'])) {
                             foreach ($practice['sections'] as &$section) {
                                 $section['section_han_html'] = !empty($section['section_han']) ? ($shouldShow ? renderHskRubyText($section['section_han']) : $section['section_han']) : '';
-                                
                                 // Parse section_vi in PHP so we can apply renderHskRubyText if needed
                                 $text = $section['section_vi'] ?? '';
                                 $mainText = $text;
@@ -400,7 +362,6 @@
                                 $hasExample = false;
                                 $headerRx = '/(例如(?:\s*[\(（]?\s*Ví dụ\s*[\)）]?)?\s*[:：]?|Ví dụ\s*[:：]?)/i';
                                 $firstTagRx = '/(男\s*[:：]|女\s*[:：]| 问\s*[:：]|★|\s+[A-D]\s+|[\(（](?:ĐÚNG|SAI|✓|✕|v|x|√|N)[\)）])/i';
-
                                 if (preg_match($headerRx, $text, $hm, PREG_OFFSET_CAPTURE)) {
                                     $mainText = trim(substr($text, 0, $hm[0][1]));
                                     $exampleRaw = trim(substr($text, $hm[0][1]));
@@ -410,14 +371,12 @@
                                     $exampleRaw = trim(substr($text, $fm[0][1]));
                                     $hasExample = true;
                                 }
-
                                 if ($hasExample) {
                                     $exHeader = '';
                                     if (preg_match($headerRx, $exampleRaw, $hm, PREG_OFFSET_CAPTURE) && $hm[0][1] == 0) {
                                         $exHeader = trim(substr($exampleRaw, 0, strlen($hm[0][0])));
                                         $exampleRaw = trim(substr($exampleRaw, strlen($hm[0][0])));
                                     }
-                                    
                                     $lines = array_filter(array_map('trim', explode("\n", $exampleRaw)));
                                     $htmlLines = [];
                                     $i = 0;
@@ -435,17 +394,14 @@
                                         }
                                         $i++;
                                     }
-                                    
                                     $exHeaderHtml = $exHeader ? '<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] mr-1 align-middle">' . ($shouldShow ? renderHskRubyText($exHeader) : htmlspecialchars($exHeader)) . '</span>' : '';
                                     $exampleHtml = $exHeaderHtml . implode('', $htmlLines);
                                 }
-
                                 $section['parsed_vi'] = [
                                     'mainText' => $mainText,
                                     'hasExample' => $hasExample,
                                     'exampleHtml' => $exampleHtml
                                 ];
-
                                 if ($shouldShow) {
                                     if (isset($section['questions'])) {
                                         foreach ($section['questions'] as &$q) {
@@ -535,13 +491,11 @@
                 activeTab: @json($activeTab ?? 'tu-vung'),
                 lessons: [],
                 hskLevels: @json($levels) || [],
-                
                 isSectionFullyAnswered(questions) {
                     if (!questions || !questions.length) return false;
                     return questions.every(q => {
                         // Skip if no answers required
                         if (!q.correct_answer && (!q.sub_questions || q.sub_questions.length === 0)) return true;
-                        
                         if (q.sub_questions && q.sub_questions.length > 0) {
                             return q.sub_questions.every(sq => {
                                 if (!sq.correct) return true;
@@ -549,7 +503,6 @@
                                 return sq.selected !== undefined && sq.selected !== null;
                             });
                         }
-                        
                         if (q.ques_type === 'reorder' || q.ques_type === 'writing') return q.userAnswer && q.userAnswer.trim() !== '';
                         if (q.ques_type === 'fill_blank_dropdown') {
                             if (!q.selected_answers) return false;
@@ -558,7 +511,6 @@
                         return q.selected !== undefined && q.selected !== null;
                     });
                 },
-
                 getSectionAnsweredProgress(questions) {
                     if (!questions || !questions.length) return { answered: 0, total: 0 };
                     let total = 0;
@@ -586,7 +538,6 @@
                     });
                     return { answered, total };
                 },
-
                 checkAllSection(questions) {
                     if (!questions) return;
                     questions.forEach(q => {
@@ -598,7 +549,6 @@
                         }
                     });
                 },
-
                 resetSection(questions) {
                     if (!questions) return;
                     questions.forEach(q => {
@@ -615,27 +565,23 @@
                         }
                     });
                 },
-                
                 init() {
                     if (this.currentLesson) {
                         // Map Laravel relationship keys to what Alpine templates expect
                         if (this.currentLesson.vocabList && !this.currentLesson.vocab_list) this.currentLesson.vocab_list = this.currentLesson.vocabList;
                         if (this.currentLesson.grammarList && !this.currentLesson.grammar_list) this.currentLesson.grammar_list = this.currentLesson.grammarList;
                         if (this.currentLesson.dialogueSections && !this.currentLesson.dialogue_sections) this.currentLesson.dialogue_sections = this.currentLesson.dialogueSections;
-
                         this.startLesson(this.currentLesson);
                     }
                     this.$watch('activeTab', () => {
                         const url = new URL(window.location);
                         const validTabs = ['tu-vung', 'ngu-phap', 'hoi-thoai', 'luyen-tap'];
                         const pathParts = url.pathname.split('/').filter(p => p);
-                        
                         if (validTabs.includes(pathParts[pathParts.length - 1])) {
                             pathParts[pathParts.length - 1] = this.activeTab;
                         } else {
                             pathParts.push(this.activeTab);
                         }
-                        
                         url.pathname = '/' + pathParts.join('/');
                         url.searchParams.delete('tab');
                         window.history.replaceState({}, '', url);
@@ -658,16 +604,12 @@
                 if(!section || !section.dialogues) return;
                 const currentLine = section.dialogues[this.quizIndex];
                 if(!currentLine) return;
-                
                 const normalizePinyin = (str) => {
                     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, 'd').replace(/Đ/g, 'D');
                 };
-
                 const cleanInput = normalizePinyin(this.quizInput.replace(/[.,!?，。！？\s]/g, '').toLowerCase());
-                
                 const targetPinyin = normalizePinyin(currentLine.pinyin.replace(/[.,!?，。！？\s]/g, '').toLowerCase());
                 const targetChar = currentLine.character.replace(/[.,!?，。！？\s]/g, '');
-                
                 if (cleanInput === targetPinyin || cleanInput === targetChar) {
                     this.quizStatus = 'correct';
                 } else {
@@ -686,12 +628,9 @@
                 this.quizInput = '';
                 this.quizStatus = 'typing';
             },
-                
                 // Practice states
                 practiceTab: 'listening',
                 practiceSectionIdx: 0,
-
-                
                 startLesson(lesson) {
                     if (lesson && lesson.dialogue_sections) {
                         let globalIdx = 1;
@@ -704,7 +643,6 @@
                             }
                         });
                     }
-                    
                     if (lesson && lesson.practices) {
                         lesson.practices.forEach(practice => {
                             if (practice.sections) {
@@ -713,7 +651,6 @@
                                         sec.questions.forEach(q => {
                                             q.selected = null;
                                             q.answered = false;
-                                            
                                             if (q.ques_type === 'fill_blank_dropdrag') {
                                                 if (q.context && q.context.includes('@{{blank}}')) {
                                                     q.parsed_context = q.context.split('@{{blank}}');
@@ -727,7 +664,6 @@
                                                     });
                                                 }
                                             }
-                                            
                                             if (q.ques_type === 'fill_blank_dropdown') {
                                                 if (q.question && q.question.includes('@{{blank}}')) {
                                                     q.parsed_question = q.question.split('@{{blank}}');
@@ -736,14 +672,12 @@
                                                 }
                                                 // Initialize array for user's selected dropdown indices
                                                 q.selected_answers = new Array(Math.max(0, q.parsed_question.length - 1)).fill('');
-                                                
                                                 // Ensure arrays are parsed
                                                 if (typeof q.hints === 'string') try { q.hints = JSON.parse(q.hints); } catch(e){}
                                                 if (typeof q.options === 'string') try { q.options = JSON.parse(q.options); } catch(e){}
                                                 if (typeof q.correct === 'string') try { q.correct = JSON.parse(q.correct); } catch(e){}
                                                 if (typeof q.correct_answer === 'string' && q.correct_answer.startsWith('[')) try { q.correct = JSON.parse(q.correct_answer); } catch(e){}
                                             }
-                                            
                                             if (q.sub_questions && Array.isArray(q.sub_questions)) {
                                                 q.sub_questions.forEach(sq => {
                                                     sq.selected = null;
@@ -751,7 +685,6 @@
                                                     sq.answered = false;
                                                 });
                                             }
-
                                             // Xử lý reorder: convert question_segments sang array objects {id, text, html, pinyin}
                                             if (q.ques_type === 'reorder' && q.question_segments) {
                                                 if (typeof q.question_segments === 'string') {
@@ -776,48 +709,38 @@
                             }
                         });
                     }
-
                     this.currentLesson = lesson;
                     this.currentDialogueSectionIdx = 0;
                 },
-
                 // Drag and drop state and methods
                 draggedItemText: null,
                 draggedSource: null, // 'pool' or sub_question index (number)
-                
                 startDrag(event, text, source) {
                     this.draggedItemText = text;
                     this.draggedSource = source;
                     event.dataTransfer.effectAllowed = 'move';
                     event.dataTransfer.setData('text/plain', text);
                 },
-                
                 onDrop(event, quiz, targetIndex) {
                     event.preventDefault();
                     if (!this.draggedItemText) return;
-                    
                     // If dropping into a sub_question dropzone
                     if (targetIndex !== 'pool') {
                         const sq = quiz.sub_questions[targetIndex];
                         if (sq.answered) return; // Cannot modify if already answered
-                        
                         // If there's already an option in this dropzone, put it back to pool
                         if (sq.selected_option) {
                             const opt = quiz.available_options.find(o => o.text === sq.selected_option);
                             if (opt) opt.used = false;
                         }
-                        
                         // Mark the new option as used
                         const newOpt = quiz.available_options.find(o => o.text === this.draggedItemText);
                         if (newOpt) newOpt.used = true;
-                        
                         // If the item came from another dropzone, clear that dropzone
                         if (this.draggedSource !== 'pool' && this.draggedSource !== targetIndex) {
                             quiz.sub_questions[this.draggedSource].selected_option = null;
                         }
-                        
                         sq.selected_option = this.draggedItemText;
-                        
                     } else {
                         // Dropping back into the pool
                         if (this.draggedSource !== 'pool') {
@@ -830,11 +753,9 @@
                             }
                         }
                     }
-                    
                     this.draggedItemText = null;
                     this.draggedSource = null;
                 },
-
                 playAudio(audioUrl) {
                     if (!audioUrl) return;
                     let audio = new Audio(audioUrl);

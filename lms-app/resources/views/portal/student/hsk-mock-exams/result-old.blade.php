@@ -22,11 +22,9 @@
         $maxScore = in_array($levelCode, ['hsk1', 'hsk2']) ? 200 : 300;
         $passScore = in_array($levelCode, ['hsk1', 'hsk2']) ? 120 : 180;
         $isPassed = $result->total_score >= $passScore;
-        
         $durationSeconds = 0;
         if ($result->completed_at && $result->started_at) {
             $durationSeconds = \Carbon\Carbon::parse($result->started_at)->diffInSeconds(\Carbon\Carbon::parse($result->completed_at));
-            
             // Giới hạn thời gian hiển thị tối đa bằng thời gian làm bài trong trường hợp bài thi bị bỏ dở
             $maxDurationSeconds = ($result->mockExam->duration ?? 0) * 60;
             if ($maxDurationSeconds > 0 && $durationSeconds > $maxDurationSeconds) {
@@ -34,12 +32,10 @@
             }
         }
         $formattedDuration = sprintf('%02d:%02d', floor($durationSeconds / 60), $durationSeconds % 60);
-
         // Group user answers by section name
         $userAnswersBySection = $result->userAnswers->groupBy(function($ua) {
             return $ua->question->hskMockExamSection->name;
         });
-
         $displayOption = function($opt, $q, $ua = null) {
             if (!$opt) {
                 if ($ua && !empty($ua->text_answer)) {
@@ -47,25 +43,19 @@
                 }
                 return '<span class="italic text-slate-400">Không trả lời</span>';
             }
-            
             $isTrueFalse = $q->options->count() == 2 && 
                 ($q->options[0]->content === '√' || $q->options[0]->content === '×');
-                
             if ($isTrueFalse) {
                 return trim($opt->content);
             }
-            
             $letter = chr(65 + ($opt->order_index - 1));
-            
             $content = trim($opt->content ?? '');
             if (empty($content) || strtoupper($content) === $letter) {
                 return $letter;
             }
-            
             return $letter . '. ' . $content;
         };
     @endphp
-
     {{-- ===== HEADER ===== --}}
     <header class="bg-white dark:bg-[#1a2332] border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-4 md:px-6 shrink-0 z-20 shadow-sm">
         <div class="flex items-center gap-3">
@@ -82,11 +72,9 @@
             </a>
         </div>
     </header>
-
     {{-- ===== MAIN CONTENT ===== --}}
     <main class="flex-1 overflow-y-auto py-8">
         <div class="max-w-4xl mx-auto px-4 md:px-6 space-y-8">
-            
             {{-- 🎉 Overall Pass/Fail Status Banner --}}
             <div class="relative overflow-hidden rounded-3xl border shadow-lg transition-all duration-300 {{ $isPassed ? 'bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-600/20 text-white' : 'bg-gradient-to-br from-rose-500 to-pink-600 border-rose-600/20 text-white' }}">
                 <div class="absolute inset-0 bg-white/10 opacity-30 mix-blend-overlay pointer-events-none"></div>
@@ -120,7 +108,6 @@
                     </div>
                 </div>
             </div>
-
             {{-- 📻 Skill Details Grid --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {{-- Listening --}}
@@ -139,7 +126,6 @@
                     </div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 text-center font-medium">Tỷ lệ đúng {{ $result->listening_score }}%</p>
                 </div>
-
                 {{-- Reading --}}
                 <div class="bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-5 shadow-sm space-y-4">
                     <div class="flex items-center justify-between">
@@ -156,7 +142,6 @@
                     </div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 text-center font-medium">Tỷ lệ đúng {{ $result->reading_score }}%</p>
                 </div>
-
                 {{-- Writing --}}
                 @if(in_array($levelCode, ['hsk3', 'hsk4', 'hsk5', 'hsk6']))
                     <div class="bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-5 shadow-sm space-y-4">
@@ -183,11 +168,9 @@
                     </div>
                 @endif
             </div>
-
             {{-- 📝 Detailed Answers Review --}}
             <div class="space-y-4">
                 <h3 class="font-black text-slate-800 dark:text-white text-base tracking-wide">Xem lại bài làm</h3>
-
                 @foreach($userAnswersBySection as $sectionName => $userAnswers)
                     <div class="bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 overflow-hidden shadow-sm">
                         {{-- Section Header --}}
@@ -197,7 +180,6 @@
                                 Đúng {{ $userAnswers->where('is_correct', true)->count() }}/{{ $userAnswers->count() }} câu
                             </span>
                         </div>
-
                         {{-- Section Questions --}}
                         <div class="divide-y divide-slate-100 dark:divide-slate-700">
                             @foreach($userAnswers as $uaIdx => $ua)
@@ -225,7 +207,6 @@
                                             @endif
                                         </div>
                                     </div>
-
                                     {{-- Review Choice --}}
                                     <div class="pl-9 grid grid-cols-1 md:grid-cols-2 gap-3">
                                         <div class="p-3 rounded-xl border {{ $ua->is_correct ? 'bg-emerald-50/30 dark:bg-emerald-950/10 border-emerald-200 dark:border-emerald-900/50' : 'bg-rose-50/30 dark:bg-rose-950/10 border-rose-200 dark:border-rose-900/50' }}">
@@ -234,7 +215,6 @@
                                                 {!! $displayOption($selectedOption, $question, $ua) !!}
                                             </span>
                                         </div>
-
                                         @if(!$ua->is_correct && $correctOption)
                                             <div class="p-3 rounded-xl bg-emerald-50/30 dark:bg-emerald-950/10 border border-emerald-200 dark:border-emerald-900/50">
                                                 <span class="text-xs font-bold text-slate-400 dark:text-slate-500 block uppercase tracking-wider mb-1">Đáp án đúng</span>
@@ -244,7 +224,6 @@
                                             </div>
                                         @endif
                                     </div>
-
                                     {{-- Explanation --}}
                                     @if($question->explanation)
                                         <div class="pl-9 text-xs text-slate-500 dark:text-slate-400">
@@ -260,7 +239,6 @@
                     </div>
                 @endforeach
             </div>
-
             {{-- ===== BOTTOM ACTIONS ===== --}}
             <div class="flex flex-col sm:flex-row gap-4 pt-4">
                 <a href="{{ route('student.hsk-mock-exams.start', ['level' => $level, 'id' => $result->hsk_mock_exam_id]) }}" class="flex-1 py-3 px-6 bg-primary text-white font-bold text-sm text-center rounded-2xl shadow-md hover:bg-primary/95 active:scale-95 transition-all duration-150 flex items-center justify-center gap-2">
@@ -272,10 +250,8 @@
                     Đề thi khác
                 </a>
             </div>
-
         </div>
     </main>
-
     {{-- ===== FOOTER ===== --}}
     <footer class="bg-white dark:bg-[#1a2332] border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-400 dark:text-slate-500 shrink-0">
         <p>© 2026 Laravel LMS. Hệ thống chấm điểm thi thử HSK tự động.</p>

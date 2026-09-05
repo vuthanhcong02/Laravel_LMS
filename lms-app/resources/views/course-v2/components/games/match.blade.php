@@ -2,7 +2,6 @@
         <div x-data="vocabMatchEngine()" 
              x-init="initMatchGame(vocabularies)"
              class="space-y-5 max-w-3xl mx-auto">
-        
         <!-- Header Bar -->
         <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
             <div class="flex items-center gap-3 w-full sm:w-auto">
@@ -14,7 +13,6 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Nối Hán tự với bản dịch tương ứng nhanh và chính xác nhất.') }}</p>
                 </div>
             </div>
-
             <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-bold text-slate-600 dark:text-slate-300">
                     <i class="fa-regular fa-clock text-[#0284c7]"></i>
@@ -29,7 +27,6 @@
                 </button>
             </div>
         </div>
-
         <!-- Not Enough Words Warning -->
         <template x-if="!vocabularies || vocabularies.length < 2">
             <div class="lms-card p-8 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl text-center space-y-3">
@@ -39,7 +36,6 @@
                 <button @click="vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
             </div>
         </template>
-
         <!-- Main Game Area -->
         <template x-if="vocabularies && vocabularies.length >= 2 && !isCompleted">
             <div class="space-y-4">
@@ -51,10 +47,8 @@
                 <div class="w-full bg-[#e8e2d9]/50 dark:bg-[#2d2926] rounded-full h-1.5 overflow-hidden">
                     <div class="bg-[#e07a5f] h-full rounded-full transition-all duration-300" :style="'width: ' + ((matchedPairs.length / currentPairs.length) * 100) + '%'"></div>
                 </div>
-
                 <!-- 2 Columns Grid -->
                 <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-2">
-                    <!-- Left Column: Chữ Hán -->
                     <div class="space-y-2.5">
                         <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-1">
                             {{ __('Chữ Hán') }}
@@ -79,8 +73,6 @@
                             </div>
                         </template>
                     </div>
-
-                    <!-- Right Column: Ý nghĩa Tiếng Việt -->
                     <div class="space-y-2.5">
                         <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-1">
                             {{ __('Ý Nghĩa Tiếng Việt') }}
@@ -103,19 +95,16 @@
                 </div>
             </div>
         </template>
-
         <!-- Completion Victory Screen -->
         <template x-if="isCompleted">
             <div class="lms-card p-8 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl text-center space-y-5 shadow-sm">
                 <div class="w-16 h-16 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] text-[#f59e0b] flex items-center justify-center text-3xl mx-auto shadow-inner">
                     <i class="fa-solid fa-trophy"></i>
                 </div>
-
                 <div class="space-y-1">
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ __('Xuất sắc! Bạn đã nối đúng toàn bộ từ vựng!') }}</h3>
                     <p class="text-xs text-slate-500">{{ __('Khả năng phản xạ và ghi nhớ từ mới của bạn rất tốt.') }}</p>
                 </div>
-
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-3 gap-3 max-w-sm mx-auto py-2">
                     <div class="p-3 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926]">
@@ -131,7 +120,6 @@
                         <div class="text-[10px] font-semibold text-slate-400">{{ __('Chính xác') }}</div>
                     </div>
                 </div>
-
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-center gap-3 pt-2">
                     <button @click="initMatchGame(vocabularies)" class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white font-bold text-xs shadow-xs btn-tactile flex items-center gap-2">

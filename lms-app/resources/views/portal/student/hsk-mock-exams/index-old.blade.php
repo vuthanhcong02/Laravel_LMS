@@ -1,19 +1,13 @@
 @extends('layouts.app')
-
 @section('title', __('Thi Thử HSK Miễn Phí'))
-
 @section('breadcrumb', 'Thi Thử HSK Miễn Phí')
 @section('breadcrumb_desc',
     'Đánh giá năng lực tiếng Trung của bạn với hệ thống đề thi chuẩn xác, giao diện mô phỏng
     phòng thi thật.')
-
 @section('content')
     <div class="min-h-screen bg-slate-50 dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 font-sans relative pb-24 pt-8">
-
         <div class="max-w-7xl mx-auto px-6 space-y-8 relative z-10">
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
                 <div class="lg:col-span-2 space-y-6">
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
@@ -21,7 +15,6 @@
                             Các cấp độ thi HSK
                         </h2>
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         @php
                             $hskCounts = [];
@@ -31,11 +24,9 @@
                                 }
                             }
                         @endphp
-
                         {{-- HSK 1 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 1]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-yellow-500/10 dark:hover:shadow-yellow-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
@@ -58,11 +49,9 @@
                                         class="material-symbols-outlined text-[14px]">fact_check</span> 40 Câu</span>
                             </div>
                         </a>
-
                         {{-- HSK 2 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 2]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-teal-500/10 dark:hover:shadow-teal-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
@@ -85,11 +74,9 @@
                                         class="material-symbols-outlined text-[14px]">fact_check</span> 60 Câu</span>
                             </div>
                         </a>
-
                         {{-- HSK 3 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 3]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-red-500/10 dark:hover:shadow-red-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
@@ -112,11 +99,9 @@
                                         class="material-symbols-outlined text-[14px]">fact_check</span> 80 Câu</span>
                             </div>
                         </a>
-
                         {{-- HSK 4 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 4]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-purple-500/10 dark:hover:shadow-purple-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
@@ -139,11 +124,9 @@
                                         class="material-symbols-outlined text-[14px]">fact_check</span> 100 Câu</span>
                             </div>
                         </a>
-
                         {{-- HSK 5 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 5]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-pink-500/10 dark:hover:shadow-pink-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
@@ -166,11 +149,9 @@
                                         class="material-symbols-outlined text-[14px]">fact_check</span> 100 Câu</span>
                             </div>
                         </a>
-
                         {{-- HSK 6 Card --}}
                         <a href="{{ route('student.hsk-mock-exams.show', ['level' => 6]) }}"
                             class="group block bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
-                            
                             <div class="flex justify-between items-start mb-4">
                                 <div
                                     class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 shadow-inner border border-slate-100 dark:border-slate-700">
@@ -193,12 +174,9 @@
                                         class="material-symbols-outlined text-[14px]">fact_check</span> 101 Câu</span>
                             </div>
                         </a>
-
                     </div>
                 </div>
-
                 <div class="lg:col-span-1 space-y-6">
-
                     {{-- User Stats --}}
                     @auth
                         <div class="flex items-center justify-between mb-2">
@@ -207,7 +185,6 @@
                                 Thống kê của bạn
                             </h2>
                         </div>
-
                         <div
                             class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm mb-6">
                             <div class="grid grid-cols-2 gap-4">
@@ -224,12 +201,10 @@
                             </div>
                         </div>
                     @endauth
-
                     {{-- Spacer for guest to align with left column title --}}
                     @guest
                         <div class="h-[36px]"></div>
                     @endguest
-
                     {{-- Leaderboard --}}
                     <div
                         class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] shadow-sm overflow-hidden flex flex-col">
@@ -239,7 +214,6 @@
                                 <span class="material-symbols-outlined text-amber-500 text-[18px]">workspace_premium</span>
                                 Bảng Xếp Hạng
                             </h3>
-                            
                                 <select id="leaderboard_level" name="leaderboard_level" onchange="fetchLeaderboard(this.value)" class="text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none cursor-pointer focus:border-primary hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                     <option value="all" {{ ($leaderboardLevel ?? 'all') == 'all' ? 'selected' : '' }}>Tất cả cấp độ</option>
                                     @if(isset($hskLevels))
@@ -249,24 +223,19 @@
                                     @endif
                                 </select>
                         </div>
-
                         <div id="leaderboard-container" class="p-2 space-y-1">
                             @include('portal.student.hsk-mock-exams.leaderboard-list')
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
-
 @push('scripts')
 <script>
 function fetchLeaderboard(level) {
     const container = document.getElementById('leaderboard-container');
     container.style.opacity = '0.5';
-    
     fetch(`{{ route('student.hsk-mock-exams.index') }}?leaderboard_level=${level}`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -284,5 +253,4 @@ function fetchLeaderboard(level) {
 }
 </script>
 @endpush
-
 @endsection

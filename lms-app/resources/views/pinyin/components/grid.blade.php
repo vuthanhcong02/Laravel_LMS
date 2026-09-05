@@ -10,8 +10,6 @@
         padding: 12px !important;
     }
 </style>
-
-{{-- ===== BẢNG PINYIN BÌNH THƯỜNG (luôn render, không dùng x-show để tránh scope conflict) ===== --}}
 <div class="relative overflow-auto w-full no-scrollbar cursor-grab"
      style="max-height: 85vh;"
      x-data="{
@@ -26,13 +24,8 @@
      @mouseup="endDrag($event)"
      @mousemove="doDrag($event)"
      @click.capture="handleClick($event)">
-
     @include('pinyin.components.grid_table')
 </div>
-
-{{-- ===== FULLSCREEN OVERLAY (x-teleport ra body - thoát khỏi mọi transform/stacking context của layout cha) =====
-     Kỹ thuật: overlay này phủ lên TRÊN bảng bình thường, không ẩn bảng bình thường
-     → tránh layout shift → không nháy màn hình --}}
 <template x-teleport="body">
     <div x-show="isFullscreen"
          x-cloak
@@ -51,8 +44,6 @@
          @mousemove="doDrag($event)"
          @click.capture="handleClick($event)"
          class="pinyin-fs-overlay no-scrollbar cursor-grab">
-
-        {{-- Toolbar cố định trên cùng --}}
         <div class="sticky top-0 left-0 right-0 z-40 mb-2 flex items-center justify-between px-3 py-2 rounded-xl border shadow-sm"
              :class="darkMode ? 'bg-slate-900/95 border-slate-700' : 'bg-white/95 border-slate-200'">
             <div class="flex items-center gap-2">
@@ -66,18 +57,14 @@
                 <span>{{ __('Thu nhỏ (F / ESC)') }}</span>
             </button>
         </div>
-
         @include('pinyin.components.grid_table')
     </div>
 </template>
-
-{{-- ===== MODAL Chi Tiết Thanh Điệu & Từ Vựng ===== --}}
 <template x-teleport="body">
     <div x-show="currentPinyin"
          x-cloak
          style="display:none;"
          class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-
         {{-- Backdrop --}}
         <div x-show="currentPinyin"
              x-transition:enter="transition ease-out duration-200"
@@ -87,7 +74,6 @@
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
              class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
-
         {{-- Panel --}}
         <div x-show="currentPinyin"
              @click.away="currentPinyin = null; selectedTone = null"
@@ -98,13 +84,11 @@
              x-transition:leave-start="opacity-100 scale-100"
              x-transition:leave-end="opacity-0 scale-95"
              class="lms-card max-w-md w-full p-6 border border-[#e8e2d9] dark:border-[#2d2926] relative z-10 space-y-4 shadow-2xl hover:transform-none">
-
             <button type="button"
                     @click="currentPinyin = null; selectedTone = null"
                     class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-[#f8f6f3] dark:bg-[#201d1b] rounded-full w-8 h-8 flex items-center justify-center cursor-pointer transition-colors btn-tactile">
                 <i class="fa-solid fa-xmark text-sm pointer-events-none"></i>
             </button>
-
             <div class="text-center pt-2">
                 <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] text-[10px] font-bold uppercase tracking-wider mb-2">
                     {{ __('Âm tiết cơ bản') }}
@@ -112,7 +96,6 @@
                 <h2 class="text-3xl font-bold text-[#e07a5f] dark:text-[#f4978e] tracking-wide zh-text" x-text="currentPinyin ? currentPinyin.full : ''"></h2>
                 <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">{{ __('Bấm vào từng thanh điệu để nghe phát âm và xem từ ví dụ') }}</p>
             </div>
-
             <div class="space-y-2" x-show="currentPinyin && currentPinyin.tones && currentPinyin.tones.length > 0">
                 <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                     <i class="fa-solid fa-waveform-lines text-[#e07a5f]"></i>
@@ -132,7 +115,6 @@
                     </template>
                 </div>
             </div>
-
             <div x-show="selectedTone && selectedTone.examples && selectedTone.examples.length > 0"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 translate-y-2"
@@ -170,7 +152,6 @@
                     </template>
                 </div>
             </div>
-
             <div x-show="currentPinyin && (!currentPinyin.tones || currentPinyin.tones.length === 0)" class="text-center py-6 text-slate-400 text-xs">
                 {{ __('Chưa có dữ liệu thanh điệu cho âm này.') }}
             </div>

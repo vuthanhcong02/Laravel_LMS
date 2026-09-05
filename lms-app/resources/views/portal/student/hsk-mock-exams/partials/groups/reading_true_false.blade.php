@@ -2,7 +2,6 @@
     $examples = $group->questions->where('is_example', true);
     $realQuestions = $group->questions->where('is_example', false);
 @endphp
-
 {{-- Example Card --}}
 @if($examples->count() > 0)
 <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 space-y-4 shadow-xs">
@@ -19,7 +18,6 @@
                         <img src="{{ hsk_storage_url($ex->image) }}" class="max-w-full max-h-full object-contain" alt="Ex">
                     </div>
                 @endif
-                
                 {{-- Text --}}
                 @if($ex->title)
                     <div class="text-lg font-bold text-slate-800 dark:text-slate-100 text-center sm:text-left break-words zh-text leading-relaxed">
@@ -27,7 +25,6 @@
                     </div>
                 @endif
             </div>
-
             {{-- Options Right --}}
             <div class="flex items-center justify-center gap-3 shrink-0">
                 @foreach ($ex->options as $idx => $option)
@@ -45,7 +42,6 @@
     @endforeach
 </div>
 @endif
-
 {{-- Questions List --}}
 <div class="space-y-4">
     @foreach ($realQuestions as $question)
@@ -54,7 +50,6 @@
         @endphp
         <div class="q-card scroll-mt-24 bg-white dark:bg-[#181615] p-5 sm:p-6 rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs space-y-4"
              id="q-{{ $currentQNum }}">
-            
             <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
                 {{-- Left: Question Number, Image & Text --}}
                 <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
@@ -66,7 +61,6 @@
                             <img src="{{ hsk_storage_url($question->image) }}" class="w-full h-full object-contain hover:scale-105 transition-transform duration-200" alt="Q{{ $currentQNum }}">
                         </div>
                     @endif
-
                     {{-- Text (Ruby) --}}
                     @if($question->title)
                         <div class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 text-center sm:text-left break-words zh-text leading-relaxed">
@@ -74,7 +68,6 @@
                         </div>
                     @endif
                 </div>
-
                 {{-- Right: Options --}}
                 <div class="flex items-center justify-center gap-3 shrink-0 w-full sm:w-auto">
                     @foreach ($question->options as $option)

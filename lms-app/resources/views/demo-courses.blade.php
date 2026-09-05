@@ -1,7 +1,5 @@
 @extends('layouts.lms')
-
 @section('title', 'Khóa học HSK - Tiếng Trung XIAOMU LMS')
-
 @section('alpine-data')
     levelFilter: 'all', 
     selectedCourse: null, 
@@ -15,14 +13,10 @@
         { id: 7, code: 'H1L07', hanzi: '今天几号？', vi: 'Hôm nay ngày mấy?', countVocab: 8, isUnlocked: true }
     ],
 @endsection
-
 @section('content')
     <!-- ========================================================================= -->
-    <!-- LEVEL 1: DANH SÁCH KHÓA HỌC NGOÀI CÙNG (TOÀN BỘ TEXT-XL H1 CHUẨN) -->
     <!-- ========================================================================= -->
     <div x-show="selectedCourse === null" class="space-y-6">
-        
-        <!-- Banner Tiêu đề Trang Khóa học (H1: text-xl font-bold) -->
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden">
             <div class="space-y-1.5">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] dark:text-[#f4978e] text-xs font-bold">
@@ -36,7 +30,6 @@
                 </p>
             </div>
         </div>
-
         <!-- Filter Bar Buttons (text-xs font-semibold) -->
         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             <button @click="levelFilter = 'all'" :class="levelFilter === 'all' ? 'bg-[#e07a5f] text-white font-bold' : 'bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-600 dark:text-slate-300'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap btn-tactile">
@@ -52,11 +45,7 @@
                 HSK 5 - HSK 6 (Cao cấp)
             </button>
         </div>
-
-        <!-- Grid các Thẻ Khóa học (Card Title: text-base font-bold, Body: text-xs font-normal) -->
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            
-            <!-- Card Khóa 1: HSK 1 -->
             <div class="lms-card p-5 flex flex-col justify-between space-y-4 group">
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
@@ -65,7 +54,6 @@
                     </div>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">HSK 1: Khởi đầu Hán ngữ</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 font-normal line-clamp-2 leading-relaxed">Lộ trình bài học chính khóa bám sát cấu trúc khung đề thi HSK. Nắm vững 150 từ vựng cốt lõi & Pinyin giọng chuẩn.</p>
-                    
                     <div class="space-y-1.5 pt-1">
                         <div class="flex justify-between text-xs font-semibold text-slate-500">
                             <span>Tiến độ học</span>
@@ -76,7 +64,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between">
                     <div class="flex items-center gap-4 text-xs font-medium text-slate-400">
                         <span><i class="fa-regular fa-clock mr-1"></i>15 bài</span>
@@ -87,8 +74,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Card Khóa 2: HSK 2 -->
             <div class="lms-card p-5 flex flex-col justify-between space-y-4 group">
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
@@ -97,7 +82,6 @@
                     </div>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">HSK 2: Giao tiếp Đời sống</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 font-normal line-clamp-2 leading-relaxed">Mở rộng 300 từ vựng, cấu trúc câu hỏi phức hợp và kỹ năng hỏi đường, mua sắm, đặt phòng khách sạn.</p>
-                    
                     <div class="space-y-1.5 pt-1">
                         <div class="flex justify-between text-xs font-semibold text-slate-500">
                             <span>Tiến độ học</span>
@@ -108,7 +92,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between">
                     <div class="flex items-center gap-4 text-xs font-medium text-slate-400">
                         <span><i class="fa-regular fa-clock mr-1"></i>15 bài</span>
@@ -119,8 +102,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Card Khóa 3: HSK 3 -->
             <div class="lms-card p-5 flex flex-col justify-between space-y-4 group">
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
@@ -129,7 +110,6 @@
                     </div>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">HSK 3: Đọc hiểu Văn bản</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 font-normal line-clamp-2 leading-relaxed">Tích lũy 600 từ vựng, tự tin đọc đoạn văn ngắn không cần Pinyin và viết đúng bộ thủ chữ Hán chuẩn nét.</p>
-                    
                     <div class="space-y-1.5 pt-1">
                         <div class="flex justify-between text-xs font-semibold text-slate-500">
                             <span>Tiến độ học</span>
@@ -140,7 +120,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between">
                     <div class="flex items-center gap-4 text-xs font-medium text-slate-400">
                         <span><i class="fa-regular fa-clock mr-1"></i>20 bài</span>
@@ -151,25 +130,16 @@
                     </button>
                 </div>
             </div>
-
         </div>
     </div>
-
-
     <!-- ========================================================================= -->
-    <!-- LEVEL 2: DANH SÁCH BÀI HỌC (ĐỒNG BỘ 100% CỠ CHỮ H1 TEXT-XL, CARD TEXT-BASE) -->
     <!-- ========================================================================= -->
     <div x-show="selectedCourse !== null" class="space-y-6" style="display: none;">
-        
-        <!-- Nút Quay lại -->
         <button @click="selectedCourse = null" class="inline-flex items-center gap-2 text-xs font-bold text-[#e07a5f] hover:text-[#c86349] transition-colors btn-tactile">
             <i class="fa-solid fa-arrow-left text-xs"></i> Quay lại danh sách khóa học
         </button>
-
-        <!-- Banner Tiêu đề HSK 1 (H1 chuẩn text-xl font-bold đồng nhất) -->
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3.5">
-                <!-- Badge HSK1 chuẩn text-xs font-bold -->
                 <div class="w-10 h-10 rounded-xl bg-[#f59e0b] text-slate-950 font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
                     HSK 1
                 </div>
@@ -182,7 +152,6 @@
                     </p>
                 </div>
             </div>
-
             <div class="flex items-center gap-2 shrink-0">
                 <span class="px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-xs font-bold text-[#e07a5f] dark:text-[#f4978e]">
                     15 Bài học
@@ -192,18 +161,12 @@
                 </span>
             </div>
         </div>
-
-        <!-- Danh sách các Thẻ Bài học (Chữ Hán: text-base font-bold zh-text đồng nhất 100%) -->
         <div class="space-y-3">
             <template x-for="(item, index) in lessons" :key="item.id">
                 <a :href="'{{ url('/demo-course-detail') }}?lesson=' + item.id"
                     class="lms-card p-4 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center justify-between gap-4 group hover:border-[#e07a5f] transition-all cursor-pointer block">
-                    
                     <div class="flex items-center gap-4 min-w-0">
-                        <!-- Số thứ tự: text-xs font-bold font-mono -->
                         <div class="w-8 h-8 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-400 dark:text-slate-500 font-bold text-xs flex items-center justify-center font-mono shrink-0 group-hover:text-[#e07a5f] group-hover:border-[#e07a5f]/40 transition-colors" x-text="index < 9 ? '0' + (index + 1) : (index + 1)">01</div>
-
-                        <!-- Tiêu đề Bài học: Mã bài text-xs, Tiêu đề text-base font-bold, Subtitle text-xs -->
                         <div class="min-w-0">
                             <div class="flex items-center gap-2 mb-0.5">
                                 <span class="text-xs font-semibold text-[#e07a5f] uppercase tracking-wider" x-text="'MÃ BÀI: ' + item.code">MÃ BÀI: H1L01</span>
@@ -212,17 +175,13 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate font-normal" x-text="item.vi">Xin chào</p>
                         </div>
                     </div>
-
-                    <!-- Nút Play Tròn w-8 h-8 -->
                     <div class="shrink-0">
                         <div class="w-8 h-8 rounded-full bg-[#f59e0b] hover:bg-[#d97706] text-slate-950 flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 btn-tactile">
                             <i class="fa-solid fa-play ml-0.5 text-[11px]"></i>
                         </div>
                     </div>
-
                 </a>
             </template>
         </div>
-
     </div>
 @endsection

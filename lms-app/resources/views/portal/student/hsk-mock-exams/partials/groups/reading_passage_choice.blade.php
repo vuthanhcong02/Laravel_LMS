@@ -14,7 +14,6 @@
     }
     $exLetter = $exData['ex_a_letter'] ?? $exData['a_letter'] ?? 'D';
 @endphp
-
 {{-- Options Bank (A-F) --}}
 @if(count($p3Options) > 0)
 <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] p-5 md:p-6 mb-6 shadow-xs relative overflow-hidden">
@@ -24,7 +23,6 @@
             <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">{{ __('Danh sách đáp án') }}</span>
         </div>
     </div>
-    
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         @foreach($p3Options as $idx => $opt)
             @php
@@ -36,7 +34,6 @@
                 {{ $isExAns 
                     ? 'bg-amber-500/10 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80' 
                     : 'bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f]/50 shadow-xs' }}">
-                
                 <div class="flex items-center gap-3.5 min-w-0">
                     <span class="w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center shrink-0 shadow-xs transition-colors
                         {{ $isExAns 
@@ -48,7 +45,6 @@
                         {!! $optText !!}
                     </div>
                 </div>
-
                 @if($isExAns)
                     <span class="px-2 py-0.5 rounded-lg bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider shrink-0 ml-2 shadow-xs">
                         {{ __('Ví dụ') }}
@@ -59,7 +55,6 @@
     </div>
 </div>
 @endif
-
 {{-- Dynamic Example Card from is_example questions --}}
 @if($examples->count() > 0)
 <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 space-y-4 shadow-xs">
@@ -98,7 +93,6 @@
     @endforeach
 </div>
 @endif
-
 {{-- Questions List --}}
 <div class="space-y-4">
     @foreach ($realQuestions as $question)
@@ -108,14 +102,12 @@
         @endphp
         <div class="q-card scroll-mt-24 p-5 sm:p-6 bg-white dark:bg-[#181615] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs"
              id="q-{{ $currentQNum }}">
-            
             <div class="flex flex-col lg:flex-row gap-5 lg:items-center justify-between">
                 {{-- Left: Question Text --}}
                 <div class="flex-1 flex items-start gap-4">
                     <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                         {{ $currentQNum }}
                     </div>
-
                     <div class="flex-1 text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed min-w-0 zh-text">
                         @if ($question->title)
                             <div class="flex flex-wrap items-end gap-x-2 gap-y-1">
@@ -126,7 +118,6 @@
                         @endif
                     </div>
                 </div>
-
                 {{-- Right: Options (A-F inline) --}}
                 <div class="flex flex-wrap lg:justify-end items-center gap-2.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#e8e2d9] dark:border-[#2d2926]">
                     @foreach ($question->options as $option)

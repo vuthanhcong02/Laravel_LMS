@@ -31,16 +31,13 @@
         },
         doDrag(e) {
             if(!this.isDown) return;
-            
             const x = e.pageX - this.$el.offsetLeft;
             const y = e.pageY - this.$el.offsetTop;
             const walkX = (x - this.startX) * 1.5;
             const walkY = (y - this.startY) * 1.5;
-            
             if (Math.abs(walkX) > 5 || Math.abs(walkY) > 5) {
                 this.isDragging = true;
             }
-            
             if (this.isDragging) {
                 e.preventDefault();
                 this.$el.scrollLeft = this.scrollLeft - walkX;
@@ -91,7 +88,6 @@
                 @endforeach
             </tr>
         </thead>
-        
         <!-- Table Body (Initials x Finals) -->
         <tbody>
             @foreach($initials as $initial)
@@ -100,14 +96,12 @@
                 <td class="sticky left-0 z-10 w-[28px] text-center p-0.5 bg-blue-300 border border-slate-300 font-bold text-[11px] text-blue-900 group-hover:bg-blue-400 transition-colors">
                     {{ $initial->name === '' ? '-' : $initial->name }}
                 </td>
-                
                 <!-- Pinyin Cells -->
                 @foreach($finals as $final)
                     @php
                         $key = $initial->id . '_' . $final->id;
                         $pinyin = $pinyins->get($key);
                     @endphp
-                    
                     <td class="p-0 border border-slate-300 {{ $pinyin ? 'bg-indigo-100 hover:bg-indigo-200' : 'bg-white' }}">
                         @if($pinyin)
                         <button 
@@ -123,12 +117,10 @@
         </tbody>
     </table>
 </div>
-
 <!-- Popup Modal for Tone Details & Vocabulary Examples -->
 <div x-show="currentPinyin" 
      style="display: none;" 
      class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    
     <!-- Backdrop -->
     <div x-show="currentPinyin"
          x-transition:enter="transition ease-out duration-300"
@@ -138,7 +130,6 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-
     <!-- Modal Panel -->
     <div x-show="currentPinyin"
          @click.away="currentPinyin = null; selectedTone = null"
@@ -149,16 +140,13 @@
          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 translate-y-8 scale-95"
          class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 dark:border-slate-700 relative z-10">
-        
         <button @click="currentPinyin = null; selectedTone = null" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer transition-colors">
             <span class="material-symbols-outlined text-[18px]">close</span>
         </button>
-        
         <div class="text-center mb-5">
             <h2 class="text-4xl font-black text-indigo-600 dark:text-indigo-400 mb-1" x-text="currentPinyin ? currentPinyin.full : ''"></h2>
             <p class="text-slate-500 dark:text-slate-400 text-xs">Chọn thanh điệu để nghe phát âm & xem từ vựng</p>
         </div>
-        
         <!-- Tones Selection Grid -->
         <div class="grid grid-cols-2 gap-2.5" x-show="currentPinyin && currentPinyin.tones && currentPinyin.tones.length > 0">
             <template x-for="tone in (currentPinyin ? currentPinyin.tones : [])" :key="tone.id">
@@ -171,7 +159,6 @@
                 </button>
             </template>
         </div>
-
         <!-- Vocabulary Examples Section -->
         <div x-show="selectedTone && selectedTone.examples && selectedTone.examples.length > 0" 
              x-transition:enter="transition ease-out duration-200"
@@ -204,7 +191,6 @@
                 </template>
             </div>
         </div>
-        
         <div x-show="currentPinyin && (!currentPinyin.tones || currentPinyin.tones.length === 0)" class="text-center py-6 text-slate-400 text-sm">
             Chưa có dữ liệu thanh điệu cho âm này.
         </div>

@@ -1,24 +1,19 @@
 @php
     $parsedEx = $group->passage_text && str_starts_with(trim($group->passage_text), '{') 
                 ? json_decode(trim($group->passage_text), true) : null;
-    
     $textOptions = [];
     $exLetter = '';
-    
     if ($parsedEx && isset($parsedEx['options'])) {
         $textOptions = $parsedEx['options'];
         $exLetter = $parsedEx['ex_a_letter'] ?? $parsedEx['a_letter'] ?? '';
     }
-
     $optLabels = [];
     foreach ($textOptions as $idx => $opt) {
         $optLabels[] = $opt['letter'] ?? chr(65 + $idx);
     }
-
     $examples = $group->questions->where('is_example', true)->sortBy('order_index');
     $realQuestions = $group->questions->where('is_example', false)->sortBy('order_index');
 @endphp
-
 @if(count($textOptions) > 0)
     {{-- Text Options Bank (A-F) --}}
     <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] p-5 md:p-6 mb-6 shadow-xs relative overflow-hidden">
@@ -33,7 +28,6 @@
             </span>
             @endif
         </div>
-        
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             @foreach($textOptions as $idx => $opt)
                 @php
@@ -45,7 +39,6 @@
                     {{ $isExAns 
                         ? 'bg-amber-500/10 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80' 
                         : 'bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f]/50 shadow-xs' }}">
-                    
                     <div class="flex items-center gap-3.5 min-w-0">
                         <span class="w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center shrink-0 shadow-xs transition-colors
                             {{ $isExAns 
@@ -57,7 +50,6 @@
                             {!! $optText !!}
                         </div>
                     </div>
-
                     @if($isExAns)
                         <span class="px-2 py-0.5 rounded-lg bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider shrink-0 ml-2 shadow-xs">
                             {{ __('Ví dụ') }}
@@ -68,7 +60,6 @@
         </div>
     </div>
 @endif
-
 {{-- Example Card --}}
 @if($examples->count() > 0)
 <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 shadow-xs">
@@ -93,7 +84,6 @@
     @endif
 </div>
 @endif
-
 {{-- Questions List --}}
 <div class="space-y-4">
     @foreach ($realQuestions as $question)
@@ -102,7 +92,6 @@
         @endphp
         <div class="q-card scroll-mt-24 bg-white dark:bg-[#181615] p-5 sm:p-6 rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-col lg:flex-row gap-5 lg:gap-8 lg:items-center justify-between"
              id="q-{{ $currentQNum }}">
-             
             <div class="flex-1 flex items-center gap-4 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center shrink-0">
                     {{ $currentQNum }}
@@ -117,7 +106,6 @@
                     @endif
                 </div>
             </div>
-            
             <div class="flex-1 lg:flex-none flex flex-wrap items-center gap-2.5 pt-2 lg:pt-0 lg:justify-end">
                 @foreach($optLabels as $letter)
                     @if($letter === $exLetter) @continue @endif

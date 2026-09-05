@@ -1,22 +1,16 @@
 @extends('layouts.app')
-
 @section('title', __('HSK Cấp ' . $level . ' - Thi Thử'))
-
 @section('breadcrumb', 'Danh sách đề thi HSK ' . $level)
 @section('breadcrumb_desc', 'Chọn đề thi phù hợp và bắt đầu kiểm tra năng lực của bạn. Hệ thống sẽ tự động chấm điểm và đưa ra phân tích sau khi bạn nộp bài.')
-
 @section('content')
 <div class="min-h-screen bg-slate-50 dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 font-sans relative pb-24 pt-8">
-    
     <div class="max-w-7xl mx-auto px-6 space-y-8 relative z-10">
-        
         {{-- Back Button & Filters --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <a href="{{ route('student.hsk-mock-exams.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-primary transition-colors bg-white dark:bg-slate-800/60 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 w-fit shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 Quay lại các cấp độ
             </a>
-
             <div class="flex items-center gap-2">
                 <select id="exam-status-filter" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm cursor-pointer">
                     <option value="all">Tất cả đề thi</option>
@@ -25,19 +19,15 @@
                 </select>
             </div>
         </div>
-
         {{-- 2-Column Layout: Structure Explanation (Left) & Exam List (Right) --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-12 gap-8">
-            
             {{-- LEFT COLUMN: EXAM STRUCTURE --}}
             <div class="lg:col-span-1 xl:col-span-4 space-y-6">
-                
                 <div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-6 shadow-sm sticky top-24">
                     <h3 class="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-2">
                         <span class="material-symbols-outlined text-primary text-[22px]">info</span>
                         Cấu trúc đề thi HSK {{ $level }}
                     </h3>
-                    
                     @if($hskLevel->exam_structure)
                         @php $structure = $hskLevel->exam_structure; @endphp
                         @if(isset($structure['note']))
@@ -45,7 +35,6 @@
                             {!! nl2br(e($structure['note'])) !!}
                         </p>
                         @endif
-
                         <div class="space-y-6">
                             @foreach($structure['sections'] ?? [] as $section)
                                 <div>
@@ -79,12 +68,9 @@
                         <p class="text-sm text-slate-500 dark:text-slate-400 italic text-center py-10">Cấu trúc đề thi đang được cập nhật...</p>
                     @endif
                 </div>
-
             </div>
-
             {{-- RIGHT COLUMN: EXAM LIST --}}
             <div class="lg:col-span-2 xl:col-span-8 space-y-6">
-                
                 @if($hskLevel->mockExams->isEmpty())
                     <div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] p-10 flex flex-col items-center justify-center text-center shadow-sm h-[400px]">
                         <div class="w-20 h-20 bg-slate-50 dark:bg-slate-800/80 rounded-full flex items-center justify-center mb-4 border border-slate-100 dark:border-slate-700">
@@ -102,7 +88,6 @@
                                 $statusClass = 'bg-slate-100 dark:bg-slate-700 text-slate-500';
                                 $highestScore = null;
                                 $userResults = $exam->results;
-                                
                                 if ($userResults->isNotEmpty()) {
                                     $completedResults = $userResults->where('status', 'completed');
                                     if ($completedResults->isNotEmpty()) {
@@ -117,17 +102,13 @@
                             @endphp
                             {{-- Exam Card (Dynamic) --}}
                             <div class="exam-card group bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[20px] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex flex-col relative" data-status="{{ $statusText === 'Đã làm' ? 'completed' : 'uncompleted' }}" data-title="{{ strtolower($exam->title) }}">
-                                
-                                
                                 <div class="p-5 flex-1 relative">
                                     <div class="flex justify-between items-start mb-3">
                                         <div class="px-2.5 py-1 {{ $statusClass }} text-[10px] font-bold uppercase tracking-wider rounded-full">
                                             {{ $statusText }}
                                         </div>
                                     </div>
-                                    
                                     <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2 group-hover:text-primary transition-colors">{{ $exam->title }}</h3>
-                                    
                                     <div class="text-xs text-slate-500 dark:text-slate-400 space-y-2 mt-4 mb-2">
                                         <div class="flex justify-between items-center">
                                             <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">schedule</span> Thời gian</span>
@@ -153,7 +134,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <div class="p-3 border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/20">
                                     @auth
                                         <a href="{{ route('student.hsk-mock-exams.start', ['level' => $level, 'id' => $exam->id]) }}" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white text-sm font-bold shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
@@ -171,14 +151,11 @@
                     </div>
                 @endif
             </div>
-
         </div>
     </div>
-
     {{-- Login Required Modal (Vanilla JS) --}}
     <div id="loginModal" class="hidden relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="document.getElementById('loginModal').classList.add('hidden')"></div>
-
         <div class="fixed inset-0 z-10 overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 pointer-events-none">
                 <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md pointer-events-auto border border-slate-200 dark:border-slate-700">
@@ -197,7 +174,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                         <a id="loginModalBtn" href="{{ route('login') }}" class="inline-flex w-full justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 sm:ml-3 sm:w-auto">
                             Đăng nhập
@@ -211,7 +187,6 @@
         </div>
     </div>
 </div>
-
 <script>
     function openLoginModal(intendedUrl) {
         // Point the login button to the intended protected route
@@ -219,21 +194,16 @@
         document.getElementById('loginModalBtn').href = intendedUrl;
         document.getElementById('loginModal').classList.remove('hidden');
     }
-
     document.addEventListener('DOMContentLoaded', function() {
         const statusSelect = document.getElementById('exam-status-filter');
         const cards = document.querySelectorAll('.exam-card');
-
         function filterExams() {
             const status = statusSelect.value;
-
             cards.forEach(card => {
                 const cardStatus = card.getAttribute('data-status');
-
                 const matchStatus = status === 'all' || 
                                     (status === 'completed' && cardStatus === 'completed') ||
                                     (status === 'uncompleted' && cardStatus !== 'completed');
-
                 if (matchStatus) {
                     card.style.display = 'flex';
                 } else {
@@ -241,7 +211,6 @@
                 }
             });
         }
-
         if(statusSelect) {
             statusSelect.addEventListener('change', filterExams);
         }

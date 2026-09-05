@@ -2,7 +2,6 @@
     $examples = $group->questions->where('is_example', true);
     $realQuestions = $group->questions->where('is_example', false);
 @endphp
-
 {{-- Example Card --}}
 @if($examples->count() > 0)
 <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 space-y-4 shadow-xs">
@@ -36,7 +35,6 @@
     @endforeach
 </div>
 @endif
-
 {{-- Questions List --}}
 <div class="space-y-4">
     @foreach ($realQuestions as $question)
@@ -45,13 +43,11 @@
         @endphp
         <div class="q-card scroll-mt-24 p-5 sm:p-6 bg-white dark:bg-[#181615] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs space-y-5"
             id="q-{{ $currentQNum }}">
-
             <div class="flex items-start gap-4">
                 {{-- Question Number --}}
                 <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                     {{ $currentQNum }}
                 </div>
-
                 <div class="flex-1 space-y-4">
                     {{-- Sentences List --}}
                     <div class="space-y-3">
@@ -67,7 +63,6 @@
                             </div>
                         @endforeach
                     </div>
-
                     {{-- Answer Input --}}
                     <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex flex-wrap items-center gap-3">
                         <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Thứ tự đúng') }}:</span>

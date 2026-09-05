@@ -1,17 +1,12 @@
 @extends('layouts.lms')
-
 @section('title', __('Khóa học HSK - Tiếng Trung XIAOMU LMS'))
-
 @section('header-left')
     <x-lms.breadcrumb :links="[
         ['label' => __('Khóa học HSK'), 'url' => null]
     ]" />
 @endsection
-
 @section('content')
     <div x-data="{ levelFilter: 'all' }" class="space-y-6">
-        
-        <!-- Banner Tiêu đề Trang Khóa học (H1: text-xl font-bold) -->
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden">
             <div class="space-y-1.5">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] dark:text-[#f4978e] text-xs font-bold">
@@ -25,7 +20,6 @@
                 </p>
             </div>
         </div>
-
         <!-- Filter Bar Buttons (text-xs font-semibold) -->
         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             <button @click="levelFilter = 'all'" :class="levelFilter === 'all' ? 'bg-[#e07a5f] text-white font-bold' : 'bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-600 dark:text-slate-300'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap btn-tactile">
@@ -41,8 +35,6 @@
                 {{ __('HSK 5 - HSK 6 (Cao cấp)') }}
             </button>
         </div>
-
-        <!-- Grid các Thẻ Khóa học (Card Title: text-base font-bold, Body: text-xs font-normal) -->
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             @foreach($levels as $level)
                 @php
@@ -55,7 +47,6 @@
                     } elseif (in_array($code, ['hsk5', 'hsk6', 'hsk-5', 'hsk-6', '5', '6'])) {
                         $group = 'hsk56';
                     }
-
                     $badgeStyle = 'bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/30';
                     $levelSubBadge = __('Sơ cấp');
                     if (in_array($code, ['hsk1', 'hsk-1', '1'])) {
@@ -78,7 +69,6 @@
                         $levelSubBadge = __('Cao cấp II');
                     }
                 @endphp
-
                 <div x-show="levelFilter === 'all' || levelFilter === '{{ $group }}'" 
                      class="lms-card p-5 flex flex-col justify-between space-y-4 group">
                     <div class="space-y-3">
@@ -86,28 +76,14 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold {{ $badgeStyle }}">
                                 {{ strtoupper($level->level_code) }} • {{ $levelSubBadge }}
                             </span>
-
                         </div>
-                        
                         <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors leading-snug">
                             {{ $level->title }}
                         </h3>
-                        
                         <p class="text-xs text-slate-500 dark:text-slate-400 font-normal line-clamp-2 leading-relaxed">
                             {{ $level->subtitle ?? __('Lộ trình bài học chính khóa bám sát cấu trúc khung đề thi HSK.') }}
                         </p>
-                        
-                        {{-- <div class="space-y-1.5 pt-1">
-                            <div class="flex justify-between text-xs font-semibold text-slate-500">
-                                <span>{{ __('Tiến độ học') }}</span>
-                                <span class="font-bold text-[#e07a5f]">0/{{ $level->lessons->count() }} {{ __('bài') }}</span>
-                            </div>
-                            <div class="w-full h-2 rounded-full bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] overflow-hidden">
-                                <div class="h-full rounded-full bg-gradient-to-r from-[#e07a5f] to-[#c86349]" style="width: 0%;"></div>
-                            </div>
-                        </div> --}}
                     </div>
-
                     <div class="pt-4 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between">
                         <div class="flex items-center gap-4 text-xs font-medium text-slate-400">
                             <span><i class="fa-regular fa-clock mr-1"></i>{{ $level->lessons->count() }} {{ __('bài') }}</span>
@@ -121,6 +97,5 @@
                 </div>
             @endforeach
         </div>
-
     </div>
 @endsection

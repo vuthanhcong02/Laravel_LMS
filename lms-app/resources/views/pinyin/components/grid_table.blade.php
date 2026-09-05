@@ -1,4 +1,3 @@
-{{-- grid_table.blade.php - Bảng Pinyin Layout Mới Nhất (38 cột, 1 hàng header) --}}
 <table class="text-center border-collapse bg-white w-full" style="font-size:11px; border-spacing:0;">
     <thead>
         <tr>
@@ -19,7 +18,6 @@
             @endforeach
         </tr>
     </thead>
-
     <tbody>
         {{-- ROW "-" --}}
         <tr class="hover:brightness-95 transition-all">
@@ -40,8 +38,6 @@
                 </td>
             @endforeach
         </tr>
-
-        {{-- CÁC ROW INITIALS --}}
         @foreach($initials as $initial)
         @php 
             $isJqx = in_array($initial->name, $jqxyInitialNames); 
@@ -53,12 +49,10 @@
                 style="min-width:30px; width:30px;">
                 {{ $initial->name }}
             </td>
-
             @foreach($finalsColumns as $colKey => $dbFinalName)
                 @php
                     $pinyin = null;
                     $dbFinalId = $finalIdByName->get($dbFinalName);
-
                     // Xử lý 3 cột 'i' đặc biệt
                     if ($colKey === 'i_zcs') {
                         if ($isZcs) $pinyin = $pinyins->get($initial->id . '_' . $dbFinalId);

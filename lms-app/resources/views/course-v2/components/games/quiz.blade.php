@@ -2,7 +2,6 @@
         <div x-data="vocabQuizEngine()" 
              x-init="initQuiz(vocabularies)"
              class="space-y-5 max-w-2xl mx-auto">
-        
         <!-- Header -->
         <div class="flex items-center justify-between">
             <button @click="vocabSubView = 'table'" class="text-xs font-bold text-slate-500 hover:text-[#e07a5f] transition-colors flex items-center gap-1.5 btn-tactile">
@@ -14,7 +13,6 @@
                 <span>{{ __('Streak:') }} <span class="text-[#f59e0b] font-bold" x-text="streak + ' 🔥'">0 🔥</span></span>
             </div>
         </div>
-
         <template x-if="!questions || questions.length === 0">
             <div class="lms-card p-8 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl text-center space-y-3">
                 <i class="fa-solid fa-circle-exclamation text-3xl text-[#f59e0b]"></i>
@@ -23,7 +21,6 @@
                 <button @click="vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
             </div>
         </template>
-
         <!-- Main Quiz Question Card -->
         <template x-if="questions && questions.length > 0 && !isCompleted">
             <div class="space-y-4">
@@ -35,7 +32,6 @@
                 <div class="w-full bg-[#e8e2d9]/50 dark:bg-[#2d2926] rounded-full h-1.5 overflow-hidden">
                     <div class="bg-[#e07a5f] h-full rounded-full transition-all duration-300" :style="'width: ' + (((currentIndex + 1) / questions.length) * 100) + '%'"></div>
                 </div>
-
                 <!-- Question Prompt Card -->
                 <div class="lms-card p-6 sm:p-8 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl text-center space-y-4 shadow-sm">
                     <div class="flex items-center justify-between">
@@ -44,19 +40,16 @@
                             <i class="fa-solid fa-volume-high"></i>
                         </button>
                     </div>
-
                     <div class="space-y-2 py-2">
                         <div class="text-4xl sm:text-6xl font-bold zh-text text-slate-900 dark:text-white tracking-wide" x-text="currentQuestion?.word"></div>
                         @if(hsk_should_show_pinyin($currentLesson->level ?? null))
                             <div class="text-sm font-mono font-bold text-[#e07a5f]" x-text="'[' + (currentQuestion?.pinyin || '') + ']'"></div>
                         @endif
                     </div>
-
                     <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
                         {{ __('Chọn ý nghĩa tiếng Việt chính xác nhất:') }}
                     </p>
                 </div>
-
                 <!-- Options List -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="(opt, oIdx) in currentQuestion?.options" :key="currentIndex + '_' + oIdx">
@@ -81,7 +74,6 @@
                         </button>
                     </template>
                 </div>
-
                 <!-- Explanation & Next Button Card -->
                 <template x-if="isAnswered">
                     <div class="lms-card p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row items-center justify-between gap-4"
@@ -94,7 +86,6 @@
                                 <p class="text-[11px] text-slate-600 dark:text-slate-400 italic" x-text="'Ví dụ: ' + currentQuestion.example"></p>
                             </template>
                         </div>
-
                         <button @click="nextQuestion()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white font-bold text-xs shadow-xs btn-tactile flex items-center justify-center gap-2 shrink-0">
                             <span x-text="currentIndex < questions.length - 1 ? '{{ __('Câu tiếp theo') }}' : '{{ __('Xem kết quả') }}'"></span>
                             <i class="fa-solid fa-arrow-right"></i>
@@ -103,19 +94,16 @@
                 </template>
             </div>
         </template>
-
         <!-- Quiz Completion Screen -->
         <template x-if="isCompleted">
             <div class="lms-card p-8 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl text-center space-y-6 shadow-sm">
                 <div class="w-20 h-20 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] flex items-center justify-center text-4xl mx-auto shadow-inner">
                     <i class="fa-solid fa-award"></i>
                 </div>
-
                 <div class="space-y-1">
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ __('Hoàn thành bài kiểm tra!') }}</h3>
                     <p class="text-xs text-slate-500" x-text="correctCount === questions.length ? '{{ __('Xuất sắc! Bạn đã trả lời đúng 100% câu hỏi.') }}' : '{{ __('Rất tốt! Hãy tiếp tục luyện tập để nhớ lâu hơn.') }}'"></p>
                 </div>
-
                 <!-- Result Score Counter -->
                 <div class="p-4 bg-[#fcfaf7] dark:bg-[#23201e] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926] max-w-sm mx-auto flex items-center justify-around">
                     <div>
@@ -133,7 +121,6 @@
                         <div class="text-[10px] font-semibold text-slate-400">{{ __('Tỷ lệ đúng') }}</div>
                     </div>
                 </div>
-
                 <div class="flex items-center justify-center gap-3 pt-2">
                     <button @click="initQuiz(vocabularies)" class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white font-bold text-xs shadow-xs btn-tactile flex items-center gap-2">
                         <i class="fa-solid fa-rotate-right"></i> {{ __('Làm lại bài thi') }}

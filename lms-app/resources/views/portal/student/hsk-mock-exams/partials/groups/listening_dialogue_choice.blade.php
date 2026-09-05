@@ -2,7 +2,6 @@
     $examples = $group->questions->where('is_example', true);
     $realQuestions = $group->questions->where('is_example', false);
 @endphp
-
 {{-- Group Header Audio --}}
 @if($group->passage_audio)
 <div class="flex flex-wrap items-end justify-end gap-3 mb-6 pb-4 border-b border-[#e8e2d9] dark:border-[#2d2926]">
@@ -16,14 +15,12 @@
     </div>
 </div>
 @endif
-
 {{-- Example Block --}}
 @if($examples->count() > 0)
     <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 space-y-3 shadow-xs">
         <div class="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200 text-sm">
             <span class="px-3 py-1 rounded-xl bg-amber-500 text-white text-xs font-bold">{{ __('Ví dụ (例如)') }}</span>
         </div>
-
         @foreach($examples as $ex)
             @php $correctOpt = $ex->options->where('is_correct', true)->first(); @endphp
             <div class="mt-3 p-4 bg-white dark:bg-[#181615] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926]">
@@ -53,15 +50,11 @@
         @endforeach
     </div>
 @endif
-
-{{-- Danh sách câu hỏi thực sự --}}
 <div class="space-y-4">
     @foreach($realQuestions as $question)
         @php $currentQNum = $qCount++; @endphp
         <div class="q-card scroll-mt-24 bg-white dark:bg-[#181615] p-5 sm:p-6 rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs space-y-4"
              id="q-{{ $currentQNum }}">
-
-            {{-- Số câu + câu hỏi audio --}}
             <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 shrink-0 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center">
@@ -69,7 +62,6 @@
                     </div>
                     <p class="text-xs text-slate-400 dark:text-slate-500 font-medium">{{ __('Nghe hội thoại và chọn đáp án đúng') }}</p>
                 </div>
-
                 @if ($question->audio_file)
                     <button type="button" 
                             onclick="playAudio('{{ hsk_storage_url($question->audio_file) }}', this)"
@@ -79,8 +71,6 @@
                     </button>
                 @endif
             </div>
-
-            {{-- Các đáp án A, B, C --}}
             <div class="flex flex-col gap-2.5">
                 @foreach($question->options as $optIdx => $option)
                     @php $optLabel = chr(65 + $optIdx); @endphp

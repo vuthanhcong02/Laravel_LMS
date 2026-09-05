@@ -1,4 +1,3 @@
-<!-- TAB 3: NGỮ PHÁP (GRAMMAR) -->
 <style>
     .hide-pinyin-rt rt {
         display: none !important;
@@ -20,9 +19,7 @@
          showExamplePinyin: {{ hsk_should_show_pinyin($currentLesson->level ?? null) ? 'true' : 'false' }}
      }" 
      class="space-y-5">
-
     @if(isset($currentLesson) && $currentLesson->grammarList && $currentLesson->grammarList->count() > 0)
-        <!-- Thanh điều khiển & Bộ lọc trọng điểm ngữ pháp -->
         <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] dark:text-[#f4978e] flex items-center justify-center text-base font-bold shrink-0">
@@ -40,8 +37,6 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Toggles hiển thị Pinyin / Bản dịch cho ví dụ -->
             <div class="flex items-center gap-1.5 p-1 bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl self-start md:self-auto overflow-x-auto no-scrollbar">
                 <button @click="showExamplePinyin = !showExamplePinyin" 
                         :class="showExamplePinyin ? 'bg-white dark:bg-[#181615] text-[#e07a5f] font-bold shadow-xs' : 'text-slate-500 dark:text-slate-400 font-semibold hover:text-slate-700 dark:hover:text-slate-300'" 
@@ -53,7 +48,6 @@
                 </button>
             </div>
         </div>
-
         @php
             // Đếm số lần xuất hiện của từng tiêu đề để tự động đánh số (1), (2)... nếu trùng lặp
             $titleCounts = [];
@@ -63,8 +57,6 @@
                 $titleCounts[$t] = ($titleCounts[$t] ?? 0) + 1;
             }
         @endphp
-
-        <!-- Quick Jump Pills (Thanh nhảy nhanh giữa các điểm ngữ pháp - Ưu tiên tiếng Việt cho HSK 1-2) -->
         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             <button @click="grammarFilter = 'all'" 
                     :class="grammarFilter === 'all' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'" 
@@ -72,18 +64,15 @@
                 <i class="fa-solid fa-layer-group text-[10px]"></i>
                 <span>{{ __('Tất cả') }} ({{ $currentLesson->grammarList->count() }})</span>
             </button>
-
             @foreach ($currentLesson->grammarList as $idx => $grammar)
                 @php
                     $rawTitle = trim($grammar->title);
                     $titleParts = preg_split('/\s*[\(（]\s*/u', $rawTitle);
                     $zhTitle = trim($titleParts[0] ?? $rawTitle);
                     $vnTitle = isset($titleParts[1]) ? trim(rtrim($titleParts[1], ')）')) : '';
-
                     $isDuplicate = ($titleCounts[$rawTitle] ?? 1) > 1;
                     $titleCurrentIndex[$rawTitle] = ($titleCurrentIndex[$rawTitle] ?? 0) + 1;
                     $partSuffix = $isDuplicate ? ' (P.' . $titleCurrentIndex[$rawTitle] . ')' : '';
-
                     // Tiêu đề nút tab: Tiếng Việt rõ ràng cho người mới bắt đầu HSK 1-2
                     $navTitle = $vnTitle ? ($vnTitle . $partSuffix) : ($zhTitle . $partSuffix);
                 @endphp
@@ -96,8 +85,6 @@
                 </button>
             @endforeach
         </div>
-
-        <!-- Danh sách thẻ ngữ pháp chi tiết -->
         <div class="space-y-6">
             @php
                 // Reset bộ đếm số phần cho các thẻ chi tiết bên dưới
@@ -110,14 +97,11 @@
                     $titleParts = preg_split('/\s*[\(（]\s*/u', $rawTitle);
                     $zhTitle = trim($titleParts[0] ?? $rawTitle);
                     $vnTitle = isset($titleParts[1]) ? trim(rtrim($titleParts[1], ')）')) : '';
-
                     $isDuplicate = ($titleCounts[$rawTitle] ?? 1) > 1;
                     $cardTitleCurrentIndex[$rawTitle] = ($cardTitleCurrentIndex[$rawTitle] ?? 0) + 1;
                     $partSuffix = $isDuplicate ? ' (' . __('Phần') . ' ' . $cardTitleCurrentIndex[$rawTitle] . ')' : '';
-
                     // Hỗ trợ cả formula và structure
                     $structureFormula = $grammar->formula ?: $grammar->structure;
-
                     // Parse examples an toàn từ nhiều định dạng dữ liệu
                     $rawExamples = $grammar->examples;
                     $examples = [];
@@ -135,12 +119,9 @@
                         }
                     }
                 @endphp
-
                 <div x-show="grammarFilter === 'all' || grammarFilter === 'rule-{{ $grammar->id }}'" 
                      class="lms-card p-5 sm:p-7 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl space-y-5 transition-all shadow-xs"
                      id="grammar-rule-{{ $grammar->id }}">
-                    
-                    <!-- Header Thẻ: Số thứ tự + Tên điểm ngữ pháp Tiếng Việt (chính) & Hán tự (phụ) -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#e8e2d9] dark:border-[#2d2926] pb-4 gap-3">
                         <div class="flex items-start sm:items-center gap-3.5">
                             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#fff2ee] to-[#fcdccf] dark:from-[#2c221e] dark:to-[#382620] text-[#e07a5f] border border-[#fcdccf] dark:border-[#4a2e26] flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
@@ -148,18 +129,14 @@
                             </div>
                             <div class="space-y-1">
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <!-- Tiêu đề Tiếng Việt rõ ràng cho người học dễ hiểu -->
                                     <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-wide">
                                         {{ $vnTitle ? ($vnTitle . $partSuffix) : $zhTitle }}
                                     </h3>
-                                    
-                                    <!-- Badge Chữ Hán -->
                                     @if($vnTitle && $zhTitle)
                                         <span class="px-2.5 py-0.5 rounded-lg bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] text-xs font-bold zh-text">
                                             {{ $zhTitle }}
                                         </span>
                                     @endif
-
                                     @if($grammar->type)
                                         <span class="px-2 py-0.5 rounded-md bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                             {{ $grammar->type }}
@@ -169,8 +146,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- 1. CÔNG THỨC / CẤU TRÚC (FORMULA BANNER) -->
                     @if($structureFormula)
                         <div class="p-4 rounded-xl bg-gradient-to-r from-[#fff7f4] via-[#fcfaf7] to-transparent dark:from-[#23201e] dark:via-[#1e1b19] dark:to-transparent border border-[#e8e2d9] dark:border-[#2d2926] space-y-2">
                             <div class="flex items-center justify-between">
@@ -190,8 +165,6 @@
                             </div>
                         </div>
                     @endif
-
-                    <!-- 2. GIẢI THÍCH Ý NGHĨA VÀ CÁCH DÙNG -->
                     @if($grammar->explanation)
                         <div class="space-y-2">
                             <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
@@ -203,8 +176,6 @@
                             </div>
                         </div>
                     @endif
-
-                    <!-- 3. CÁC CÂU VÍ DỤ MINH HỌA -->
                     @if(!empty($examples))
                         <div class="space-y-3 pt-1">
                             <div class="flex items-center justify-between">
@@ -216,7 +187,6 @@
                                     {{ count($examples) }} {{ __('câu') }}
                                 </span>
                             </div>
-
                             <div class="space-y-2.5">
                                 @foreach($examples as $exIdx => $example)
                                     @php
@@ -238,18 +208,14 @@
                                         }
                                         $audioText = $char ?: (is_string($example) ? $example : '');
                                     @endphp
-
                                     <div class="p-3.5 sm:p-4 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] flex items-start justify-between gap-3 group/ex hover:border-[#e07a5f]/40 dark:hover:border-[#e07a5f]/40 transition-all">
-                                        
                                         <div class="flex flex-col gap-2 flex-1 min-w-0">
-                                            
                                             <!-- Row 1: Index Icon + Chinese Text -->
                                             <div class="flex items-center gap-3">
                                                 <!-- Index icon / arrow -->
                                                 <div class="w-6 h-6 rounded-lg bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-[#e07a5f] text-[11px] font-bold flex items-center justify-center shrink-0 group-hover/ex:bg-[#e07a5f] group-hover/ex:text-white transition-colors">
                                                     {{ $exIdx + 1 }}
                                                 </div>
-
                                                 <div class="flex-1 min-w-0">
                                                     @php
                                                         // Tạo chuỗi ruby có pinyin trên đầu chữ Hán
@@ -262,8 +228,6 @@
                                                             }
                                                         }
                                                     @endphp
-
-                                                    <!-- Chữ Hán kèm Pinyin trên đầu (Ruby Text) -->
                                                     @if($char)
                                                         <div class="grammar-ruby zh-text text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-relaxed tracking-wide break-words select-text flex flex-wrap items-end gap-x-1 gap-y-2"
                                                              :class="{ 'hide-pinyin-rt': !showExamplePinyin }">
@@ -280,8 +244,6 @@
                                                     @endif
                                                 </div>
                                             </div>
-
-                                            <!-- Row 2: Nghĩa tiếng Việt -->
                                             @if($trans)
                                                 <div>
                                                     <div class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 pt-2 border-t border-[#e8e2d9]/60 dark:border-[#2d2926] flex items-start gap-1.5 ml-9">
@@ -291,8 +253,6 @@
                                                 </div>
                                             @endif
                                         </div>
-
-                                        <!-- Nút phát âm thanh mẫu câu -->
                                         @if($audioText)
                                             <button onclick="window.playAudio('{{ addslashes($audioText) }}')" 
                                                     class="w-8 h-8 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-400 hover:text-[#e07a5f] hover:border-[#e07a5f] flex items-center justify-center shrink-0 transition-all btn-tactile shadow-2xs mt-1"
@@ -305,12 +265,9 @@
                             </div>
                         </div>
                     @endif
-
                 </div>
             @endforeach
         </div>
-
-        <!-- Banner Chuyển tiếp sang Luyện tập ngữ pháp -->
         <div class="lms-card p-5 bg-gradient-to-r from-[#fff7f4] via-[#fcfaf7] to-white dark:from-[#23201e] dark:via-[#1e1b19] dark:to-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3.5 text-left">
                 <div class="w-10 h-10 rounded-xl bg-[#e07a5f] text-white flex items-center justify-center text-lg font-bold shrink-0 shadow-xs">
@@ -328,7 +285,6 @@
                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
             </a>
         </div>
-
     @else
         <x-lms.empty-state 
             icon="fa-solid fa-spell-check"

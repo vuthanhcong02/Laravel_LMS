@@ -1,7 +1,5 @@
 @extends('layouts.lms')
-
 @section('title', 'Chiết Tự Chữ Hán & Bộ Thủ - Tiếng Trung XIAOMU LMS')
-
 @section('alpine-data')
     selectedRadical: 'all', 
     selectedLevel: 'all', 
@@ -116,7 +114,6 @@
         }
     ],
 @endsection
-
 @section('header-left')
     <div class="relative w-full">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -124,9 +121,7 @@
         <span class="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold bg-white dark:bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">⌘K</span>
     </div>
 @endsection
-
 @section('content')
-    <!-- Banner Tiêu đề Trang Chiết tự -->
     <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden">
         <div class="space-y-1.5">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] dark:text-[#f4978e] text-xs font-bold">
@@ -140,11 +135,9 @@
             </p>
         </div>
     </div>
-
     <!-- RADICAL & HSK FILTERS BAR -->
     <div class="lms-card p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
-            <!-- Bộ thủ Filter Tabs -->
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
                 <span class="text-slate-400 font-bold shrink-0">Bộ thủ:</span>
                 <button @click="selectedRadical = 'all'" :class="selectedRadical === 'all' ? 'bg-[#e07a5f] text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'" class="px-3 py-1.5 rounded-xl btn-tactile shrink-0">
@@ -163,7 +156,6 @@
                     水 (Bộ Thủy)
                 </button>
             </div>
-
             <!-- Level Filter -->
             <div class="flex items-center gap-2 shrink-0">
                 <span class="text-slate-400 font-bold">Cấp độ:</span>
@@ -176,13 +168,11 @@
             </div>
         </div>
     </div>
-
     <!-- CHARACTER ETYMOLOGY CARDS LIST (1/2 LEFT vs UPPER/LOWER RIGHT LAYOUT) -->
     <div class="space-y-6">
         <template x-for="item in characters" :key="item.id">
             <div x-show="(selectedRadical === 'all' || item.radicalPrimary === selectedRadical) && (selectedLevel === 'all' || item.level === selectedLevel) && (searchQuery === '' || item.hanzi.includes(searchQuery) || item.pinyin.includes(searchQuery) || item.meaning.includes(searchQuery))"
                  class="lms-card p-5 sm:p-6 space-y-4 hover:border-[#e07a5f]/50 transition-all shadow-sm">
-                
                 <!-- Card Header Bar -->
                 <div class="flex items-center justify-between border-b border-[#e8e2d9] dark:border-[#2d2926] pb-3">
                     <div class="flex items-center gap-3">
@@ -195,16 +185,11 @@
                             <span class="text-[11px] font-bold text-amber-700 dark:text-amber-400" x-text="item.type">Tính từ</span>
                         </div>
                     </div>
-
                     <div class="flex items-center gap-2">
                         <span class="px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2a221f] text-[#e07a5f] text-xs font-bold" x-text="item.level">HSK 1</span>
                     </div>
                 </div>
-
-                <!-- LAYOUT CHÍNH: 1/2 BÊN TRÁI VS 1/2 BÊN PHẢI (NỬA TRÊN CÁCH VIẾT, NỬA DƯỚI CHIẾT TỰ) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    <!-- 1/2 BÊN TRÁI: NGHĨA, PHÁT ÂM & VÍ DỤ MẪU -->
                     <div class="p-4 rounded-2xl bg-[#faf6f2] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] flex flex-col justify-between space-y-3">
                         <div>
                             <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 mb-3">
@@ -215,24 +200,18 @@
                                     <i class="fa-solid fa-volume-high mr-1"></i>Nghe phát âm
                                 </button>
                             </div>
-
                             <div class="space-y-1 mb-3">
                                 <span class="text-[10px] text-slate-400 uppercase font-bold block">Giải nghĩa tiếng Việt:</span>
                                 <div class="text-base sm:text-lg font-bold text-slate-900 dark:text-white" x-text="item.meaning">Tốt, hay, đẹp, giỏi</div>
                             </div>
                         </div>
-
                         <div class="p-3 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] space-y-1">
                             <div class="font-bold text-slate-400 text-[10px]"><i class="fa-solid fa-quote-left text-[#e07a5f] mr-1"></i>Ví dụ mẫu HSK:</div>
                             <div class="text-sm font-bold zh-text text-slate-800 dark:text-slate-100" x-text="item.exampleZh">你好！很高兴认识你。</div>
                             <div class="text-xs text-slate-500" x-text="item.exampleVi">Xin chào! Rất vui được quen biết bạn.</div>
                         </div>
                     </div>
-
-                    <!-- 1/2 BÊN PHẢI: CHIA THÀNH 2 NỬA DỌC (NỬA TRÊN CÁCH VIẾT, NỬA DƯỚI CHIẾT TỰ) -->
                     <div class="flex flex-col gap-4">
-                        
-                        <!-- NỬA TRÊN (BÊN PHẢI): KHUNG CÁCH VIẾT & BÚT THUẬN -->
                         <div class="p-4 rounded-2xl bg-white dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2.5 shadow-xs">
                             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                                 <span class="px-2.5 py-1 rounded-lg bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] text-xs font-black">
@@ -240,11 +219,9 @@
                                 </span>
                                 <span class="text-xs font-bold text-slate-400" x-text="item.strokes.count + ' Nét vẽ'">6 Nét vẽ</span>
                             </div>
-
                             <div class="text-xs text-slate-600 dark:text-slate-300">
                                 Quy tắc nét: <strong class="text-slate-800 dark:text-white" x-text="item.strokes.rules"></strong>
                             </div>
-
                             <div class="flex items-center justify-between pt-1">
                                 <div class="flex flex-wrap gap-1">
                                     <template x-for="(st, idx) in item.strokes.steps" :key="idx">
@@ -256,8 +233,6 @@
                                 </button>
                             </div>
                         </div>
-
-                        <!-- NỬA DƯỚI (BÊN PHẢI): KHUNG CHIẾT TỰ CHỮ HÁN -->
                         <div class="p-4 rounded-2xl bg-white dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2.5 shadow-xs">
                             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                                 <span class="px-2.5 py-1 rounded-lg bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] text-xs font-black">
@@ -265,16 +240,12 @@
                                 </span>
                                 <span class="text-xs font-bold text-slate-400" x-text="item.etymology.category">Chữ Hội ý</span>
                             </div>
-
-                            <!-- Bộ thủ hợp thành -->
                             <div class="flex items-center gap-2 text-xs">
                                 <span class="text-slate-400 font-bold shrink-0">Bộ thủ:</span>
                                 <template x-for="rad in item.etymology.radicals" :key="rad.radical">
                                     <span class="px-2.5 py-1 rounded-lg bg-[#fff2ee] dark:bg-[#2a221f] text-[#e07a5f] text-xs font-bold border border-[#fcdccf] dark:border-[#42271f]" x-text="rad.radical + ' (' + rad.meaning + ')'"></span>
                                 </template>
                             </div>
-
-                            <!-- Mẹo ghi nhớ chiết tự -->
                             <div class="p-3 rounded-xl bg-[#fff2ee]/60 dark:bg-[#2a221f]/60 text-slate-700 dark:text-slate-300 text-xs leading-relaxed">
                                 <strong class="text-[#e07a5f] font-bold block mb-1"><i class="fa-solid fa-brain mr-1"></i>Chiết tự ghi nhớ:</strong>
                                 <span x-text="item.etymology.story"></span>
