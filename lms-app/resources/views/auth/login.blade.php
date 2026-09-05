@@ -25,7 +25,7 @@
             -webkit-font-smoothing: antialiased;
         }
         
-        .zh-text { font-family: 'Noto Sans SC', sans-serif; }
+        .zh-text { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
 
         @keyframes floatCard {
             0%, 100% { transform: translateY(0px) rotate(0deg); }

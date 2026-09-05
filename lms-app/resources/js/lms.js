@@ -1,29 +1,69 @@
 window.toneToUnicode = function (pinyin) {
-    if (!pinyin) return pinyin;
+    if (!pinyin) return '';
     const toneMap = {
-        'a': ['ā', 'á', 'ǎ', 'à'],
-        'e': ['ē', 'é', 'ě', 'è'],
-        'i': ['ī', 'í', 'ǐ', 'ì'],
-        'o': ['ō', 'ó', 'ǒ', 'ò'],
-        'u': ['ū', 'ú', 'ǔ', 'ù'],
-        'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ'],
-        'v': ['ǖ', 'ǘ', 'ǚ', 'ǜ'],
+        'a': ['ā', 'á', 'ǎ', 'à'], 'A': ['Ā', 'Á', 'Ǎ', 'À'],
+        'e': ['ē', 'é', 'ě', 'è'], 'E': ['Ē', 'É', 'Ě', 'È'],
+        'i': ['ī', 'í', 'ǐ', 'ì'], 'I': ['Ī', 'Í', 'Ǐ', 'Ì'],
+        'o': ['ō', 'ó', 'ǒ', 'ò'], 'O': ['Ō', 'Ó', 'Ǒ', 'Ò'],
+        'u': ['ū', 'ú', 'ǔ', 'ù'], 'U': ['Ū', 'Ú', 'Ǔ', 'Ù'],
+        'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ'], 'Ü': ['Ǖ', 'Ǘ', 'Ǚ', 'Ǜ'],
     };
-    const match = pinyin.match(/^(.*?)([1-4])$/);
-    if (!match) return pinyin;
+
+    let str = String(pinyin).trim();
+    str = str.replace(/uue/gi, 'üe').replace(/uun/gi, 'ün').replace(/uu/gi, 'ü');
+    str = str.replace(/v/g, 'ü').replace(/V/g, 'Ü');
+
+    const match = str.match(/^(.*?)([1-5])$/);
+    if (!match) {
+        return str;
+    }
+
     const base = match[1];
-    const toneNum = parseInt(match[2]) - 1;
-    const priority = ['a', 'e', 'ou', 'o', 'u', 'i', 'ü', 'v'];
-    for (let vowel of priority) {
-        if (vowel === 'ou' && base.includes('ou')) {
-            return base.replace('o', toneMap['o'][toneNum]) + '';
-        }
-        if (base.includes(vowel) && toneMap[vowel]) {
-            return base.replace(vowel, toneMap[vowel][toneNum]);
+    const toneNum = parseInt(match[2], 10) - 1;
+    if (toneNum < 0 || toneNum > 3) return base;
+
+    const lowerBase = base.toLowerCase();
+    
+    // 1. Nếu có nguyên âm 'a', đánh dấu trên 'a'
+    let idx = lowerBase.indexOf('a');
+    if (idx !== -1) {
+        const char = base[idx];
+        return base.substring(0, idx) + toneMap[char][toneNum] + base.substring(idx + 1);
+    }
+
+    // 2. Nếu có nguyên âm 'e', đánh dấu trên 'e'
+    idx = lowerBase.indexOf('e');
+    if (idx !== -1) {
+        const char = base[idx];
+        return base.substring(0, idx) + toneMap[char][toneNum] + base.substring(idx + 1);
+    }
+
+    // 3. Nếu có cụm 'ou', đánh dấu trên 'o'
+    idx = lowerBase.indexOf('ou');
+    if (idx !== -1) {
+        const char = base[idx];
+        return base.substring(0, idx) + toneMap[char][toneNum] + base.substring(idx + 1);
+    }
+
+    // 4. Các trường hợp còn lại (ui, iu, ü...), đánh dấu trên nguyên âm xuất hiện sau cùng
+    const vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+    let lastVowelIdx = -1;
+    for (let i = 0; i < base.length; i++) {
+        if (vowels.includes(lowerBase[i])) {
+            lastVowelIdx = i;
         }
     }
-    return pinyin;
+
+    if (lastVowelIdx !== -1) {
+        const char = base[lastVowelIdx];
+        if (toneMap[char]) {
+            return base.substring(0, lastVowelIdx) + toneMap[char][toneNum] + base.substring(lastVowelIdx + 1);
+        }
+    }
+
+    return base;
 };
+
 
 // Global Audio Player Logic for XIAOMU LMS
 let currentGlobalAudio = null;

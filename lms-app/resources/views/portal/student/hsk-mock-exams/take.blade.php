@@ -29,7 +29,7 @@
             color: #1e1b18;
             -webkit-font-smoothing: antialiased;
         }
-        .zh-text { font-family: 'Noto Sans SC', sans-serif; }
+        .zh-text { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
 
         /* Native Ruby pinyin formatting & high-contrast visibility */
         ruby { font-size: 1.1em; }

@@ -175,3 +175,88 @@ if (! function_exists('hsk_should_show_pinyin')) {
         return $levelNum < 4;
     }
 }
+
+if (! function_exists('pinyin_tone_to_unicode')) {
+    /**
+     * Convert pinyin with tone numbers (e.g. bian1, mi4, gui4, lv3) to accurate Unicode characters with tone marks (biān, mì, guì, lǚ)
+     *
+     * @param string|null $pinyin
+     * @return string
+     */
+    function pinyin_tone_to_unicode(?string $pinyin): string
+    {
+        if (empty($pinyin)) {
+            return '';
+        }
+
+        $toneMap = [
+            'a' => ['ā', 'á', 'ǎ', 'à'], 'A' => ['Ā', 'Á', 'Ǎ', 'À'],
+            'e' => ['ē', 'é', 'ě', 'è'], 'E' => ['Ē', 'É', 'Ě', 'È'],
+            'i' => ['ī', 'í', 'ǐ', 'ì'], 'I' => ['Ī', 'Í', 'Ǐ', 'Ì'],
+            'o' => ['ō', 'ó', 'ǒ', 'ò'], 'O' => ['Ō', 'Ó', 'Ǒ', 'Ò'],
+            'u' => ['ū', 'ú', 'ǔ', 'ù'], 'U' => ['Ū', 'Ú', 'Ǔ', 'Ù'],
+            'ü' => ['ǖ', 'ǘ', 'ǚ', 'ǜ'], 'Ü' => ['Ǖ', 'Ǘ', 'Ǚ', 'Ǜ'],
+        ];
+
+        $str = trim($pinyin);
+        // Convert convention for 'ü' (u-umlaut): audio dataset uses 'uu' (nuu -> nü, luu -> lü) and 'v' (nv -> nü, lv -> lü)
+        $str = str_replace(['uue', 'uun', 'uu', 'UUE', 'UUN', 'UU'], ['üe', 'ün', 'ü', 'ÜE', 'ÜN', 'Ü'], $str);
+        $str = str_replace(['v', 'V'], ['ü', 'Ü'], $str);
+
+        if (!preg_match('/^(.*?)([1-5])$/', $str, $matches)) {
+            return $str;
+        }
+
+        $base = $matches[1];
+        $toneNum = (int) $matches[2] - 1;
+
+        if ($toneNum < 0 || $toneNum > 3) {
+            return $base;
+        }
+
+        $lowerBase = mb_strtolower($base);
+
+        // Rule 1: If vowel 'a' exists, place tone on 'a'
+        $idx = mb_strpos($lowerBase, 'a');
+        if ($idx !== false) {
+            $char = mb_substr($base, $idx, 1);
+            return mb_substr($base, 0, $idx) . $toneMap[$char][$toneNum] . mb_substr($base, $idx + 1);
+        }
+
+        // Rule 2: If vowel 'e' exists, place tone on 'e'
+        $idx = mb_strpos($lowerBase, 'e');
+        if ($idx !== false) {
+            $char = mb_substr($base, $idx, 1);
+            return mb_substr($base, 0, $idx) . $toneMap[$char][$toneNum] . mb_substr($base, $idx + 1);
+        }
+
+        // Rule 3: If 'ou' exists, place tone on 'o'
+        $idx = mb_strpos($lowerBase, 'ou');
+        if ($idx !== false) {
+            $char = mb_substr($base, $idx, 1);
+            return mb_substr($base, 0, $idx) . $toneMap[$char][$toneNum] . mb_substr($base, $idx + 1);
+        }
+
+        // Rule 4: For other cases (ui, iu, ü...), place tone on the last vowel
+        $vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+        $lastVowelIdx = -1;
+        $chars = mb_str_split($base);
+
+        foreach ($chars as $i => $c) {
+            if (in_array(mb_strtolower($c), $vowels, true)) {
+                $lastVowelIdx = $i;
+            }
+        }
+
+        if ($lastVowelIdx !== -1) {
+            $char = $chars[$lastVowelIdx];
+            if (isset($toneMap[$char])) {
+                $chars[$lastVowelIdx] = $toneMap[$char][$toneNum];
+                return implode('', $chars);
+            }
+        }
+
+        return $base;
+    }
+}
+

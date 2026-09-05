@@ -29,55 +29,58 @@
             <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-5 no-scrollbar">
                 
                 <div>
-                    <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">Học tập</div>
+                    <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">{{ __('Học tập') }}</div>
                     <div class="space-y-1">
                         @php
                             $isHomeActive = request()->routeIs('home');
                         @endphp
-                        <a href="{{ route('home') }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isHomeActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Trang chủ' : ''">
+                        <a href="{{ route('home') }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isHomeActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Trang chủ') }}' : ''">
                             <i class="fa-solid fa-house text-base w-5 text-center shrink-0 transition-colors {{ $isHomeActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Trang chủ</span>
+                            <span x-show="!sidebarCollapsed" class="truncate">{{ __('Trang chủ') }}</span>
                         </a>
 
                         @php
                             $isPinyinActive = request()->routeIs('pinyin.index') || request()->is('bang-phien-am-pinyin*') || request()->is('demo-pinyin-chart*');
                         @endphp
-                        <a href="{{ route('pinyin.index') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isPinyinActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Bảng Pinyin' : ''">
+                        <a href="{{ route('pinyin.index') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isPinyinActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Bảng Pinyin') }}' : ''">
                             <i class="fa-solid fa-table-cells text-base w-5 text-center transition-colors {{ $isPinyinActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }} shrink-0"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">{{ __('Bảng Pinyin') }}</span>
                         </a>
 
-                        <a href="{{ url('/demo-pinyin-practice') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Luyện tập Pinyin' : ''">
-                            <i class="fa-solid fa-headset text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Luyện tập Pinyin</span>
+                        @php
+                            $isPinyinPracticeActive = request()->routeIs('pinyin.quiz');
+                        @endphp
+                        <a href="{{ route('pinyin.quiz') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isPinyinPracticeActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Luyện tập Pinyin') }}' : ''">
+                            <i class="fa-solid fa-headset text-base w-5 text-center transition-colors {{ $isPinyinPracticeActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }} shrink-0"></i>
+                            <span x-show="!sidebarCollapsed" class="truncate">{{ __('Luyện tập Pinyin') }}</span>
                         </a>
 
                         @php
                             $isCourseActive = request()->routeIs('courses*') || request()->is('demo-courses');
                         @endphp
-                        <a href="{{ route('courses') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isCourseActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Khóa học HSK' : ''">
+                        <a href="{{ route('courses') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isCourseActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Khóa học HSK') }}' : ''">
                             <i class="fa-solid fa-book-open text-base w-5 text-center shrink-0 transition-colors {{ $isCourseActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Khóa học HSK</span>
+                            <span x-show="!sidebarCollapsed" class="truncate">{{ __('Khóa học HSK') }}</span>
                         </a>
 
-                        <a href="{{ url('/demo-flashcards') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Thẻ ghi nhớ' : ''">
+                        <a href="{{ url('/demo-flashcards') }}" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Thẻ ghi nhớ') }}' : ''">
                             <i class="fa-solid fa-layer-group text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Thẻ ghi nhớ</span>
+                            <span x-show="!sidebarCollapsed" class="truncate">{{ __('Thẻ ghi nhớ') }}</span>
                         </a>
 
                         @php
                             $isHskActive = request()->routeIs('student.hsk-mock-exams.*');
                         @endphp
-                        <a href="{{ route('student.hsk-mock-exams.index') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isHskActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Luyện thi HSK' : ''">
+                        <a href="{{ route('student.hsk-mock-exams.index') }}" class="group flex items-center gap-3 rounded-xl text-sm font-medium transition-all btn-tactile {{ $isHskActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }}" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Luyện thi HSK') }}' : ''">
                             <i class="fa-solid fa-file-pen text-base w-5 text-center shrink-0 transition-colors {{ $isHskActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Luyện thi HSK</span>
+                            <span x-show="!sidebarCollapsed" class="truncate">{{ __('Luyện thi HSK') }}</span>
                         </a>
 
                     </div>
                 </div>
 
                 <div>
-                    <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">Hệ thống</div>
+                    <div x-show="!sidebarCollapsed" class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-2">{{ __('Hệ thống') }}</div>
                     <div class="space-y-1">
                         @if(auth()->check() && auth()->user()->role !== User::ROLE_GUEST)
                             @php
@@ -97,23 +100,23 @@
                                 }
                                 $isDashboardActive = request()->url() === $dashboardRoute;
                             @endphp
-                            <a href="{{ $dashboardRoute }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isDashboardActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ $dashboardLabel }}' : ''">
+                            <a href="{{ $dashboardRoute }}" class="group flex items-center gap-3 rounded-xl text-sm {{ $isDashboardActive ? 'nav-item-active' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? $dashboardLabel : ''">
                                 <i class="fa-solid fa-chart-pie text-base w-5 text-center shrink-0 transition-colors {{ $isDashboardActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                                 <span x-show="!sidebarCollapsed" class="truncate">{{ $dashboardLabel }}</span>
                             </a>
                         @endif
 
-                        <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-[#e07a5f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Liên hệ hỗ trợ' : ''">
+                        <a href="#" class="group flex items-center gap-3 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:text-[#e07a5f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium px-3.5 py-2.5 transition-all btn-tactile" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Liên hệ hỗ trợ') }}' : ''">
                             <i class="fa-solid fa-envelope text-slate-400 dark:text-slate-500 text-base w-5 text-center group-hover:text-[#e07a5f] transition-colors shrink-0"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate">Liên hệ hỗ trợ</span>
+                            <span x-show="!sidebarCollapsed" class="truncate">{{ __('Liên hệ hỗ trợ') }}</span>
                         </a>
 
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                             @csrf
                         </form>
-                        <button x-show="isLoggedIn" @click.prevent="document.getElementById('logout-form').submit()" class="group flex items-center gap-3 w-full rounded-xl text-sm text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium px-3.5 py-2.5 transition-all btn-tactile cursor-pointer" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? 'Đăng xuất' : ''">
+                        <button x-show="isLoggedIn" @click.prevent="document.getElementById('logout-form').submit()" class="group flex items-center gap-3 w-full rounded-xl text-sm text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium px-3.5 py-2.5 transition-all btn-tactile cursor-pointer" :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'" :title="sidebarCollapsed ? '{{ __('Đăng xuất') }}' : ''">
                             <i class="fa-solid fa-arrow-right-from-bracket text-red-500 text-base w-5 text-center shrink-0"></i>
-                            <span x-show="!sidebarCollapsed" class="truncate font-semibold">Đăng xuất</span>
+                            <span x-show="!sidebarCollapsed" class="truncate font-semibold">{{ __('Đăng xuất') }}</span>
                         </button>
                     </div>
                 </div>
