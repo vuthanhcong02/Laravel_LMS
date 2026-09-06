@@ -84,11 +84,11 @@ class AuthService
 
             $previous = url()->previous();
             $default = RouteServiceProvider::HOME;
-            
+
             if ($previous && $previous !== route('login') && $previous !== url('/login') && $previous !== route('register') && $previous !== url('/register')) {
                 $default = $previous;
             }
-            
+
             return redirect()->intended($default);
         } catch (\Exception $e) {
             Log::error('Registration error: ' . $e->getMessage());
@@ -175,6 +175,16 @@ class AuthService
             }
 
             return redirect()->intended(RouteServiceProvider::HOME);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            if ($e->getResponse()->getStatusCode() === 400) {
+                Log::warning('Social login: Authorization code already used or invalid (often due to double requests). Provider: ' . $provider);
+                if (Auth::check()) {
+                    return redirect()->intended(RouteServiceProvider::HOME);
+                }
+                return redirect()->route('home')->with('error', 'Phiên đăng nhập đã hết hạn hoặc được sử dụng. Vui lòng đăng nhập lại.');
+            }
+            Log::error('Social login ClientException: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('home')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
         } catch (\Exception $e) {
             Log::error('Social login error: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->route('home')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
