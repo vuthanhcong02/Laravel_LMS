@@ -30,11 +30,14 @@ class HskMockExamController extends Controller
         $totalExamsCount = $this->hskMockExamService->getTotalExamsCount();
         $totalAttempts = $this->hskMockExamService->getTotalAttempts();
 
-        // Leaderboard (Top 10 highest scores overall or by level)
+        // Leaderboard rankings (top students overall or filtered by level and timeframe)
+        $leaderboardLimit = (int) $request->get('limit', 8);
         $leaderboardLevel = $request->get('leaderboard_level');
-        $leaderboardData = $this->hskMockExamService->getLeaderboard($leaderboardLevel, 10, $userId);
+        $timeframe = $request->get('timeframe', 'all_time');
+        $leaderboardData = $this->hskMockExamService->getLeaderboard($leaderboardLevel, $leaderboardLimit, $userId, $timeframe);
         
-        $leaderboard = $leaderboardData['topList']->map(function ($result, $index) {
+        $formatResultItem = function ($result, $index = null) {
+            if (!$result) return null;
             $levelCode = strtolower($result->mockExam->hskLevel->level_code ?? 'hsk1');
             $badgeBg = 'bg-slate-100 text-slate-800 border-slate-200';
             if (str_contains($levelCode, 'hsk1')) $badgeBg = 'bg-amber-100 text-amber-800 border-amber-200';
@@ -44,20 +47,28 @@ class HskMockExamController extends Controller
             elseif (str_contains($levelCode, 'hsk5')) $badgeBg = 'bg-rose-100 text-rose-800 border-rose-200';
             elseif (str_contains($levelCode, 'hsk6')) $badgeBg = 'bg-emerald-100 text-emerald-800 border-emerald-200';
 
-            $fullName = trim(($result->user->last_name ?? '') . ' ' . ($result->user->first_name ?? 'Người dùng'));
+            $fullName = trim(($result->user->last_name ?? '') . ' ' . ($result->user->first_name ?? __('Người dùng')));
             return [
-                'rank' => $index + 1,
+                'rank' => $index !== null ? ($index + 1) : null,
+                'user_id' => $result->user_id,
                 'avatar' => $result->user->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($fullName),
                 'name' => $fullName,
                 'level' => strtoupper($levelCode),
                 'badgeBg' => $badgeBg,
-                'score' => $result->total_score . ' Điểm',
+                'score' => $result->total_score . ' ' . __('Điểm'),
                 'time' => floor($result->duration_seconds / 60) . 'p ' . str_pad($result->duration_seconds % 60, 2, '0', STR_PAD_LEFT) . 's',
             ];
+        };
+
+        $leaderboard = $leaderboardData['topList']->map(function ($result, $index) use ($formatResultItem) {
+            return $formatResultItem($result, $index);
         })->values();
 
         $currentUserRank = $leaderboardData['currentUserRank'];
-        $currentUserResult = $leaderboardData['currentUserResult'];
+        $currentUserResult = $leaderboardData['currentUserResult'] ? $formatResultItem($leaderboardData['currentUserResult']) : null;
+        if ($currentUserResult && $currentUserRank) {
+            $currentUserResult['rank'] = $currentUserRank;
+        }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([

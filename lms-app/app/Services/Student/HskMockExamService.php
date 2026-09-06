@@ -306,16 +306,22 @@ class HskMockExamService
     }
 
     /**
-     * Get leaderboard
+     * Get student mock exam leaderboard rankings
      */
-    public function getLeaderboard($levelCode = null, $limit = 10, $currentUserId = null)
+    public function getLeaderboard($levelCode = null, $limit = 10, $currentUserId = null, $timeframe = 'all_time')
     {
         $subQuery = DB::table('hsk_mock_exam_results as r')
             ->selectRaw(
-                'r.*, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) as duration_seconds,
+                'r.id, r.user_id, r.total_score, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) as duration_seconds,
                 ROW_NUMBER() OVER (PARTITION BY r.user_id ORDER BY r.total_score DESC, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) ASC) as rn'
             )
             ->where('r.status', 'completed');
+
+        if ($timeframe === 'month') {
+            $subQuery->where('r.completed_at', '>=', now()->startOfMonth());
+        } elseif ($timeframe === 'week') {
+            $subQuery->where('r.completed_at', '>=', now()->startOfWeek());
+        }
 
         if ($levelCode && $levelCode !== 'all') {
             $subQuery->join('hsk_mock_exams as e', 'r.hsk_mock_exam_id', '=', 'e.id')
@@ -323,31 +329,39 @@ class HskMockExamService
                 ->where('l.level_code', $levelCode);
         }
 
-        $rankedIds = DB::table(DB::raw("({$subQuery->toSql()}) as ranked"))
+        // Get ranked result IDs and user IDs
+        $rankedResults = DB::table(DB::raw("({$subQuery->toSql()}) as ranked"))
             ->mergeBindings($subQuery)
             ->where('rn', 1)
             ->orderByDesc('total_score')
             ->orderBy('duration_seconds')
-            ->pluck('id');
+            ->get(['id', 'user_id']);
 
-        $allRanked = HskMockExamResult::with(['user', 'mockExam.hskLevel'])
+        $topIds = $rankedResults->take($limit)->pluck('id');
+
+        // Eager load only top list results to prevent memory bloat and N+1 queries
+        $topList = HskMockExamResult::with(['user', 'mockExam.hskLevel'])
             ->selectRaw('*, TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds')
-            ->whereIn('id', $rankedIds)
+            ->whereIn('id', $topIds)
             ->orderByDesc('total_score')
             ->orderByRaw('TIMESTAMPDIFF(SECOND, started_at, completed_at) ASC')
             ->get();
-
-        $topList = $allRanked->take($limit);
 
         $currentUserRank = null;
         $currentUserResult = null;
 
         if ($currentUserId) {
-            $userIndex = $allRanked->search(fn($item) => $item->user_id == $currentUserId);
+            $userIndex = $rankedResults->search(fn($item) => $item->user_id == $currentUserId);
 
             if ($userIndex !== false) {
                 $currentUserRank = $userIndex + 1;
-                $currentUserResult = $allRanked[$userIndex];
+                $userResultId = $rankedResults[$userIndex]->id;
+
+                // Reuse from topList if already eager loaded, otherwise load specifically
+                $currentUserResult = $topList->firstWhere('id', $userResultId) 
+                    ?? HskMockExamResult::with(['user', 'mockExam.hskLevel'])
+                        ->selectRaw('*, TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds')
+                        ->find($userResultId);
             }
         }
 
