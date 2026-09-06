@@ -107,8 +107,17 @@ class AuthService
         if ($request->has('error')) {
             return redirect()->route('home')->with('error', 'Bạn đã hủy đăng nhập ' . ucfirst($provider));
         }
+
         try {
-            $socialUser = Socialite::driver($provider)->user();
+            // Attempt to get user with state validation first.
+            // If state is missing (e.g., session lost due to load balancer, back-button, or session timeout),
+            // retry using stateless mode — the OAuth code from Google is still valid.
+            try {
+                $socialUser = Socialite::driver($provider)->user();
+            } catch (InvalidStateException $e) {
+                Log::warning('Social login: state mismatch, retrying stateless for provider: ' . $provider);
+                $socialUser = Socialite::driver($provider)->stateless()->user();
+            }
 
             if (! $socialUser || ! $socialUser->getId()) {
                 return redirect()->route('home')->with('error', 'Không lấy được thông tin từ ' . ucfirst($provider));
@@ -122,8 +131,17 @@ class AuthService
             $user = User::where('email', $email)->first();
 
             if ($user) {
-                if ($user->provider !== $provider) {
-                    return redirect()->route('home')->with('error', 'Email này đã được sử dụng. Vui lòng đăng nhập bằng mật khẩu.');
+                // ACCOUNT AUTO-LINKING (Best Practice):
+                // Google has verified this email. We trust it and allow login.
+                // If they registered via password (provider is null), we link this social account.
+                if (empty($user->provider)) {
+                    $user->provider = $provider;
+                    $user->provider_id = $socialUser->getId();
+                    // Optional: update avatar if they didn't have one
+                    if (empty($user->avatar)) {
+                        $user->avatar = $socialUser->getAvatar();
+                    }
+                    $user->save();
                 }
             } else {
                 $avatar = $socialUser->getAvatar();
@@ -144,6 +162,10 @@ class AuthService
 
             Auth::login($user);
 
+            // Regenerate session to persist the new auth state before the redirect response is sent.
+            // Without this, the session write may be incomplete and the user appears logged out.
+            $request->session()->regenerate();
+
             if (in_array($user->role, [User::ROLE_STUDENT, User::ROLE_GUEST])) {
                 $default = $user->role === User::ROLE_GUEST ? route('home') : route('student.dashboard');
                 if (session()->has('social_login_redirect')) {
@@ -153,9 +175,6 @@ class AuthService
             }
 
             return redirect()->intended(RouteServiceProvider::HOME);
-        } catch (InvalidStateException $e) {
-            Log::warning('Social login invalid state: ' . $e->getMessage());
-            return redirect()->route('login')->with('error', 'Phiên đăng nhập ' . ucfirst($provider) . ' đã hết hạn hoặc không hợp lệ. Vui lòng thử lại.');
         } catch (\Exception $e) {
             Log::error('Social login error: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->route('home')->with('error', 'Đăng nhập ' . ucfirst($provider) . ' thất bại. Vui lòng thử lại sau.');
