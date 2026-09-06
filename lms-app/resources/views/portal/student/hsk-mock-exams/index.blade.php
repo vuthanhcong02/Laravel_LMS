@@ -281,14 +281,19 @@
                 </div>
                 <!-- Footer button -->
                 <div class="pt-2 border-t border-[#e8e2d9] dark:border-[#2d2926] text-center">
-                    <button class="text-xs font-semibold text-[#e07a5f] hover:underline flex items-center justify-center gap-1.5 w-full py-1.5">
-                        <span>{{ __('Xem toàn bộ bảng xếp hạng (Top 100)') }}</span>
+                    <button type="button" 
+                            @click="openFullLeaderboard()" 
+                            class="text-xs font-semibold text-[#e07a5f] hover:underline flex items-center justify-center gap-1.5 w-full py-1.5 cursor-pointer">
+                        <span>{{ __('Xem toàn bộ bảng xếp hạng (Top 20)') }}</span>
                         <i class="fa-solid fa-angle-right text-[10px]"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Top 20 Leaderboard Modal --}}
+    @include('portal.student.hsk-mock-exams.partials.leaderboard-modal')
 </div>
 <script>
     window.hskLeaderboardData = @json($leaderboard ?? []);
