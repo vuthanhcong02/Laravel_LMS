@@ -108,12 +108,30 @@
                                             } else {
                                                 console.error('SortableJS is not loaded');
                                             }
+                                        },
+                                        toggleGroup(id) {
+                                            if (this.activeGroupId === id) {
+                                                this.activeGroupId = null;
+                                            } else {
+                                                this.activeGroupId = id;
+                                                this.$nextTick(() => {
+                                                    const target = document.getElementById('part-' + id);
+                                                    const container = document.getElementById('main-editor-scroll');
+                                                    if (target && container) {
+                                                        const scrollPos = target.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+                                                        container.scrollTo({
+                                                            top: Math.max(0, scrollPos - 20),
+                                                            behavior: 'smooth'
+                                                        });
+                                                    }
+                                                });
+                                            }
                                         }
                                     }">
                                         @foreach($groups as $group)
                                             <div id="part-{{ $group->id }}" wire:key="group-{{ $group->id }}" data-id="{{ $group->id }}" class="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-colors scroll-mt-24" :class="activeGroupId === {{ $group->id }} ? 'ring-2 ring-primary border-primary' : ''">
                                                 <div class="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/80" 
-                                                     @click="activeGroupId = activeGroupId === {{ $group->id }} ? null : {{ $group->id }}">
+                                                     @click="toggleGroup({{ $group->id }})">
                                                     <div>
                                                         <div wire:key="title-{{ $group->id }}" x-data="{ editingTitle: false, title: '{{ addslashes($group->title) }}' }" class="flex items-center gap-2">
                                                             <h3 x-show="!editingTitle" class="font-bold text-slate-800 dark:text-white flex items-center gap-2 cursor-pointer group/title" @click.stop="editingTitle = true">

@@ -48,7 +48,7 @@
 
                         <div>
                             <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nội dung (Text/Pinyin)</label>
-                            <input type="text" wire:model.defer="questionTitles.{{ $index }}" placeholder="Nhập từ vựng..." class="w-full p-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                            <textarea wire:model.defer="questionTitles.{{ $index }}" rows="2" placeholder="Nhập nội dung câu hỏi..." class="w-full p-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"></textarea>
                         </div>
                         
                         <div>

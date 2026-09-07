@@ -33,12 +33,10 @@
             $optLabels[] = $opt['letter'] ?? chr(65 + $idx);
         }
     } else {
-        $optLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
-        if (count($passageImages) > 6) {
-            $optLabels = [];
-            for($i = 0; $i < count($passageImages); $i++) {
-                $optLabels[] = chr(65 + $i);
-            }
+        $optLabels = [];
+        $imgCount = count($passageImages) > 0 ? count($passageImages) : 6;
+        for($i = 0; $i < $imgCount; $i++) {
+            $optLabels[] = chr(65 + $i);
         }
     }
 @endphp

@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Configure custom user resolver for Laravel Pulse
         Pulse::users(function ($ids) {
-            return User::findMany($ids)->map(fn (User $user) => [
+            return User::findMany($ids)->map(fn(User $user) => [
                 'id'     => $user->id,
                 'name'   => trim($user->first_name . ' ' . $user->last_name) ?: $user->email,
                 'extra'  => $user->email,
