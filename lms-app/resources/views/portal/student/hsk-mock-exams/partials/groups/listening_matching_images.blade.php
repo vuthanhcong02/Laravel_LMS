@@ -5,12 +5,17 @@
     if ($group->passage_image) {
         $passageImages = explode(',', $group->passage_image);
     }
-    $imgLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
-    // Attempt to parse passage_text for example letter, fallback to C
-    $exLetter = 'C';
-    if ($group->passage_text && str_starts_with(trim($group->passage_text), '{')) {
-        $parsedEx = json_decode(trim($group->passage_text), true);
-        $exLetter = $parsedEx['a_letter'] ?? $parsedEx['ex_a_letter'] ?? 'C';
+    $imgLabels = [];
+    $imgCount = count($passageImages) > 0 ? count($passageImages) : 6;
+    for($i = 0; $i < $imgCount; $i++) {
+        $imgLabels[] = chr(65 + $i);
+    }
+    $exLetter = '';
+    if ($examples->count() > 0) {
+        $correctOpt = $examples->first()->options->where('is_correct', true)->first();
+        if ($correctOpt) {
+            $exLetter = $correctOpt->content;
+        }
     }
 @endphp
 {{-- Group Header Audio --}}
@@ -27,13 +32,14 @@
 </div>
 @endif
 @if(count($passageImages) > 0)
+    @if($examples->count() > 0)
     {{-- Example Card --}}
     <div class="bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl p-5 mb-6 shadow-xs">
         <div class="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200 text-sm">
             <span class="px-3 py-1 rounded-xl bg-amber-500 text-white text-xs font-bold">{{ __('Ví dụ (例如)') }}</span>
             <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-lg">{{ __('Đáp án mẫu') }}: {{ $exLetter }}</span>
         </div>
-        @if($examples->count() > 0 && $examples->first()->title)
+        @if($examples->first()->title)
             @php
                 $exTitle = collect(explode("\n", $examples->first()->title))
                     ->map(fn($line) => trim($line))
@@ -45,6 +51,7 @@
             </div>
         @endif
     </div>
+    @endif
     {{-- Images Grid --}}
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-8">
         @foreach($passageImages as $idx => $img)

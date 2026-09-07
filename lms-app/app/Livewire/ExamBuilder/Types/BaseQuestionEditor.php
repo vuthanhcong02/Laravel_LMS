@@ -3,6 +3,7 @@
 namespace App\Livewire\ExamBuilder\Types;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 use Livewire\WithFileUploads;
 use App\Models\HskMockExamQuestionGroup;
 use App\Models\HskMockExamQuestion;
@@ -109,6 +110,12 @@ abstract class BaseQuestionEditor extends Component
                 }
             }
         });
+    }
+
+    #[On('save-all-parts')]
+    public function handleGlobalSave()
+    {
+        $this->saveGroup();
     }
 
     public function saveGroup()

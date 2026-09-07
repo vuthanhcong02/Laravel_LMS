@@ -71,18 +71,14 @@ class ListeningMatchingImages extends BaseQuestionEditor
         DB::transaction(function () {
             foreach ($this->group->questions as $q) {
                 $correctContent = $this->correctAnswers[$q->id] ?? null;
-                if ($q->options->isEmpty()) {
-                    $q->options()->create([
-                        'content' => $correctContent,
-                        'is_correct' => true,
-                        'order_index' => 1
-                    ]);
-                } else {
-                    $opt = $q->options->first();
-                    $opt->content = $correctContent;
-                    $opt->is_correct = true;
-                    $opt->save();
-                }
+                // Delete existing options to clean up any A-F imports
+                $q->options()->delete();
+                // Create single correct option for matching group
+                $q->options()->create([
+                    'content' => $correctContent,
+                    'is_correct' => true,
+                    'order_index' => 1
+                ]);
             }
             parent::saveGroup();
         });

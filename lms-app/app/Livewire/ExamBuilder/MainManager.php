@@ -139,7 +139,8 @@ class MainManager extends Component
 
     public function save()
     {
-        $this->dispatch('notify', msg: 'Lưu cài đặt chung thành công!', type: 'success');
+        $this->dispatch('save-all-parts');
+        $this->dispatch('notify', msg: 'Lưu toàn bộ đề thi thành công!', type: 'success');
     }
 
     public function render()

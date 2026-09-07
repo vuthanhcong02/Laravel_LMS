@@ -125,20 +125,12 @@ class ReadingMatchingSentences extends BaseQuestionEditor
 
             foreach ($this->group->questions as $q) {
                 $correctContent = $this->correctAnswers[$q->id] ?? null;
-                if ($q->options->isEmpty()) {
-                    if ($correctContent) {
-                        $q->options()->create([
-                            'content' => $correctContent,
-                            'is_correct' => true,
-                            'order_index' => 1
-                        ]);
-                    }
-                } else {
-                    $opt = $q->options->first();
-                    $opt->content = $correctContent;
-                    $opt->is_correct = true;
-                    $opt->save();
-                }
+                $q->options()->delete();
+                $q->options()->create([
+                    'content' => $correctContent,
+                    'is_correct' => true,
+                    'order_index' => 1
+                ]);
             }
             parent::saveGroup();
         });
