@@ -66,8 +66,6 @@ class ListeningMatchingImages extends BaseQuestionEditor
 
     public function saveGroup()
     {
-        Log::info('[LMI::saveGroup] CALLED - correctAnswers count: ' . count($this->correctAnswers) . ' questionTitles count: ' . count($this->questionTitles));
-        
         DB::transaction(function () {
             foreach ($this->group->questions as $q) {
                 $correctContent = $this->correctAnswers[$q->id] ?? null;
@@ -82,8 +80,6 @@ class ListeningMatchingImages extends BaseQuestionEditor
             }
             parent::saveGroup();
         });
-        
-        Log::info('[LMI::saveGroup] done, questionTitles:', $this->questionTitles);
     }
 
     public function render()

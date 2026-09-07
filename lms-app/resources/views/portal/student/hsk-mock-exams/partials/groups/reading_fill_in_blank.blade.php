@@ -109,12 +109,16 @@
             <div class="flex-1 lg:flex-none flex flex-wrap items-center gap-2.5 pt-2 lg:pt-0 lg:justify-end">
                 @foreach($optLabels as $letter)
                     @if($letter === $exLetter) @continue @endif
-                    <label class="cursor-pointer group block shrink-0">
+                    <label class="cursor-pointer group block shrink-0 matching-label" data-group-id="{{ $group->id }}" data-letter="{{ $letter }}">
                         <input type="radio"
                             name="answers[{{ $question->id }}]"
                             value="{{ $letter }}"
-                            onchange="updateSidebar({{ $currentQNum }})"
-                            class="peer hidden">
+                            data-group-id="{{ $group->id }}"
+                            data-question-id="{{ $question->id }}"
+                            data-qnum="{{ $currentQNum }}"
+                            data-letter="{{ $letter }}"
+                            onchange="updateSidebar({{ $currentQNum }}); handleMatchingExclusion(this)"
+                            class="peer hidden matching-radio">
                         <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-[#e8e2d9] dark:border-[#2d2926] bg-[#f8f6f3] dark:bg-[#201d1b] flex items-center justify-center text-sm font-bold text-slate-700 dark:text-slate-300 transition-all peer-checked:border-[#e07a5f] peer-checked:bg-[#e07a5f] peer-checked:text-white hover:border-[#e07a5f]/50 btn-tactile shadow-xs">
                             {{ $letter }}
                         </div>

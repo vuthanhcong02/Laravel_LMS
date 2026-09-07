@@ -127,10 +127,14 @@
                                 <span class="text-slate-400 dark:text-slate-500 font-bold text-xs">{{ $optContent }}</span>
                             </div>
                         @else
-                            <label class="cursor-pointer group relative block shrink-0">
+                            <label class="cursor-pointer group relative block shrink-0 matching-label" data-group-id="{{ $group->id }}" data-letter="{{ $optContent }}">
                                 <input type="radio" name="answers[{{ $question->id }}]"
-                                    class="peer hidden" value="{{ $option->id }}"
-                                    onchange="updateSidebar({{ $currentQNum }})">
+                                    class="peer hidden matching-radio" value="{{ $option->id }}"
+                                    data-group-id="{{ $group->id }}"
+                                    data-question-id="{{ $question->id }}"
+                                    data-qnum="{{ $currentQNum }}"
+                                    data-letter="{{ $optContent }}"
+                                    onchange="updateSidebar({{ $currentQNum }}); handleMatchingExclusion(this)">
                                 <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-[#e8e2d9] dark:border-[#2d2926] bg-[#f8f6f3] dark:bg-[#201d1b] flex items-center justify-center transition-all peer-checked:border-[#e07a5f] peer-checked:bg-[#e07a5f] peer-checked:text-white hover:border-[#e07a5f]/50 btn-tactile shadow-xs">
                                     <div class="text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors group-hover:text-[#e07a5f] peer-checked:text-white zh-text">
                                         {!! renderHskRubyText($optContent) !!}
