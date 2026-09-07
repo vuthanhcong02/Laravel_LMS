@@ -98,6 +98,13 @@
                         $actionBtn = '<span>' . __('Vào thi') . '</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>';
                         $highestResult = $userResults->where('status', 'completed')->sortByDesc('total_score')->first();
                         $inProgressResult = $userResults->where('status', 'in_progress')->first();
+                        if ($inProgressResult && $inProgressResult->started_at) {
+                            $elapsedSec = now()->diffInSeconds($inProgressResult->started_at);
+                            $totalSec = ($exam->duration ?? 40) * 60;
+                            if ($elapsedSec >= $totalSec) {
+                                $inProgressResult = null;
+                            }
+                        }
                         if ($highestResult) {
                             $maxPt = in_array(strtolower($hskLevel->level_code), ['hsk1', 'hsk2']) ? 200 : 300;
                             $statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1"><i class="fa-solid fa-medal text-[10px]"></i> ' . __('Đạt') . ': ' . $highestResult->total_score . '/' . $maxPt . '</span>';

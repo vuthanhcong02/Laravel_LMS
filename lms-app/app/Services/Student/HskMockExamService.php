@@ -43,6 +43,15 @@ class HskMockExamService
      */
     public function getHskLevelWithMockExams($levelCode, $userId = null)
     {
+        if ($userId) {
+            HskMockExamResult::where('user_id', $userId)
+                ->where('status', 'in_progress')
+                ->whereHas('mockExam', function ($q) {
+                    $q->whereRaw('TIMESTAMPDIFF(SECOND, hsk_mock_exam_results.started_at, NOW()) >= (hsk_mock_exams.duration * 60)');
+                })
+                ->delete();
+        }
+
         return HskLevel::where('level_code', $levelCode)
             ->with(['mockExams' => function ($q) use ($userId) {
                 $q->where('is_published', true)
@@ -295,11 +304,11 @@ class HskMockExamService
                 $q->whereHas('mockExam.hskLevel', function ($lq) {
                     $lq->whereIn('level_code', ['hsk1', 'hsk2']);
                 })->where('total_score', '>=', 120)
-                ->orWhere(function ($q2) {
-                    $q2->whereHas('mockExam.hskLevel', function ($lq) {
-                        $lq->whereNotIn('level_code', ['hsk1', 'hsk2']);
-                    })->where('total_score', '>=', 180);
-                });
+                    ->orWhere(function ($q2) {
+                        $q2->whereHas('mockExam.hskLevel', function ($lq) {
+                            $lq->whereNotIn('level_code', ['hsk1', 'hsk2']);
+                        })->where('total_score', '>=', 180);
+                    });
             })->count();
 
         return round(($passed / $total) * 100, 1) . '%';
@@ -358,10 +367,10 @@ class HskMockExamService
                 $userResultId = $rankedResults[$userIndex]->id;
 
                 // Reuse from topList if already eager loaded, otherwise load specifically
-                $currentUserResult = $topList->firstWhere('id', $userResultId) 
+                $currentUserResult = $topList->firstWhere('id', $userResultId)
                     ?? HskMockExamResult::with(['user', 'mockExam.hskLevel'])
-                        ->selectRaw('*, TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds')
-                        ->find($userResultId);
+                    ->selectRaw('*, TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds')
+                    ->find($userResultId);
             }
         }
 

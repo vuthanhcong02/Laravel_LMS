@@ -63,25 +63,56 @@
             border-color: rgba(224, 122, 95, 0.4);
             box-shadow: 0 8px 24px -4px rgba(224, 122, 95, 0.08);
         }
-        /* Modern Radio options active styling */
-        input[type="radio"]:checked ~ div,
-        input[type="radio"]:checked + div {
+        /* Modern Radio options active styling (for regular choice cards) */
+        input[type="radio"]:not(.matching-radio):checked ~ div,
+        input[type="radio"]:not(.matching-radio):checked + div {
             border-color: #e07a5f !important;
             background-color: #fff7f4 !important;
             box-shadow: 0 2px 8px -2px rgba(224, 122, 95, 0.25);
         }
-        .dark input[type="radio"]:checked ~ div,
-        .dark input[type="radio"]:checked + div {
+        .dark input[type="radio"]:not(.matching-radio):checked ~ div,
+        .dark input[type="radio"]:not(.matching-radio):checked + div {
             background-color: #2a201c !important;
             border-color: #e07a5f !important;
         }
-        input[type="radio"]:checked ~ div div:first-child,
-        input[type="radio"]:checked + div div:first-child,
-        input[type="radio"]:checked ~ div .opt-badge,
-        input[type="radio"]:checked + div .opt-badge {
+        input[type="radio"]:not(.matching-radio):checked ~ div div:first-child,
+        input[type="radio"]:not(.matching-radio):checked + div div:first-child,
+        input[type="radio"]:not(.matching-radio):checked ~ div .opt-badge,
+        input[type="radio"]:not(.matching-radio):checked + div .opt-badge {
             background-color: #e07a5f !important;
             border-color: #e07a5f !important;
             color: #ffffff !important;
+        }
+
+        /* Matching Circle Radio Buttons (A / B / C / D / E / F) */
+        .matching-radio + div {
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .matching-radio:checked + div,
+        .matching-radio:checked ~ div {
+            background-color: #e07a5f !important;
+            border-color: #e07a5f !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px -2px rgba(224, 122, 95, 0.45) !important;
+        }
+        .matching-radio:checked + div *,
+        .matching-radio:checked ~ div * {
+            color: #ffffff !important;
+        }
+        /* State when an option is already taken by another question in the group */
+        .matching-taken {
+            opacity: 0.45;
+            transition: all 0.2s ease;
+        }
+        .matching-taken:hover {
+            opacity: 1;
+        }
+        .matching-taken div {
+            border-style: dashed !important;
+            border-color: #d1c7bc !important;
+        }
+        .dark .matching-taken div {
+            border-color: #4a443f !important;
         }
         html { scroll-behavior: smooth; }
         @keyframes timer-pulse {
@@ -176,6 +207,14 @@
                             $validGroups = $section->questionGroups->filter(
                                 fn($g) => $g->questions->where('is_example', false)->count() > 0,
                             );
+                            // Dịch tên section từ tiếng Anh (trong DB) sang tiếng Việt
+                            $sectionNameMap = [
+                                'listening' => __('Nghe hiểu'),
+                                'reading'   => __('Đọc hiểu'),
+                                'writing'   => __('Viết'),
+                                'speaking'  => __('Nói'),
+                            ];
+                            $sectionDisplayName = $sectionNameMap[strtolower($section->name)] ?? $section->name;
                         @endphp
                         @if ($sectionRealQCount > 0)
                             <div class="space-y-6">
@@ -187,7 +226,7 @@
                                         </span>
                                         <div>
                                             <h2 class="text-base md:text-lg font-bold uppercase tracking-wide">
-                                                {{ $section->name }}
+                                                {{ $sectionDisplayName }}
                                             </h2>
                                             <p class="text-xs text-white/80 font-medium">
                                                 {{ $validGroups->count() }} {{ __('phần bài tập') }} • {{ $sectionRealQCount }} {{ __('câu hỏi') }}
@@ -252,13 +291,20 @@
                             $sectionRealQCount = $section->questionGroups->sum(
                                 fn($g) => $g->questions->where('is_example', false)->count(),
                             );
+                            $sectionNameMap = [
+                                'listening' => __('Nghe hiểu'),
+                                'reading'   => __('Đọc hiểu'),
+                                'writing'   => __('Viết'),
+                                'speaking'  => __('Nói'),
+                            ];
+                            $sectionDisplayName = $sectionNameMap[strtolower($section->name)] ?? $section->name;
                         @endphp
                         @if ($sectionRealQCount > 0)
                             <div>
                                 <div class="flex items-center gap-2 mb-2.5">
                                     <span class="w-2 h-2 rounded-full bg-[#e07a5f]"></span>
                                     <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                        {{ __('Phần') }} {{ $sectionIndex + 1 }}: {{ $section->name }}
+                                        {{ __('Phần') }} {{ $sectionIndex + 1 }}: {{ $sectionDisplayName }}
                                     </p>
                                 </div>
                                 @foreach ($section->questionGroups as $gIdx => $group)
@@ -321,11 +367,18 @@
                         $sectionRealQCount = $section->questionGroups->sum(
                             fn($g) => $g->questions->where('is_example', false)->count(),
                         );
+                        $sectionNameMap = [
+                            'listening' => __('Nghe hiểu'),
+                            'reading'   => __('Đọc hiểu'),
+                            'writing'   => __('Viết'),
+                            'speaking'  => __('Nói'),
+                        ];
+                        $sectionDisplayName = $sectionNameMap[strtolower($section->name)] ?? $section->name;
                     @endphp
                     @if ($sectionRealQCount > 0)
                         <div>
                             <p class="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                                {{ __('Phần') }} {{ $sectionIndex + 1 }}: {{ $section->name }}
+                                {{ __('Phần') }} {{ $sectionIndex + 1 }}: {{ $sectionDisplayName }}
                             </p>
                             <div class="grid grid-cols-5 gap-2">
                                 @foreach ($section->questionGroups as $group)
@@ -408,6 +461,96 @@
         const _totalQ = {{ $totalQuestions }};
         const _answeredSet = new Set();
         let timeRemaining = {{ isset($timeRemaining) ? $timeRemaining : ($exam->duration * 60) }};
+
+        /**
+         * Xử lý exclusive matching: mỗi đáp án (A/B/C...) chỉ được chọn 1 lần trong nhóm.
+         * Khi câu khác chọn trùng option, tự động nhường (bỏ chọn ở câu cũ và cập nhật sidebar).
+         * Luôn cho phép click và đổi lại bất cứ lúc nào, không bị khóa cứng (deadlock).
+         */
+        function handleMatchingExclusion(changedInput) {
+            const groupId = changedInput?.dataset?.groupId;
+            if (!groupId) return;
+
+            const allGroupInputs = document.querySelectorAll(
+                `.matching-radio[data-group-id="${groupId}"]`
+            );
+
+            // Nếu changedInput đang được checked, giải phóng option này ở các câu khác trong cùng group
+            if (changedInput.checked) {
+                const letter = changedInput.dataset.letter;
+                const qId = changedInput.dataset.questionId;
+
+                allGroupInputs.forEach(input => {
+                    if (input !== changedInput && input.dataset.letter === letter && input.checked) {
+                        input.checked = false;
+                        const otherQNum = input.dataset.qnum;
+                        // Kiểm tra xem câu cũ còn radio nào checked không
+                        const otherStillHasAnswer = document.querySelector(
+                            `.matching-radio[data-question-id="${input.dataset.questionId}"]:checked`
+                        );
+                        if (!otherStillHasAnswer && otherQNum) {
+                            unmarkSidebar(otherQNum);
+                        }
+                    }
+                });
+            }
+
+            // Map các letter đang được chọn trong group: letter -> questionId
+            const usedLetters = new Map();
+            allGroupInputs.forEach(input => {
+                if (input.checked) {
+                    usedLetters.set(input.dataset.letter, input.dataset.questionId);
+                }
+            });
+
+            // Cập nhật visual state cho các nút trong group (vẫn giữ clickable để user có thể click đổi/cướp đáp án)
+            allGroupInputs.forEach(input => {
+                const label = input.closest('label');
+                if (!label) return;
+
+                input.disabled = false; // Luôn cho phép click
+                label.classList.add('cursor-pointer');
+                label.classList.remove('cursor-not-allowed', 'pointer-events-none');
+
+                const isUsedByOther = usedLetters.has(input.dataset.letter)
+                    && usedLetters.get(input.dataset.letter) !== input.dataset.questionId;
+
+                if (isUsedByOther) {
+                    label.classList.add('matching-taken');
+                    label.classList.remove('opacity-50', 'hover:opacity-100');
+                } else {
+                    label.classList.remove('matching-taken', 'opacity-50', 'hover:opacity-100');
+                }
+            });
+        }
+
+        // Hỗ trợ click-to-deselect (bỏ chọn khi click lại đáp án đang chọn)
+        document.addEventListener('pointerdown', (e) => {
+            const label = e.target.closest('.matching-label');
+            if (!label) return;
+            const radio = label.querySelector('.matching-radio');
+            if (radio) {
+                radio._wasChecked = radio.checked;
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const label = e.target.closest('.matching-label');
+            if (!label) return;
+            const radio = label.querySelector('.matching-radio');
+            if (radio && radio._wasChecked) {
+                e.preventDefault();
+                radio.checked = false;
+                radio._wasChecked = false;
+                
+                const qNum = radio.dataset.qnum;
+                if (qNum) {
+                    unmarkSidebar(qNum);
+                }
+                handleMatchingExclusion(radio);
+            }
+        });
+
         // Theme toggle
         function toggleTheme() {
             if (document.documentElement.classList.contains('dark')) {
@@ -435,6 +578,7 @@
         }
         // Sidebar answer progress update
         function updateSidebar(qNum) {
+            const qNumInt = Number(qNum);
             // Update desktop button
             const btn = document.getElementById('nav-btn-' + qNum);
             if (btn) {
@@ -445,7 +589,28 @@
             if (mobBtn) {
                 mobBtn.className = 'mob-nav-btn-item w-full aspect-square rounded-xl text-xs font-bold flex items-center justify-center border bg-[#e07a5f] text-white border-[#e07a5f] shadow-xs';
             }
-            _answeredSet.add(qNum);
+            _answeredSet.add(qNumInt);
+            refreshProgress();
+        }
+
+        // Hủy đánh dấu khi câu bị bỏ chọn
+        function unmarkSidebar(qNum) {
+            const qNumInt = Number(qNum);
+            _answeredSet.delete(qNumInt);
+            // Reset desktop button
+            const btn = document.getElementById('nav-btn-' + qNum);
+            if (btn) {
+                btn.className = 'nav-btn-item w-full aspect-square rounded-xl text-xs font-bold flex items-center justify-center border bg-slate-50 dark:bg-[#201d1b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-[#2d2926] hover:border-[#e07a5f] hover:text-[#e07a5f] transition-all btn-tactile';
+            }
+            // Reset mobile button
+            const mobBtn = document.getElementById('mob-nav-btn-' + qNum);
+            if (mobBtn) {
+                mobBtn.className = 'mob-nav-btn-item w-full aspect-square rounded-xl text-xs font-bold flex items-center justify-center border bg-slate-50 dark:bg-[#201d1b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-[#2d2926]';
+            }
+            refreshProgress();
+        }
+
+        function refreshProgress() {
             const done = _answeredSet.size;
             const textEl = document.getElementById('sidebar-progress-text');
             if (textEl) textEl.innerText = done;
@@ -454,7 +619,11 @@
             const mobBadge = document.getElementById('mobile-nav-badge');
             if (mobBadge) {
                 mobBadge.innerText = done;
-                mobBadge.classList.remove('hidden');
+                if (done > 0) {
+                    mobBadge.classList.remove('hidden');
+                } else {
+                    mobBadge.classList.add('hidden');
+                }
             }
             const bar = document.getElementById('sidebar-progress-bar');
             if (bar && _totalQ > 0) bar.style.width = `${(done / _totalQ) * 100}%`;
