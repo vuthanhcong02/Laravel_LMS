@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Overtrue\Pinyin\Pinyin;
 
@@ -16,13 +17,31 @@ if (! function_exists('splitName')) {
         ];
     }
 }
+if (! function_exists('_hsk_cache_remember_forever')) {
+    /**
+     * Wrapper an toàn cho cache()->rememberForever().
+     * Fallback về tính toán trực tiếp nếu cache directory bị xóa hoặc không có quyền ghi.
+     */
+    function _hsk_cache_remember_forever(string $key, callable $callback): string
+    {
+        try {
+            return cache()->rememberForever($key, $callback);
+        } catch (\Throwable $e) {
+            // Cache directory không tồn tại hoặc không có quyền ghi (thường sau khi clear cache trên production)
+            // Fallback về tính toán trực tiếp thay vì crash toàn trang
+            Log::warning('[Helper] Cache write failed, computing directly. Key: ' . $key . ' Error: ' . $e->getMessage());
+            return call_user_func($callback);
+        }
+    }
+}
+
 if (! function_exists('renderHskRubyText')) {
     function renderHskRubyText($html, $pinyinStr = '', $hanziStr = '')
     {
         if (empty(trim($html ?? ''))) return '';
         
         $cacheKey = 'hsk_ruby_' . md5(($html ?? '') . ($pinyinStr ?? '') . ($hanziStr ?? ''));
-        return cache()->rememberForever($cacheKey, function () use ($html, $pinyinStr, $hanziStr) {
+        return _hsk_cache_remember_forever($cacheKey, function () use ($html, $pinyinStr, $hanziStr) {
             $html = trim($html ?? '');
             // Strip dangerous tags to prevent XSS
             $html = strip_tags($html, '<ruby><rt><rp><br>');
@@ -103,6 +122,7 @@ if (! function_exists('renderHskRubyText')) {
     }
 }
 
+
 if (! function_exists('hsk_storage_url')) {
     function hsk_storage_url(?string $path): string
     {
@@ -121,7 +141,7 @@ if (! function_exists('hsk_render_pinyin')) {
         if (empty(trim($text ?? ''))) return '';
 
         $cacheKey = 'hsk_pinyin_' . md5($text);
-        return cache()->rememberForever($cacheKey, function () use ($text) {
+        return _hsk_cache_remember_forever($cacheKey, function () use ($text) {
             // Split by <br> tags to prevent parsing HTML tag characters individually
             $lines = preg_split('/<br\s*\/?>/i', $text);
             $renderedLines = [];
@@ -174,7 +194,7 @@ if (! function_exists('hsk_render_flashcard_ruby')) {
         if (empty(trim($text ?? ''))) return '';
 
         $cacheKey = 'hsk_flashcard_ruby_' . md5($text);
-        return cache()->rememberForever($cacheKey, function () use ($text) {
+        return _hsk_cache_remember_forever($cacheKey, function () use ($text) {
             $lines = preg_split('/<br\s*\/?>|\n/i', $text);
             $renderedLines = [];
 
