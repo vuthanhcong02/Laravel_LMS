@@ -35,148 +35,89 @@ if (! function_exists('_hsk_cache_remember_forever')) {
     }
 }
 
-if (! function_exists('_hsk_format_ruby_char')) {
-    /**
-     * Định dạng thẻ ruby chuẩn và tự động dính các dấu câu/ngoặc đi liền phía sau vào cùng một khối nowrap
-     * để tránh việc dấu câu (。, ，, ？, ...) bị rớt xuống dòng một mình.
-     */
-    function _hsk_format_ruby_char(string $hanzi, string $pinyin = '', string $trailingPunct = '', string $fontSizeClass = 'text-sm font-medium'): string
-    {
-        $rubyHtml = '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="' . $fontSizeClass . ' zh-text text-slate-800 dark:text-slate-100">' . e($hanzi) . '</span>';
-        if (!empty($pinyin)) {
-            $rubyHtml .= '<rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($pinyin) . '</rt>';
-        }
-        $rubyHtml .= '</ruby>';
-
-        if (!empty($trailingPunct)) {
-            return '<span class="inline-flex items-end whitespace-nowrap">' . $rubyHtml . '<span class="' . $fontSizeClass . ' text-slate-800 dark:text-slate-100 self-end mb-[2px]">' . e($trailingPunct) . '</span></span>';
-        }
-
-        return $rubyHtml;
-    }
-}
-
 if (! function_exists('renderHskRubyText')) {
     function renderHskRubyText($html, $pinyinStr = '', $hanziStr = '')
     {
         if (empty(trim($html ?? ''))) return '';
         
-        $cacheKey = 'hsk_ruby_v4_' . md5(($html ?? '') . ($pinyinStr ?? '') . ($hanziStr ?? ''));
+        $cacheKey = 'hsk_ruby_' . md5(($html ?? '') . ($pinyinStr ?? '') . ($hanziStr ?? ''));
         return _hsk_cache_remember_forever($cacheKey, function () use ($html, $pinyinStr, $hanziStr) {
             $html = trim($html ?? '');
             // Strip dangerous tags to prevent XSS
             $html = strip_tags($html, '<ruby><rt><rp><br>');
             
             if (!empty($html) && str_contains($html, '<ruby')) {
-                // If HTML contains ruby tags, parse ruby elements and glue trailing punctuation
-                $parts = preg_split('/(<ruby[^>]*>.*?<\/ruby>)/is', $html, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-                $out = '';
-                $count = count($parts);
-                
-                for ($i = 0; $i < $count; $i++) {
-                    $part = $parts[$i];
-                    if (preg_match('/<ruby[^>]*>(.*?)<\/ruby>/is', $part, $rubyMatch)) {
-                        $inner = $rubyMatch[1];
+                // If already split into multiple 1-to-1 rubies, format them with modern flex styling
+                if (substr_count($html, '<ruby') > 1) {
+                    $styled = preg_replace_callback('/<ruby[^>]*>(.*?)<\/ruby>/is', function($m) {
+                        $inner = $m[1];
                         $rt = '';
                         if (preg_match('/<rt[^>]*>(.*?)<\/rt>/is', $inner, $rtMatch)) {
                             $rt = trim(strip_tags($rtMatch[1]));
                         }
+                        // Extract hanzi by removing <rt> and stripping other tags
                         $hz = trim(strip_tags(preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $inner)));
                         
-                        // Lookahead: Glue any trailing punctuation/brackets to this ruby
-                        $trailingPunct = '';
-                        if ($i + 1 < $count && !str_contains($parts[$i + 1], '<ruby')) {
-                            $nextText = $parts[$i + 1];
-                            if (preg_match('/^([^\x{4e00}-\x{9fa5}]+)/u', $nextText, $pMatch)) {
-                                $fullMatch = $pMatch[1];
-                                if (preg_match('/^(.*?[^\s])(\s+)$/us', $fullMatch, $sep)) {
-                                    $trailingPunct = $sep[1];
-                                    $remSpace = $sep[2];
-                                } else {
-                                    $trailingPunct = $fullMatch;
-                                    $remSpace = '';
-                                }
-                                $parts[$i + 1] = $remSpace . mb_substr($nextText, mb_strlen($fullMatch));
-                            }
+                        if (!empty($rt) && !empty($hz)) {
+                            return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($hz) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($rt) . '</rt></ruby>';
                         }
-                        
-                        if (!empty($hz)) {
-                            $out .= _hsk_format_ruby_char($hz, $rt, $trailingPunct);
-                        }
-                    } else {
-                        // Plain text / punctuation / breaks between rubies
-                        if (preg_match('/<br\s*\/?>|\n/i', $part)) {
-                            $out .= '<div class="w-full h-0 basis-full my-1"></div>';
-                        } elseif (trim($part) === '') {
-                            $out .= '<span class="mx-1"> </span>';
-                        } else {
-                            $out .= '<span class="inline-block whitespace-nowrap text-sm font-medium text-slate-800 dark:text-slate-100 self-end mb-[2px]">' . e($part) . '</span>';
-                        }
-                    }
+                        return e(strip_tags($m[0]));
+                    }, $html);
+                    $styled = preg_replace('/<br\s*\/?>/i', '<div class="w-full h-0 basis-full my-1"></div>', $styled);
+                    return '<div class="flex flex-wrap items-end gap-x-2 gap-y-1">' . $styled . '</div>';
                 }
                 
-                return '<div class="inline-flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom">' . $out . '</div>';
+                if (preg_match('/<rt[^>]*>(.*?)<\/rt>/is', $html, $pyM)) {
+                    $extractedPinyin = trim(strip_tags($pyM[1]));
+                    $cleanHtml = preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $html);
+                    $extractedHanzi = trim(strip_tags($cleanHtml));
+                    if (!empty($extractedPinyin) && !empty($extractedHanzi)) {
+                        $pinyinStr = $extractedPinyin;
+                        $hanziStr = $extractedHanzi;
+                    } else {
+                        return e(strip_tags($html));
+                    }
+                } else {
+                    return function_exists('hsk_render_pinyin') ? hsk_render_pinyin($html) : e(strip_tags($html));
+                }
             }
 
-            // If pinyinStr and hanziStr were provided
-            if (!empty($hanziStr) && !empty($pinyinStr)) {
-                preg_match_all('/(?:[a-zA-Z]{1,3})?[aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜAEIOUÜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙǕǗǙǛ]+(?:ng|n|r)?/iu', $pinyinStr, $m);
-                $validPinyins = $m[0] ?? [];
-                $chars = mb_str_split($hanziStr);
-                $chineseCharCount = 0;
-                foreach ($chars as $char) {
-                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
-                        $chineseCharCount++;
+            preg_match_all('/(?:[a-zA-Z]{1,3})?[aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜAEIOUÜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙǕǗǙǛ]+(?:ng|n|r)?/iu', $pinyinStr, $m);
+            $validPinyins = $m[0] ?? [];
+
+            $chars = mb_str_split($hanziStr);
+
+            $chineseCharCount = 0;
+            foreach ($chars as $char) {
+                if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                    $chineseCharCount++;
+                }
+            }
+
+            if (count($validPinyins) === $chineseCharCount && $chineseCharCount > 0) {
+                $out = '';
+                $pIdx = 0;
+                foreach ($chars as $i => $char) {
+                    if ($char === "\n") {
+                        $out .= '<div class="w-full h-0 basis-full my-1"></div>';
+                    } else if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                        $out .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($validPinyins[$pIdx++]) . '</rt></ruby>';
+                    } else if (trim($char) === '') {
+                        $out .= '<span class="mx-1"> </span>';
+                    } else {
+                        $out .= '<span class="text-sm font-medium text-slate-800 dark:text-slate-100 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
                     }
                 }
-                
-                if (count($validPinyins) === $chineseCharCount && $chineseCharCount > 0) {
-                    preg_match_all('/[\x{4e00}-\x{9fa5}]|[^\x{4e00}-\x{9fa5}]+/u', $hanziStr, $tokMatches);
-                    $rawTokens = $tokMatches[0] ?? [];
-                    $out = '';
-                    $pIdx = 0;
-                    $tCount = count($rawTokens);
-                    
-                    for ($ti = 0; $ti < $tCount; $ti++) {
-                        $tok = $rawTokens[$ti];
-                        if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $tok)) {
-                            $py = $validPinyins[$pIdx++] ?? '';
-                            $trailingPunct = '';
-                            if ($ti + 1 < $tCount && !preg_match('/[\x{4e00}-\x{9fa5}]/u', $rawTokens[$ti + 1])) {
-                                $nextTok = $rawTokens[$ti + 1];
-                                if (preg_match('/^([^\x{4e00}-\x{9fa5}]+)/u', $nextTok, $pMatch)) {
-                                    $fullMatch = $pMatch[1];
-                                    if (preg_match('/^(.*?[^\s])(\s+)$/us', $fullMatch, $sep)) {
-                                        $trailingPunct = $sep[1];
-                                        $remSpace = $sep[2];
-                                    } else {
-                                        $trailingPunct = $fullMatch;
-                                        $remSpace = '';
-                                    }
-                                    $rawTokens[$ti + 1] = $remSpace . mb_substr($nextTok, mb_strlen($fullMatch));
-                                }
-                            }
-                            $out .= _hsk_format_ruby_char($tok, $py, $trailingPunct);
-                        } else {
-                            if (preg_match('/<br\s*\/?>|\n/i', $tok)) {
-                                $out .= '<div class="w-full h-0 basis-full my-1"></div>';
-                            } elseif (trim($tok) === '') {
-                                $out .= '<span class="mx-1"> </span>';
-                            } else {
-                                $out .= '<span class="inline-block whitespace-nowrap text-sm font-medium text-slate-800 dark:text-slate-100 self-end mb-[2px]">' . e($tok) . '</span>';
-                            }
-                        }
-                    }
-                    return '<div class="inline-flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom">' . $out . '</div>';
-                }
+                return $out;
             }
 
             // Fallback for unaligned text or plain text
-            if (function_exists('hsk_render_pinyin')) {
+            if (empty($hanziStr) && !empty($html) && function_exists('hsk_render_pinyin')) {
                 return hsk_render_pinyin($html);
             }
             
-            return '<div><div class="text-xs text-slate-500 mb-1 leading-none">' . e($pinyinStr) . '</div><div class="text-base font-bold text-slate-800 dark:text-slate-100 tracking-widest">' . (!empty($hanziStr) ? e($hanziStr) : e($html)) . '</div></div>';
+            $fallbackHtml = '<div><div class="text-xs text-slate-500 mb-1 leading-none">' . e($pinyinStr) . '</div><div class="text-base font-bold text-slate-800 dark:text-slate-100 tracking-widest">' . (!empty($hanziStr) ? e($hanziStr) : e($html)) . '</div></div>';
+            return $fallbackHtml;
         });
     }
 }
@@ -199,20 +140,16 @@ if (! function_exists('hsk_render_pinyin')) {
     {
         if (empty(trim($text ?? ''))) return '';
 
-        $cacheKey = 'hsk_pinyin_v4_' . md5($text);
+        $cacheKey = 'hsk_pinyin_' . md5($text);
         return _hsk_cache_remember_forever($cacheKey, function () use ($text) {
             // Split by <br> tags to prevent parsing HTML tag characters individually
-            $lines = preg_split('/<br\s*\/?>|\n/i', $text);
+            $lines = preg_split('/<br\s*\/?>/i', $text);
             $renderedLines = [];
 
             foreach ($lines as $line) {
-                if (trim($line) === '') {
-                    $renderedLines[] = '';
-                    continue;
-                }
-
-                // Extract all Chinese characters to evaluate their pinyin in context (for polyphones)
                 $chars = mb_str_split($line);
+                
+                // Extract all Chinese characters to evaluate their pinyin in context (for polyphones)
                 $chineseChars = '';
                 foreach ($chars as $char) {
                     if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
@@ -225,45 +162,20 @@ if (! function_exists('hsk_render_pinyin')) {
                 }
                 $pIdx = 0;
 
-                // Tokenize into Chinese chars and non-Chinese chunks
-                preg_match_all('/[\x{4e00}-\x{9fa5}]|[^\x{4e00}-\x{9fa5}]+/u', $line, $matches);
-                $rawTokens = $matches[0] ?? [];
-                $tCount = count($rawTokens);
-
                 $html = '<div class="inline-flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom">';
-
-                for ($ti = 0; $ti < $tCount; $ti++) {
-                    $tok = $rawTokens[$ti];
-                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $tok)) {
-                        $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($tok) ?? '';
-                        $trailingPunct = '';
-
-                        // Lookahead: If next token has punctuation/symbols, glue to this Chinese character
-                        if ($ti + 1 < $tCount && !preg_match('/[\x{4e00}-\x{9fa5}]/u', $rawTokens[$ti + 1])) {
-                            $nextTok = $rawTokens[$ti + 1];
-                            if (preg_match('/^([^\x{4e00}-\x{9fa5}]+)/u', $nextTok, $pMatch)) {
-                                $fullMatch = $pMatch[1];
-                                if (preg_match('/^(.*?[^\s])(\s+)$/us', $fullMatch, $sep)) {
-                                    $trailingPunct = $sep[1];
-                                    $remSpace = $sep[2];
-                                } else {
-                                    $trailingPunct = $fullMatch;
-                                    $remSpace = '';
-                                }
-                                $rawTokens[$ti + 1] = $remSpace . mb_substr($nextTok, mb_strlen($fullMatch));
-                            }
-                        }
-
-                        $html .= _hsk_format_ruby_char($tok, $py, $trailingPunct);
+                
+                foreach ($chars as $char) {
+                    if ($char === "\n") {
+                        $html .= '<div class="w-full h-0 basis-full my-1"></div>';
+                    } elseif (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                        $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
+                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1px]"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($py) . '</rt></ruby>';
+                    } elseif (trim($char) === '') {
+                        $html .= '<span class="mx-1"> </span>';
                     } else {
-                        if (trim($tok) === '') {
-                            $html .= '<span class="mx-1"> </span>';
-                        } else {
-                            $html .= '<span class="inline-block whitespace-nowrap text-sm font-medium text-slate-800 dark:text-slate-100 self-end mb-[2px]">' . e($tok) . '</span>';
-                        }
+                        $html .= '<span class="text-sm font-medium text-slate-800 dark:text-slate-100 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
                     }
                 }
-
                 $html .= '</div>';
                 $renderedLines[] = $html;
             }
@@ -281,7 +193,7 @@ if (! function_exists('hsk_render_flashcard_ruby')) {
     {
         if (empty(trim($text ?? ''))) return '';
 
-        $cacheKey = 'hsk_flashcard_ruby_v4_' . md5($text);
+        $cacheKey = 'hsk_flashcard_ruby_' . md5($text);
         return _hsk_cache_remember_forever($cacheKey, function () use ($text) {
             $lines = preg_split('/<br\s*\/?>|\n/i', $text);
             $renderedLines = [];
@@ -307,44 +219,15 @@ if (! function_exists('hsk_render_flashcard_ruby')) {
                 }
                 $pIdx = 0;
 
-                preg_match_all('/[\x{4e00}-\x{9fa5}]|[^\x{4e00}-\x{9fa5}]+/u', $trimmedLine, $matches);
-                $rawTokens = $matches[0] ?? [];
-                $tCount = count($rawTokens);
-
                 $html = '<div class="inline-flex flex-wrap items-end gap-x-[1.5px] gap-y-1.5 align-bottom leading-normal">';
-                for ($ti = 0; $ti < $tCount; $ti++) {
-                    $tok = $rawTokens[$ti];
-                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $tok)) {
-                        $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($tok) ?? '';
-                        $trailingPunct = '';
-
-                        if ($ti + 1 < $tCount && !preg_match('/[\x{4e00}-\x{9fa5}]/u', $rawTokens[$ti + 1])) {
-                            $nextTok = $rawTokens[$ti + 1];
-                            if (preg_match('/^([^\x{4e00}-\x{9fa5}]+)/u', $nextTok, $pMatch)) {
-                                $fullMatch = $pMatch[1];
-                                if (preg_match('/^(.*?[^\s])(\s+)$/us', $fullMatch, $sep)) {
-                                    $trailingPunct = $sep[1];
-                                    $remSpace = $sep[2];
-                                } else {
-                                    $trailingPunct = $fullMatch;
-                                    $remSpace = '';
-                                }
-                                $rawTokens[$ti + 1] = $remSpace . mb_substr($nextTok, mb_strlen($fullMatch));
-                            }
-                        }
-
-                        $rubyHtml = '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1.5px]"><span class="text-sm sm:text-base font-bold zh-text text-slate-800 dark:text-slate-100">' . e($tok) . '</span><rt class="text-[10px] sm:text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] mb-1 select-none tracking-normal">' . e($py) . '</rt></ruby>';
-                        if (!empty($trailingPunct)) {
-                            $html .= '<span class="inline-flex items-end whitespace-nowrap">' . $rubyHtml . '<span class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 self-end mb-[2px]">' . e($trailingPunct) . '</span></span>';
-                        } else {
-                            $html .= $rubyHtml;
-                        }
+                foreach ($chars as $char) {
+                    if (preg_match('/[\x{4e00}-\x{9fa5}]/u', $char)) {
+                        $py = $validPinyins[$pIdx++] ?? (string) Pinyin::sentence($char) ?? '';
+                        $html .= '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1.5px]"><span class="text-sm sm:text-base font-bold zh-text text-slate-800 dark:text-slate-100">' . e($char) . '</span><rt class="text-[10px] sm:text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] mb-1 select-none tracking-normal">' . e($py) . '</rt></ruby>';
+                    } elseif (trim($char) === '') {
+                        $html .= '<span class="mx-1"> </span>';
                     } else {
-                        if (trim($tok) === '') {
-                            $html .= '<span class="mx-1"> </span>';
-                        } else {
-                            $html .= '<span class="inline-block whitespace-nowrap text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mt-auto self-end mb-[2px]">' . e($tok) . '</span>';
-                        }
+                        $html .= '<span class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mt-auto self-end mb-[2px]">' . e($char) . '</span>';
                     }
                 }
                 $html .= '</div>';
