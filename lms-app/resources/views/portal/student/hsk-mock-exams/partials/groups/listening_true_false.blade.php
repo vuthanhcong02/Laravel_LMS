@@ -39,12 +39,22 @@
                     @php
                         $isTrue = ($option->content === '√');
                         $isCorrect = $option->is_correct;
-                        $iconColor = $isTrue ? 'text-emerald-500' : 'text-rose-500';
-                        $bgSelected = $isCorrect ? ($isTrue ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' : 'border-rose-500 bg-rose-50 dark:bg-rose-950/30') : 'border-[#e8e2d9] dark:border-[#2d2926] bg-[#f8f6f3] dark:bg-[#201d1b] opacity-60';
                     @endphp
-                    <div class="cursor-not-allowed">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 flex items-center justify-center {{ $bgSelected }} shadow-xs">
-                            <span class="text-2xl font-bold {{ $iconColor }}">{{ $option->content }}</span>
+                    <div class="cursor-not-allowed select-none">
+                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center transition-transform
+                            {{ $isCorrect 
+                                ? ($isTrue ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30' : 'bg-rose-500 border-rose-500 text-white shadow-sm shadow-rose-500/30')
+                                : ($isTrue ? 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/30 dark:bg-emerald-950/10 text-emerald-400/40 dark:text-emerald-500/30' : 'border-rose-200 dark:border-rose-900/60 bg-rose-50/30 dark:bg-rose-950/10 text-rose-400/40 dark:text-rose-500/30') }}">
+                            @if($isTrue)
+                                <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            @else
+                                <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -79,8 +89,8 @@
                 @if ($question->audio_file)
                     <button type="button" 
                             onclick="playAudio('{{ hsk_storage_url($question->audio_file) }}', this)"
-                            class="w-full sm:w-auto h-12 px-5 rounded-2xl bg-[#fff2ee] dark:bg-[#251d1a] border border-[#fcdccf] dark:border-[#42271f] text-[#e07a5f] font-bold text-xs hover:bg-[#e07a5f] hover:text-white transition-all flex items-center justify-center gap-2 btn-tactile shadow-xs">
-                        <i class="fa-solid fa-volume-high text-sm"></i>
+                            class="w-full sm:w-auto h-10 px-4 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] border border-[#fcdccf] dark:border-[#42271f] text-[#e07a5f] font-bold text-xs hover:bg-[#e07a5f] hover:text-white transition-all flex items-center justify-center gap-2 btn-tactile shadow-xs">
+                        <i class="fa-solid fa-volume-high text-xs"></i>
                         <span>{{ __('Nghe Audio') }}</span>
                     </button>
                 @endif
@@ -88,15 +98,27 @@
                     @foreach ($question->options as $option)
                         @php
                             $isTrue = ($option->content === '√');
-                            $iconColor = $isTrue ? 'text-emerald-500' : 'text-rose-500';
+                            $radioClass = $isTrue ? 'tf-true-radio' : 'tf-false-radio';
                         @endphp
-                        <label class="cursor-pointer group block shrink-0">
+                        <label class="cursor-pointer group block shrink-0 select-none">
                             <input type="radio" name="answers[{{ $question->id }}]"
                                 value="{{ $option->id }}"
                                 onchange="updateSidebar({{ $currentQNum }})"
-                                class="peer hidden">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#e8e2d9] dark:border-[#2d2926] bg-[#f8f6f3] dark:bg-[#201d1b] peer-checked:border-[#e07a5f] peer-checked:bg-[#fff5f2] dark:peer-checked:bg-[#2a201c] flex items-center justify-center transition-all hover:border-[#e07a5f]/50 btn-tactile shadow-xs">
-                                <span class="text-2xl font-bold {{ $iconColor }}">{{ $option->content }}</span>
+                                class="peer hidden tf-radio {{ $radioClass }}">
+                            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center transition-all duration-200 btn-tactile shadow-2xs
+                                {{ $isTrue 
+                                    ? 'border-emerald-300 dark:border-emerald-800 bg-[#fcfaf7] dark:bg-[#201d1b] text-emerald-600/70 dark:text-emerald-400/80 hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20' 
+                                    : 'border-rose-300 dark:border-rose-800 bg-[#fcfaf7] dark:bg-[#201d1b] text-rose-600/70 dark:text-rose-400/80 hover:border-rose-500 hover:text-rose-600 hover:bg-rose-50/50 dark:hover:bg-rose-950/20' }}">
+                                @if($isTrue)
+                                    <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                @else
+                                    <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                @endif
                             </div>
                         </label>
                     @endforeach

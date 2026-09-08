@@ -64,24 +64,44 @@
             box-shadow: 0 8px 24px -4px rgba(224, 122, 95, 0.08);
         }
         /* Modern Radio options active styling (for regular choice cards) */
-        input[type="radio"]:not(.matching-radio):checked ~ div,
-        input[type="radio"]:not(.matching-radio):checked + div {
+        input[type="radio"]:not(.matching-radio):not(.tf-radio):checked ~ div,
+        input[type="radio"]:not(.matching-radio):not(.tf-radio):checked + div {
             border-color: #e07a5f !important;
             background-color: #fff7f4 !important;
             box-shadow: 0 2px 8px -2px rgba(224, 122, 95, 0.25);
         }
-        .dark input[type="radio"]:not(.matching-radio):checked ~ div,
-        .dark input[type="radio"]:not(.matching-radio):checked + div {
+        .dark input[type="radio"]:not(.matching-radio):not(.tf-radio):checked ~ div,
+        .dark input[type="radio"]:not(.matching-radio):not(.tf-radio):checked + div {
             background-color: #2a201c !important;
             border-color: #e07a5f !important;
         }
-        input[type="radio"]:not(.matching-radio):checked ~ div div:first-child,
-        input[type="radio"]:not(.matching-radio):checked + div div:first-child,
-        input[type="radio"]:not(.matching-radio):checked ~ div .opt-badge,
-        input[type="radio"]:not(.matching-radio):checked + div .opt-badge {
+        input[type="radio"]:not(.matching-radio):not(.tf-radio):checked ~ div .opt-badge,
+        input[type="radio"]:not(.matching-radio):not(.tf-radio):checked + div .opt-badge {
             background-color: #e07a5f !important;
             border-color: #e07a5f !important;
             color: #ffffff !important;
+        }
+
+        /* True/False Radio Buttons (√ / ×) */
+        .tf-true-radio:checked + div {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+            transform: scale(1.05);
+        }
+        .tf-true-radio:checked + div svg {
+            stroke: #ffffff !important;
+        }
+        .tf-false-radio:checked + div {
+            background-color: #f43f5e !important;
+            border-color: #f43f5e !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3) !important;
+            transform: scale(1.05);
+        }
+        .tf-false-radio:checked + div svg {
+            stroke: #ffffff !important;
         }
 
         /* Matching Circle Radio Buttons (A / B / C / D / E / F) */
