@@ -173,6 +173,7 @@
     @endif
     @include('components.lms.auth-modal')
     @include('components.lms.contact-modal')
+    <x-lms.scroll-top />
     @yield('scripts')
 </body>
 </html>

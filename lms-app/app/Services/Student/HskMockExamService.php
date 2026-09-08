@@ -259,7 +259,9 @@ class HskMockExamService
             ->where('status', 'completed')
             ->with([
                 'mockExam.hskLevel',
+                'userAnswers.option',
                 'userAnswers.question.options',
+                'userAnswers.question.group',
                 'userAnswers.question.hskMockExamSection'
             ])
             ->firstOrFail();
