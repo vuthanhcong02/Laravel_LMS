@@ -204,7 +204,7 @@
                         <div class="space-y-1.5">
                             <div class="flex items-center justify-between">
                                 <label class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Mật khẩu') }}</label>
-                                <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#e07a5f] hover:underline">{{ __('Quên mật khẩu?') }}</a>
+                                <a href="{{ route('home') }}" class="text-xs font-bold text-[#e07a5f] hover:underline">{{ __('Quên mật khẩu?') }}</a>
                             </div>
                             <div class="relative">
                                 <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
