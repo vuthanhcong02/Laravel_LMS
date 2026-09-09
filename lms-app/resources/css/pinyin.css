@@ -1,0 +1,75 @@
+/* Pinyin Matrix Chart & Fullscreen Overlay */
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Fullscreen overlay */
+.pinyin-fs-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9990 !important;
+    overflow: auto !important;
+    padding: 12px !important;
+}
+
+/* Row dividers between initial groups */
+.pinyin-row-divider td {
+    border-bottom: 2px solid #1e293b !important;
+}
+.dark .pinyin-row-divider td {
+    border-bottom: 2px solid #cbd5e1 !important;
+}
+
+/* Vertical borders per finals column */
+.pinyin-matrix-table th[data-col] {
+    border-right: 1px solid #94a3b8;
+}
+.dark .pinyin-matrix-table th[data-col] {
+    border-right: 1px solid #475569;
+}
+
+.pinyin-matrix-table td[data-col] {
+    border-right: 1px solid #cbd5e1;
+}
+.dark .pinyin-matrix-table td[data-col] {
+    border-right: 1px solid #334155;
+}
+
+/* Hover crosshair highlights */
+.pinyin-highlight-row {
+    background-color: #f1f7ff !important;
+}
+.dark .pinyin-highlight-row {
+    background-color: rgba(59, 130, 246, 0.12) !important;
+}
+
+.pinyin-highlight-col {
+    background-color: #f1f7ff !important;
+}
+.dark .pinyin-highlight-col {
+    background-color: rgba(59, 130, 246, 0.12) !important;
+}
+
+th.pinyin-header-active {
+    background-color: #4379d6 !important;
+    color: #ffffff !important;
+    box-shadow: inset 0 -2px 0 #1d4ed8;
+}
+
+td.pinyin-initial-active {
+    background-color: #68a04b !important;
+    color: #ffffff !important;
+    box-shadow: inset -2px 0 0 #365314;
+}
+
+td.pinyin-cell-active {
+    background-color: #bfdbfe !important;
+}
+.dark td.pinyin-cell-active {
+    background-color: rgba(59, 130, 246, 0.4) !important;
+}
