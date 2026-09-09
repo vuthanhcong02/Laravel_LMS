@@ -20,7 +20,7 @@ export const lmsApp = (initialState = {}) => ({
     langOpen: false,
     currentLang: 'Việt Nam',
     darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-    socialDockExpanded: true,
+    socialDockExpanded: false,
     searchKeyword: '',
     authModalOpen: initialState.authModalOpen || false,
     authModalTab: initialState.authModalTab || 'login',

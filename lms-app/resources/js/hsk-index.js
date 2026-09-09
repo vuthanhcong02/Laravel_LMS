@@ -3,7 +3,7 @@ export default () => ({
     leaderboardFilter: 'all_time', 
     leaderboardLevel: 'all',
     loadingLeaderboard: false,
-    socialDockExpanded: true, 
+    socialDockExpanded: false, 
     leaderboard: window.hskLeaderboardData || [],
     
     // Top 20 Leaderboard Modal state
