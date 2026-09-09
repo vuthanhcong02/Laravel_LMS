@@ -14,13 +14,6 @@ class AuthenticatedSessionController extends Controller
 {
     public function __construct(protected AuthService $authService) {}
 
-    /**
-     * Display the login view.
-     */
-    public function create(): View
-    {
-        return view('auth.login');
-    }
 
     /**
      * Handle an incoming authentication request.
