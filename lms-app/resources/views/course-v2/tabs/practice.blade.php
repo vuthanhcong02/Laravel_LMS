@@ -47,7 +47,7 @@
         };
     };
 </script>
-                        <div x-show="activeTab === 'luyen-tap'" x-transition:enter="transition ease-out duration-200" style="display: none;" x-init="initPracticeData()">
+                        <div x-show="activeTab === 'luyen-tap'" x-transition:enter="transition ease-out duration-200" style="display: none;">
                             <!-- Empty State Practice -->
                             <template x-if="(!currentLesson?.practices || currentLesson?.practices.length === 0)">
                                 <x-lms.empty-state 

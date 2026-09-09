@@ -45,7 +45,7 @@
             </button>
         </div>
         <!-- Body with Custom Tabs & Scrollable Content -->
-        <div class="overflow-y-auto pr-1 flex-1 space-y-5 no-scrollbar" x-data="{ activeGroup: 'labial' }">
+        <div class="overflow-y-auto pr-1 flex-1 space-y-5 no-scrollbar" x-data="pinyinGuideModal">
             <!-- Group Tabs Navigation (1 Single Row with horizontal scroll) -->
             <div class="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 no-scrollbar border-b border-[#e8e2d9]/60 dark:border-[#2d2926]">
                 <button type="button" @click="activeGroup = 'labial'" 
@@ -281,3 +281,13 @@
     </div>
 </div>
 </template>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        if (!Alpine.data('pinyinGuideModal')) {
+            Alpine.data('pinyinGuideModal', (defaultGroup = 'labial') => ({
+                activeGroup: defaultGroup
+            }));
+        }
+    });
+</script>

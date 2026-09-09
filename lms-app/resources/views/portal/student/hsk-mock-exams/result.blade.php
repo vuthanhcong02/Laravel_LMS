@@ -1,6 +1,6 @@
 @extends('layouts.lms')
 
-@section('title', __('Kết quả thi thử') . ' ' . ($result->mockExam->hskLevel->title ?? ('HSK ' . $level)) . ' - ' . ($result->mockExam->title ?? '') . ' - XIAOMU LMS')
+@section('title', __('Kết quả thi thử') . ' ' . ($result->mockExam->hskLevel->title ?? ('HSK ' . $level)) . ' - ' . ($result->mockExam->title ?? '') . ' - XiaoMu LMS')
 
 @section('header-left')
     <x-lms.breadcrumb :links="[
@@ -130,37 +130,7 @@
     };
 @endphp
 
-<div x-data="{ 
-    filter: 'all', 
-    collapsedSections: {},
-    mobilePaletteOpen: false,
-    highlightedQ: null,
-    scrollToQuestion(qId, sectionKey, isCorrect) {
-        // Mở accordion nếu đang đóng
-        this.collapsedSections[sectionKey] = false;
-        // Đảm bảo filter hiển thị câu này
-        if (this.filter === 'correct' && !isCorrect) {
-            this.filter = 'all';
-        } else if (this.filter === 'incorrect' && isCorrect) {
-            this.filter = 'all';
-        }
-        this.mobilePaletteOpen = false;
-        
-        this.$nextTick(() => {
-            const el = document.getElementById(qId);
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                this.highlightedQ = qId;
-                setTimeout(() => {
-                    if (this.highlightedQ === qId) {
-                        this.highlightedQ = null;
-                    }
-                }, 2000);
-            }
-        });
-    }
-}" 
-class="space-y-6 pb-12 relative">
+<div x-data="hskResultViewer" class="space-y-6 pb-12 relative">
 
     <!-- Top Action Navigation Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -507,8 +477,7 @@ class="space-y-6 pb-12 relative">
                             @endphp
 
                             <div id="{{ $qAnchorId }}"
-                                 x-data="{ isCorrect: {{ $isCorrect ? 'true' : 'false' }} }"
-                                 x-show="filter === 'all' || (filter === 'correct' && isCorrect) || (filter === 'incorrect' && !isCorrect)"
+                                 x-show="filter === 'all' || (filter === 'correct' && {{ $isCorrect ? 'true' : 'false' }}) || (filter === 'incorrect' && {{ !$isCorrect ? 'true' : 'false' }})"
                                  :class="highlightedQ === '{{ $qAnchorId }}' ? 'bg-[#fff4ef] dark:bg-[#2c1d18] border-l-4 border-l-[#e07a5f] shadow-inner ring-1 ring-inset ring-[#e07a5f]/40' : 'border-l-4 border-l-transparent'"
                                  class="p-5 sm:p-6 space-y-4 hover:bg-[#fcfaf7]/50 dark:hover:bg-[#1a1817]/40 transition-all duration-300 scroll-mt-24">
                                 
@@ -821,4 +790,41 @@ class="space-y-6 pb-12 relative">
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        if (!Alpine.data('hskResultViewer')) {
+            Alpine.data('hskResultViewer', () => ({
+                filter: 'all', 
+                collapsedSections: {},
+                mobilePaletteOpen: false,
+                highlightedQ: null,
+                scrollToQuestion(qId, sectionKey, isCorrect) {
+                    this.collapsedSections[sectionKey] = false;
+                    if (this.filter === 'correct' && !isCorrect) {
+                        this.filter = 'all';
+                    } else if (this.filter === 'incorrect' && isCorrect) {
+                        this.filter = 'all';
+                    }
+                    this.mobilePaletteOpen = false;
+                    
+                    this.$nextTick(() => {
+                        const el = document.getElementById(qId);
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            this.highlightedQ = qId;
+                            setTimeout(() => {
+                                if (this.highlightedQ === qId) {
+                                    this.highlightedQ = null;
+                                }
+                            }, 2000);
+                        }
+                    });
+                }
+            }));
+        }
+    });
+</script>
 @endsection

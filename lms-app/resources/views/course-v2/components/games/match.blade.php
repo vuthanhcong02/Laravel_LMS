@@ -1,6 +1,5 @@
-    <template x-if="vocabSubView === 'match'">
-        <div x-data="vocabMatchEngine()" 
-             x-init="initMatchGame(vocabularies)"
+    <template x-if="($store.lesson ? $store.lesson.vocabSubView : vocabSubView) === 'match'">
+        <div x-data="vocabMatchEngine(vocabularies)" 
              class="space-y-5 max-w-3xl mx-auto">
         <!-- Header Bar -->
         <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
@@ -33,7 +32,7 @@
                 <i class="fa-solid fa-circle-exclamation text-3xl text-[#f59e0b]"></i>
                 <h4 class="text-base font-bold text-slate-800 dark:text-white">{{ __('Cần ít nhất 2 từ vựng để chơi!') }}</h4>
                 <p class="text-xs text-slate-500">{{ __('Bài học này chưa có đủ từ vựng để tạo bàn chơi nối từ.') }}</p>
-                <button @click="vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
+                <button @click="$store.lesson ? $store.lesson.vocabSubView = 'table' : vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
             </div>
         </template>
         <!-- Main Game Area -->

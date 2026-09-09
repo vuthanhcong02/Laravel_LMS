@@ -1,10 +1,9 @@
-    <template x-if="vocabSubView === 'typing'">
-        <div x-data="vocabTypingEngine()" 
-             x-init="initTyping(vocabularies)"
+    <template x-if="($store.lesson ? $store.lesson.vocabSubView : vocabSubView) === 'typing'">
+        <div x-data="vocabTypingEngine(vocabularies)" 
              class="space-y-5 max-w-xl mx-auto">
         <!-- Header -->
         <div class="flex items-center justify-between">
-            <button @click="vocabSubView = 'table'" class="text-xs font-bold text-slate-500 hover:text-[#e07a5f] transition-colors flex items-center gap-1.5 btn-tactile">
+            <button @click="$store.lesson ? $store.lesson.vocabSubView = 'table' : vocabSubView = 'table'" class="text-xs font-bold text-slate-500 hover:text-[#e07a5f] transition-colors flex items-center gap-1.5 btn-tactile">
                 <i class="fa-solid fa-arrow-left"></i> {{ __('Quay lại Bảng từ') }}
             </button>
             <div class="text-xs font-bold text-slate-400 flex items-center gap-2">
@@ -15,7 +14,7 @@
             <div class="lms-card p-8 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl text-center space-y-3">
                 <i class="fa-solid fa-circle-exclamation text-3xl text-[#f59e0b]"></i>
                 <h4 class="text-base font-bold text-slate-800 dark:text-white">{{ __('Chưa có từ vựng để luyện gõ!') }}</h4>
-                <button @click="vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
+                <button @click="$store.lesson ? $store.lesson.vocabSubView = 'table' : vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
             </div>
         </template>
         <!-- Main Typing Card -->
