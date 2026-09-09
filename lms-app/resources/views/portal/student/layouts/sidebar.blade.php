@@ -1,7 +1,6 @@
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 md:flex flex-col justify-between p-6 min-h-[calc(100vh-65px)]">
     <div class="flex flex-col gap-6">
-        <!-- Profile học viên giống y hệt teacher -->
         <div class="flex items-center gap-3 px-2">
             @if(Auth::user()->avatar_url)
                 <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover shadow-sm">

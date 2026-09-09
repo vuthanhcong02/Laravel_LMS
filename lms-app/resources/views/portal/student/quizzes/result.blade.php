@@ -161,7 +161,6 @@
                         {{-- Options / Student Answer --}}
                         <div class="space-y-3 pt-2">
                             
-                            {{-- Trắc nghiệm hoặc Đúng/Sai --}}
                             @if($question->type === \App\Enums\QuestionType::MULTIPLE_CHOICE || $question->type === \App\Enums\QuestionType::TRUE_FALSE)
                                 <div class="grid gap-2">
                                     @foreach($question->options as $option)
@@ -200,7 +199,6 @@
                                     @endforeach
                                 </div>
                             
-                            {{-- Tự luận --}}
                             @elseif($question->type === \App\Enums\QuestionType::ESSAY)
                                 <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/30">
                                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{{ __('Bài làm của bạn:') }}</p>

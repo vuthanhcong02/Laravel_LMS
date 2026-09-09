@@ -1,10 +1,5 @@
 @extends('layouts.lms')
-@section('title', 'Tiếng Trung XIAOMU - Trang chủ')
-@section('alpine-data')
-    rankTab: 'week', 
-    rankMetric: 'time', 
-    socialDockExpanded: true,
-@endsection
+@section('title', 'Tiếng Trung XiaoMu - Trang chủ')
 @section('content')
 <div class="mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl">
                     <div class="lg:col-span-2 space-y-8 animate-fade-in-up">
@@ -194,60 +189,7 @@
                         </div>
                     </div>
                     <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.1s;">
-                        <div x-data="{ 
-                            playing: false,
-                            timer: null,
-                            playAudio() {
-                                if (!('speechSynthesis' in window)) {
-                                    alert('Trình duyệt không hỗ trợ phát âm.');
-                                    return;
-                                }
-                                const synth = window.speechSynthesis;
-                                const word = '{{ addslashes($wordOfDay->word ?? '坚持') }}';
-                                if (!word) return;
-                                // Xóa timer trước đó nếu người dùng click liên tục
-                                if (this.timer) {
-                                    clearTimeout(this.timer);
-                                    this.timer = null;
-                                }
-                                // Đánh thức synth nếu bị Chrome pause ngầm
-                                if (synth.paused) {
-                                    synth.resume();
-                                }
-                                // Hủy phát âm hiện tại
-                                synth.cancel();
-                                this.playing = true;
-                                // Chờ 60ms để Chrome dọn dẹp hàng đợi audio trước khi speak lượt mới
-                                this.timer = setTimeout(() => {
-                                    if (synth.paused) {
-                                        synth.resume();
-                                    }
-                                    const utterance = new SpeechSynthesisUtterance(word);
-                                    utterance.lang = 'zh-CN';
-                                    utterance.rate = 0.85;
-                                    // Gán giọng tiếng Trung phù hợp
-                                    const voices = synth.getVoices();
-                                    const zhVoice = voices.find(v => 
-                                        v.lang === 'zh-CN' || v.lang === 'zh_CN' || 
-                                        v.lang.startsWith('zh') || v.lang.startsWith('cmn')
-                                    );
-                                    if (zhVoice) {
-                                        utterance.voice = zhVoice;
-                                    }
-                                    utterance.onend = () => {
-                                        this.playing = false;
-                                        window._activeUtterance = null;
-                                    };
-                                    utterance.onerror = () => {
-                                        this.playing = false;
-                                        window._activeUtterance = null;
-                                    };
-                                    // Giữ biến toàn cục tránh Garbage Collector giải phóng sớm
-                                    window._activeUtterance = utterance;
-                                    synth.speak(utterance);
-                                }, 60);
-                            }
-                        }" class="lms-card p-6 space-y-3 relative group">
+                        <div x-data="homeDailyVocab('{{ addslashes($wordOfDay->word ?? '坚持') }}')" class="lms-card p-6 space-y-3 relative group">
                             <div class="flex items-center justify-between text-xs text-[#e07a5f] font-bold">
                                 <span>Từ vựng hôm nay</span>
                                 <span class="px-2 py-0.5 bg-[#fff2ee] dark:bg-slate-800 rounded text-[10px] font-bold">HSK {{ $wordOfDay->level ?? 5 }}</span>
@@ -284,7 +226,7 @@
                         <div class="lms-card p-6 space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
-                                    <i class="fa-solid fa-globe text-[#e07a5f]"></i> Kết nối cùng XIAOMU
+                                    <i class="fa-solid fa-globe text-[#e07a5f]"></i> Kết nối cùng XiaoMu
                                 </h3>
                                 <span class="text-[10px] font-bold text-[#e07a5f] bg-[#fff2ee] dark:bg-slate-800 px-2 py-0.5 rounded">Cộng đồng</span>
                             </div>
@@ -324,23 +266,5 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="lg:hidden fixed bottom-0 inset-x-0 bg-white dark:bg-[#141211] border-t border-[#e8e2d9] dark:border-[#262220] flex items-center justify-around py-2.5 px-2 z-30 shadow-md">
-                <a href="{{ url('/demo-ui') }}" class="flex flex-col items-center gap-0.5 text-[#e07a5f] btn-tactile">
-                    <i class="fa-solid fa-house text-base"></i>
-                    <span class="text-[10px] font-bold">Trang chủ</span>
-                </a>
-                <a href="{{ url('/demo-courses') }}" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 dark:hover:text-white btn-tactile">
-                    <i class="fa-solid fa-book-open text-base"></i>
-                    <span class="text-[10px] font-medium">Khóa học</span>
-                </a>
-                <a href="{{ url('/demo-exams') }}" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 dark:hover:text-white btn-tactile">
-                    <i class="fa-solid fa-file-pen text-base"></i>
-                    <span class="text-[10px] font-medium">Luyện thi</span>
-                </a>
-                <a href="#" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 dark:hover:text-white btn-tactile">
-                    <i class="fa-solid fa-user text-base"></i>
-                    <span class="text-[10px] font-medium">Cá nhân</span>
-                </a>
             </div>
 @endsection

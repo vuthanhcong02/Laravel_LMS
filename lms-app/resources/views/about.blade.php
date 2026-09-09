@@ -121,56 +121,6 @@
 </section>
 
 <!-- Team Section -->
-<!-- <section class="py-16 bg-white">
-     <div class="container mx-auto px-4">
-          <div class="text-center mb-12">
-               <h2 class="text-3xl font-bold mb-4">Đội ngũ của chúng tôi</h2>
-               <p class="text-gray-600 max-w-2xl mx-auto">Đội ngũ chuyên gia và giảng viên giàu kinh nghiệm, tâm huyết
-                    với sứ mệnh mang lại kiến thức chất lượng cho cộng đồng.</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-               <div class="team-card bg-white rounded-2xl p-6 text-center shadow-md">
-                    <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                         <i class="fas fa-user text-indigo-600 text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Nguyễn Văn A</h3>
-                    <p class="text-indigo-600 font-semibold mb-3">Founder & CEO</p>
-                    <p class="text-gray-600 text-sm">Với 10 năm kinh nghiệm trong lĩnh vực giáo dục trực tuyến và công
-                         nghệ.</p>
-               </div>
-
-               <div class="team-card bg-white rounded-2xl p-6 text-center shadow-md">
-                    <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                         <i class="fas fa-user text-indigo-600 text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Trần Thị B</h3>
-                    <p class="text-indigo-600 font-semibold mb-3">CTO</p>
-                    <p class="text-gray-600 text-sm">Chuyên gia công nghệ với 8 năm kinh nghiệm phát triển nền tảng học
-                         tập.</p>
-               </div>
-
-               <div class="team-card bg-white rounded-2xl p-6 text-center shadow-md">
-                    <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                         <i class="fas fa-user text-indigo-600 text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Lê Văn C</h3>
-                    <p class="text-indigo-600 font-semibold mb-3">Head of Content</p>
-                    <p class="text-gray-600 text-sm">Chịu trách nhiệm kiểm duyệt và phát triển nội dung khóa học chất
-                         lượng.</p>
-               </div>
-
-               <div class="team-card bg-white rounded-2xl p-6 text-center shadow-md">
-                    <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                         <i class="fas fa-user text-indigo-600 text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Phạm Thị D</h3>
-                    <p class="text-indigo-600 font-semibold mb-3">Student Success Manager</p>
-                    <p class="text-gray-600 text-sm">Đảm bảo trải nghiệm học tập tốt nhất cho mọi học viên.</p>
-               </div>
-          </div>
-     </div>
-</section> -->
 
 <!-- Values -->
 <section class="py-16 bg-gray-50">
