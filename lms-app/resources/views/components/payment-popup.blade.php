@@ -11,7 +11,6 @@
 
           <!-- Content -->
           <div class="p-6">
-               <!-- Thông tin thanh toán -->
                <div class="mb-6">
                     <div class="flex justify-between items-center mb-2">
                          <span class="text-gray-600">Số tiền:</span>
@@ -23,7 +22,6 @@
                     </div>
                </div>
 
-               <!-- Mã QR -->
                <div class="text-center mb-6">
                     <div class="bg-white p-4 rounded-lg border-2 border-dashed border-gray-300 inline-block mb-4">
                          <!-- Placeholder for QR code - in real app, generate dynamic QR -->
@@ -38,7 +36,6 @@
                     <p class="text-sm text-gray-600 mb-2">Quét mã QR để thanh toán</p>
                </div>
 
-               <!-- Thông tin tài khoản -->
                <div class="bg-gray-50 rounded-lg p-4 mb-6">
                     <h3 class="font-semibold mb-3 text-gray-800">Thông tin chuyển khoản</h3>
                     <div class="space-y-2 text-sm">
@@ -61,7 +58,6 @@
                     </div>
                </div>
 
-               <!-- Nút hành động -->
                <div class="flex space-x-3">
                     <button id="confirm-payment"
                          class="flex-1 bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition duration-300 font-semibold flex items-center justify-center">

@@ -47,15 +47,8 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/', function () {
         return redirect()->route('home');
     });
-    // Old Home
-    Route::get('/trang-chu-old-v2', 'getViewHome')->name('home.old-v2');
     Route::get('/lien-he', [PageController::class, 'getViewContact'])->name('contact');
     Route::post('/lien-he', [ContactController::class, 'store'])->middleware('throttle:3,1')->name('contact.store');
-    // Old Routes
-    Route::get('/khoa-hoc-old-v2', 'getViewCourses')->name('courses.old-v2');
-    Route::get('/khoa-hoc-old-v2/{levelSlug}/{lessonSlug}/{tab?}', 'showCourseLesson')->name('courses.old-v2.lesson')->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
-
-    // V2 Routes (now main)
     Route::get('/khoa-hoc', 'getViewCoursesV2')->name('courses');
     Route::get('/khoa-hoc/{levelSlug}', 'showCourseLevelV2')->name('courses.level');
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
@@ -63,28 +56,16 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
-    // New Home
     Route::get('/trang-chu', 'getDemoHome')->name('home');
     Route::get('/the-ghi-nho', 'getViewFlashcards')->name('flashcards');
     Route::post('/flashcards/remember', 'rememberVocabulary')->name('flashcards.remember');
     Route::post('/flashcards/unremember', 'unrememberVocabulary')->name('flashcards.unremember');
     Route::post('/flashcards/reset', 'resetVocabularyProgress')->name('flashcards.reset');
-    Route::view('/demo-courses', 'demo-courses');
-    Route::view('/demo-course-detail', 'demo-course-detail');
-    Route::view('/demo-exams', 'demo-exams');
-    Route::view('/demo-exam-take', 'demo-exam-take');
-    Route::view('/demo-flashcards', 'demo-flashcards');
-    Route::view('/demo-etymology', 'demo-etymology');
-    Route::view('/login', 'auth.login');
-    Route::view('/register', 'auth.register');
-    Route::view('/forgot-password', 'auth.forgot-password');
-    Route::view('/reset-password', 'auth.reset-password');
 });
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
 
-    // HSK Course Lesson (Học bài học chi tiết)
     Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', [PageController::class, 'showCourseLessonV2'])
         ->name('courses.lesson')
         ->whereIn('tab', ['tu-vung', 'hoi-thoai', 'ngu-phap', 'luyen-tap']);
@@ -269,21 +250,3 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
-
-Route::get('/debug-db', function () {
-    $lesson = App\Models\Lesson::find(21);
-    $lesson->load('practices.sections.questions');
-    $out = "";
-    foreach ($lesson->practices as $practice) {
-        foreach ($practice->sections as $section) {
-            foreach ($section->questions as $q) {
-                if (!empty($q->question_segments)) {
-                    $out .= "Question ID: {$q->id}\n";
-                    $out .= "Type: " . gettype($q->question_segments) . "\n";
-                    $out .= "Value: " . json_encode($q->question_segments, JSON_UNESCAPED_UNICODE) . "\n\n";
-                }
-            }
-        }
-    }
-    return response($out)->header('Content-Type', 'text/plain');
-});

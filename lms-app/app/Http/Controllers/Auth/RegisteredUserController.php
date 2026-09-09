@@ -14,14 +14,6 @@ class RegisteredUserController extends Controller
     public function __construct(protected AuthService $authService) {}
 
     /**
-     * Display the registration view.
-     */
-    public function create(): View
-    {
-        return view('auth.register');
-    }
-
-    /**
      * Handle an incoming registration request.
      *
      * @throws \Illuminate\Validation\ValidationException

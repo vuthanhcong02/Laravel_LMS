@@ -1,5 +1,5 @@
 @extends('layouts.lms')
-@section('title', __('Thẻ ghi nhớ Flashcards HSK - Tiếng Trung XIAOMU LMS'))
+@section('title', __('Thẻ ghi nhớ Flashcards HSK - Tiếng Trung XiaoMu LMS'))
 @section('header-left')
     <x-lms.breadcrumb :links="[
         ['label' => __('Trang chủ'), 'url' => route('home')],
@@ -311,7 +311,7 @@
             }));
         });
     </script>
-    <div x-data="flashcardApp()" class="space-y-6 pb-12">
+    <div x-data="flashcardApp" class="space-y-6 pb-12">
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
             <div class="absolute right-4 -bottom-6 text-9xl font-extrabold text-[#e07a5f]/5 pointer-events-none select-none zh-text">
                 记

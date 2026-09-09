@@ -1,4 +1,4 @@
-<section x-data="passwordUpdateForm()">
+<section x-data="passwordUpdateForm('{{ route('password.update') }}')">
     <header class="mb-6">
         <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <i class="fa-solid fa-shield-halved text-[#e07a5f]"></i>
@@ -8,7 +8,7 @@
             {{ __('Đảm bảo tài khoản của bạn đang sử dụng mật khẩu mạnh, kết hợp chữ cái, số và ký tự đặc biệt để tối ưu bảo mật.') }}
         </p>
     </header>
-    <form id="passwordForm" @submit.prevent="submitPasswordForm" class="space-y-4">
+    <form id="passwordForm" action="{{ route('password.update') }}" method="POST" @submit.prevent="submitPasswordForm" class="space-y-4">
         @csrf
         @method('put')
         <div>
@@ -72,53 +72,10 @@
                 <i x-show="loading" class="fa-solid fa-spinner fa-spin text-xs" style="display: none;"></i>
                 <span x-text="loading ? '{{ __('Đang cập nhật...') }}' : '{{ __('Cập nhật mật khẩu') }}'">{{ __('Cập nhật mật khẩu') }}</span>
             </button>
-            <div x-show="successMessage" x-transition x-init="$watch('successMessage', val => { if (val) setTimeout(() => successMessage = '', 3000) })" style="display: none;"
+            <div x-show="successMessage" x-transition style="display: none;"
                  class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-900/50">
                 <i class="fa-solid fa-circle-check text-xs"></i>
                 <span x-text="successMessage"></span>
             </div>
-        </div>
     </form>
 </section>
-<script>
-    function passwordUpdateForm() {
-        return {
-            showCurrent: false, 
-            showNew: false, 
-            showConfirm: false,
-            loading: false,
-            errors: {},
-            successMessage: '',
-            async submitPasswordForm() {
-                this.loading = true;
-                this.errors = {};
-                this.successMessage = '';
-                let form = document.getElementById('passwordForm');
-                let formData = new FormData(form);
-                try {
-                    const response = await fetch('{{ route("password.update") }}', {
-                        method: 'POST', // Blade has @method('put') which adds _method=put to FormData
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        },
-                        body: formData
-                    });
-                    const data = await response.json();
-                    if (response.ok && data.success) {
-                        this.successMessage = data.message;
-                        form.reset();
-                    } else if (response.status === 422) {
-                        for (const key in data.errors) {
-                            this.errors[key] = data.errors[key][0];
-                        }
-                    }
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    this.loading = false;
-                }
-            }
-        }
-    }
-</script>

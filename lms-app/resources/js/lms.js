@@ -65,7 +65,7 @@ window.toneToUnicode = function (pinyin) {
 };
 
 
-// Global Audio Player Logic for XIAOMU LMS
+// Global Audio Player Logic for XiaoMu LMS
 let currentGlobalAudio = null;
 let _globalSpeechTimer = null;
 

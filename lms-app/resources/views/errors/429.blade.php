@@ -1,5 +1,7 @@
 @extends('errors.layout')
-@section('title', 'Quá nhiều yêu cầu')
+
+@section('title', __('Quá nhiều yêu cầu'))
 @section('code', '429')
-@section('icon', 'hourglass_empty')
-@section('message', 'Bạn đã thao tác quá nhanh. Vui lòng đợi một lát trước khi tiếp tục để đảm bảo hệ thống hoạt động ổn định.')
+@section('icon', 'speed')
+@section('message', __('Bạn đang thực hiện thao tác quá nhanh. Vui lòng tạm dừng một chút trước khi thử lại.'))
+@section('action_reload', true)

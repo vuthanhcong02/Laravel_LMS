@@ -1,5 +1,5 @@
 @extends('layouts.lms')
-@section('title', $currentLevel->title . ' - ' . __('Tiếng Trung XIAOMU LMS'))
+@section('title', $currentLevel->title . ' - ' . __('Tiếng Trung XiaoMu LMS'))
 @section('header-left')
     <x-lms.breadcrumb :breadcrumbs="[
         ['name' => __('Khóa học'), 'url' => route('courses')],

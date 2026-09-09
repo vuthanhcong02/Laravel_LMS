@@ -20,12 +20,12 @@
         <div class="flex flex-col items-center text-center pt-1 mb-5">
             <div
                 class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#fff2ee] to-[#fdeae3] dark:from-[#2a221f] dark:to-[#1e1715] border border-[#fcdccf] dark:border-[#42271f] p-1.5 shadow-sm mb-3 flex items-center justify-center shrink-0">
-                <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-full h-full rounded-xl object-cover">
+                <img src="{{ asset('logo.png') }}" alt="XiaoMu Logo" class="w-full h-full rounded-xl object-cover">
             </div>
             <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 <span
                     x-text="authModalTab === 'login' ? 'Đăng nhập' : (authModalTab === 'register' ? 'Tạo tài khoản mới' : 'Khôi phục mật khẩu')"></span>
-                <span class="text-[#e07a5f]">XIAOMU</span>
+                <span class="text-[#e07a5f]">XiaoMu</span>
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1"
                 x-text="authModalTab === 'login' ? 'Tiếp tục hành trình chinh phục tiếng Trung của bạn' : (authModalTab === 'register' ? 'Bắt đầu lộ trình luyện thi HSK thông minh hôm nay' : 'Nhập email của bạn để nhận liên kết đặt lại mật khẩu')">
@@ -177,7 +177,7 @@
                         class="mt-0.5 rounded text-[#e07a5f] focus:ring-[#e07a5f]/20 border-slate-300 dark:border-slate-700 dark:bg-slate-800">
                     <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight select-none">
                         {{ __('Tôi đồng ý với') }} <a href="#" class="text-[#e07a5f] underline">{{ __('Điều khoản dịch vụ') }}</a> {{ __('và') }} <a
-                            href="#" class="text-[#e07a5f] underline">{{ __('Chính sách bảo mật') }}</a> {{ __('của XIAOMU.') }}
+                            href="#" class="text-[#e07a5f] underline">{{ __('Chính sách bảo mật') }}</a> {{ __('của XiaoMu.') }}
                     </span>
                 </div>
                 <button type="submit"
@@ -214,37 +214,7 @@
                 </p>
             </div>
         </div>
-        <div x-show="authModalTab === 'forgot'" class="space-y-4" style="display: none;" x-data="{
-            forgotLoading: false,
-            forgotStatus: null,
-            forgotError: null,
-            async submitForgot() {
-                if (this.forgotLoading) return;
-                this.forgotLoading = true;
-                this.forgotStatus = null;
-                this.forgotError = null;
-                try {
-                    const response = await fetch('{{ route('password.email') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ email: authEmail })
-                    });
-                    const data = await response.json();
-                    if (response.ok) {
-                        this.forgotStatus = data.status || 'Đã gửi liên kết khôi phục.';
-                    } else {
-                        this.forgotError = data.message || (data.errors && data.errors.email ? data.errors.email[0] : 'Có lỗi xảy ra.');
-                    }
-                } catch (e) {
-                    this.forgotError = 'Lỗi kết nối mạng, vui lòng thử lại.';
-                }
-                this.forgotLoading = false;
-            }
-        }">
+        <div x-show="authModalTab === 'forgot'" class="space-y-4" style="display: none;" x-data="authForgotForm('{{ route('password.email') }}')">
             <div
                 class="p-3.5 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 <i class="fa-solid fa-circle-info text-[#e07a5f] mr-1"></i>

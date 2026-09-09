@@ -1,10 +1,9 @@
-    <template x-if="vocabSubView === 'quiz'">
-        <div x-data="vocabQuizEngine()" 
-             x-init="initQuiz(vocabularies)"
+    <template x-if="($store.lesson ? $store.lesson.vocabSubView : vocabSubView) === 'quiz'">
+        <div x-data="vocabQuizEngine(vocabularies)" 
              class="space-y-5 max-w-2xl mx-auto">
         <!-- Header -->
         <div class="flex items-center justify-between">
-            <button @click="vocabSubView = 'table'" class="text-xs font-bold text-slate-500 hover:text-[#e07a5f] transition-colors flex items-center gap-1.5 btn-tactile">
+            <button @click="$store.lesson ? $store.lesson.vocabSubView = 'table' : vocabSubView = 'table'" class="text-xs font-bold text-slate-500 hover:text-[#e07a5f] transition-colors flex items-center gap-1.5 btn-tactile">
                 <i class="fa-solid fa-arrow-left"></i> {{ __('Quay lại Bảng từ') }}
             </button>
             <div class="text-xs font-bold text-slate-400 flex items-center gap-2">
@@ -18,7 +17,7 @@
                 <i class="fa-solid fa-circle-exclamation text-3xl text-[#f59e0b]"></i>
                 <h4 class="text-base font-bold text-slate-800 dark:text-white">{{ __('Cần ít nhất 4 từ vựng để tạo bài trắc nghiệm!') }}</h4>
                 <p class="text-xs text-slate-500">{{ __('Bài học này chưa đủ lượng từ vựng để sinh câu hỏi trắc nghiệm.') }}</p>
-                <button @click="vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
+                <button @click="$store.lesson ? $store.lesson.vocabSubView = 'table' : vocabSubView = 'table'" class="px-4 py-2 bg-[#e07a5f] text-white text-xs font-bold rounded-xl btn-tactile">{{ __('Xem Bảng từ') }}</button>
             </div>
         </template>
         <!-- Main Quiz Question Card -->
@@ -53,22 +52,22 @@
                 <!-- Options List -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="(opt, oIdx) in currentQuestion?.options" :key="currentIndex + '_' + oIdx">
-                        <button @click="selectAnswer(oIdx)"
+                        <button @click="selectOption(opt)"
                                 :disabled="isAnswered"
                                 :class="[
                                     !isAnswered ? 'bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] hover:bg-[#fff2ee]/30 dark:hover:bg-slate-800/50 text-slate-800 dark:text-slate-200' :
-                                    (oIdx === currentQuestion.correctOptionIdx ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold ring-1 ring-emerald-500' :
-                                    (selectedOption === oIdx ? 'bg-rose-50 dark:bg-rose-950/30 border-rose-500 text-rose-700 dark:text-rose-300' : 'opacity-50 bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] text-slate-500'))
+                                    (opt.isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold ring-1 ring-emerald-500' :
+                                    (selectedOption === opt ? 'bg-rose-50 dark:bg-rose-950/30 border-rose-500 text-rose-700 dark:text-rose-300' : 'opacity-50 bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] text-slate-500'))
                                 ]"
                                 class="p-4 rounded-xl border text-left text-xs sm:text-sm font-semibold transition-all flex items-center justify-between btn-tactile shadow-2xs">
                             <div class="flex items-center gap-3">
                                 <span class="w-6 h-6 rounded-lg bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-[11px] font-bold flex items-center justify-center text-slate-500" x-text="String.fromCharCode(65 + oIdx)"></span>
-                                <span x-text="opt"></span>
+                                <span x-text="typeof opt === 'object' ? (opt.text || opt.meaning || opt.word) : opt"></span>
                             </div>
-                            <template x-if="isAnswered && oIdx === currentQuestion.correctOptionIdx">
+                            <template x-if="isAnswered && opt.isCorrect">
                                 <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
                             </template>
-                            <template x-if="isAnswered && selectedOption === oIdx && oIdx !== currentQuestion.correctOptionIdx">
+                            <template x-if="isAnswered && selectedOption === opt && !opt.isCorrect">
                                 <i class="fa-solid fa-circle-xmark text-rose-500 text-base"></i>
                             </template>
                         </button>
@@ -77,10 +76,10 @@
                 <!-- Explanation & Next Button Card -->
                 <template x-if="isAnswered">
                     <div class="lms-card p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row items-center justify-between gap-4"
-                         :class="selectedOption === currentQuestion.correctOptionIdx ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' : 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-300 dark:border-rose-800'">
+                         :class="selectedOption?.isCorrect ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' : 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-300 dark:border-rose-800'">
                         <div class="space-y-1 text-left w-full sm:w-auto">
                             <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold" :class="selectedOption === currentQuestion.correctOptionIdx ? 'text-emerald-600' : 'text-rose-600'" x-text="selectedOption === currentQuestion.correctOptionIdx ? '{{ __('Chính xác! +10 điểm') }}' : '{{ __('Chưa chính xác!') }}'"></span>
+                                <span class="text-xs font-bold" :class="selectedOption?.isCorrect ? 'text-emerald-600' : 'text-rose-600'" x-text="selectedOption?.isCorrect ? '{{ __('Chính xác! +10 điểm') }}' : '{{ __('Chưa chính xác!') }}'"></span>
                             </div>
                             <template x-if="currentQuestion.example">
                                 <p class="text-[11px] text-slate-600 dark:text-slate-400 italic" x-text="'Ví dụ: ' + currentQuestion.example"></p>
@@ -125,7 +124,7 @@
                     <button @click="initQuiz(vocabularies)" class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white font-bold text-xs shadow-xs btn-tactile flex items-center gap-2">
                         <i class="fa-solid fa-rotate-right"></i> {{ __('Làm lại bài thi') }}
                     </button>
-                    <button @click="vocabSubView = 'table'" class="px-4 py-2.5 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] font-bold text-xs btn-tactile">
+                    <button @click="$store.lesson ? $store.lesson.vocabSubView = 'table' : vocabSubView = 'table'" class="px-4 py-2.5 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] font-bold text-xs btn-tactile">
                         {{ __('Về Bảng từ') }}
                     </button>
                 </div>

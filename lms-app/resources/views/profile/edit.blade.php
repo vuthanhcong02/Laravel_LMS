@@ -1,10 +1,9 @@
 @extends('layouts.lms')
-@section('title', __('Hồ sơ cá nhân - XIAOMU Tiếng Trung LMS'))
-@section('alpine-data')
-    activeTab: '{{ $errors->updatePassword->isNotEmpty() ? 'security' : 'profile' }}',
-@endsection
+@section('title', __('Hồ sơ cá nhân - XiaoMu Tiếng Trung LMS'))
 @section('content')
-<div class="max-w-6xl mx-auto space-y-6">
+<div x-data="userProfilePage('{{ $errors->updatePassword->isNotEmpty() ? 'security' : 'profile' }}', '{{ addslashes($user->first_name . ' ' . $user->last_name) }}', '{{ $user->avatar_url }}')" 
+     @profile-updated.window="userName = $event.detail.name; userAvatar = $event.detail.avatar"
+     class="max-w-6xl mx-auto space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
         <div>
             <x-lms.breadcrumb 
@@ -27,12 +26,7 @@
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div class="lg:col-span-4 space-y-4">
-            <div class="lms-card overflow-hidden"
-                 x-data="{ 
-                     userName: '{{ addslashes($user->first_name . ' ' . $user->last_name) }}',
-                     userAvatar: '{{ $user->avatar_url }}'
-                 }"
-                 @profile-updated.window="userName = $event.detail.name; userAvatar = $event.detail.avatar">
+            <div class="lms-card overflow-hidden">
                 <div class="h-24 bg-gradient-to-r from-[#e07a5f]/80 via-[#e07a5f] to-[#c86349] relative">
                     <div class="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:12px_12px] opacity-20"></div>
                 </div>
@@ -61,7 +55,7 @@
                             @elseif($user->role === \App\Models\User::ROLE_TEACHER)
                                 {{ __('Giảng viên') }}
                             @else
-                                {{ __('Học viên XIAOMU') }}
+                                {{ __('Học viên XiaoMu') }}
                             @endif
                         </span>
                     </div>
@@ -119,3 +113,4 @@
     </div>
 </div>
 @endsection
+

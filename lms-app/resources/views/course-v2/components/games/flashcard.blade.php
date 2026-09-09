@@ -1,7 +1,7 @@
-    <div x-show="vocabSubView === 'flashcard'" style="display: none;" class="space-y-4 max-w-2xl mx-auto">
+    <div x-show="($store.lesson ? $store.lesson.vocabSubView : vocabSubView) === 'flashcard'" style="display: none;" class="space-y-4 max-w-2xl mx-auto">
         <!-- Header -->
         <div class="flex items-center justify-between mb-2">
-            <button @click="vocabSubView = 'table'" class="text-xs font-bold text-slate-500 hover:text-[#e07a5f] transition-colors flex items-center gap-1.5 btn-tactile">
+            <button @click="$store.lesson ? $store.lesson.vocabSubView = 'table' : vocabSubView = 'table'" class="text-xs font-bold text-slate-500 hover:text-[#e07a5f] transition-colors flex items-center gap-1.5 btn-tactile">
                 <i class="fa-solid fa-arrow-left"></i> {{ __('Quay lại Bảng từ') }}
             </button>
             <div class="text-xs font-bold text-slate-400">

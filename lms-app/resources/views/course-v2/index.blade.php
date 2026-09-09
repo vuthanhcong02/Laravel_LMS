@@ -1,12 +1,12 @@
 @extends('layouts.lms')
-@section('title', __('Khóa học HSK - Tiếng Trung XIAOMU LMS'))
+@section('title', __('Khóa học HSK - Tiếng Trung XiaoMu LMS'))
 @section('header-left')
     <x-lms.breadcrumb :links="[
         ['label' => __('Khóa học HSK'), 'url' => null]
     ]" />
 @endsection
 @section('content')
-    <div x-data="{ levelFilter: 'all' }" class="space-y-6">
+    <div x-data="courseCatalogApp" class="space-y-6">
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden">
             <div class="space-y-1.5">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] dark:text-[#f4978e] text-xs font-bold">
@@ -49,24 +49,12 @@
                     }
                     $badgeStyle = 'bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/30';
                     $levelSubBadge = __('Sơ cấp');
-                    if (in_array($code, ['hsk1', 'hsk-1', '1'])) {
-                        $badgeStyle = 'bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/30';
-                        $levelSubBadge = __('Sơ cấp I');
-                    } elseif (in_array($code, ['hsk2', 'hsk-2', '2'])) {
-                        $badgeStyle = 'bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/30';
-                        $levelSubBadge = __('Sơ cấp II');
-                    } elseif (in_array($code, ['hsk3', 'hsk-3', '3'])) {
-                        $badgeStyle = 'bg-[#0284c7]/15 text-[#0284c7] border border-[#0284c7]/30';
-                        $levelSubBadge = __('Trung cấp I');
-                    } elseif (in_array($code, ['hsk4', 'hsk-4', '4'])) {
-                        $badgeStyle = 'bg-[#0284c7]/15 text-[#0284c7] border border-[#0284c7]/30';
-                        $levelSubBadge = __('Trung cấp II');
-                    } elseif (in_array($code, ['hsk5', 'hsk-5', '5'])) {
-                        $badgeStyle = 'bg-[#6d28d9]/15 text-[#6d28d9] border border-[#6d28d9]/30';
-                        $levelSubBadge = __('Cao cấp I');
-                    } elseif (in_array($code, ['hsk6', 'hsk-6', '6'])) {
-                        $badgeStyle = 'bg-[#be185d]/15 text-[#be185d] border border-[#be185d]/30';
-                        $levelSubBadge = __('Cao cấp II');
+                    if ($group === 'hsk34') {
+                        $badgeStyle = 'bg-[#3b82f6]/15 text-[#3b82f6] border border-[#3b82f6]/30';
+                        $levelSubBadge = __('Trung cấp');
+                    } elseif ($group === 'hsk56') {
+                        $badgeStyle = 'bg-[#8b5cf6]/15 text-[#8b5cf6] border border-[#8b5cf6]/30';
+                        $levelSubBadge = __('Cao cấp');
                     }
                 @endphp
                 <div x-show="levelFilter === 'all' || levelFilter === '{{ $group }}'" 
@@ -98,4 +86,16 @@
             @endforeach
         </div>
     </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        if (!Alpine.data('courseCatalogApp')) {
+            Alpine.data('courseCatalogApp', () => ({
+                levelFilter: 'all'
+            }));
+        }
+    });
+</script>
 @endsection

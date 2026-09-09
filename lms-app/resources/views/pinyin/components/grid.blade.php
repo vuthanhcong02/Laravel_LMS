@@ -12,13 +12,7 @@
 </style>
 <div class="relative overflow-auto w-full no-scrollbar cursor-grab"
      style="max-height: 85vh;"
-     x-data="{
-        isDown: false, isDragging: false, startX: 0, scrollLeft: 0, startY: 0, scrollTop: 0,
-        initDrag(e) { this.isDown=true; this.isDragging=false; this.$el.classList.add('!cursor-grabbing','select-none'); this.startX=e.pageX-this.$el.offsetLeft; this.scrollLeft=this.$el.scrollLeft; this.startY=e.pageY-this.$el.offsetTop; this.scrollTop=this.$el.scrollTop; },
-        endDrag(e)   { this.isDown=false; this.$el.classList.remove('!cursor-grabbing','select-none'); setTimeout(()=>{this.isDragging=false;},50); },
-        doDrag(e)    { if(!this.isDown) return; const wX=(e.pageX-this.$el.offsetLeft-this.startX)*1.5; const wY=(e.pageY-this.$el.offsetTop-this.startY)*1.5; if(Math.abs(wX)>5||Math.abs(wY)>5){this.isDragging=true;} if(this.isDragging){e.preventDefault();this.$el.scrollLeft=this.scrollLeft-wX;this.$el.scrollTop=this.scrollTop-wY;} },
-        handleClick(e){ if(this.isDragging){e.stopPropagation();e.preventDefault();} }
-     }"
+     x-data="pinyinDragScroll"
      @mousedown="initDrag($event)"
      @mouseleave="endDrag($event)"
      @mouseup="endDrag($event)"
@@ -31,13 +25,7 @@
          x-cloak
          style="display:none;"
          :style="darkMode ? 'background:#0e0c0b;' : 'background:#f8f6f6;'"
-         x-data="{
-            isDown: false, isDragging: false, startX: 0, scrollLeft: 0, startY: 0, scrollTop: 0,
-            initDrag(e) { this.isDown=true; this.isDragging=false; this.$el.classList.add('!cursor-grabbing','select-none'); this.startX=e.pageX-this.$el.offsetLeft; this.scrollLeft=this.$el.scrollLeft; this.startY=e.pageY-this.$el.offsetTop; this.scrollTop=this.$el.scrollTop; },
-            endDrag(e)   { this.isDown=false; this.$el.classList.remove('!cursor-grabbing','select-none'); setTimeout(()=>{this.isDragging=false;},50); },
-            doDrag(e)    { if(!this.isDown) return; const wX=(e.pageX-this.$el.offsetLeft-this.startX)*1.5; const wY=(e.pageY-this.$el.offsetTop-this.startY)*1.5; if(Math.abs(wX)>5||Math.abs(wY)>5){this.isDragging=true;} if(this.isDragging){e.preventDefault();this.$el.scrollLeft=this.scrollLeft-wX;this.$el.scrollTop=this.scrollTop-wY;} },
-            handleClick(e){ if(this.isDragging){e.stopPropagation();e.preventDefault();} }
-         }"
+         x-data="pinyinDragScroll"
          @mousedown="initDrag($event)"
          @mouseleave="endDrag($event)"
          @mouseup="endDrag($event)"

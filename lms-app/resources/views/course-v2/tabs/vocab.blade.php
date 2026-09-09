@@ -37,19 +37,19 @@
 <div class="space-y-4">
     <!-- ===================================================================== -->
     <!-- ===================================================================== -->
-    <div x-show="vocabSubView === 'table'" class="space-y-4">
+    <div x-show="($store.lesson ? $store.lesson.vocabSubView : vocabSubView) === 'table'" class="space-y-4">
         <!-- Header Card -->
-        <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] dark:text-[#f4978e] flex items-center justify-center text-sm font-bold shrink-0">
+        <div class="lms-card p-3.5 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] dark:text-[#f4978e] flex items-center justify-center text-xs sm:text-sm font-bold shrink-0">
                     <i class="fa-solid fa-list-check"></i>
                 </div>
-                <div class="space-y-0.5">
-                    <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ __('Từ vựng trọng tâm') }}</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-normal">{{ __('Ghi nhớ và luyện phát âm các từ vựng mới của bài học.') }}</p>
+                <div class="space-y-0.5 min-w-0">
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">{{ __('Từ vựng trọng tâm') }}</h2>
+                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-normal line-clamp-1 sm:line-clamp-none">{{ __('Ghi nhớ và luyện phát âm các từ vựng mới của bài học.') }}</p>
                 </div>
             </div>
-            <div class="text-xs font-bold text-slate-500 dark:text-slate-400 bg-[#fcfaf7] dark:bg-[#23201e] px-3 py-1.5 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926]">
+            <div class="text-xs font-bold text-slate-500 dark:text-slate-400 bg-[#fcfaf7] dark:bg-[#23201e] px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] shrink-0 whitespace-nowrap">
                 <span class="text-[#e07a5f]">{{ $currentLesson && $currentLesson->vocabList ? $currentLesson->vocabList->count() : 0 }}</span> {{ __('từ vựng') }}
             </div>
         </div>

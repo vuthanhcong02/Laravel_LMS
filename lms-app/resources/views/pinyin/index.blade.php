@@ -1,18 +1,11 @@
 @extends('layouts.lms')
-@section('title', __('Bảng Phiên âm Pinyin - Tiếng Trung XIAOMU'))
-@section('alpine-data')
-    currentPinyin: null,
-    selectedTone: null,
-    isFullscreen: false,
-    showGuideModal: false,
-    socialDockExpanded: true,
-@endsection
+@section('title', __('Bảng Phiên âm Pinyin - Tiếng Trung XiaoMu'))
 @section('header-left')
     <x-lms.breadcrumb :links="[['label' => __('Bảng phát âm Pinyin'), 'url' => null]]" />
 @endsection
 @section('content')
-    <div class="space-y-6"
-        @keyup.window="if(($event.key === 'f' || $event.key === 'F') && !currentPinyin && !showGuideModal) { isFullscreen = !isFullscreen; } if($event.key === 'Escape') { isFullscreen = false; }">
+    <div x-data="pinyinBoardApp" class="space-y-6"
+        @keyup.window="handleKeyup($event)">
         <div
             class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
             <!-- Faint Watermark Hanzi -->

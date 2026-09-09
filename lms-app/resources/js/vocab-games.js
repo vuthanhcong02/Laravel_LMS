@@ -66,7 +66,7 @@ window.playWrongSound = function() {
 // ==========================================
 // 1. ENGINE GAME NỐI TỪ (MATCH WORDS)
 // ==========================================
-window.vocabMatchEngine = function() {
+window.vocabMatchEngine = function(vocabList = null) {
     return {
         currentPairs: [],
         leftItems: [],
@@ -81,6 +81,11 @@ window.vocabMatchEngine = function() {
         showPinyinHint: false,
         attempts: 0,
         correctMatches: 0,
+
+        init() {
+            const list = vocabList || (typeof this.vocabularies !== 'undefined' ? this.vocabularies : []);
+            if (list && list.length > 0) this.initMatchGame(list);
+        },
 
         get accuracy() {
             if (this.attempts === 0) return 100;
@@ -197,7 +202,7 @@ window.vocabMatchEngine = function() {
 // ==========================================
 // 2. ENGINE TRẮC NGHIỆM TỪ VỰNG (VOCAB QUIZ)
 // ==========================================
-window.vocabQuizEngine = function() {
+window.vocabQuizEngine = function(vocabList = null) {
     return {
         questions: [],
         currentIndex: 0,
@@ -208,12 +213,18 @@ window.vocabQuizEngine = function() {
         correctCount: 0,
         isCompleted: false,
 
+        init() {
+            const list = vocabList || (typeof this.vocabularies !== 'undefined' ? this.vocabularies : []);
+            if (list && list.length > 0) this.initQuiz(list);
+        },
+
         get currentQuestion() {
             return this.questions[this.currentIndex] || null;
         },
 
-        initQuiz(vocabList) {
-            if (!vocabList || vocabList.length < 4) return;
+        initQuiz(list = null) {
+            const currentList = list || vocabList || (typeof this.vocabularies !== 'undefined' ? this.vocabularies : []);
+            if (!currentList || currentList.length < 4) return;
 
             this.currentIndex = 0;
             this.selectedOption = null;
@@ -224,55 +235,63 @@ window.vocabQuizEngine = function() {
             this.isCompleted = false;
 
             // Pick up to 10 questions
-            let shuffledVocab = [...vocabList].sort(() => 0.5 - Math.random());
+            let shuffledVocab = [...currentList].sort(() => 0.5 - Math.random());
             let quizList = shuffledVocab.slice(0, 10);
 
             this.questions = quizList.map(item => {
-                // Create 3 random distractors
-                let otherMeanings = vocabList
-                    .filter(v => v.id !== item.id)
-                    .map(v => v.meaning)
-                    .sort(() => 0.5 - Math.random())
-                    .slice(0, 3);
-
-                // If not enough unique distractors, fill with placeholder
-                while (otherMeanings.length < 3) {
-                    otherMeanings.push('Đáp án ngẫu nhiên ' + (otherMeanings.length + 1));
-                }
-
-                // Shuffle options
-                let allOptions = [item.meaning, ...otherMeanings].sort(() => 0.5 - Math.random());
-                let correctIdx = allOptions.indexOf(item.meaning);
+                let otherVocab = currentList.filter(v => v.id !== item.id);
+                let distractors = otherVocab.sort(() => 0.5 - Math.random()).slice(0, 3);
+                
+                let options = [
+                    { id: item.id, text: item.meaning, isCorrect: true },
+                    ...distractors.map(d => ({ id: d.id, text: d.meaning, isCorrect: false }))
+                ].sort(() => 0.5 - Math.random());
 
                 return {
                     id: item.id,
                     word: item.word,
                     pinyin: item.pinyin,
-                    type: item.type,
-                    meaning: item.meaning,
-                    example: item.example,
                     audio_url: item.audio_url,
-                    options: allOptions,
-                    correctOptionIdx: correctIdx
+                    meaning: item.meaning,
+                    type: item.type || 'Từ vựng',
+                    example: item.example || '',
+                    options: options,
+                    correctOptionIdx: options.findIndex(o => o.isCorrect)
                 };
             });
         },
 
-        selectAnswer(optionIdx) {
+        selectOption(option) {
             if (this.isAnswered) return;
 
-            this.selectedOption = optionIdx;
+            // Nếu truyền index thay vì object
+            if (typeof option === 'number' && this.currentQuestion && this.currentQuestion.options) {
+                option = this.currentQuestion.options[option];
+            }
+
+            if (!option) return;
+
+            this.selectedOption = option;
             this.isAnswered = true;
 
-            if (optionIdx === this.currentQuestion.correctOptionIdx) {
+            if (option.isCorrect) {
                 window.playCorrectSound();
-                this.correctCount++;
+                this.score += 10 + (this.streak * 2);
                 this.streak++;
-                this.score += 10 + (this.streak > 1 ? 5 : 0);
+                this.correctCount++;
             } else {
                 window.playWrongSound();
                 this.streak = 0;
             }
+
+            // Phát âm từ vựng
+            if (this.currentQuestion && this.currentQuestion.word) {
+                window.playAudio(this.currentQuestion.audio_url || ('https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(this.currentQuestion.word) + '&type=1'));
+            }
+        },
+
+        selectAnswer(option) {
+            this.selectOption(option);
         },
 
         nextQuestion() {
@@ -290,7 +309,7 @@ window.vocabQuizEngine = function() {
 // ==========================================
 // 3. ENGINE LUYỆN GÕ PHÍM (VOCAB TYPING)
 // ==========================================
-window.vocabTypingEngine = function() {
+window.vocabTypingEngine = function(vocabList = null) {
     return {
         words: [],
         currentIndex: 0,
@@ -299,6 +318,11 @@ window.vocabTypingEngine = function() {
         showHint: false,
         correctCount: 0,
         isCompleted: false,
+
+        init() {
+            const list = vocabList || (typeof this.vocabularies !== 'undefined' ? this.vocabularies : []);
+            if (list && list.length > 0) this.initTyping(list);
+        },
 
         get currentWord() {
             return this.words[this.currentIndex] || null;

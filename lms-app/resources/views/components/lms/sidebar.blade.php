@@ -10,9 +10,9 @@
                }">
             <div class="h-20 flex items-center justify-between px-4 border-b border-[#e8e2d9] dark:border-[#262220] shrink-0">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group min-w-0" :class="sidebarCollapsed ? 'justify-center w-full' : ''">
-                    <img src="{{ asset('logo.png') }}" alt="XIAOMU Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
+                    <img src="{{ asset('logo.png') }}" alt="XiaoMu Logo" class="w-10 h-10 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform duration-200">
                     <div x-show="!sidebarCollapsed" class="flex flex-col min-w-0 transition-opacity duration-200">
-                        <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">XIAOMU</span>
+                        <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">XiaoMu</span>
                         <span class="text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] tracking-wide mt-1 leading-none">
                             {{ __('Tiếng Trung') }}
                         </span>
@@ -114,10 +114,7 @@
             </nav>
             <div class="border-t border-[#e8e2d9] dark:border-[#262220] bg-[#faf6f2] dark:bg-slate-900/60 shrink-0 transition-all">
                 <div x-show="isLoggedIn" class="p-3"
-                     x-data="{ 
-                         userName: '{{ auth()->check() ? (auth()->user()->first_name . ' ' . auth()->user()->last_name) : 'Vũ Thành Công' }}',
-                         userAvatar: '{{ auth()->check() ? auth()->user()->avatar_url : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80' }}'
-                     }"
+                     x-data="sidebarUserProfile('{{ auth()->check() ? (auth()->user()->first_name . ' ' . auth()->user()->last_name) : 'Vũ Thành Công' }}', '{{ auth()->check() ? auth()->user()->avatar_url : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80' }}')"
                      @profile-updated.window="userName = $event.detail.name; userAvatar = $event.detail.avatar">
                     <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 min-w-0 group" :class="sidebarCollapsed ? 'justify-center' : ''">
                         <div class="relative shrink-0">

@@ -14,7 +14,6 @@
         <div wire:loading wire:target="groupAudio" class="mt-1 text-xs text-slate-500 font-bold">Đang tải lên...</div>
     </div>
 
-    {{-- Danh sách câu hỏi --}}
     <div>
         <h4 class="text-sm font-black text-slate-600 dark:text-slate-300 uppercase tracking-wide mb-3">
             Danh sách Câu hỏi ({{ $group->questions->count() }})
@@ -22,7 +21,6 @@
 
         @foreach($group->questions as $index => $question)
             <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-4">
-                {{-- Header câu hỏi --}}
                 <div class="flex justify-between items-center mb-3">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 shrink-0 {{ $question->is_example ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 border-amber-200' : 'bg-white dark:bg-slate-700 text-slate-500 border-slate-200 dark:border-slate-600' }} rounded-lg border flex items-center justify-center font-black text-sm shadow-sm">
@@ -41,7 +39,6 @@
                     </div>
                 </div>
 
-                {{-- Nội dung câu hỏi --}}
                 <div class="pl-11 space-y-3">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nội dung câu hỏi (Tuỳ chọn)</label>
@@ -50,7 +47,6 @@
                             class="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-primary focus:border-primary"></textarea>
                     </div>
 
-                    {{-- Các đáp án A, B, C --}}
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2">Đáp án (A, B, C)</label>
                         <div class="space-y-2">
@@ -86,7 +82,6 @@
             </div>
         @endforeach
 
-        {{-- Nút thêm câu + lưu --}}
         <div class="flex items-center gap-3 mt-2">
             <button type="button" wire:click="addQuestion" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm font-bold text-sm text-primary hover:border-primary/50 transition-colors">
                 <span class="material-symbols-outlined text-lg">add</span>

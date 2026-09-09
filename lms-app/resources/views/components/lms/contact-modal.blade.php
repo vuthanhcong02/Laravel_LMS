@@ -22,71 +22,7 @@
              x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
              x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
              @click.outside="contactModalOpen = false"
-             x-data="{
-                 name: '{{ auth()->check() ? auth()->user()->first_name . ' ' . auth()->user()->last_name : '' }}',
-                 email: '{{ auth()->check() ? auth()->user()->email : '' }}',
-                 phone: '',
-                 topic: 'tu-van',
-                 message: '',
-                 website: '',
-                 loading: false,
-                 success: false,
-                 errorMessage: '',
-                 fieldErrors: {},
-                 resetForm() {
-                     this.name = '{{ auth()->check() ? auth()->user()->first_name . ' ' . auth()->user()->last_name : '' }}';
-                     this.email = '{{ auth()->check() ? auth()->user()->email : '' }}';
-                     this.phone = '';
-                     this.topic = 'tu-van';
-                     this.message = '';
-                     this.website = '';
-                     this.success = false;
-                     this.errorMessage = '';
-                     this.fieldErrors = {};
-                 },
-                 submitForm() {
-                     this.loading = true;
-                     this.errorMessage = '';
-                     this.fieldErrors = {};
-                     fetch('{{ route('contact.store') }}', {
-                         method: 'POST',
-                         headers: {
-                             'Content-Type': 'application/json',
-                             'Accept': 'application/json',
-                             'X-CSRF-TOKEN': document.querySelector('meta[name=\'csrf-token\']').getAttribute('content')
-                         },
-                         body: JSON.stringify({
-                             name: this.name,
-                             email: this.email,
-                             phone: this.phone,
-                             topics: [this.topic],
-                             message: this.message,
-                             website: this.website
-                         })
-                     })
-                     .then(async response => {
-                         const data = await response.json();
-                         if (response.ok && data.success) {
-                             this.success = true;
-                             this.message = '';
-                         } else if (response.status === 429) {
-                             this.errorMessage = '{{ __('Bạn đã gửi yêu cầu quá nhiều lần liên tiếp. Vui lòng chờ 1 phút trước khi thử lại.') }}';
-                         } else if (response.status === 422) {
-                             this.fieldErrors = data.errors || {};
-                             this.errorMessage = '{{ __('Vui lòng kiểm tra lại thông tin nhập bên dưới.') }}';
-                         } else {
-                             this.errorMessage = data.message || '{{ __('Đã có lỗi xảy ra, vui lòng thử lại sau.') }}';
-                         }
-                     })
-                     .catch(err => {
-                         console.error('Contact Form Error:', err);
-                         this.errorMessage = '{{ __('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.') }}';
-                     })
-                     .finally(() => {
-                         this.loading = false;
-                     });
-                 }
-             }"
+             x-data="contactModalForm({ initialName: '{{ auth()->check() ? auth()->user()->first_name . ' ' . auth()->user()->last_name : '' }}', initialEmail: '{{ auth()->check() ? auth()->user()->email : '' }}', submitUrl: '{{ route('contact.store') }}' })"
              class="relative transform overflow-hidden rounded-3xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-left shadow-2xl transition-all w-full max-w-2xl sm:max-w-[720px] lg:max-w-3xl my-8">
             <button @click="contactModalOpen = false"
                     class="absolute right-4 top-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-[#201d1b] text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors btn-tactile"
@@ -104,7 +40,7 @@
                             {{ __('Liên Hệ & Hỗ Trợ Học Tập') }}
                         </h3>
                         <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                            {{ __('Đội ngũ giảng viên và hỗ trợ viên XIAOMU luôn sẵn sàng giải đáp thắc mắc và đồng hành cùng bạn 24/7.') }}
+                            {{ __('Đội ngũ giảng viên và hỗ trợ viên XiaoMu luôn sẵn sàng giải đáp thắc mắc và đồng hành cùng bạn 24/7.') }}
                         </p>
                     </div>
                 </div>
@@ -151,7 +87,7 @@
                                     {{ __('Gửi yêu cầu hỗ trợ thành công!') }}
                                 </h4>
                                 <p class="text-xs text-emerald-600 dark:text-emerald-400">
-                                    {{ __('Cảm ơn bạn đã liên hệ. Đội ngũ tư vấn viên XIAOMU sẽ liên hệ và giải đáp sớm nhất có thể.') }}
+                                    {{ __('Cảm ơn bạn đã liên hệ. Đội ngũ tư vấn viên XiaoMu sẽ liên hệ và giải đáp sớm nhất có thể.') }}
                                 </p>
                             </div>
                             <button @click="resetForm()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold btn-tactile shadow-xs">

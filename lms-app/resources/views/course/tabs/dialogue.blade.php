@@ -74,10 +74,9 @@
                                 </button>
                             </div>
 
-                            <!-- Quiz Mode (Luyện Nghe / Luyện Gõ / Luyện Dịch) -->
                             <div x-show="modeNghe || modeGo || modeDich" class="mt-6 mb-4 w-full">
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-6 relative">
-                                    <!-- Nghe Mode Header -->
+                                <div
+                                    class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-6 relative">
                                     <div x-show="modeNghe" class="text-center space-y-4 mb-6">
                                         <h4 class="text-[13px] font-bold text-primary uppercase tracking-widest">Nghe và
                                             gõ lại chữ Hán</h4>
@@ -93,7 +92,6 @@
                                         </p>
                                     </div>
 
-                                    <!-- Gõ Mode Header -->
                                     <div x-show="modeGo" class="text-left mb-6">
                                         <p class="text-2xl font-black text-slate-800 dark:text-white tracking-wide font-chinese flex items-center gap-2"
                                             x-show="!(modePinyin && window.alignPinyin(dialogues[quizIndex].character, dialogues[quizIndex].pinyin, currentLevelObj?.level_code))">
@@ -124,11 +122,11 @@
                                                 </template>
                                             </div>
                                         </div>
-                                        <p x-show="modeNghia" class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium"
+                                        <p x-show="modeNghia"
+                                            class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium"
                                             x-text="dialogues[quizIndex].translation"></p>
                                     </div>
 
-                                    <!-- Dịch Mode Header -->
                                     <div x-show="modeDich" class="text-left mb-4">
                                         <p class="text-[15px] text-slate-700 dark:text-slate-300">
                                             <span class="font-bold text-slate-800 dark:text-white"
@@ -292,12 +290,10 @@
                                                         x-text="l_c"></p>
                                                 </div>
 
-                                                <!-- Empty state placeholder (khi tắt cả pinyin và chữ Hán) -->
                                                 <p x-show="!modePinyin && !modeHanyu"
                                                     class="text-xs text-slate-400 dark:text-slate-600 italic py-1 opacity-60">
                                                     (Đang ẩn nội dung)
                                                 </p>
-                                                <!-- Luyện dịch toggle text -->
                                                 <p x-show="modeNghia"
                                                     class="text-xs text-slate-505 dark:text-slate-455 mt-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-800/80 font-semibold">
                                                     {{ $line->translation }}</p>

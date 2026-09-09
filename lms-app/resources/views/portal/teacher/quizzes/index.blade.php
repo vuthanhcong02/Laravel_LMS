@@ -148,7 +148,6 @@
             <form :action="actionUrl" method="POST" enctype="multipart/form-data" class="p-8 space-y-5">
                 @csrf
 
-                {{-- Cấu trúc CSV --}}
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">{{ __('Cấu trúc File CSV') }}</h4>

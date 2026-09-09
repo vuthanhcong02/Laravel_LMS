@@ -1,17 +1,17 @@
-<section x-data="avatarUpload('{{ $user->avatar_url }}')">
+<section x-data="avatarUpload({ defaultUrl: '{{ $user->avatar_url }}', updateUrl: '{{ route('profile.update') }}' })">
     <header class="mb-6">
         <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <i class="fa-regular fa-id-badge text-[#e07a5f]"></i>
             <span>{{ __('Thông tin cá nhân') }}</span>
         </h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            {{ __('Cập nhật họ tên, địa chỉ email và ảnh đại diện hiển thị trên toàn hệ thống XIAOMU LMS.') }}
+            {{ __('Cập nhật họ tên, địa chỉ email và ảnh đại diện hiển thị trên toàn hệ thống XiaoMu LMS.') }}
         </p>
     </header>
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
-    <form id="profileForm" @submit.prevent="submitProfileForm" class="space-y-5">
+    <form id="profileForm" action="{{ route('profile.update') }}" method="POST" @submit.prevent="submitProfileForm" class="space-y-5">
         @csrf
         @method('patch')
         <div class="p-4 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
@@ -100,74 +100,10 @@
                 <i x-show="loading" class="fa-solid fa-spinner fa-spin text-xs" style="display: none;"></i>
                 <span x-text="loading ? '{{ __('Đang lưu...') }}' : '{{ __('Lưu thay đổi') }}'">{{ __('Lưu thay đổi') }}</span>
             </button>
-            <div x-show="successMessage" x-transition x-init="$watch('successMessage', val => { if (val) setTimeout(() => successMessage = '', 3000) })" style="display: none;"
+            <div x-show="successMessage" x-transition style="display: none;"
                  class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-900/50">
                 <i class="fa-solid fa-circle-check text-xs"></i>
                 <span x-text="successMessage"></span>
             </div>
-        </div>
     </form>
 </section>
-<script>
-    function avatarUpload(defaultUrl) {
-        return {
-            imageUrl: defaultUrl || 'https://ui-avatars.com/api/?name=User&background=fdeae3&color=e07a5f',
-            hasNewImage: false,
-            loading: false,
-            errors: {},
-            successMessage: '',
-            fileChosen(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.imageUrl = e.target.result;
-                        this.hasNewImage = true;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            },
-            async submitProfileForm() {
-                this.loading = true;
-                this.errors = {};
-                this.successMessage = '';
-                let form = document.getElementById('profileForm');
-                let formData = new FormData(form);
-                try {
-                    const response = await fetch('{{ route("profile.update") }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        },
-                        body: formData
-                    });
-                    const data = await response.json();
-                    if (response.ok && data.success) {
-                        this.successMessage = data.message;
-                        this.hasNewImage = false;
-                        // Cập nhật URL ảnh mới từ server trả về nếu có
-                        if (data.user && data.user.avatar_url) {
-                            this.imageUrl = data.user.avatar_url;
-                        }
-                        // Phát sự kiện global để sidebar cập nhật
-                        window.dispatchEvent(new CustomEvent('profile-updated', {
-                            detail: {
-                                name: data.user ? (data.user.first_name + ' ' + data.user.last_name) : (formData.get('first_name') + ' ' + formData.get('last_name')),
-                                avatar: data.user ? data.user.avatar_url : this.imageUrl
-                            }
-                        }));
-                    } else if (response.status === 422) {
-                        for (const key in data.errors) {
-                            this.errors[key] = data.errors[key][0];
-                        }
-                    }
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    this.loading = false;
-                }
-            }
-        }
-    }
-</script>
