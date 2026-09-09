@@ -63,6 +63,11 @@ Route::controller(PageController::class)->group(function () {
     Route::post('/flashcards/reset', 'resetVocabularyProgress')->name('flashcards.reset');
 });
 
+// Lazy-load pinyin detail API
+Route::get('/bang-phien-am-pinyin/{id}/detail', [PinyinController::class, 'detail'])
+    ->name('pinyin.detail')
+    ->where('id', '[0-9]+');
+
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
 

@@ -29,7 +29,7 @@ import {
     authForgotForm,
     sidebarUserProfile
 } from './alpine/components/lms-components.js';
-import { pinyinBoardApp, pinyinDragScroll } from './alpine/components/pinyin-chart.js';
+import { pinyinBoardApp, pinyinDragScroll, pinyinCrosshair } from './alpine/components/pinyin-chart.js';
 import { pinyinQuizApp } from './alpine/components/pinyin-quiz.js';
 import { userProfilePage, passwordUpdateForm, avatarUpload } from './alpine/components/profile-forms.js';
 import hskIndex from './hsk-index.js';
@@ -52,6 +52,7 @@ if (!window.Alpine) {
     Alpine.data('sidebarUserProfile', sidebarUserProfile);
     Alpine.data('pinyinBoardApp', pinyinBoardApp);
     Alpine.data('pinyinDragScroll', pinyinDragScroll);
+    Alpine.data('pinyinCrosshair', pinyinCrosshair);
     Alpine.data('pinyinQuizApp', pinyinQuizApp);
     Alpine.data('userProfilePage', userProfilePage);
     Alpine.data('passwordUpdateForm', passwordUpdateForm);
