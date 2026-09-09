@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
 
 
-    Route::post('dang-ky', [RegisteredUserController::class, 'store'])->middleware('throttle:5,1');
+    Route::post('dang-ky', [RegisteredUserController::class, 'store'])
+        ->name('register')
+        ->middleware('throttle:5,1');
 
 
     Route::post('dang-nhap', [AuthenticatedSessionController::class, 'store'])->name('login')->middleware('throttle:5,1');
