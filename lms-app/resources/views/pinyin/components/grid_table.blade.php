@@ -19,7 +19,7 @@
                 <th data-col="{{ $colKey }}"
                     class="p-0.5 bg-[#8cb4f5] border-b-2 border-slate-400 dark:border-slate-600 font-bold text-slate-900 whitespace-nowrap"
                     style="min-width:26px;">
-                    {{ str_replace(['i_zcs', 'i_zh', 'ueng', 'uue', 'uun', 'uu'], ['i', 'i', 'ueng', 'üan', 'ün', 'ü'], $colKey) }}
+                    {{ str_replace(['i_zcs', 'i_zh', 'ueng', 'uue', 'uun', 'uu', 'ue'], ['i', 'i', 'ueng', 'üan', 'ün', 'ü', 'üe'], $colKey) }}
                 </th>
             @endforeach
         </tr>
