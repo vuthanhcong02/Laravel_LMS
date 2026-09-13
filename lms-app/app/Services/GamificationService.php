@@ -288,6 +288,7 @@ class GamificationService
                 ->withSum(['expTransactions as period_exp' => function ($q) use ($startOfWeek, $endOfWeek) {
                     $q->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
                 }], 'exp_gained')
+                ->having('period_exp', '>', 0)
                 ->orderByDesc('period_exp')
                 ->orderByDesc('current_streak')
                 ->orderByDesc('exp_total')
@@ -302,6 +303,7 @@ class GamificationService
                 ->withSum(['expTransactions as period_exp' => function ($q) use ($startOfMonth, $endOfMonth) {
                     $q->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
                 }], 'exp_gained')
+                ->having('period_exp', '>', 0)
                 ->orderByDesc('period_exp')
                 ->orderByDesc('current_streak')
                 ->orderByDesc('exp_total')
@@ -310,6 +312,7 @@ class GamificationService
         } else {
             // All time: Based on total EXP and streak
             $topUsers = (clone $baseQuery)
+                ->where('exp_total', '>', 0)
                 ->orderByDesc('exp_total')
                 ->orderByDesc('current_streak')
                 ->orderByDesc('id')
