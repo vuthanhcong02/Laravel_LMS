@@ -73,24 +73,40 @@ class PinyinQuizController extends Controller
             ]);
         }
 
-        // User must answer at least 40% of questions correctly to avoid spamming
-        $minCorrect = (int) ceil($request->quiz_length * 0.4);
+        // User must answer at least minimum required percent (e.g. 40%) of questions correctly to avoid spamming
+        $minPercent = (float) config('gamification.actions.pinyin_practice.min_correct_percent', 40);
+        $minCorrect = (int) ceil($request->quiz_length * ($minPercent / 100));
         $expResult = null;
 
         if ($request->correct_count >= $minCorrect) {
             $gamificationService = app(GamificationService::class);
-            $expResult = $gamificationService->awardExp($user, 'pinyin_practice');
+            $expResult = $gamificationService->awardExp(
+                $user,
+                'pinyin_practice',
+                null,
+                [
+                    'quiz_length'   => (int) $request->quiz_length,
+                    'correct_count' => (int) $request->correct_count,
+                ]
+            );
         }
+
+        $freshUser = $user->fresh();
+        $levelInfo = app(GamificationService::class)->calculateLevelInfo((int) ($freshUser->exp_total ?? 0));
 
         return response()->json([
             'success' => true,
             'message' => $expResult ? __('Chúc mừng! Bạn nhận được :exp EXP từ bài luyện tập Pinyin.', ['exp' => $expResult['exp_gained']]) : __('Đã hoàn thành bài luyện tập.'),
             'gamification' => $expResult,
             'user' => [
-                'current_streak' => $user->fresh()->current_streak,
-                'today_exp' => $user->fresh()->today_exp,
-                'exp_total' => $user->fresh()->exp_total,
-                'progress_percent' => $user->fresh()->daily_progress_percent,
+                'current_streak'   => $freshUser->current_streak,
+                'today_exp'        => $freshUser->today_exp,
+                'exp_total'        => $freshUser->exp_total,
+                'progress_percent' => $freshUser->daily_progress_percent,
+                'level'            => $levelInfo['level'],
+                'level_badge'      => $levelInfo['level_badge'],
+                'level_progress'   => $levelInfo['progress_percent'],
+                'level_info'       => $levelInfo,
             ],
         ]);
     }

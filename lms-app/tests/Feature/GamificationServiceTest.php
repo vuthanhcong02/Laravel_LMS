@@ -100,32 +100,84 @@ class GamificationServiceTest extends TestCase
     }
 
     /**
-     * [NEW] Test Daily Cap cộng EXP từng phần khi sắp chạm trần (partial cap).
-     * pinyin_practice: daily_cap = 30, mỗi lần 10 EXP.
-     * Sau 2 ván (20 EXP), ván thứ 3 nhận đủ 10 EXP. Ván thứ 4 bị chặn hoàn toàn.
+     * Test Pinyin practice dynamic EXP based on quiz length and diminishing returns.
+     * Session 1 (50 questions): 50 EXP (100%)
+     * Session 2 (20 questions): 20 EXP (100%)
+     * Session 3 (50 questions): 25 EXP (50% of 50)
+     * Session 4 (10 questions): 5 EXP (50% of 10)
+     * Session 5 (50 questions): 13 EXP (25% of 50)
      */
-    public function test_daily_cap_gives_partial_exp_when_nearing_limit(): void
+    public function test_pinyin_practice_dynamic_exp_and_diminishing_returns(): void
     {
         /** @var User $user */
         $user = User::factory()->create(['exp_total' => 0]);
 
-        $res1 = $this->service->awardExp($user, 'pinyin_practice');
-        $this->assertEquals(10, $res1['exp_gained']);
+        // Session 1: 50 questions -> 50 EXP (100%)
+        $res1 = $this->service->awardExp($user, 'pinyin_practice', null, ['quiz_length' => 50]);
+        $this->assertNotNull($res1);
+        $this->assertEquals(50, $res1['exp_gained']);
 
-        $res2 = $this->service->awardExp($user, 'pinyin_practice');
-        $this->assertEquals(10, $res2['exp_gained']);
+        // Session 2: 20 questions -> 20 EXP (100%)
+        $res2 = $this->service->awardExp($user, 'pinyin_practice', null, ['quiz_length' => 20]);
+        $this->assertNotNull($res2);
+        $this->assertEquals(20, $res2['exp_gained']);
 
-        $res3 = $this->service->awardExp($user, 'pinyin_practice');
-        $this->assertEquals(10, $res3['exp_gained']);
+        // Session 3: 50 questions -> 25 EXP (50%)
+        $res3 = $this->service->awardExp($user, 'pinyin_practice', null, ['quiz_length' => 50]);
+        $this->assertNotNull($res3);
+        $this->assertEquals(25, $res3['exp_gained']);
 
-        // Ván 4: đã đủ 30 EXP/ngày → bị chặn
-        $res4 = $this->service->awardExp($user, 'pinyin_practice');
-        $this->assertNull($res4);
+        // Session 4: 10 questions -> 5 EXP (50%)
+        $res4 = $this->service->awardExp($user, 'pinyin_practice', null, ['quiz_length' => 10]);
+        $this->assertNotNull($res4);
+        $this->assertEquals(5, $res4['exp_gained']);
 
-        $total = UserExpTransaction::where('user_id', $user->id)
-            ->where('action_type', 'pinyin_practice')
-            ->sum('exp_gained');
-        $this->assertEquals(30, $total);
+        // Session 5: 50 questions -> 13 EXP (25%)
+        $res5 = $this->service->awardExp($user, 'pinyin_practice', null, ['quiz_length' => 50]);
+        $this->assertNotNull($res5);
+        $this->assertEquals(13, $res5['exp_gained']);
+    }
+
+    /**
+     * Test HSK mock exam daily one-time per exam ID.
+     * Submitting Exam A on Day 1 -> 50 EXP.
+     * Resubmitting Exam A on Day 1 -> blocked (null).
+     * Submitting Exam B on Day 1 -> 50 EXP.
+     * Resubmitting Exam A on Day 2 -> 50 EXP.
+     */
+    public function test_hsk_mock_exam_daily_one_time_per_exam(): void
+    {
+        $timezone = config('gamification.timezone', 'Asia/Ho_Chi_Minh');
+        Carbon::setTestNow(Carbon::parse('2026-09-13 10:00:00', $timezone));
+
+        /** @var User $user */
+        $user = User::factory()->create(['exp_total' => 0]);
+
+        $examA = 101;
+        $examB = 102;
+
+        // 1. Submit Exam A on Day 1 -> 50 EXP
+        $resA1 = $this->service->awardExp($user, 'hsk_mock_exam', $examA);
+        $this->assertNotNull($resA1);
+        $this->assertEquals(50, $resA1['exp_gained']);
+
+        // 2. Resubmit Exam A on Day 1 -> blocked (null)
+        $resA2 = $this->service->awardExp($user, 'hsk_mock_exam', $examA);
+        $this->assertNull($resA2);
+
+        // 3. Submit Exam B on Day 1 -> 50 EXP
+        $resB1 = $this->service->awardExp($user, 'hsk_mock_exam', $examB);
+        $this->assertNotNull($resB1);
+        $this->assertEquals(50, $resB1['exp_gained']);
+
+        // 4. Advance to Day 2 and resubmit Exam A -> 50 EXP
+        Carbon::setTestNow(Carbon::parse('2026-09-14 10:00:00', $timezone));
+
+        $resA_day2 = $this->service->awardExp($user, 'hsk_mock_exam', $examA);
+        $this->assertNotNull($resA_day2);
+        $this->assertEquals(50, $resA_day2['exp_gained']);
+
+        Carbon::setTestNow(); // Reset time mock
     }
 
     /**
@@ -497,12 +549,12 @@ class GamificationServiceTest extends TestCase
     }
 
     /**
-     * [NEW] Test leaderboard trả về đúng cấu trúc dữ liệu và badge cho từng item.
+     * Test leaderboard returns correct data structure, level badge, and raw_exp.
      */
     public function test_leaderboard_returns_correct_data_structure_and_badge(): void
     {
         /** @var User $user */
-        $user = User::factory()->create(['exp_total' => 600, 'role' => User::ROLE_STUDENT]);
+        $user = User::factory()->create(['exp_total' => 500, 'role' => User::ROLE_STUDENT]);
 
         $result      = $this->service->getGamificationLeaderboard('all_time', 1);
         $leaderboard = $result['leaderboard'];
@@ -510,14 +562,105 @@ class GamificationServiceTest extends TestCase
         $item = collect($leaderboard)->firstWhere('user_id', $user->id);
         $this->assertNotNull($item);
 
-        // Kiểm tra các key bắt buộc
-        foreach (['rank', 'user_id', 'name', 'avatar', 'exp', 'raw_exp', 'streak', 'longest_streak', 'badge'] as $key) {
+        foreach (['rank', 'user_id', 'name', 'avatar', 'exp', 'raw_exp', 'streak', 'longest_streak', 'level', 'level_badge', 'badge'] as $key) {
             $this->assertArrayHasKey($key, $item);
         }
 
-        // Badge: 600 EXP >= 500 → 'Học giả'
-        $this->assertEquals('Học giả', $item['badge']);
-        // Badge: raw_exp phải đúng
-        $this->assertEquals(600, $item['raw_exp']);
+        // 500 EXP corresponds to Level 6 in arithmetic scale
+        $this->assertEquals(6, $item['level']);
+        $this->assertEquals('Lv.6', $item['level_badge']);
+        $this->assertEquals('Lv.6', $item['badge']);
+        $this->assertEquals(500, $item['raw_exp']);
+    }
+
+    // =========================================================================
+    // calculateLevelInfo() — Tests
+    // =========================================================================
+
+    /**
+     * Test level calculation for Level 1 (0 - 49 EXP).
+     */
+    public function test_calculate_level_info_for_level_1(): void
+    {
+        $info0 = $this->service->calculateLevelInfo(0);
+        $this->assertEquals(1, $info0['level']);
+        $this->assertEquals('Lv.1', $info0['level_badge']);
+        $this->assertEquals(0, $info0['current_level_base_exp']);
+        $this->assertEquals(50, $info0['next_level_exp']);
+        $this->assertEquals(0, $info0['exp_in_level']);
+        $this->assertEquals(0, $info0['progress_percent']);
+        $this->assertFalse($info0['is_max']);
+
+        $info25 = $this->service->calculateLevelInfo(25);
+        $this->assertEquals(1, $info25['level']);
+        $this->assertEquals(25, $info25['exp_in_level']);
+        $this->assertEquals(50, $info25['progress_percent']);
+        $this->assertFalse($info25['is_max']);
+    }
+
+    /**
+     * Test level calculation for Level 2 (50 - 124 EXP) and Level 5 (350 - 499 EXP).
+     */
+    public function test_calculate_level_info_for_tiered_levels(): void
+    {
+        // Level 2 (50 - 124 EXP): base 50, next 125, needs 75 EXP
+        $info50 = $this->service->calculateLevelInfo(50);
+        $this->assertEquals(2, $info50['level']);
+        $this->assertEquals('Lv.2', $info50['level_badge']);
+        $this->assertEquals(50, $info50['current_level_base_exp']);
+        $this->assertEquals(125, $info50['next_level_exp']);
+        $this->assertEquals(0, $info50['exp_in_level']);
+        $this->assertEquals(0, $info50['progress_percent']);
+        $this->assertFalse($info50['is_max']);
+
+        // Level 5 (350 - 499 EXP): base 350, next 500, needs 150 EXP
+        $info425 = $this->service->calculateLevelInfo(425);
+        $this->assertEquals(5, $info425['level']);
+        $this->assertEquals('Lv.5', $info425['level_badge']);
+        $this->assertEquals(350, $info425['current_level_base_exp']);
+        $this->assertEquals(500, $info425['next_level_exp']);
+        $this->assertEquals(75, $info425['exp_in_level']);
+        $this->assertEquals(50, $info425['progress_percent']);
+        $this->assertFalse($info425['is_max']);
+    }
+
+    /**
+     * Test level calculation reaching Max Level 30 (11,600 EXP).
+     */
+    public function test_calculate_level_info_reaching_max_level_30(): void
+    {
+        $infoMax = $this->service->calculateLevelInfo(11600);
+        $this->assertEquals(30, $infoMax['level']);
+        $this->assertEquals('Lv.30', $infoMax['level_badge']);
+        $this->assertEquals(11600, $infoMax['current_level_base_exp']);
+        $this->assertEquals(11600, $infoMax['next_level_exp']);
+        $this->assertEquals(100, $infoMax['progress_percent']);
+        $this->assertTrue($infoMax['is_max']);
+    }
+
+    /**
+     * Test level calculation exceeds Max Level 30 (e.g. 15,000 EXP): level stays 30 and is_max is true.
+     */
+    public function test_calculate_level_info_exceeding_max_level(): void
+    {
+        $infoOver = $this->service->calculateLevelInfo(15000);
+        $this->assertEquals(30, $infoOver['level']);
+        $this->assertEquals('Lv.30', $infoOver['level_badge']);
+        $this->assertEquals(100, $infoOver['progress_percent']);
+        $this->assertTrue($infoOver['is_max']);
+    }
+
+    /**
+     * Test User model level accessors.
+     */
+    public function test_user_model_level_accessors(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['exp_total' => 175]);
+
+        $this->assertEquals(3, $user->level);
+        $this->assertEquals('Lv.3', $user->level_badge);
+        $this->assertEquals(50, $user->level_progress_percent);
+        $this->assertIsArray($user->level_info);
     }
 }
