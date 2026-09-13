@@ -256,8 +256,9 @@ class PageController extends Controller
         $gamificationService = app(GamificationService::class);
         $result = $gamificationService->awardExp($user, $actionType, (int) $lesson->id);
 
-        // [PERF-2] Merge 4 fresh() into 1 query
+        // Retrieve updated user state and level progression
         $freshUser = $user->fresh();
+        $levelInfo = $gamificationService->calculateLevelInfo((int) ($freshUser->exp_total ?? 0));
 
         return response()->json([
             'success'      => true,
@@ -268,6 +269,10 @@ class PageController extends Controller
                 'today_exp'        => $freshUser->today_exp,
                 'exp_total'        => $freshUser->exp_total,
                 'progress_percent' => $freshUser->daily_progress_percent,
+                'level'            => $levelInfo['level'],
+                'level_badge'      => $levelInfo['level_badge'],
+                'level_progress'   => $levelInfo['progress_percent'],
+                'level_info'       => $levelInfo,
             ],
         ]);
     }
