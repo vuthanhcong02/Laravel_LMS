@@ -34,6 +34,43 @@ export const pinyinQuizApp = (allTonesInput = []) => ({
     isPausedAdvance: false,
     remainingAdvanceMs: 2500,
     advanceTargetEndTime: 0,
+    earnedExp: 0,
+    gamificationData: null,
+    isSubmitting: false,
+
+    async submitQuizToServer() {
+        if (this.isSubmitting) return;
+        this.isSubmitting = true;
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/luyen-tap-pinyin/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
+                },
+                body: JSON.stringify({
+                    quiz_length: this.quizLength,
+                    correct_count: this.correctCount,
+                    score: this.score,
+                }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.gamification) {
+                    this.earnedExp = result.gamification.exp_gained || 0;
+                    this.gamificationData = result.gamification;
+                    window.dispatchEvent(new CustomEvent('exp-updated', { detail: result }));
+                }
+            }
+        } catch (e) {
+            console.warn('Could not submit pinyin quiz result:', e);
+        } finally {
+            this.isSubmitting = false;
+        }
+    },
 
     selectQuizLength(len) {
         this.configQuizLength = len;
@@ -349,6 +386,7 @@ export const pinyinQuizApp = (allTonesInput = []) => ({
         this.clearAdvanceTimers();
         if (this.questionInRound >= this.quizLength) {
             this.screen = 'summary';
+            this.submitQuizToServer();
         } else {
             this.questionInRound++;
             this.nextQuestion(this.autoPlayAudio);

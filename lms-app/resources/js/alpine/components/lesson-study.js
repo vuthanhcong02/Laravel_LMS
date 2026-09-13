@@ -69,6 +69,46 @@ export const lessonStudyApp = (config = {}) => ({
     vocabularies: config.vocabularies || [],
     currentLesson: config.currentLesson || null,
     currentLevelObj: config.currentLevelObj || null,
+    isMarkingTab: false,
+
+    async completeAndNextTab(currentTab, nextUrl = null) {
+        if (!this.currentLessonId) {
+            if (nextUrl) window.location.href = nextUrl;
+            return;
+        }
+
+        if (this.isMarkingTab) return;
+        this.isMarkingTab = true;
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch(`/khoa-hoc/bai-hoc/${this.currentLessonId}/mark-tab`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
+                },
+                body: JSON.stringify({
+                    tab: currentTab,
+                }),
+            });
+
+            if (response.ok) {
+                const res = await response.json();
+                if (res.success) {
+                    window.dispatchEvent(new CustomEvent('exp-updated', { detail: res }));
+                }
+            }
+        } catch (e) {
+            console.warn('Could not mark lesson tab:', e);
+        } finally {
+            this.isMarkingTab = false;
+            if (nextUrl) {
+                window.location.href = nextUrl;
+            }
+        }
+    },
 
     init() {
         if (typeof this.initPracticeData === 'function') {

@@ -534,6 +534,14 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400"
                         x-text="`Bạn đã hoàn thành bài luyện ${quizLength} câu phản xạ Pinyin.`">
                     </p>
+                    <template x-if="earnedExp > 0">
+                        <div class="pt-2 flex items-center justify-center">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold animate-bounce">
+                                <i class="fa-solid fa-bolt text-amber-500"></i>
+                                <span>+<span x-text="earnedExp"></span> EXP Kinh nghiệm</span>
+                            </span>
+                        </div>
+                    </template>
                 </div>
                 <div
                     class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3.5 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926]">

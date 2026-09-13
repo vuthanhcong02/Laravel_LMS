@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <div class="flex items-baseline gap-1.5">
-                                        <span class="text-2xl font-bold text-slate-900 dark:text-white">0</span>
+                                        <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ auth()->check() ? (auth()->user()->current_streak ?? 0) : 0 }}</span>
                                         <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ __('Ngày liên tục') }}</span>
                                     </div>
                                     <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <div class="flex items-baseline gap-1.5">
-                                        <span class="text-2xl font-bold text-slate-900 dark:text-white">0</span>
+                                        <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $completedLessonsCount ?? 0 }}</span>
                                         <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ __('Bài đã hoàn thành') }}</span>
                                     </div>
                                     <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
@@ -67,6 +67,7 @@
                                 </div>
                             </div>
                         </div>
+                        <x-lms.streak-heatmap :user="auth()->user()" />
                         <div class="space-y-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
@@ -189,6 +190,8 @@
                         </div>
                     </div>
                     <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.1s;">
+                        <x-lms.leaderboard-widget :initialLeaderboard="$initialLeaderboard ?? []" />
+
                         <div x-data="homeDailyVocab('{{ addslashes($wordOfDay->word ?? '坚持') }}')" class="lms-card p-6 space-y-3 relative group">
                             <div class="flex items-center justify-between text-xs text-[#e07a5f] font-bold">
                                 <span>Từ vựng hôm nay</span>
