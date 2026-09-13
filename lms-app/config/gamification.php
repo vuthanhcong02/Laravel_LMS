@@ -3,14 +3,58 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Mục tiêu EXP mỗi ngày (Daily Goal EXP)
+    | Daily EXP Goal
     |--------------------------------------------------------------------------
-    |
-    | Số điểm kinh nghiệm tối thiểu học viên cần đạt được trong một ngày
-    | để duy trì hoặc tăng chuỗi học tập (Streak).
-    |
     */
     'daily_goal_exp' => 50,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Level Progression Configuration
+    |--------------------------------------------------------------------------
+    |
+    | 30 Levels on an Arithmetic Scale (+25 EXP per level increment).
+    | Lv 1 -> Lv 2: 50 EXP (Cumulative: 50 EXP)
+    | Lv 2 -> Lv 3: 75 EXP (Cumulative: 125 EXP)
+    | ...
+    | Max level is 30 at 11,600 cumulative EXP.
+    |
+    */
+    'levels' => [
+        'max_level' => 30,
+        'thresholds' => [
+            1  => 0,
+            2  => 50,
+            3  => 125,
+            4  => 225,
+            5  => 350,
+            6  => 500,
+            7  => 675,
+            8  => 875,
+            9  => 1100,
+            10 => 1350,
+            11 => 1625,
+            12 => 1925,
+            13 => 2250,
+            14 => 2600,
+            15 => 2975,
+            16 => 3375,
+            17 => 3800,
+            18 => 4250,
+            19 => 4725,
+            20 => 5225,
+            21 => 5750,
+            22 => 6300,
+            23 => 6875,
+            24 => 7475,
+            25 => 8100,
+            26 => 8750,
+            27 => 9425,
+            28 => 10125,
+            29 => 10850,
+            30 => 11600,
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -48,9 +92,11 @@ return [
 
         // --- 1. THI THỬ HSK ---
         'hsk_mock_exam' => [
-            'exp'       => 50,
-            'daily_cap' => null,
-            'one_time'  => false,
+            'exp'                 => 50,
+            'min_score_percent'   => 30, // Điểm tối thiểu 30% mới được cộng EXP
+            'daily_one_time_exam' => true, // Mỗi đề thi cụ thể chỉ nhận EXP 1 lần trong 1 ngày
+            'daily_cap'           => null,
+            'one_time'            => false,
         ],
 
         // --- 2. CÁC PHẦN TRONG BÀI HỌC KHÓA HỌC (COURSE V2) ---
@@ -84,9 +130,20 @@ return [
 
         // --- 4. LUYỆN TẬP PHẢN XẠ PINYIN ---
         'pinyin_practice' => [
-            'exp'       => 10,
-            'daily_cap' => 30, // Tối đa 30 EXP (3 ván quiz) mỗi ngày
-            'one_time'  => false,
+            'exp'                 => 10,
+            'exp_rates'           => [
+                10 => 10,
+                20 => 20,
+                50 => 50,
+            ],
+            'min_correct_percent' => 40, // Làm đúng tối thiểu 40% số câu
+            'diminishing_returns' => [
+                ['max_sessions' => 2, 'rate' => 1.0],   // Ván 1 & 2 trong ngày: 100% EXP
+                ['max_sessions' => 4, 'rate' => 0.5],   // Ván 3 & 4 trong ngày: 50% EXP
+                ['max_sessions' => null, 'rate' => 0.25], // Ván 5 trở đi trong ngày: 25% EXP (tối thiểu 1 EXP)
+            ],
+            'daily_cap'           => null,
+            'one_time'            => false,
         ],
     ],
 ];

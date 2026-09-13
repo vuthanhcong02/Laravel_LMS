@@ -17,9 +17,13 @@ class GamificationService
      * @param User $user
      * @param string $actionType
      * @param int|null $referenceId
+     * @param User $user
+     * @param string $actionType
+     * @param int|null $referenceId
+     * @param array $context Additional context for calculation (e.g., quiz_length)
      * @return array|null Return EXP information or null if blocked
      */
-    public function awardExp(User $user, string $actionType, ?int $referenceId = null): ?array
+    public function awardExp(User $user, string $actionType, ?int $referenceId = null, array $context = []): ?array
     {
         $config = config("gamification.actions.{$actionType}");
         if (!$config) {
@@ -42,7 +46,7 @@ class GamificationService
             // block(5) = wait up to 5 seconds to acquire lock, throw LockTimeoutException if not acquired
             $lock->block(5);
 
-            // 1. Prevent duplicate rewards for one-time actions
+            // 1. Prevent duplicate rewards for global one-time actions
             if (!empty($config['one_time']) && $referenceId !== null) {
                 $alreadyAwarded = UserExpTransaction::where('user_id', $user->id)
                     ->where('action_type', $actionType)
@@ -54,11 +58,47 @@ class GamificationService
                 }
             }
 
-            $baseExp = (int) $config['exp'];
-            $dailyCap = isset($config['daily_cap']) ? $config['daily_cap'] : null;
-            $expToAdd = $baseExp;
+            // 2. Prevent duplicate rewards for daily one-time actions per specific reference ID (e.g. HSK mock exam on the same day)
+            if (!empty($config['daily_one_time_exam']) && $referenceId !== null) {
+                $alreadyAwardedToday = UserExpTransaction::where('user_id', $user->id)
+                    ->where('action_type', $actionType)
+                    ->where('reference_id', $referenceId)
+                    ->whereBetween('created_at', [$startOfDay, $endOfDay])
+                    ->exists();
 
-            // 2. Check daily EXP limit (Daily Cap) — inside lock to prevent race condition
+                if ($alreadyAwardedToday) {
+                    return null;
+                }
+            }
+
+            // 3. Determine base EXP and apply diminishing returns if configured
+            $baseExp = (int) ($config['exp'] ?? 0);
+            if (!empty($config['exp_rates']) && !empty($context['quiz_length'])) {
+                $length = (int) $context['quiz_length'];
+                $baseExp = $config['exp_rates'][$length] ?? $baseExp;
+            }
+
+            if (!empty($config['diminishing_returns']) && is_array($config['diminishing_returns'])) {
+                $todaySessionsCount = UserExpTransaction::where('user_id', $user->id)
+                    ->where('action_type', $actionType)
+                    ->whereBetween('created_at', [$startOfDay, $endOfDay])
+                    ->count();
+
+                $rate = 1.0;
+                foreach ($config['diminishing_returns'] as $tier) {
+                    if ($tier['max_sessions'] === null || $todaySessionsCount < $tier['max_sessions']) {
+                        $rate = (float) $tier['rate'];
+                        break;
+                    }
+                }
+                $expToAdd = max(1, (int) round($baseExp * $rate));
+            } else {
+                $expToAdd = $baseExp;
+            }
+
+            $dailyCap = isset($config['daily_cap']) ? $config['daily_cap'] : null;
+
+            // 4. Check daily EXP limit (Daily Cap) — inside lock to prevent race condition
             if ($dailyCap !== null) {
                 $todayExpGained = (int) UserExpTransaction::where('user_id', $user->id)
                     ->where('action_type', $actionType)
@@ -69,7 +109,7 @@ class GamificationService
                     return null;
                 }
 
-                if ($todayExpGained + $baseExp > $dailyCap) {
+                if ($todayExpGained + $expToAdd > $dailyCap) {
                     $expToAdd = $dailyCap - $todayExpGained;
                 }
             }
@@ -136,8 +176,11 @@ class GamificationService
                     $user->save();
                 }
 
-                // Only call fresh() once instead of multiple times.
+                // Retrieve updated user state once
                 $freshUser = $user->fresh();
+
+                // Calculate level progression info
+                $levelInfo = $this->calculateLevelInfo((int) $freshUser->exp_total);
 
                 return [
                     'exp_gained'       => $expToAdd,
@@ -147,12 +190,116 @@ class GamificationService
                     'longest_streak'   => $freshUser->longest_streak,
                     'streak_increased' => $streakIncreased,
                     'reached_goal'     => $newTodayTotalExp >= $dailyGoal,
+                    'level_info'       => $levelInfo,
                 ];
             });
         } finally {
             // Always release lock whether successful or failed
             $lock->release();
         }
+    }
+
+    /**
+     * Get level threshold mapping (Level => Cumulative EXP required).
+     *
+     * @return array<int, int>
+     */
+    public function getLevelThresholds(): array
+    {
+        return config('gamification.levels.thresholds', [
+            1  => 0,
+            2  => 50,
+            3  => 125,
+            4  => 225,
+            5  => 350,
+            6  => 500,
+            7  => 675,
+            8  => 875,
+            9  => 1100,
+            10 => 1350,
+            11 => 1625,
+            12 => 1925,
+            13 => 2250,
+            14 => 2600,
+            15 => 2975,
+            16 => 3375,
+            17 => 3800,
+            18 => 4250,
+            19 => 4725,
+            20 => 5225,
+            21 => 5750,
+            22 => 6300,
+            23 => 6875,
+            24 => 7475,
+            25 => 8100,
+            26 => 8750,
+            27 => 9425,
+            28 => 10125,
+            29 => 10850,
+            30 => 11600,
+        ]);
+    }
+
+    /**
+     * Calculate comprehensive level progression info for a given cumulative EXP.
+     * Progression follows arithmetic curve (+25 EXP per level, Max Level: 30 at 11,600 EXP).
+     *
+     * @param int $expTotal
+     * @return array
+     */
+    public function calculateLevelInfo(int $expTotal): array
+    {
+        $thresholds = $this->getLevelThresholds();
+        $maxLevel = (int) (config('gamification.levels.max_level') ?? max(array_keys($thresholds)));
+        $maxThreshold = $thresholds[$maxLevel] ?? 11600;
+
+        $expTotal = max(0, $expTotal);
+
+        if ($expTotal >= $maxThreshold) {
+            $prevThreshold = $thresholds[$maxLevel - 1] ?? ($maxThreshold - 750);
+            $expNeededInLevel = $maxThreshold - $prevThreshold;
+
+            return [
+                'level'                  => $maxLevel,
+                'level_badge'            => 'Lv.' . $maxLevel,
+                'current_level_base_exp' => $maxThreshold,
+                'next_level_exp'         => $maxThreshold,
+                'exp_in_level'           => $expNeededInLevel,
+                'exp_needed_in_level'    => $expNeededInLevel,
+                'progress_percent'       => 100,
+                'is_max'                 => true,
+            ];
+        }
+
+        $currentLevel = 1;
+        foreach ($thresholds as $lvl => $reqExp) {
+            if ($expTotal >= $reqExp) {
+                $currentLevel = $lvl;
+            } else {
+                break;
+            }
+        }
+
+        $currentBaseExp = $thresholds[$currentLevel];
+        $nextLevel = min($maxLevel, $currentLevel + 1);
+        $nextBaseExp = $thresholds[$nextLevel];
+        $expNeededInLevel = $nextBaseExp - $currentBaseExp;
+        $expInLevel = $expTotal - $currentBaseExp;
+
+        $progressPercent = $expNeededInLevel > 0
+            ? (int) round(($expInLevel / $expNeededInLevel) * 100)
+            : 100;
+
+        return [
+            'level'                  => $currentLevel,
+            'level_badge'            => 'Lv.' . $currentLevel,
+            'current_level_base_exp' => $currentBaseExp,
+            'next_level_exp'         => $nextBaseExp,
+            'exp_in_level'           => $expInLevel,
+            'exp_needed_in_level'    => $expNeededInLevel,
+            'progress_percent'       => min(100, max(0, $progressPercent)),
+            'is_max'                 => false,
+        ];
     }
 
     /**
@@ -231,9 +378,7 @@ class GamificationService
                 $dayTrans = $transactions->get($dateStr, collect());
                 if ($dayTrans->isNotEmpty()) {
                     foreach ($dayTrans->groupBy('action_type') as $actType => $items) {
-                        $name = $actionNames[$actType] ?? 'Hoạt động học tập';
-                        $count = $items->count();
-                        $activities[] = $count > 1 ? "{$name} (x{$count})" : $name;
+                        $activities[] = $actionNames[$actType] ?? 'Hoạt động học tập';
                     }
                 } elseif ($exp > 0) {
                     $activities[] = 'Hoàn thành bài học';
@@ -323,17 +468,20 @@ class GamificationService
         $leaderboard = $topUsers->map(function ($u, $index) use ($timeframe) {
             $fullName = $u->full_name;
             $expValue = ($timeframe === 'all_time') ? (int) ($u->exp_total ?? 0) : (int) ($u->period_exp ?? 0);
+            $levelInfo = $this->calculateLevelInfo((int) ($u->exp_total ?? 0));
 
             return [
-                'rank' => $index + 1,
-                'user_id' => $u->id,
-                'name' => $fullName,
-                'avatar' => $u->avatar_url,
-                'exp' => number_format($expValue) . ' EXP',
-                'raw_exp' => $expValue,
-                'streak' => (int) ($u->current_streak ?? 0),
+                'rank'           => $index + 1,
+                'user_id'        => $u->id,
+                'name'           => $fullName,
+                'avatar'         => $u->avatar_url,
+                'exp'            => number_format($expValue) . ' EXP',
+                'raw_exp'        => $expValue,
+                'streak'         => (int) ($u->current_streak ?? 0),
                 'longest_streak' => (int) ($u->longest_streak ?? 0),
-                'badge' => $expValue >= 500 ? 'Học giả' : ($expValue >= 100 ? 'Tiến bộ' : 'Tập sự'),
+                'level'          => $levelInfo['level'],
+                'level_badge'    => $levelInfo['level_badge'],
+                'badge'          => $levelInfo['level_badge'],
             ];
         })->values()->toArray();
 
