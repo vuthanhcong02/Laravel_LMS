@@ -476,7 +476,7 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3 max-w-md mx-auto pt-1">
-                    <template x-for="(opt, idx) in currentOptions" :key="opt.id + '_' + idx">
+                    <template x-for="(opt, idx) in currentOptions" :key="'q_' + questionInRound + '_' + (isMistakePracticeMode ? 'm_' : 'n_') + opt.id + '_' + idx">
                         <button type="button" @click="selectAnswer(opt)" :disabled="answered"
                             :class="getOptionClass(opt)"
                             class="p-3.5 sm:p-4 rounded-2xl border-2 btn-tactile flex flex-col items-center justify-center min-h-[85px] sm:min-h-[95px] relative transition-all cursor-pointer select-none">
@@ -487,14 +487,17 @@
                             {{-- Pinyin Display --}}
                             <span x-text="formatPinyin(opt.display)"
                                 class="text-3xl font-bold tracking-normal zh-text"></span>
-                            <div class="absolute top-2.5 right-2.5">
-                                <template x-if="answered && opt.id === targetTone.id">
-                                    <i class="fa-solid fa-circle-check text-emerald-500 text-lg animate-bounce"></i>
-                                </template>
-                                <template
-                                    x-if="answered && selectedOpt && selectedOpt.id === opt.id && opt.id !== targetTone.id">
-                                    <i class="fa-solid fa-circle-xmark text-rose-500 text-lg"></i>
-                                </template>
+                            <div class="absolute top-2.5 right-2.5 flex items-center justify-center">
+                                <span x-show="answered && opt.id === targetTone.id" x-cloak>
+                                    <svg class="w-5 h-5 text-emerald-500 animate-bounce" viewBox="0 0 24 24" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                <span x-show="answered && selectedOpt && selectedOpt.id === opt.id && opt.id !== targetTone.id" x-cloak>
+                                    <svg class="w-5 h-5 text-rose-500" viewBox="0 0 24 24" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
                             </div>
                         </button>
                     </template>

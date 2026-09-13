@@ -247,9 +247,20 @@ class HskMockExamService
 
             $exam->increment('attempt_count');
 
+            $maxScore = ($scores['listening']['total'] > 0 ? 100 : 0)
+                + ($scores['reading']['total'] > 0 ? 100 : 0)
+                + ($scores['writing']['total'] > 0 ? 100 : 0);
+
+            if ($maxScore <= 0) {
+                $maxScore = 200;
+            }
+
+            $scorePercent = ($totalScore / $maxScore) * 100;
+            $minScorePercent = (float) config('gamification.actions.hsk_mock_exam.min_score_percent', 30);
+
             $user = User::find($userId);
-            if ($user) {
-                event(new UserEarnedExp($user, 'hsk_mock_exam', $result->id));
+            if ($user && $scorePercent >= $minScorePercent) {
+                event(new UserEarnedExp($user, 'hsk_mock_exam', (int) $exam->id));
             }
 
             return $result;

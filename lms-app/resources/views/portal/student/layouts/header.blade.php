@@ -22,11 +22,14 @@
         </nav>
         <div class="flex items-center gap-3">
             @auth
-                <!-- Mini Streak Flame Pill -->
-                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-600 dark:text-amber-400 text-xs font-bold shadow-xs" title="{{ __('Chuỗi ngày học liên tục') }}">
-                    <span>🔥</span>
-                    <span>{{ auth()->user()->current_streak ?? 0 }} {{ __('ngày') }}</span>
-                    <span class="text-[10px] text-slate-400 dark:text-slate-500 font-normal">({{ auth()->user()->today_exp ?? 0 }}/{{ auth()->user()->daily_goal_exp ?? 50 }} EXP)</span>
+                <!-- Mini Streak Flame & Level Pill -->
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-600 dark:text-amber-400 text-xs font-bold shadow-xs" title="{{ __('Chuỗi ngày học liên tục & Cấp độ') }}">
+                    <div class="flex items-center gap-1">
+                        <span>🔥</span>
+                        <span>{{ auth()->user()->current_streak ?? 0 }} {{ __('ngày') }}</span>
+                    </div>
+                    <span class="text-slate-300 dark:text-slate-600 font-normal">•</span>
+                    <span class="px-1.5 py-0.5 rounded bg-amber-200/60 dark:bg-amber-900/60 text-[11px] font-bold text-amber-700 dark:text-amber-300">{{ auth()->user()->level_badge }}</span>
                 </div>
             @endauth
             {{-- Notifications Dropdown --}}

@@ -191,4 +191,36 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
         return min(100, $percent);
     }
+
+    /**
+     * Get user level and progression details.
+     */
+    public function getLevelInfoAttribute(): array
+    {
+        return app(\App\Services\GamificationService::class)->calculateLevelInfo((int) ($this->exp_total ?? 0));
+    }
+
+    /**
+     * Get current level number (1 - 30).
+     */
+    public function getLevelAttribute(): int
+    {
+        return $this->level_info['level'];
+    }
+
+    /**
+     * Get level badge string (e.g. Lv.1, Lv.30).
+     */
+    public function getLevelBadgeAttribute(): string
+    {
+        return $this->level_info['level_badge'];
+    }
+
+    /**
+     * Get progress percentage to next level (0 - 100%).
+     */
+    public function getLevelProgressPercentAttribute(): int
+    {
+        return $this->level_info['progress_percent'];
+    }
 }

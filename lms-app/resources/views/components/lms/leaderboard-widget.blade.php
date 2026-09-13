@@ -104,8 +104,12 @@
                                 class="w-7 h-7 rounded-full object-cover ring-1 ring-[#e8e2d9] dark:ring-[#332e2b] shrink-0" />
 
                             <div class="min-w-0 flex-1">
-                                <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate leading-tight"
-                                    x-text="item.name"></p>
+                                <div class="flex items-center gap-1.5">
+                                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate leading-tight"
+                                        x-text="item.name"></p>
+                                    <span class="text-[10px] font-bold text-[#e07a5f] dark:text-[#f4978e] px-1 py-0.2 rounded bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf]/50 dark:border-[#e07a5f]/20 leading-none shrink-0"
+                                        x-text="item.badge || item.level_badge"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="shrink-0">

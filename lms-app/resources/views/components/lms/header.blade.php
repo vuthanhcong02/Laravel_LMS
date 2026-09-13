@@ -73,37 +73,29 @@
             streak: {{ auth()->check() ? auth()->user()->current_streak ?? 0 : 0 }},
             longestStreak: {{ auth()->check() ? auth()->user()->longest_streak ?? 0 : 0 }},
             todayExp: {{ auth()->check() ? auth()->user()->today_exp ?? 0 : 0 }},
-            goalExp: {{ auth()->check() ? auth()->user()->daily_goal_exp ?? 50 : 50 }},
-            expTotal: {{ auth()->check() ? auth()->user()->exp_total ?? 0 : 0 }}
+            expTotal: {{ auth()->check() ? auth()->user()->exp_total ?? 0 : 0 }},
+            maxLevel: {{ config('gamification.levels.max_level', 30) }},
+            thresholds: @js(config('gamification.levels.thresholds'))
         })" @exp-updated.window="onExpUpdated($event.detail)" class="relative">
             <button type="button" @click="tooltipOpen = !tooltipOpen" @click.outside="tooltipOpen = false"
-                class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border transition-all btn-tactile cursor-pointer select-none"
-                :class="reachedGoal
-                    ?
-                    'bg-[#fff2ee] dark:bg-[#2c221e] border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] shadow-xs' :
-                    'bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:border-slate-300'">
-                <div class="relative w-6 h-6 flex items-center justify-center shrink-0">
-                    <svg class="w-6 h-6 -rotate-90 transform" viewBox="0 0 36 36">
-                        <path class="text-slate-200 dark:text-slate-700 stroke-current" stroke-width="3.5"
-                            fill="none"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="text-[#e07a5f] stroke-current transition-all duration-500 ease-out"
-                            :stroke-dasharray="`${percent}, 100`" stroke-width="3.5" stroke-linecap="round"
-                            fill="none"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    </svg>
-                    <span class="absolute inset-0 flex items-center justify-center text-xs leading-none"
-                        :class="reachedGoal ? 'animate-bounce' : 'opacity-80'">🔥</span>
+                class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:border-slate-300 transition-all btn-tactile cursor-pointer select-none">
+                
+                <div class="flex items-center gap-1">
+                    <span class="text-sm leading-none">🔥</span>
+                    <span class="text-xs font-bold font-mono tracking-tight text-amber-600 dark:text-amber-400" x-text="streak"></span>
+                    <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 hidden sm:inline">{{ __('ngày') }}</span>
                 </div>
+
+                <div class="w-px h-3.5 bg-[#e8e2d9] dark:bg-[#2d2926]"></div>
 
                 <div class="flex items-center gap-1.5">
-                    <span class="text-xs font-bold font-mono tracking-tight"
-                        :class="reachedGoal ? 'text-[#e07a5f] dark:text-[#f4978e]' : 'text-slate-700 dark:text-slate-200'"
-                        x-text="streak"></span>
-                    <span
-                        class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 hidden sm:inline">{{ __('ngày') }}</span>
+                    <span class="text-[11px] font-bold text-[#e07a5f] dark:text-[#f4978e] px-1.5 py-0.5 rounded-md bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf]/50 dark:border-[#e07a5f]/20 leading-none" x-text="levelBadge"></span>
+                    
+                    <div class="w-10 sm:w-12 h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden p-[1px] hidden xs:block">
+                        <div class="h-full bg-gradient-to-r from-[#e07a5f] to-[#f4978e] rounded-full transition-all duration-500 ease-out"
+                            :style="`width: ${levelPercent}%`"></div>
+                    </div>
                 </div>
-
             </button>
 
             <div x-show="tooltipOpen" x-cloak x-transition:enter="transition ease-out duration-200"
@@ -117,62 +109,71 @@
 
                 <template x-if="isLoggedIn">
                     <div class="space-y-4">
-                        <div
-                            class="flex items-start justify-between border-b border-[#e8e2d9] dark:border-white/10 pb-4">
+                        <div class="flex items-start justify-between border-b border-[#e8e2d9] dark:border-white/10 pb-3.5">
                             <div class="flex items-start gap-3">
                                 <span class="text-2xl mt-0.5">🔥</span>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight mb-1">
-                                        {{ __('Chuỗi học tập') }}</h4>
-                                    <span
-                                        class="text-xs text-slate-500 dark:text-slate-400 font-medium leading-snug block max-w-[140px]">{{ __('Học mỗi ngày để giữ chuỗi') }}</span>
+                                        {{ __('Chuỗi học tập') }}
+                                    </h4>
+                                    <span class="text-xs text-slate-500 dark:text-slate-400 font-medium leading-snug block">
+                                        {{ __('Học mỗi ngày để giữ chuỗi liên tục') }}
+                                    </span>
                                 </div>
                             </div>
-                            <span
-                                class="text-xs font-bold px-3 py-1.5 rounded-full text-center shrink-0 whitespace-nowrap"
-                                :class="reachedGoal ?
-                                    'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' :
-                                    'bg-[#fff0eb] dark:bg-[#e07a5f]/10 text-[#e07a5f] dark:text-[#e07a5f]'"
-                                x-text="reachedGoal ? '{{ __('Đã hoàn thành') }}' : '{{ __('Đang thực hiện') }}'"></span>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] dark:text-[#f4978e] border border-[#fcdccf]/60 dark:border-[#e07a5f]/20 shrink-0 whitespace-nowrap"
+                                x-text="levelBadge"></span>
                         </div>
 
                         <div class="space-y-2">
                             <div class="flex justify-between items-end">
-                                <span
-                                    class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Mục tiêu hôm nay') }}</span>
-                                <span class="text-slate-900 dark:text-white font-bold text-sm">
-                                    <span class="text-[#e07a5f]" x-text="todayExp"></span>/<span
-                                        x-text="goalExp"></span> <span
-                                        class="text-[10px] text-slate-400 font-bold ml-0.5">EXP</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Tiến trình cấp độ') }}</span>
+                                    <template x-if="isMaxLevel">
+                                        <span class="text-[10px] font-bold text-amber-500 bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 rounded leading-none">MAX</span>
+                                    </template>
+                                </div>
+                                <span class="text-slate-900 dark:text-white font-bold text-xs">
+                                    <template x-if="!isMaxLevel">
+                                        <span>
+                                            <span class="text-[#e07a5f]" x-text="levelInfo.expInLevel"></span>/<span x-text="levelInfo.expNeeded"></span>
+                                            <span class="text-[10px] text-slate-400 font-bold ml-0.5">EXP</span>
+                                        </span>
+                                    </template>
+                                    <template x-if="isMaxLevel">
+                                        <span class="text-[#e07a5f] font-bold text-xs">{{ __('Cấp độ tối đa') }}</span>
+                                    </template>
                                 </span>
                             </div>
+
                             <div class="w-full h-2.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden p-[2px]">
                                 <div class="h-full bg-gradient-to-r from-[#e07a5f] to-[#f4978e] rounded-full transition-all duration-500 ease-out"
-                                    :style="`width: ${percent}%`"></div>
+                                    :style="`width: ${levelPercent}%`"></div>
+                            </div>
+
+                            <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                                <span x-text="levelBadge"></span>
+                                <span x-text="isMaxLevel ? 'Lv.30 (MAX)' : `Lv.${level + 1}`"></span>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-2 pt-2">
-                            <div
-                                class="py-2.5 px-2 rounded-[20px] bg-[#fcfaf7] dark:bg-white/5 border border-transparent dark:border-white/5 text-center flex flex-col justify-center items-center h-full hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
+                        <div class="grid grid-cols-3 gap-2 pt-1">
+                            <div class="py-2.5 px-2 rounded-[20px] bg-[#fcfaf7] dark:bg-white/5 border border-transparent dark:border-white/5 text-center flex flex-col justify-center items-center h-full hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
                                 <div class="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase mb-1">
                                     {{ __('Hiện tại') }}</div>
                                 <div class="text-[11px] font-bold text-[#e07a5f] whitespace-nowrap">🔥 <span
                                         x-text="streak"></span> {{ __('ngày') }}</div>
                             </div>
-                            <div
-                                class="py-2.5 px-2 rounded-[20px] bg-[#fcfaf7] dark:bg-white/5 border border-transparent dark:border-white/5 text-center flex flex-col justify-center items-center h-full hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
+                            <div class="py-2.5 px-2 rounded-[20px] bg-[#fcfaf7] dark:bg-white/5 border border-transparent dark:border-white/5 text-center flex flex-col justify-center items-center h-full hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
                                 <div class="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase mb-1">
                                     {{ __('Kỷ lục') }}</div>
                                 <div class="text-[11px] font-bold text-amber-500 whitespace-nowrap">🏆 <span
                                         x-text="longestStreak"></span> {{ __('ngày') }}</div>
                             </div>
-                            <div
-                                class="py-2.5 px-2 rounded-[20px] bg-[#fcfaf7] dark:bg-white/5 border border-transparent dark:border-white/5 text-center flex flex-col justify-center items-center h-full hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
+                            <div class="py-2.5 px-2 rounded-[20px] bg-[#fcfaf7] dark:bg-white/5 border border-transparent dark:border-white/5 text-center flex flex-col justify-center items-center h-full hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
                                 <div class="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase mb-1">
                                     {{ __('Tổng EXP') }}</div>
-                                <div
-                                    class="text-[11px] font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">
+                                <div class="text-[11px] font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">
                                     ⚡ <span x-text="expTotal"></span></div>
                             </div>
                         </div>
@@ -181,15 +182,14 @@
 
                 <template x-if="!isLoggedIn">
                     <div class="space-y-3 text-center py-1">
-                        <div
-                            class="w-12 h-12 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] flex items-center justify-center mx-auto text-xl shadow-xs">
+                        <div class="w-12 h-12 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] flex items-center justify-center mx-auto text-xl shadow-xs">
                             🔥
                         </div>
                         <div class="space-y-1">
                             <h4 class="text-sm font-bold text-slate-900 dark:text-white">
                                 {{ __('Bắt đầu Chuỗi Học Tập!') }}</h4>
                             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                {{ __('Đăng nhập ngay để ghi nhận chuỗi ngày học liên tục, tích lũy điểm EXP và đua Top Bảng Xếp Hạng.') }}
+                                {{ __('Đăng nhập ngay để ghi nhận chuỗi ngày học liên tục, tích lũy điểm EXP, nâng cấp bậc và đua Top Bảng Xếp Hạng.') }}
                             </p>
                         </div>
                         <button type="button"
