@@ -67,6 +67,23 @@
                             {{ $user->email }}
                         </p>
                     </div>
+
+                    <!-- Gamification Stats Overview in Profile Card -->
+                    <div class="grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-[#e8e2d9] dark:border-[#2d2926]">
+                        <div class="p-2 rounded-xl bg-[#fcfaf7] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-center">
+                            <div class="text-[9px] text-slate-400 font-bold uppercase">{{ __('Chuỗi') }}</div>
+                            <div class="text-xs font-bold text-[#e07a5f] mt-0.5">🔥 {{ $user->current_streak ?? 0 }} {{ __('ngày') }}</div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-[#fcfaf7] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-center">
+                            <div class="text-[9px] text-slate-400 font-bold uppercase">{{ __('Kỷ lục') }}</div>
+                            <div class="text-xs font-bold text-amber-500 mt-0.5">🏆 {{ $user->longest_streak ?? 0 }} {{ __('ngày') }}</div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-[#fcfaf7] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-center">
+                            <div class="text-[9px] text-slate-400 font-bold uppercase">{{ __('Tổng EXP') }}</div>
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5">⚡ {{ number_format($user->exp_total ?? 0) }}</div>
+                        </div>
+                    </div>
+
                     <div class="mt-3.5 text-center">
                         <span class="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
                             <i class="fa-regular fa-calendar text-[10px]"></i>
@@ -92,7 +109,10 @@
                 </button>
             </div>
         </div>
-        <div class="lg:col-span-8">
+        <div class="lg:col-span-8 space-y-6">
+            <!-- 90-Day Contribution Heatmap Widget -->
+            <x-lms.streak-heatmap :user="$user" />
+
             <div class="lms-card p-6 sm:p-8 shadow-sm">
                 <div x-show="activeTab === 'profile'" 
                      x-transition:enter="transition ease-out duration-200"

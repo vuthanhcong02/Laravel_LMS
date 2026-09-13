@@ -32,6 +32,10 @@ import {
 import { pinyinBoardApp, pinyinDragScroll, pinyinCrosshair } from './alpine/components/pinyin-chart.js';
 import { pinyinQuizApp } from './alpine/components/pinyin-quiz.js';
 import { userProfilePage, passwordUpdateForm, avatarUpload } from './alpine/components/profile-forms.js';
+import headerStreakWidget from './alpine/components/header-streak.js';
+import streakHeatmapWidget from './alpine/components/streak-heatmap.js';
+import gamificationLeaderboard from './alpine/components/gamification-leaderboard.js';
+import hskResultViewer from './alpine/components/hsk-result-viewer.js';
 import hskIndex from './hsk-index.js';
 import examTimer from './hsk-take.js';
 
@@ -54,6 +58,9 @@ if (!window.Alpine) {
     Alpine.data('pinyinDragScroll', pinyinDragScroll);
     Alpine.data('pinyinCrosshair', pinyinCrosshair);
     Alpine.data('pinyinQuizApp', pinyinQuizApp);
+    Alpine.data('headerStreakWidget', headerStreakWidget);
+    Alpine.data('streakHeatmapWidget', streakHeatmapWidget);
+    Alpine.data('gamificationLeaderboard', gamificationLeaderboard);
     Alpine.data('userProfilePage', userProfilePage);
     Alpine.data('passwordUpdateForm', passwordUpdateForm);
     Alpine.data('avatarUpload', avatarUpload);
@@ -69,6 +76,7 @@ if (!window.Alpine) {
     // HSK components
     Alpine.data('hskIndex', hskIndex);
     Alpine.data('examTimer', examTimer);
+    Alpine.data('hskResultViewer', hskResultViewer);
 
     Alpine.start();
 }

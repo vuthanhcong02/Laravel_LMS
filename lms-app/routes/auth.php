@@ -33,8 +33,12 @@ Route::middleware('guest')->group(function () {
     Route::post('dat-lai-mat-khau', [NewPasswordController::class, 'store'])
         ->name('password.store');
 
-    Route::get('auth/{provider}', [AuthenticatedSessionController::class, 'redirect'])->name('socialite.redirect');
-    Route::get('auth/{provider}/callback', [AuthenticatedSessionController::class, 'callback'])->name('socialite.callback');
+    Route::get('auth/{provider}', [AuthenticatedSessionController::class, 'redirect'])
+        ->where('provider', 'google')
+        ->name('socialite.redirect');
+    Route::get('auth/{provider}/callback', [AuthenticatedSessionController::class, 'callback'])
+        ->where('provider', 'google')
+        ->name('socialite.callback');
 });
 
 Route::middleware('auth')->group(function () {

@@ -20,7 +20,15 @@
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
                 href="{{ route('support.index') }}">Support</a>
         </nav>
-        <div class="flex gap-3">
+        <div class="flex items-center gap-3">
+            @auth
+                <!-- Mini Streak Flame Pill -->
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-600 dark:text-amber-400 text-xs font-bold shadow-xs" title="{{ __('Chuỗi ngày học liên tục') }}">
+                    <span>🔥</span>
+                    <span>{{ auth()->user()->current_streak ?? 0 }} {{ __('ngày') }}</span>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 font-normal">({{ auth()->user()->today_exp ?? 0 }}/{{ auth()->user()->daily_goal_exp ?? 50 }} EXP)</span>
+                </div>
+            @endauth
             {{-- Notifications Dropdown --}}
             <div class="relative" x-data="{ notifOpen: false }">
                 <button @click="notifOpen = !notifOpen"

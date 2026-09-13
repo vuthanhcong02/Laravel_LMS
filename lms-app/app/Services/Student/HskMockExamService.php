@@ -2,10 +2,12 @@
 
 namespace App\Services\Student;
 
+use App\Events\UserEarnedExp;
 use App\Models\HskLevel;
 use App\Models\HskMockExam;
 use App\Models\HskMockExamResult;
 use App\Models\HskMockExamUserAnswer;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class HskMockExamService
@@ -244,6 +246,11 @@ class HskMockExamService
             ]);
 
             $exam->increment('attempt_count');
+
+            $user = User::find($userId);
+            if ($user) {
+                event(new UserEarnedExp($user, 'hsk_mock_exam', $result->id));
+            }
 
             return $result;
         });

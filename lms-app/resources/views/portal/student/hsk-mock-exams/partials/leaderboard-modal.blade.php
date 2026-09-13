@@ -161,6 +161,12 @@
                                 </div>
                                 <div class="flex items-center gap-2 mt-0.5">
                                     <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border" :class="item.badgeBg" x-text="item.level"></span>
+                                    <template x-if="item.streak > 0">
+                                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center gap-0.5">
+                                            <span>🔥</span>
+                                            <span x-text="item.streak"></span>
+                                        </span>
+                                    </template>
                                 </div>
                             </div>
                         </div>

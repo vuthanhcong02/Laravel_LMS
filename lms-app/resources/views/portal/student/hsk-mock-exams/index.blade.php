@@ -216,7 +216,7 @@
                 <div class="flex items-center justify-between border-b border-[#e8e2d9] dark:border-[#2d2926] pb-3">
                     <div>
                         <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-trophy text-amber-500"></i> {{ __('Bảng Xếp Hạng') }} <span class="text-xs font-normal text-slate-400 zh-text">成绩榜</span>
+                            <i class="fa-solid fa-trophy text-amber-500"></i> {{ __('Bảng Xếp Hạng') }}
                         </h3>
                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Top 8 Học viên xuất sắc nhất') }}</p>
                     </div>
