@@ -56,6 +56,8 @@ class HskMockExamController extends Controller
                 'level' => strtoupper($levelCode),
                 'badgeBg' => $badgeBg,
                 'score' => $result->total_score . ' ' . __('Điểm'),
+                'streak' => (int) ($result->user->current_streak ?? 0),
+                'exp_total' => (int) ($result->user->exp_total ?? 0),
                 'time' => floor($result->duration_seconds / 60) . 'p ' . str_pad($result->duration_seconds % 60, 2, '0', STR_PAD_LEFT) . 's',
             ];
         };

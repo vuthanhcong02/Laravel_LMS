@@ -54,6 +54,7 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/goc-chia-se', 'getViewBlog')->name('blog');
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
+    Route::post('/luyen-tap-pinyin/submit', [PinyinQuizController::class, 'submit'])->name('pinyin.quiz.submit');
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
     Route::get('/trang-chu', 'getDemoHome')->name('home');
@@ -61,6 +62,7 @@ Route::controller(PageController::class)->group(function () {
     Route::post('/flashcards/remember', 'rememberVocabulary')->name('flashcards.remember');
     Route::post('/flashcards/unremember', 'unrememberVocabulary')->name('flashcards.unremember');
     Route::post('/flashcards/reset', 'resetVocabularyProgress')->name('flashcards.reset');
+    Route::get('/api/leaderboard/gamification', 'getGamificationLeaderboard')->name('api.leaderboard.gamification');
 });
 
 // Lazy-load pinyin detail API
@@ -70,6 +72,10 @@ Route::get('/bang-phien-am-pinyin/{id}/detail', [PinyinController::class, 'detai
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
+
+    Route::post('/khoa-hoc/bai-hoc/{lesson_id}/mark-tab', [PageController::class, 'markLessonTab'])
+        ->name('courses.lesson.markTab')
+        ->where('lesson_id', '[0-9]+');
 
     Route::get('/khoa-hoc/{levelSlug}/{lessonSlug}/{tab?}', [PageController::class, 'showCourseLessonV2'])
         ->name('courses.lesson')
