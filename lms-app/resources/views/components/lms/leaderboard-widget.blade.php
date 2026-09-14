@@ -144,7 +144,13 @@
                                         <div class="flex items-center justify-center gap-1 mt-0.5">
                                             <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top2.badgeBg" x-text="top2.level"></span>
                                         </div>
-                                        <span class="text-[9px] font-bold text-slate-600 dark:text-slate-300 mt-0.2" x-text="top2.score"></span>
+                                        <div class="mt-0.5">
+                                            <span class="text-[9px] font-bold text-slate-700 dark:text-slate-200 block leading-tight" x-text="top2.score"></span>
+                                            <span class="text-[8px] font-semibold text-slate-400 dark:text-slate-500 inline-flex items-center justify-center gap-0.5 leading-tight">
+                                                <i class="fa-solid fa-clock text-[#0284c7] text-[7px]"></i>
+                                                <span x-text="top2.time"></span>
+                                            </span>
+                                        </div>
                                     @else
                                         <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.2" x-text="top2.exp"></span>
                                     @endif
@@ -187,7 +193,13 @@
                                         <div class="flex items-center justify-center gap-1 mt-0.5">
                                             <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top1.badgeBg" x-text="top1.level"></span>
                                         </div>
-                                        <span class="text-[9px] sm:text-[10px] font-bold text-[#e07a5f] dark:text-[#f4978e] mt-0.2" x-text="top1.score"></span>
+                                        <div class="mt-0.5">
+                                            <span class="text-[9px] sm:text-[10px] font-bold text-[#e07a5f] dark:text-[#f4978e] block leading-tight" x-text="top1.score"></span>
+                                            <span class="text-[8px] font-semibold text-slate-400 dark:text-slate-500 inline-flex items-center justify-center gap-0.5 leading-tight">
+                                                <i class="fa-solid fa-clock text-[#0284c7] text-[7px]"></i>
+                                                <span x-text="top1.time"></span>
+                                            </span>
+                                        </div>
                                     @else
                                         <span class="text-[9px] sm:text-[10px] font-bold text-[#e07a5f] dark:text-[#f4978e] mt-0.2" x-text="top1.exp"></span>
                                     @endif
@@ -227,7 +239,13 @@
                                         <div class="flex items-center justify-center gap-1 mt-0.5">
                                             <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top3.badgeBg" x-text="top3.level"></span>
                                         </div>
-                                        <span class="text-[9px] font-bold text-slate-600 dark:text-slate-300 mt-0.2" x-text="top3.score"></span>
+                                        <div class="mt-0.5">
+                                            <span class="text-[9px] font-bold text-slate-700 dark:text-slate-200 block leading-tight" x-text="top3.score"></span>
+                                            <span class="text-[8px] font-semibold text-slate-400 dark:text-slate-500 inline-flex items-center justify-center gap-0.5 leading-tight">
+                                                <i class="fa-solid fa-clock text-[#0284c7] text-[7px]"></i>
+                                                <span x-text="top3.time"></span>
+                                            </span>
+                                        </div>
                                     @else
                                         <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.2" x-text="top3.exp"></span>
                                     @endif
