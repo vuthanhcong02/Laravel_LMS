@@ -344,7 +344,8 @@ class HskMockExamService
                 'r.id, r.user_id, r.total_score, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) as duration_seconds,
                 ROW_NUMBER() OVER (PARTITION BY r.user_id ORDER BY r.total_score DESC, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) ASC) as rn'
             )
-            ->where('r.status', 'completed');
+            ->where('r.status', 'completed')
+            ->where('r.total_score', '>=', 50);
 
         if ($timeframe === 'month') {
             $subQuery->where('r.completed_at', '>=', now()->startOfMonth());

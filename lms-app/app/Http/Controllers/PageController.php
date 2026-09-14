@@ -152,7 +152,7 @@ class PageController extends Controller
                 ->count();
         }
 
-        $leaderboardData = $gamificationService->getGamificationLeaderboard('all_time', 5);
+        $leaderboardData = $gamificationService->getGamificationLeaderboard('all_time', 8);
         $initialLeaderboard = $leaderboardData['leaderboard'] ?? [];
 
         return view('home', compact('wordOfDay', 'suggestedLesson', 'completedLessonsCount', 'initialLeaderboard'));

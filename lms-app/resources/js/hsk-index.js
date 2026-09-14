@@ -5,6 +5,22 @@ export default () => ({
     loadingLeaderboard: false,
     socialDockExpanded: false, 
     leaderboard: window.hskLeaderboardData || [],
+
+    get top1() {
+        return this.leaderboard.find(item => item.rank === 1) || null;
+    },
+    get top2() {
+        return this.leaderboard.find(item => item.rank === 2) || null;
+    },
+    get top3() {
+        return this.leaderboard.find(item => item.rank === 3) || null;
+    },
+    get restItems() {
+        return this.leaderboard.filter(item => item.rank > 3);
+    },
+    get hasTop3() {
+        return this.leaderboard.length > 0;
+    },
     
     // Top 20 Leaderboard Modal state
     fullLeaderboardOpen: false,
