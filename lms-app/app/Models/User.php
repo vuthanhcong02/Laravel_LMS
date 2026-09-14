@@ -123,7 +123,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             return $this->avatar;
         }
 
-        return asset('storage/' . $this->avatar);
+        return '/storage/' . ltrim($this->avatar, '/');
     }
 
     public function enrollments()

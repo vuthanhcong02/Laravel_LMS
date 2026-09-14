@@ -79,18 +79,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Section Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-[#e07a5f]"></i> {{ __('Các cấp độ thi HSK') }}
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {{ __('Chọn cấp độ HSK phù hợp để xem danh sách đề thi chi tiết và bắt đầu làm bài.') }}
+            </p>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-layer-group text-[#e07a5f]"></i> {{ __('Các cấp độ thi HSK') }}
-                    </h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {{ __('Chọn cấp độ HSK phù hợp để xem danh sách đề thi chi tiết và bắt đầu làm bài.') }}
-                    </p>
-                </div>
-            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @php
                     $levelMeta = [
@@ -212,83 +215,11 @@
             </div>
         </div>
         <div id="leaderboard-section" class="space-y-4">
-            <div class="lms-card p-5 space-y-4 sticky top-6">
-                <div class="flex items-center justify-between border-b border-[#e8e2d9] dark:border-[#2d2926] pb-3">
-                    <div>
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-trophy text-amber-500"></i> {{ __('Bảng Xếp Hạng') }}
-                        </h3>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Top 8 Học viên xuất sắc nhất') }}</p>
-                    </div>
-                    <div class="shrink-0">
-                        <select x-model="leaderboardLevel" 
-                                class="text-[11px] bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl px-2.5 py-1 font-bold text-slate-700 dark:text-slate-200 outline-none focus:border-[#e07a5f] cursor-pointer">
-                            <option value="all">{{ __('Tất cả cấp') }}</option>
-                            <option value="hsk1">HSK 1</option>
-                            <option value="hsk2">HSK 2</option>
-                            <option value="hsk3">HSK 3</option>
-                            <option value="hsk4">HSK 4</option>
-                            <option value="hsk5">HSK 5</option>
-                            <option value="hsk6">HSK 6</option>
-                        </select>
-                    </div>
-                </div>
-                <!-- Tabs Filter 1 Row -->
-                <div class="flex items-center gap-1 bg-[#f8f6f3] dark:bg-[#201d1b] p-1 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] flex-nowrap overflow-x-auto no-scrollbar">
-                    <button @click="leaderboardFilter = 'all_time'" :class="leaderboardFilter === 'all_time' ? 'bg-[#e07a5f] text-white shadow-sm font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'" class="flex-1 py-1 px-2 rounded-lg text-[11px] whitespace-nowrap transition-all text-center btn-tactile">{{ __('Toàn thời gian') }}</button>
-                    <button @click="leaderboardFilter = 'month'" :class="leaderboardFilter === 'month' ? 'bg-[#e07a5f] text-white shadow-sm font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'" class="flex-1 py-1 px-2 rounded-lg text-[11px] whitespace-nowrap transition-all text-center btn-tactile">{{ __('Tháng này') }}</button>
-                    <button @click="leaderboardFilter = 'week'" :class="leaderboardFilter === 'week' ? 'bg-[#e07a5f] text-white shadow-sm font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'" class="flex-1 py-1 px-2 rounded-lg text-[11px] whitespace-nowrap transition-all text-center btn-tactile">{{ __('Tuần này') }}</button>
-                </div>
-                <!-- Leaderboard Item List with Loading state -->
-                <div class="relative min-h-[160px]">
-                    <!-- Loading Spinner Overlay -->
-                    <div x-show="loadingLeaderboard" 
-                         class="absolute inset-0 bg-white/70 dark:bg-[#181615]/70 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-xl"
-                         x-transition>
-                        <i class="fa-solid fa-spinner animate-spin text-[#e07a5f] text-lg"></i>
-                    </div>
-                    <div class="space-y-2 max-h-[480px] overflow-y-auto pr-1 no-scrollbar">
-                        <template x-for="item in leaderboard" :key="item.rank">
-                            <div class="flex items-center justify-between p-2.5 rounded-xl transition-all btn-tactile"
-                                 :class="item.rank === 1 ? 'bg-amber-500/10 border border-amber-500/30' : (item.rank === 2 ? 'bg-slate-200/50 dark:bg-slate-700/30 border border-slate-300 dark:border-slate-600' : (item.rank === 3 ? 'bg-amber-700/10 border border-amber-700/30' : 'bg-[#fcfaf7] dark:bg-[#1d1a18] border border-transparent hover:border-[#e8e2d9] dark:hover:border-[#2d2926]'))">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0"
-                                          :class="item.rank === 1 ? 'bg-amber-500 text-white shadow-sm' : (item.rank === 2 ? 'bg-slate-400 text-white' : (item.rank === 3 ? 'bg-amber-700 text-white' : 'text-slate-400'))"
-                                          x-text="'#' + item.rank">
-                                    </span>
-                                    <img :src="item.avatar" class="w-8 h-8 rounded-full object-cover border border-white dark:border-[#25211e] shrink-0" />
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" x-text="item.name"></p>
-                                        <div class="flex items-center gap-1.5 mt-0.5">
-                                            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border" :class="item.badgeBg" x-text="item.level"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <div class="text-xs font-bold text-slate-900 dark:text-white" x-text="item.score"></div>
-                                    <div class="text-[10px] text-slate-400 flex items-center justify-end gap-1">
-                                        <i class="fa-solid fa-clock text-[#0284c7] text-[9px]"></i>
-                                        <span x-text="item.time"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                        <div x-show="leaderboard.length === 0 && !loadingLeaderboard" class="py-8 text-center text-xs text-slate-400">
-                            <i class="fa-solid fa-award text-2xl text-slate-300 dark:text-slate-600 mb-2 block"></i>
-                            {{ __('Chưa có dữ liệu bảng xếp hạng') }}
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer button -->
-                <div class="pt-2 border-t border-[#e8e2d9] dark:border-[#2d2926] text-center">
-                    <button type="button" 
-                            @click="openFullLeaderboard()" 
-                            class="text-xs font-semibold text-[#e07a5f] hover:underline flex items-center justify-center gap-1.5 w-full py-1.5 cursor-pointer">
-                        <span>{{ __('Xem toàn bộ bảng xếp hạng (Top 20)') }}</span>
-                        <i class="fa-solid fa-angle-right text-[10px]"></i>
-                    </button>
-                </div>
-            </div>
+            <x-lms.leaderboard-widget 
+                type="hsk" 
+                :showLevelFilter="true" 
+                :showFullModalButton="true" 
+            />
         </div>
     </div>
 

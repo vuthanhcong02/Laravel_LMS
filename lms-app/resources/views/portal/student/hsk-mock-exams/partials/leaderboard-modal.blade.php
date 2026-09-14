@@ -147,6 +147,8 @@
                             {{-- Student Avatar --}}
                             <img :src="item.avatar" 
                                  :alt="item.name"
+                                 referrerpolicy="no-referrer"
+                                 onerror="const fb='https://ui-avatars.com/api/?name=' + encodeURIComponent(this.alt || 'User') + '&color=FFFFFF&background=e07a5f'; if (this.src !== fb) { this.src = fb; }"
                                  class="w-9 h-9 rounded-full object-cover border border-white dark:border-[#25211e] shrink-0 shadow-2xs" />
 
                             {{-- Student Info --}}
