@@ -34,7 +34,7 @@
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
                         {{ $resolvedTitle }}
                     </h3>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate cursor-default" title="{{ $resolvedSubtitle }}">
                         {{ $resolvedSubtitle }}
                     </p>
                 </div>
@@ -138,11 +138,12 @@
                                             2
                                         </span>
                                     </div>
-                                    <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-100 truncate w-full px-0.5 leading-tight"
+                                    <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-100 truncate w-full px-0.5 leading-tight cursor-default"
+                                        :title="top2.name"
                                         x-text="top2.name"></span>
                                     @if($isHsk)
                                         <div class="flex items-center justify-center gap-1 mt-0.5">
-                                            <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top2.badgeBg" x-text="top2.level"></span>
+                                            <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top2.badgeBg" :title="top2.level" x-text="top2.level"></span>
                                         </div>
                                         <div class="mt-0.5">
                                             <span class="text-[9px] font-bold text-slate-700 dark:text-slate-200 block leading-tight" x-text="top2.score"></span>
@@ -187,11 +188,12 @@
                                             1
                                         </span>
                                     </div>
-                                    <span class="text-[10px] sm:text-[11px] font-bold text-slate-900 dark:text-white truncate w-full px-0.5 leading-tight"
+                                    <span class="text-[10px] sm:text-[11px] font-bold text-slate-900 dark:text-white truncate w-full px-0.5 leading-tight cursor-default"
+                                        :title="top1.name"
                                         x-text="top1.name"></span>
                                     @if($isHsk)
                                         <div class="flex items-center justify-center gap-1 mt-0.5">
-                                            <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top1.badgeBg" x-text="top1.level"></span>
+                                            <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top1.badgeBg" :title="top1.level" x-text="top1.level"></span>
                                         </div>
                                         <div class="mt-0.5">
                                             <span class="text-[9px] sm:text-[10px] font-bold text-[#e07a5f] dark:text-[#f4978e] block leading-tight" x-text="top1.score"></span>
@@ -233,11 +235,12 @@
                                             3
                                         </span>
                                     </div>
-                                    <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-100 truncate w-full px-0.5 leading-tight"
+                                    <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-100 truncate w-full px-0.5 leading-tight cursor-default"
+                                        :title="top3.name"
                                         x-text="top3.name"></span>
                                     @if($isHsk)
                                         <div class="flex items-center justify-center gap-1 mt-0.5">
-                                            <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top3.badgeBg" x-text="top3.level"></span>
+                                            <span class="text-[8px] font-bold px-1 rounded border leading-tight" :class="top3.badgeBg" :title="top3.level" x-text="top3.level"></span>
                                         </div>
                                         <div class="mt-0.5">
                                             <span class="text-[9px] font-bold text-slate-700 dark:text-slate-200 block leading-tight" x-text="top3.score"></span>
@@ -287,14 +290,17 @@
                                         class="w-7 h-7 rounded-full object-cover ring-1.5 ring-[#e8e2d9] dark:ring-[#332e2b] shrink-0" />
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-1.5">
-                                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate leading-tight"
+                                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate leading-tight cursor-default"
+                                                :title="item.name"
                                                 x-text="item.name"></p>
                                             @if($isHsk)
                                                 <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border leading-none shrink-0"
                                                     :class="item.badgeBg"
+                                                    :title="item.level"
                                                     x-text="item.level"></span>
                                             @else
-                                                <span class="text-[9px] font-bold text-[#e07a5f] dark:text-[#f4978e] px-1.5 py-0.5 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf]/60 dark:border-[#e07a5f]/20 leading-none shrink-0"
+                                                <span class="text-[9px] font-bold text-[#e07a5f] dark:text-[#f4978e] px-1.5 py-0.5 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf]/60 dark:border-[#e07a5f]/20 leading-none shrink-0 cursor-default"
+                                                    :title="item.badge || item.level_badge"
                                                     x-text="item.badge || item.level_badge"></span>
                                             @endif
                                         </div>

@@ -95,7 +95,7 @@
                                 <span>{{ __('Vị trí của bạn') }}</span>
                                 <span class="font-bold text-[#e07a5f]" x-text="'#' + currentUserRank"></span>
                             </div>
-                            <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate" x-text="currentUserResult ? currentUserResult.name : ''"></div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate cursor-default" :title="currentUserResult ? currentUserResult.name : ''" x-text="currentUserResult ? currentUserResult.name : ''"></div>
                         </div>
                     </div>
                     <div class="text-right shrink-0" x-show="currentUserResult">
@@ -154,7 +154,7 @@
                             {{-- Student Info --}}
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                    <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate" x-text="item.name"></p>
+                                    <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate cursor-default" :title="item.name" x-text="item.name"></p>
                                     <template x-if="item.rank <= 3">
                                         <span class="text-[10px] font-bold text-amber-500">
                                             <i class="fa-solid fa-medal"></i>
@@ -162,7 +162,7 @@
                                     </template>
                                 </div>
                                 <div class="flex items-center gap-2 mt-0.5">
-                                    <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border" :class="item.badgeBg" x-text="item.level"></span>
+                                    <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border cursor-default" :class="item.badgeBg" :title="item.level" x-text="item.level"></span>
                                     <template x-if="item.streak > 0">
                                         <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center gap-0.5">
                                             <span>🔥</span>
