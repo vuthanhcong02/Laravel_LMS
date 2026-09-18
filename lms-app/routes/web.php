@@ -28,6 +28,7 @@ use App\Http\Controllers\Student\HskMockExamController;
 use App\Http\Controllers\Student\StudentDashboardController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentQuizController;
+use App\Http\Controllers\Student\SentenceStudyController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
@@ -70,8 +71,19 @@ Route::get('/bang-phien-am-pinyin/{id}/detail', [PinyinController::class, 'detai
     ->name('pinyin.detail')
     ->where('id', '[0-9]+');
 
+// Sentence study topics list (Public access for browsing topics)
+Route::get('/luyen-ghep-cau', [SentenceStudyController::class, 'index'])->name('sentences.index');
+
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
+
+    // Sentence practice routes (Requires authentication)
+    Route::get('/luyen-tap-ngau-nhien', [SentenceStudyController::class, 'random'])->name('sentences.random');
+    Route::get('/luyen-tap-ngau-nhien/more', [SentenceStudyController::class, 'moreRandomSentences'])->name('sentences.random.more');
+    Route::get('/luyen-ghep-cau/{level}/{slug}', [SentenceStudyController::class, 'practice'])->name('sentences.practice');
+    Route::post('/luyen-ghep-cau/complete', [SentenceStudyController::class, 'completePractice'])
+        ->name('sentences.complete')
+        ->middleware('throttle:20,1');
 
     Route::post('/khoa-hoc/bai-hoc/{lesson_id}/mark-tab', [PageController::class, 'markLessonTab'])
         ->name('courses.lesson.markTab')
@@ -138,6 +150,14 @@ Route::middleware(['auth'])->group(function () {
             Route::get('student/profile', [StudentProfileController::class, 'edit'])->name('student.profile.edit');
             Route::put('student/profile', [StudentProfileController::class, 'update'])->name('student.profile.update');
             Route::put('student/profile/password', [StudentProfileController::class, 'updatePassword'])->name('student.profile.updatePassword');
+
+            // Sentence builder study and practice routes
+            Route::get('student/sentences', [SentenceStudyController::class, 'index'])->name('student.sentences.index');
+            Route::get('student/sentences/{level}/{slug}', [SentenceStudyController::class, 'practice'])->name('student.sentences.practice');
+            Route::post('student/sentences/complete', [SentenceStudyController::class, 'completePractice'])
+                ->name('student.sentences.complete')
+                ->middleware('throttle:20,1');
+            Route::get('student/sentences/random/more', [SentenceStudyController::class, 'moreRandomSentences'])->name('student.sentences.random.more');
         });
 
         // ─── Admin routes ─────────────────────────────────────────────────────

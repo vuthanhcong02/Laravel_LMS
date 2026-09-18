@@ -2,7 +2,7 @@
     class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 gap-3 w-64 shrink-0 border-r border-primary/10 bg-white dark:bg-slate-900 md:flex flex-col justify-between p-6 min-h-[calc(100vh-65px)]">
     <div class="flex flex-col gap-6">
         <div class="flex items-center gap-3 px-2">
-            @if(Auth::user()->avatar_url)
+            @if(Auth::check() && Auth::user()->avatar_url)
                 <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover shadow-sm">
             @else
                 <div class="bg-primary/20 p-2 rounded-full flex items-center justify-center w-10 h-10 shadow-sm">
@@ -10,8 +10,8 @@
                 </div>
             @endif
             <div class="flex flex-col overflow-hidden">
-                <h1 class="text-slate-900 dark:text-white text-sm font-bold truncate">{{ Auth::user()->name ?? __('Học viên') }}</h1>
-                <p class="text-slate-500 text-xs truncate">{{ __('Học viên') }}</p>
+                <h1 class="text-slate-900 dark:text-white text-sm font-bold truncate">{{ Auth::check() ? (Auth::user()->name ?? __('Học viên')) : __('Khách') }}</h1>
+                <p class="text-slate-500 text-xs truncate">{{ Auth::check() ? __('Học viên') : __('Chưa đăng nhập') }}</p>
             </div>
         </div>
 
@@ -38,6 +38,12 @@
                 href="{{ route('student.quizzes.index') }}">
                 <span class="material-symbols-outlined text-[22px]">quiz</span>
                 <p class="text-sm font-medium">{{ __('Bài kiểm tra') }}</p>
+            </a>
+
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('student.sentences.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
+                href="{{ route('student.sentences.index') }}">
+                <span class="material-symbols-outlined text-[22px]">auto_stories</span>
+                <p class="text-sm font-medium">{{ __('Luyện ghép câu') }}</p>
             </a>
 
             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('support.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"

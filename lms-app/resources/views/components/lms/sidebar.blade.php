@@ -68,6 +68,43 @@
                             <i class="fa-solid fa-file-pen text-base w-5 text-center shrink-0 transition-colors {{ $isHskActive ? '' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
                             <span x-show="!sidebarCollapsed" class="truncate">{{ __('Luyện thi HSK') }}</span>
                         </a>
+                        @php
+                            $isSentencesActive = request()->routeIs('sentences.*') || request()->routeIs('student.sentences.*') || request()->is('luyen-ghep-cau*') || request()->is('luyen-tap*');
+                            $currentMode = request()->query('mode', 'scramble');
+                            $isScrambleActive = $isSentencesActive && $currentMode === 'scramble';
+                            $isClozeActive = $isSentencesActive && $currentMode === 'cloze';
+                            $isDictationActive = $isSentencesActive && $currentMode === 'dictation';
+                        @endphp
+                        <div x-data="{ open: {{ $isSentencesActive ? 'true' : 'false' }} }">
+                            <button @click="open = !open" 
+                                    class="group w-full flex items-center justify-between rounded-xl text-sm font-medium transition-all btn-tactile {{ $isSentencesActive ? 'text-[#e07a5f] bg-[#e07a5f]/10 font-semibold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800' }} px-3.5 py-2.5"
+                                    :class="sidebarCollapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5'"
+                                    :title="sidebarCollapsed ? '{{ __('Luyện tập câu') }}' : ''">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <i class="fa-solid fa-shapes text-base w-5 text-center shrink-0 transition-colors {{ $isSentencesActive ? 'text-[#e07a5f]' : 'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]' }}"></i>
+                                    <span x-show="!sidebarCollapsed" class="truncate">{{ __('Luyện tập câu') }}</span>
+                                </div>
+                                <i x-show="!sidebarCollapsed && !open" class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+                                <i x-show="!sidebarCollapsed && open" class="fa-solid fa-chevron-up text-xs text-[#e07a5f]"></i>
+                            </button>
+                            <div x-show="open && !sidebarCollapsed" x-transition.opacity.duration.200ms class="pl-7 pr-1 mt-1 space-y-1">
+                                <a href="{{ route('sentences.index', ['mode' => 'scramble']) }}" 
+                                   class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors {{ $isScrambleActive ? 'text-[#e07a5f] bg-[#e07a5f]/10 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50' }}">
+                                    <i class="fa-solid fa-puzzle-piece text-[11px] w-3.5 text-center"></i>
+                                    <span>{{ __('Ghép câu') }}</span>
+                                </a>
+                                <a href="{{ route('sentences.index', ['mode' => 'cloze']) }}" 
+                                   class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors {{ $isClozeActive ? 'text-[#e07a5f] bg-[#e07a5f]/10 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50' }}">
+                                    <i class="fa-solid fa-pen-to-square text-[11px] w-3.5 text-center"></i>
+                                    <span>{{ __('Điền từ vào chỗ trống') }}</span>
+                                </a>
+                                <a href="{{ route('sentences.index', ['mode' => 'dictation']) }}" 
+                                   class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors {{ $isDictationActive ? 'text-[#e07a5f] bg-[#e07a5f]/10 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50' }}">
+                                    <i class="fa-solid fa-headphones text-[11px] w-3.5 text-center"></i>
+                                    <span>{{ __('Nghe & Chép chính tả') }}</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
