@@ -35,7 +35,15 @@
 @endsection
 
 @section('content')
-<div class="space-y-5 max-w-7xl mx-auto w-full">
+<div x-data="sentenceTopicSearch({
+    initialTopics: {{ \Illuminate\Support\Js::from($topics) }},
+    level: '{{ $selectedLevel }}',
+    mode: '{{ $mode }}',
+    search: '{{ $search }}',
+    searchUrl: '{{ route('sentences.index') }}',
+    practiceBaseUrl: '{{ url('/luyen-ghep-cau') }}',
+    isAuthenticated: {{ auth()->check() ? 'true' : 'false' }}
+})" class="space-y-5 max-w-7xl mx-auto w-full">
     <div class="lms-card p-4 sm:p-5 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
         <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-[#e07a5f]/10 rounded-full blur-2xl pointer-events-none"></div>
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -58,30 +66,40 @@
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 flex-nowrap shrink-0">
             <span class="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1 hidden sm:inline">{{ __('Cấp độ:') }}</span>
             @foreach($levels as $lvl)
-                <a href="{{ route('sentences.index', ['mode' => $mode, 'level' => $lvl, 'q' => $search]) }}"
-                   class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap btn-tactile {{ $selectedLevel === $lvl ? 'bg-[#e07a5f] text-white shadow-xs' : 'bg-[#f8f6f3] dark:bg-[#23201e] text-slate-600 dark:text-slate-300 hover:bg-[#e8e2d9] dark:hover:bg-[#2d2926]' }}">
+                <button type="button"
+                        @click="selectLevel('{{ $lvl }}')"
+                        class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap btn-tactile cursor-pointer"
+                        :class="selectedLevel === '{{ $lvl }}' ? 'bg-[#e07a5f] text-white shadow-xs' : 'bg-[#f8f6f3] dark:bg-[#23201e] text-slate-600 dark:text-slate-300 hover:bg-[#e8e2d9] dark:hover:bg-[#2d2926]'">
                     {{ $lvl }}
-                </a>
+                </button>
             @endforeach
         </div>
 
         @if($mode === 'scramble')
-            <form method="GET" action="{{ route('sentences.index') }}" class="flex items-center gap-2 w-full lg:w-64">
-                <input type="hidden" name="mode" value="{{ $mode }}">
-                <input type="hidden" name="level" value="{{ $selectedLevel }}">
+            <div class="flex items-center gap-2 w-full lg:w-72">
                 <div class="relative w-full">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" name="q" value="{{ $search }}"
-                           placeholder="{{ __('Tìm chủ đề') }}"
-                           class="w-full pl-8 pr-3 py-1.5 text-xs bg-[#f8f6f3] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] rounded-lg text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-1 focus:ring-[#e07a5f]/20 transition-all">
+                    <button type="button"
+                            @click="submitSearch()"
+                            class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#e07a5f] text-xs p-1 transition-colors cursor-pointer"
+                            title="{{ __('Tìm kiếm (Enter)') }}">
+                        <i x-show="!isLoading" class="fa-solid fa-magnifying-glass"></i>
+                        <i x-show="isLoading" class="fa-solid fa-spinner fa-spin text-[#e07a5f]" style="display: none;"></i>
+                    </button>
+                    <input type="text"
+                           x-model="searchQuery"
+                           @keydown.enter.prevent="submitSearch()"
+                           placeholder="{{ __('Tìm chủ đề (nhấn Enter)...') }}"
+                           class="w-full pl-8 pr-8 py-1.5 text-xs bg-[#f8f6f3] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] rounded-lg text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-1 focus:ring-[#e07a5f]/20 transition-all">
+                    <button type="button"
+                            x-show="searchQuery.length > 0"
+                            @click="clearSearch()"
+                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-pointer p-0.5"
+                            title="{{ __('Xóa tìm kiếm') }}"
+                            style="display: none;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                @if($search)
-                    <a href="{{ route('sentences.index', ['mode' => $mode, 'level' => $selectedLevel]) }}"
-                       class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-medium" title="{{ __('Xóa tìm kiếm') }}">
-                        <i class="fa-solid fa-xmark text-xs"></i>
-                    </a>
-                @endif
-            </form>
+            </div>
         @endif
     </div>
 

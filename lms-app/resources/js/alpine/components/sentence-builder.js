@@ -236,77 +236,69 @@ export default function sentenceBuilder(config = {}) {
          * ✏️ 2. CLOZE TEST LOGIC
          * ═══════════════════════════════════════════════════════════ */
         initClozeQuestion() {
+            // Priority 1: Use server-computed high precision Cloze data
+            if (this.currentSentence.cloze && this.currentSentence.cloze.target_word) {
+                const serverCloze = this.currentSentence.cloze;
+                this.clozeData = {
+                    prefix: serverCloze.prefix || '',
+                    suffix: serverCloze.suffix || '',
+                    targetWord: serverCloze.target_word,
+                    options: serverCloze.options || [],
+                    userChoice: null,
+                    isAnswered: false,
+                };
+                return;
+            }
+
+            // Fallback: Client-side boundary-accurate generation
             const rawSentence = this.currentSentence.hanzi || '';
-            
-            // Common HSK confusable / grammar word sets
-            const confusableSets = [
-                ['还是', '或者', '而且', '但是'],
-                ['刚', '刚才', '已经', '经常'],
-                ['常常', '往往', '总共', '一直'],
-                ['会', '能', '可以', '想'],
-                ['以为', '认为', '觉得', '希望'],
-                ['张', '条', '件', '本', '只', '个'],
-                ['在', '从', '离', '往'],
-                ['因为', '所以', '虽然', '如果'],
-                ['餐厅', '厨房', '超市', '医院'],
-                ['做饭', '吃饭', '买菜', '洗碗'],
-            ];
+            const tokens = (this.currentSentence.tokens && this.currentSentence.tokens.length > 0)
+                ? this.currentSentence.tokens
+                : (this.currentSentence.words || []).map(w => w.hanzi);
 
-            let targetWord = '';
-            let distractors = [];
-
-            // Priority 1: Check if sentence contains any grammar confusable word
-            for (const set of confusableSets) {
-                for (const word of set) {
-                    if (rawSentence.includes(word)) {
-                        targetWord = word;
-                        distractors = set.filter(w => w !== word).slice(0, 3);
-                        break;
-                    }
+            const validIndices = [];
+            tokens.forEach((t, i) => {
+                const clean = (typeof t === 'string' ? t : t.hanzi || '').trim();
+                if (clean && !/[，。！？、；：“”‘’（）《》…,\.!\?;:"'\(\)]/u.test(clean)) {
+                    validIndices.push(i);
                 }
-                if (targetWord) break;
+            });
+
+            const targetIdx = validIndices.length > 0
+                ? validIndices[Math.floor(validIndices.length / 2)]
+                : 0;
+
+            const targetWord = (typeof tokens[targetIdx] === 'string' ? tokens[targetIdx] : tokens[targetIdx]?.hanzi || '').trim() || '学习';
+
+            // Trace tokens before targetIdx
+            let cursor = 0;
+            const totalLen = rawSentence.length;
+            for (let i = 0; i < targetIdx; i++) {
+                const tok = (typeof tokens[i] === 'string' ? tokens[i] : tokens[i]?.hanzi || '');
+                const tokLen = tok.length;
+                while (cursor < totalLen && rawSentence.substring(cursor, cursor + tokLen) !== tok) {
+                    cursor++;
+                }
+                cursor += tokLen;
             }
 
-            // Priority 2: Extract a meaningful word from sentence tokens (prefer compound words)
-            if (!targetWord) {
-                const candidates = (this.currentSentence.tokens && this.currentSentence.tokens.length > 0)
-                    ? this.currentSentence.tokens.filter(t => !/[，。！？、；：“”‘’（）《》…,\.!\?;:"'\(\)]/.test(t.trim()) && !['的', '了', '吗', '呢', '吧'].includes(t.trim()))
-                    : (this.currentSentence.words || []).map(w => w.hanzi.trim()).filter(w => !/[，。！？、；：“”‘’（）《》…,\.!\?;:"'\(\)]/.test(w) && !['的', '了', '吗', '呢', '吧'].includes(w));
-                
-                const compoundWords = candidates.filter(w => w.length >= 2);
-                targetWord = (compoundWords.length > 0 ? compoundWords[Math.floor(Math.random() * compoundWords.length)] : candidates[Math.floor(Math.random() * candidates.length)]) || '什么';
-
-                // Get 3 other words of same length from other sentences in topic
-                const allWordsInTopic = [];
-                this.sentences.forEach(s => {
-                    const pool = (s.tokens && s.tokens.length > 0) ? s.tokens : (s.words || []).map(w => w.hanzi);
-                    pool.forEach(w => {
-                        const clean = (typeof w === 'string' ? w : w.hanzi || '').trim();
-                        if (clean.length === targetWord.length && clean !== targetWord && !allWordsInTopic.includes(clean)) {
-                            allWordsInTopic.push(clean);
-                        }
-                    });
-                });
-
-                distractors = this.shuffleArray(allWordsInTopic).slice(0, 3);
-                while (distractors.length < 3) {
-                    distractors.push(['自己', '朋友', '今天', '地方', '学习'][distractors.length]);
-                }
+            const wordLen = targetWord.length;
+            while (cursor < totalLen && rawSentence.substring(cursor, cursor + wordLen) !== targetWord) {
+                cursor++;
             }
 
-            // Split sentence into prefix and suffix around target word
-            const splitIdx = rawSentence.indexOf(targetWord);
-            const prefix = splitIdx !== -1 ? rawSentence.substring(0, splitIdx) : '';
-            const suffix = splitIdx !== -1 ? rawSentence.substring(splitIdx + targetWord.length) : '';
+            const prefix = rawSentence.substring(0, cursor);
+            const suffix = rawSentence.substring(cursor + wordLen);
 
-            // Generate 4 options A, B, C, D
+            const distractors = ['自己', '朋友', '今天', '地方', '学习'].filter(w => w !== targetWord).slice(0, 3);
             const options = this.shuffleArray([
-                { text: targetWord, correct: true },
-                ...distractors.map(d => ({ text: d, correct: false }))
+                { text: targetWord, pinyin: '', correct: true },
+                ...distractors.map(d => ({ text: d, pinyin: '', correct: false }))
             ]).map((opt, idx) => ({
                 id: idx,
                 label: ['A', 'B', 'C', 'D'][idx],
                 text: opt.text,
+                pinyin: opt.pinyin,
                 correct: opt.correct,
             }));
 
@@ -341,10 +333,10 @@ export default function sentenceBuilder(config = {}) {
                     this.retryQueue.push(this.currentSentence);
                 }
 
-                // Auto transition to next sentence after showing wrong indicator
+                // Give 1000ms for learner to review the correct highlighted answer before moving on
                 setTimeout(() => {
                     this.nextSentence();
-                }, 700);
+                }, 1000);
             }
         },
 

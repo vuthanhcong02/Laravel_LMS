@@ -74,22 +74,50 @@
                             :class="{
                                 'cursor-pointer': !clozeData.isAnswered,
                                 'cursor-default': clozeData.isAnswered,
-                                'bg-[#f8f6f3] dark:bg-[#23201e] border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] hover:bg-[#fff7f4] dark:hover:bg-[#2a2220]': !clozeData.userChoice,
-                                'bg-[#f8f6f3] dark:bg-[#23201e] border-[#e8e2d9] dark:border-[#2d2926] opacity-40': clozeData.isAnswered && clozeData.userChoice !== option.text,
+                                'bg-[#f8f6f3] dark:bg-[#23201e] border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] hover:bg-[#fff7f4] dark:hover:bg-[#2a2220]': !clozeData.isAnswered,
                                 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30': clozeData.isAnswered && clozeData.userChoice === option.text && option.correct,
-                                'bg-rose-500 border-rose-500 text-white shadow-sm shadow-rose-500/30': clozeData.isAnswered && clozeData.userChoice === option.text && !option.correct
+                                'bg-rose-500 border-rose-500 text-white shadow-sm shadow-rose-500/30': clozeData.isAnswered && clozeData.userChoice === option.text && !option.correct,
+                                'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/40': clozeData.isAnswered && status === 'wrong' && option.correct,
+                                'bg-[#f8f6f3] dark:bg-[#23201e] border-[#e8e2d9] dark:border-[#2d2926] opacity-35': clozeData.isAnswered && clozeData.userChoice !== option.text && !(status === 'wrong' && option.correct)
                             }">
-                        <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="flex items-center gap-3 min-w-0">
                             <span class="size-6 rounded-lg flex items-center justify-center text-xs font-bold transition-colors shrink-0"
-                                  :class="(clozeData.userChoice === option.text) ? 'bg-white/20 text-white' : 'bg-white dark:bg-[#181615] text-slate-500 group-hover:text-[#e07a5f] group-hover:bg-[#fff2ee] border border-[#e8e2d9]/60 dark:border-[#2d2926]'">
+                                  :class="{
+                                      'bg-white/20 text-white': clozeData.userChoice === option.text,
+                                      'bg-emerald-500 text-white': clozeData.isAnswered && status === 'wrong' && option.correct,
+                                      'bg-white dark:bg-[#181615] text-slate-500 group-hover:text-[#e07a5f] group-hover:bg-[#fff2ee] border border-[#e8e2d9]/60 dark:border-[#2d2926]': !clozeData.isAnswered || (clozeData.userChoice !== option.text && !option.correct)
+                                  }">
                                 <span x-text="option.label"></span>
                             </span>
-                            <span class="zh-text text-base sm:text-lg font-bold truncate"
-                                  :class="(clozeData.userChoice === option.text) ? 'text-white' : 'text-slate-800 dark:text-slate-100 group-hover:text-[#e07a5f]'"
-                                  x-text="option.text"></span>
+                            <div class="flex flex-col items-start leading-tight min-w-0">
+                                <span class="zh-text text-base sm:text-lg font-bold truncate"
+                                      :class="{
+                                          'text-white': clozeData.userChoice === option.text,
+                                          'text-emerald-700 dark:text-emerald-300': clozeData.isAnswered && status === 'wrong' && option.correct,
+                                          'text-slate-800 dark:text-slate-100 group-hover:text-[#e07a5f]': !clozeData.isAnswered || (clozeData.userChoice !== option.text && !option.correct)
+                                      }"
+                                      x-text="option.text"></span>
+                                <template x-if="option.pinyin">
+                                    <span class="text-[11px] font-medium tracking-wide mt-0.5"
+                                          :class="{
+                                              'text-white/80': clozeData.userChoice === option.text,
+                                              'text-emerald-600 dark:text-emerald-400': clozeData.isAnswered && status === 'wrong' && option.correct,
+                                              'text-slate-400 dark:text-slate-500 group-hover:text-[#e07a5f]/80': !clozeData.isAnswered || (clozeData.userChoice !== option.text && !option.correct)
+                                          }"
+                                          x-text="option.pinyin"></span>
+                                </template>
+                            </div>
                         </div>
-                        <div x-show="clozeData.isAnswered && clozeData.userChoice === option.text" class="shrink-0 ml-1">
-                            <i class="fa-solid text-sm text-white" :class="option.correct ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
+                        <div x-show="clozeData.isAnswered" class="shrink-0 ml-1">
+                            <template x-if="clozeData.userChoice === option.text">
+                                <i class="fa-solid text-sm text-white" :class="option.correct ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
+                            </template>
+                            <template x-if="clozeData.isAnswered && status === 'wrong' && option.correct">
+                                <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-check text-xs"></i>
+                                    <span class="hidden sm:inline">{{ __('Đáp án đúng') }}</span>
+                                </span>
+                            </template>
                         </div>
                     </button>
                 </template>

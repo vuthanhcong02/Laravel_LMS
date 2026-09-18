@@ -19,15 +19,26 @@ class SentenceStudyController extends Controller
     ) {}
 
     /**
-     * Display sentence study topics list by HSK level
+     * Display sentence study topics list by HSK level (Supports AJAX search)
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $selectedLevel = $request->query('level', 'HSK1');
         $search = trim((string) $request->query('q', ''));
         $mode = $request->query('mode', 'scramble');
 
         $data = $this->sentenceService->getTopicsData($selectedLevel, $search);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'topics' => $data['topics'],
+                'selectedLevel' => $data['selectedLevel'],
+                'query' => $search,
+                'mode' => $mode,
+                'count' => count($data['topics']),
+            ]);
+        }
 
         return view('portal.student.sentences.index', array_merge($data, [
             'levels' => $this->sentenceService->getLevels(),

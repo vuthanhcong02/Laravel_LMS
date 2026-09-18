@@ -6,10 +6,21 @@ use App\Models\PracticeSentence;
 use App\Models\SentenceTopic;
 use App\Models\User;
 use App\Services\GamificationService;
+use App\Services\Student\SentenceClozeService;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class SentenceStudyService
 {
+    /**
+     * Cloze question generator service
+     */
+    protected SentenceClozeService $clozeService;
+
+    public function __construct(SentenceClozeService $clozeService)
+    {
+        $this->clozeService = $clozeService;
+    }
     /**
      * Supported HSK levels
      *
@@ -65,14 +76,19 @@ class SentenceStudyService
         $query = SentenceTopic::where('level', $levelNumber);
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
+            $isMysql = DB::connection()->getDriverName() === 'mysql';
+
+            $query->where(function ($q) use ($search, $isMysql) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('title_vi', 'like', "%{$search}%")
                   ->orWhere('hanzi', 'like', "%{$search}%")
-                  ->orWhereHas('sentences', function ($sq) use ($search) {
-                      $sq->where('hanzi', 'like', "%{$search}%")
-                         ->orWhere('pinyin', 'like', "%{$search}%");
-                  });
+                  ->orWhere('pinyin', 'like', "%{$search}%");
+
+                // Case-insensitive and accent-insensitive search for Vietnamese topic title
+                if ($isMysql) {
+                    $q->orWhereRaw('title_vi COLLATE utf8mb4_0900_ai_ci LIKE ?', ["%{$search}%"]);
+                } else {
+                    $q->orWhere('title_vi', 'like', "%{$search}%");
+                }
             });
         }
 
@@ -158,7 +174,7 @@ class SentenceStudyService
             'title' => 'Random ' . $selectedLevel,
             'titleVi' => ($modeNames[$mode] ?? __('Luyện tập')) . ' - ' . $selectedLevel,
             'level' => $levelNumber,
-            'sentences' => $this->formatSentencesCollection($randomSentences),
+            'sentences' => $this->formatSentencesCollection($randomSentences, $selectedLevel),
         ];
 
         return [
@@ -183,7 +199,7 @@ class SentenceStudyService
             'titleVi' => $topic->title_vi ?: $topic->title,
             'hanzi' => $topic->hanzi,
             'level' => $topic->level,
-            'sentences' => $this->formatSentencesCollection($topic->sentences),
+            'sentences' => $this->formatSentencesCollection($topic->sentences, 'HSK' . $topic->level),
         ];
     }
 
@@ -193,11 +209,11 @@ class SentenceStudyService
      * @param Collection|array $sentences
      * @return array
      */
-    public function formatSentencesCollection($sentences): array
+    public function formatSentencesCollection($sentences, string $level = 'HSK1'): array
     {
         $collection = $sentences instanceof Collection ? $sentences : collect($sentences);
 
-        return $collection->map(function ($sentence) {
+        return $collection->map(function ($sentence) use ($level) {
             return [
                 'id' => $sentence->id,
                 'hanzi' => $sentence->hanzi,
@@ -208,6 +224,7 @@ class SentenceStudyService
                 'duration' => $sentence->duration,
                 'words' => $sentence->words ?: [],
                 'tokens' => $sentence->tokens ?: [],
+                'cloze' => $this->clozeService->generateCloze($sentence, $level),
             ];
         })->values()->toArray();
     }
@@ -230,7 +247,7 @@ class SentenceStudyService
             ->limit($limit)
             ->get();
 
-        return $this->formatSentencesCollection($randomSentences);
+        return $this->formatSentencesCollection($randomSentences, $selectedLevel);
     }
 
     /**
@@ -296,6 +313,7 @@ class SentenceStudyService
             'success'      => true,
             'message'      => $message,
             'bonus_info'   => $bonusInfo,
+            'exp_gained'   => $expResult['exp_gained'] ?? 0,
             'gamification' => $expResult,
             'user'         => [
                 'current_streak'   => $freshUser->current_streak,
