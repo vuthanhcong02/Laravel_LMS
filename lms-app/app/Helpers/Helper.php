@@ -242,11 +242,24 @@ if (! function_exists('hsk_render_flashcard_ruby')) {
 if (! function_exists('hsk_should_show_pinyin')) {
     function hsk_should_show_pinyin($level = null): bool
     {
-        if (empty($level) || !isset($level->level_code)) {
+        if (empty($level)) {
             return true;
         }
-        $levelNum = (int) str_replace('hsk', '', strtolower($level->level_code));
-        return $levelNum < 4;
+        if (is_numeric($level)) {
+            return (int) $level < 4;
+        }
+        if (is_string($level)) {
+            $levelNum = (int) filter_var($level, FILTER_SANITIZE_NUMBER_INT);
+            return $levelNum > 0 ? $levelNum < 4 : true;
+        }
+        if (is_object($level) && isset($level->level_code)) {
+            $levelNum = (int) str_replace('hsk', '', strtolower($level->level_code));
+            return $levelNum < 4;
+        }
+        if (is_object($level) && isset($level->level)) {
+            return (int) $level->level < 4;
+        }
+        return true;
     }
 }
 

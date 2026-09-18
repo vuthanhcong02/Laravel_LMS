@@ -145,5 +145,23 @@ return [
             'daily_cap'           => null,
             'one_time'            => false,
         ],
+
+        'sentence_practice' => [
+            'exp'                 => 15,
+            'exp_by_level'        => [
+                'HSK1'   => 15,
+                'HSK2'   => 15,
+                'HSK3'   => 20,
+                'HSK4'   => 20,
+                'HSK5'   => 25,
+                'HSK6'   => 25,
+                'HSK7-9' => 30,
+            ],
+            'no_hint_bonus'       => 5,
+            'min_correct_percent' => 50, // Minimum 50% correct to earn EXP
+            'daily_cap'           => 150,
+            'diminishing_returns' => null,
+            'one_time'            => false,
+        ],
     ],
 ];

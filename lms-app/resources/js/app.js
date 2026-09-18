@@ -36,6 +36,8 @@ import headerStreakWidget from './alpine/components/header-streak.js';
 import streakHeatmapWidget from './alpine/components/streak-heatmap.js';
 import gamificationLeaderboard from './alpine/components/gamification-leaderboard.js';
 import hskResultViewer from './alpine/components/hsk-result-viewer.js';
+import sentenceBuilder from './alpine/components/sentence-builder.js';
+import sentenceTopicSearch from './alpine/components/sentence-topic-search.js';
 import hskIndex from './hsk-index.js';
 import examTimer from './hsk-take.js';
 
@@ -77,6 +79,8 @@ if (!window.Alpine) {
     Alpine.data('hskIndex', hskIndex);
     Alpine.data('examTimer', examTimer);
     Alpine.data('hskResultViewer', hskResultViewer);
+    Alpine.data('sentenceBuilder', sentenceBuilder);
+    Alpine.data('sentenceTopicSearch', sentenceTopicSearch);
 
     Alpine.start();
 }

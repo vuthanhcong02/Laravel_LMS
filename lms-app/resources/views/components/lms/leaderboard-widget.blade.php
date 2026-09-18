@@ -1,5 +1,5 @@
 @props([
-    'type' => 'gamification', // 'gamification' | 'hsk'
+    'type' => 'gamification',
     'initialLeaderboard' => [],
     'title' => null,
     'subtitle' => null,
@@ -24,7 +24,6 @@
      @if(!$isHsk) x-data="gamificationLeaderboard({ items: @js($initialLeaderboard), timeframe: 'all_time' })" @endif>
     <div class="lms-card p-3.5 space-y-3 sticky top-6 border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs">
 
-        <!-- Header -->
         <div class="flex items-center justify-between pb-2 border-b border-[#e8e2d9] dark:border-[#2d2926]">
             <div class="flex items-center gap-2 min-w-0">
                 <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-amber-500 to-amber-400 text-white flex items-center justify-center shadow-xs text-xs shrink-0">
@@ -41,7 +40,6 @@
             </div>
 
             @if($isHsk && $showLevelFilter)
-                <!-- HSK Level Dropdown -->
                 <div class="shrink-0">
                     <select x-model="leaderboardLevel" 
                             class="text-[10px] sm:text-[11px] bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-lg px-2 py-1 font-bold text-slate-700 dark:text-slate-200 outline-none focus:border-[#e07a5f] cursor-pointer">
@@ -61,7 +59,6 @@
             @endif
         </div>
 
-        <!-- Timeframe Filter Tabs -->
         <div class="grid grid-cols-3 p-1 rounded-xl bg-[#f0ebe3] dark:bg-[#201c1a] border border-[#e8e2d9] dark:border-[#2d2926] gap-1">
             @if($isHsk)
                 <button type="button" @click="leaderboardFilter = 'all_time'"
@@ -110,22 +107,17 @@
             @endif
         </div>
 
-        <!-- Main Content Area -->
         <div class="relative min-h-[160px]">
-            <!-- Loading Overlay -->
             <div x-show="{{ $isHsk ? 'loadingLeaderboard' : 'loading' }}"
                 class="absolute inset-0 bg-white/80 dark:bg-[#181615]/80 backdrop-blur-[1px] flex items-center justify-center z-20 rounded-xl"
                 x-transition>
                 <i class="fa-solid fa-spinner animate-spin text-[#e07a5f] text-sm"></i>
             </div>
 
-            <!-- Leaderboard Active Content -->
             <div x-show="hasTop3" class="space-y-2.5">
-                <!-- COMPACT TOP 3 PODIUM CONTAINER -->
                 <div class="rounded-xl p-2 bg-[#faf7f2]/80 dark:bg-[#1c1917]/70 border border-[#e8e2d9]/70 dark:border-[#2d2926] shadow-2xs">
                     <div class="grid grid-cols-3 items-end gap-1.5 pt-2">
 
-                        <!-- RANK #2 (LEFT - SILVER PODIUM) -->
                         <div class="flex flex-col items-center text-center">
                             <template x-if="top2">
                                 <div class="flex flex-col items-center w-full min-w-0">
@@ -153,7 +145,16 @@
                                             </span>
                                         </div>
                                     @else
-                                        <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.2" x-text="top2.exp"></span>
+                                        <div class="mt-1 flex flex-col items-center gap-1">
+                                            <span class="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight" x-text="top2.exp"></span>
+                                            <template x-if="top2.streak > 0">
+                                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-500/10 dark:bg-red-950/40 text-red-500 dark:text-red-400 text-[9px] font-bold border border-red-500/20 shadow-2xs leading-none"
+                                                      :title="top2.streak + ' {{ __('ngày học liên tiếp') }}'">
+                                                    <span>🔥</span>
+                                                    <span x-text="top2.streak"></span>
+                                                </span>
+                                            </template>
+                                        </div>
                                     @endif
                                 </div>
                             </template>
@@ -164,7 +165,6 @@
                                 </div>
                             </template>
 
-                            <!-- Silver Pedestal -->
                             <div class="w-9 sm:w-10 h-8 rounded-t-md bg-gradient-to-t from-slate-400 via-slate-300 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-500 flex items-center justify-center mt-1.5 shadow-2xs mx-auto">
                                 <span class="text-[10px] font-bold text-slate-700/60 dark:text-slate-200/50 select-none">
                                     #2
@@ -172,7 +172,6 @@
                             </div>
                         </div>
 
-                        <!-- RANK #1 (CENTER - GOLD PODIUM) -->
                         <div class="flex flex-col items-center text-center">
                             <template x-if="top1">
                                 <div class="flex flex-col items-center w-full min-w-0">
@@ -203,7 +202,16 @@
                                             </span>
                                         </div>
                                     @else
-                                        <span class="text-[9px] sm:text-[10px] font-bold text-[#e07a5f] dark:text-[#f4978e] mt-0.2" x-text="top1.exp"></span>
+                                        <div class="mt-1 flex flex-col items-center gap-1">
+                                            <span class="text-[10px] sm:text-[11px] font-extrabold text-[#e07a5f] dark:text-[#f4978e] leading-tight" x-text="top1.exp"></span>
+                                            <template x-if="top1.streak > 0">
+                                                <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-red-500/15 dark:bg-red-950/50 text-red-500 dark:text-red-400 text-[9px] font-extrabold border border-red-500/30 shadow-2xs leading-none"
+                                                      :title="top1.streak + ' {{ __('ngày học liên tiếp') }}'">
+                                                    <span>🔥</span>
+                                                    <span x-text="top1.streak"></span>
+                                                </span>
+                                            </template>
+                                        </div>
                                     @endif
                                 </div>
                             </template>
@@ -214,7 +222,6 @@
                                 </div>
                             </template>
 
-                            <!-- Gold Pedestal -->
                             <div class="w-10 sm:w-11 h-12 rounded-t-md bg-gradient-to-t from-amber-600 via-amber-400 to-amber-300 text-amber-950 flex items-center justify-center mt-1.5 shadow-xs shadow-amber-500/20 border-t border-amber-100 mx-auto">
                                 <span class="text-[11px] font-bold text-amber-950/60 select-none">
                                     #1
@@ -222,7 +229,6 @@
                             </div>
                         </div>
 
-                        <!-- RANK #3 (RIGHT - BRONZE PODIUM) -->
                         <div class="flex flex-col items-center text-center">
                             <template x-if="top3">
                                 <div class="flex flex-col items-center w-full min-w-0">
@@ -250,7 +256,16 @@
                                             </span>
                                         </div>
                                     @else
-                                        <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-0.2" x-text="top3.exp"></span>
+                                        <div class="mt-1 flex flex-col items-center gap-1">
+                                            <span class="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight" x-text="top3.exp"></span>
+                                            <template x-if="top3.streak > 0">
+                                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-500/10 dark:bg-red-950/40 text-red-500 dark:text-red-400 text-[9px] font-bold border border-red-500/20 shadow-2xs leading-none"
+                                                      :title="top3.streak + ' {{ __('ngày học liên tiếp') }}'">
+                                                    <span>🔥</span>
+                                                    <span x-text="top3.streak"></span>
+                                                </span>
+                                            </template>
+                                        </div>
                                     @endif
                                 </div>
                             </template>
@@ -261,7 +276,6 @@
                                 </div>
                             </template>
 
-                            <!-- Bronze Pedestal -->
                             <div class="w-9 sm:w-10 h-6 rounded-t-md bg-gradient-to-t from-amber-700 via-orange-500 to-orange-400 text-amber-950 flex items-center justify-center mt-1.5 shadow-2xs mx-auto">
                                 <span class="text-[9px] font-bold text-amber-950/60 select-none">
                                     #3
@@ -271,11 +285,10 @@
                     </div>
                 </div>
 
-                <!-- TOP 4+ LIST -->
                 <div x-show="restItems.length > 0" class="space-y-1.5 pt-0.5">
                     <div class="flex items-center justify-between px-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         <span>{{ __('Thứ hạng tiếp theo') }}</span>
-                        <span>{{ $isHsk ? __('Điểm & Thời gian') : __('EXP') }}</span>
+                        <span>{{ $isHsk ? __('Điểm & Thời gian') : __('Thành tích') }}</span>
                     </div>
 
                     <div class="space-y-1.5 max-h-[180px] overflow-y-auto pr-0.5 no-scrollbar">
@@ -316,9 +329,18 @@
                                             </div>
                                         </div>
                                     @else
-                                        <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] dark:text-[#f28e75] font-bold text-[11px] border border-[#fcdccf]/60 dark:border-[#e07a5f]/20">
-                                            <i class="fa-solid fa-bolt text-[10px] text-amber-500"></i>
-                                            <span x-text="item.exp"></span>
+                                        <div class="flex items-center gap-1.5 shrink-0 justify-end">
+                                            <template x-if="item.streak > 0">
+                                                <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-red-500/10 dark:bg-red-950/30 text-red-500 dark:text-red-400 font-bold text-[11px] border border-red-500/20 shadow-2xs leading-none"
+                                                      :title="item.streak + ' {{ __('ngày học liên tiếp') }}'">
+                                                    <span>🔥</span>
+                                                    <span x-text="item.streak"></span>
+                                                </span>
+                                            </template>
+                                            <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] dark:text-[#f28e75] font-bold text-[11px] border border-[#fcdccf]/60 dark:border-[#e07a5f]/20 shadow-2xs leading-none">
+                                                <i class="fa-solid fa-bolt text-[10px] text-amber-500"></i>
+                                                <span x-text="item.exp"></span>
+                                            </div>
                                         </div>
                                     @endif
                                 </div>
@@ -328,7 +350,6 @@
                 </div>
             </div>
 
-            <!-- EMPTY STATE -->
             <div x-show="!hasTop3 && !({{ $isHsk ? 'loadingLeaderboard' : 'loading' }})" class="py-6 text-center space-y-1.5">
                 <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs mx-auto shadow-2xs">
                     <i class="fa-solid fa-trophy"></i>
@@ -343,7 +364,6 @@
         </div>
 
         @if($isHsk && $showFullModalButton)
-            <!-- Footer button for Top 20 Modal -->
             <div class="pt-2 border-t border-[#e8e2d9] dark:border-[#2d2926] text-center">
                 <button type="button" 
                         @click="openFullLeaderboard()" 
