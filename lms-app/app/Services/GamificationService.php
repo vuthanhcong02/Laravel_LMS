@@ -73,7 +73,9 @@ class GamificationService
 
             // 3. Determine base EXP and apply diminishing returns if configured
             $baseExp = (int) ($config['exp'] ?? 0);
-            if (!empty($config['exp_rates']) && !empty($context['quiz_length'])) {
+            if (!empty($context['base_exp'])) {
+                $baseExp = (int) $context['base_exp'];
+            } elseif (!empty($config['exp_rates']) && !empty($context['quiz_length'])) {
                 $length = (int) $context['quiz_length'];
                 $baseExp = $config['exp_rates'][$length] ?? $baseExp;
             }
