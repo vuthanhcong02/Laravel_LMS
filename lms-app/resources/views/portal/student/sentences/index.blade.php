@@ -1,28 +1,32 @@
 @extends('layouts.lms')
 
 @php
-    $mode = $mode ?? 'scramble';
+    $mode = $mode ?? 'ghep-cau';
     $modeLabels = [
-        'scramble' => [
+        'ghep-cau' => [
             'name' => __('Ghép câu'),
             'icon' => 'fa-solid fa-puzzle-piece',
             'desc' => __('Rèn luyện tư duy ngữ pháp tự nhiên, phản xạ sắp xếp trật tự từ Hán ngữ kết hợp phát âm bản xứ.'),
             'badge' => __('Luyện ghép câu'),
         ],
-        'cloze' => [
+        'dien-tu' => [
             'name' => __('Điền từ vào chỗ trống'),
             'icon' => 'fa-solid fa-pen-to-square',
             'desc' => __('Thử thách phán đoán từ vựng & ngữ pháp phù hợp nhất để hoàn thành câu hoàn chỉnh.'),
             'badge' => __('Luyện điền từ'),
         ],
-        'dictation' => [
+        'nghe-chep' => [
             'name' => __('Nghe & Chép chính tả'),
             'icon' => 'fa-solid fa-headphones',
             'desc' => __('Luyện tai nghe phát âm chuẩn bản xứ và rèn luyện kỹ năng gõ chữ Hán/Pinyin chính xác 100%.'),
             'badge' => __('Luyện nghe chép'),
         ],
     ];
-    $currentModeInfo = $modeLabels[$mode] ?? $modeLabels['scramble'];
+    $modeLabels['scramble'] = $modeLabels['ghep-cau'];
+    $modeLabels['cloze'] = $modeLabels['dien-tu'];
+    $modeLabels['dictation'] = $modeLabels['nghe-chep'];
+    $modeLabels['chep-chinh-ta'] = $modeLabels['nghe-chep'];
+    $currentModeInfo = $modeLabels[$mode] ?? $modeLabels['ghep-cau'];
 @endphp
 
 @section('title', $currentModeInfo['name'] . ' - XiaoMu LMS')
@@ -75,7 +79,7 @@
             @endforeach
         </div>
 
-        @if($mode === 'scramble')
+        @if($mode === 'ghep-cau' || $mode === 'scramble')
             <div class="flex items-center gap-2 w-full lg:w-72">
                 <div class="relative w-full">
                     <button type="button"
@@ -103,7 +107,7 @@
         @endif
     </div>
 
-    @if($mode === 'scramble')
+    @if($mode === 'ghep-cau' || $mode === 'scramble')
         @include('portal.student.sentences.partials.topic-list')
     @else
         @include('portal.student.sentences.partials.random-card')

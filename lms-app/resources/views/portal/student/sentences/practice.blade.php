@@ -1,10 +1,14 @@
 @extends('layouts.lms')
 
 @php
-    $mode = $mode ?? 'scramble';
+    $mode = $mode ?? 'ghep-cau';
     $modeTitles = [
+        'ghep-cau' => __('Ghép câu'),
         'scramble' => __('Ghép câu'),
+        'dien-tu' => __('Điền từ vào chỗ trống'),
         'cloze' => __('Điền từ vào chỗ trống'),
+        'nghe-chep' => __('Nghe & Chép chính tả'),
+        'chep-chinh-ta' => __('Nghe & Chép chính tả'),
         'dictation' => __('Nghe & Chép chính tả'),
     ];
     $modeTitle = $modeTitles[$mode] ?? __('Luyện tập');
@@ -29,7 +33,7 @@
         <div class="flex items-center justify-between gap-3 pb-2.5 border-b border-[#e8e2d9]/60 dark:border-[#2d2926]">
 
             <div class="flex items-center gap-2.5 min-w-0">
-                <a href="{{ ($isRandom ?? false) ? route('sentences.index', ['mode' => 'scramble', 'level' => $level]) : route('sentences.index', ['mode' => $mode, 'level' => $level]) }}"
+                <a href="{{ ($isRandom ?? false) ? route('sentences.index', ['mode' => 'ghep-cau', 'level' => $level]) : route('sentences.index', ['mode' => $mode, 'level' => $level]) }}"
                    class="size-8 rounded-xl bg-[#f8f6f3] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-600 dark:text-slate-300 hover:text-[#e07a5f] flex items-center justify-center text-xs transition-all btn-tactile shrink-0"
                    title="{{ __('Về danh sách') }}">
                     <i class="fa-solid fa-arrow-left text-[11px]"></i>

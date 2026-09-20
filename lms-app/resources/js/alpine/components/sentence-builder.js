@@ -7,11 +7,17 @@
  */
 
 export default function sentenceBuilder(config = {}) {
+    let internalMode = config.mode || 'ghep-cau';
+    if (internalMode === 'ghep-cau' || internalMode === 'scramble') internalMode = 'scramble';
+    else if (internalMode === 'dien-tu' || internalMode === 'cloze') internalMode = 'cloze';
+    else if (internalMode === 'nghe-chep' || internalMode === 'chep-chinh-ta' || internalMode === 'dictation') internalMode = 'dictation';
+
     return {
         topic: config.topic || {},
         level: config.level || 'HSK1',
         slug: config.slug || '',
-        mode: config.mode || 'scramble', // 'scramble' | 'cloze' | 'dictation'
+        mode: internalMode,
+        rawMode: config.mode || 'ghep-cau',
         isRandom: Boolean(config.isRandom),
         completeUrl: config.completeUrl || '',
         moreUrl: config.moreUrl || '',

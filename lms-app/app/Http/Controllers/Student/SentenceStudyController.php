@@ -25,7 +25,7 @@ class SentenceStudyController extends Controller
     {
         $selectedLevel = $request->query('level', 'HSK1');
         $search = trim((string) $request->query('q', ''));
-        $mode = $request->query('mode', 'scramble');
+        $mode = $this->normalizeMode($request->query('mode'));
 
         $data = $this->sentenceService->getTopicsData($selectedLevel, $search);
 
@@ -52,7 +52,7 @@ class SentenceStudyController extends Controller
      */
     public function practice(Request $request, string $level, string $slug): View
     {
-        $mode = $request->query('mode', 'scramble');
+        $mode = $this->normalizeMode($request->query('mode'));
         $data = $this->sentenceService->getPracticeData($level, $slug);
 
         return view('portal.student.sentences.practice', array_merge($data, [
@@ -67,7 +67,7 @@ class SentenceStudyController extends Controller
     public function random(Request $request): View
     {
         $selectedLevel = $request->query('level', 'HSK1');
-        $mode = $request->query('mode', 'cloze');
+        $mode = $this->normalizeMode($request->query('mode', 'dien-tu'));
         $limit = (int) $request->query('limit', 15);
 
         $data = $this->sentenceService->getRandomPracticeData($selectedLevel, $mode, $limit);
@@ -76,6 +76,18 @@ class SentenceStudyController extends Controller
             'mode' => $mode,
             'isRandom' => true,
         ]));
+    }
+
+    /**
+     * Normalize practice mode (Supports both Vietnamese slug and English slug)
+     */
+    private function normalizeMode(?string $mode): string
+    {
+        return match (strtolower((string) $mode)) {
+            'dien-tu', 'cloze' => 'dien-tu',
+            'nghe-chep', 'chep-chinh-ta', 'dictation' => 'nghe-chep',
+            default => 'ghep-cau',
+        };
     }
 
     /**
