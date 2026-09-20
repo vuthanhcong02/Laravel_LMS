@@ -1,10 +1,22 @@
 export default () => ({
+    mainTab: new URLSearchParams(window.location.search).get('tab') || 'exams',
     levelTab: 'all', 
     leaderboardFilter: 'all_time', 
     leaderboardLevel: 'all',
     loadingLeaderboard: false,
     socialDockExpanded: false, 
     leaderboard: window.hskLeaderboardData || [],
+
+    switchMainTab(tab) {
+        this.mainTab = tab;
+        const url = new URL(window.location.href);
+        if (tab === 'history') {
+            url.searchParams.set('tab', 'history');
+        } else {
+            url.searchParams.delete('tab');
+        }
+        window.history.replaceState({}, '', url.toString());
+    },
 
     get top1() {
         return this.leaderboard.find(item => item.rank === 1) || null;

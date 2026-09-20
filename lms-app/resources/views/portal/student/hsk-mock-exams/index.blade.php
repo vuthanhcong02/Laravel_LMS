@@ -80,21 +80,47 @@
         </div>
     </div>
 
-    <!-- Section Header -->
-    <div class="flex items-center justify-between">
-        <div>
-            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <i class="fa-solid fa-layer-group text-[#e07a5f]"></i> {{ __('Các cấp độ thi HSK') }}
-            </h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                {{ __('Chọn cấp độ HSK phù hợp để xem danh sách đề thi chi tiết và bắt đầu làm bài.') }}
-            </p>
+    <!-- Main Navigation Tabs -->
+    <div class="flex items-center justify-between flex-wrap gap-3 pb-2 border-b border-[#e8e2d9] dark:border-[#2d2926]">
+        <div class="inline-flex items-center p-1 rounded-2xl bg-[#f5f1eb] dark:bg-[#1a1816] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-bold shadow-2xs">
+            <button type="button"
+                    @click="switchMainTab('exams')"
+                    :class="mainTab === 'exams' ? 'bg-white dark:bg-[#25211e] text-[#e07a5f] shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'"
+                    class="px-4 py-2 rounded-xl transition-all flex items-center gap-2 cursor-pointer btn-tactile">
+                <i class="fa-solid fa-layer-group text-sm"></i>
+                <span>{{ __('Kho đề thi HSK') }}</span>
+                <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-[#e07a5f]/10 text-[#e07a5f] font-bold">
+                    {{ $totalExamsCount ?? 0 }}
+                </span>
+            </button>
+
+            <button type="button"
+                    @click="switchMainTab('history')"
+                    :class="mainTab === 'history' ? 'bg-white dark:bg-[#25211e] text-[#e07a5f] shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'"
+                    class="px-4 py-2 rounded-xl transition-all flex items-center gap-2 cursor-pointer btn-tactile">
+                <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+                <span>{{ __('Lịch sử làm bài') }}</span>
+                @auth
+                    @if(($userHistory->total() ?? 0) > 0)
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
+                            {{ $userHistory->total() }}
+                        </span>
+                    @endif
+                @endauth
+            </button>
+        </div>
+
+        <div class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
+            <span x-show="mainTab === 'exams'">{{ __('Chọn cấp độ HSK để xem đề thi chi tiết') }}</span>
+            <span x-show="mainTab === 'history'" style="display: none;">{{ __('Xem lại điểm số, đáp án và giải thích chi tiết') }}</span>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Kho de thi TAB -->
+            <div x-show="mainTab === 'exams'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @php
                     $levelMeta = [
                         'hsk1' => ['tag' => 'Cơ bản', 'duration' => 40, 'questions' => 40, 'pass_score' => '120/200', 'badgeClass' => 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20'],
@@ -214,8 +240,15 @@
                 @endforeach
             </div>
         </div>
-        <div id="leaderboard-section" class="space-y-4">
-            <x-lms.leaderboard-widget 
+
+        <!-- Lịch sử làm bài TAB -->
+        <div x-show="mainTab === 'history'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+            @include('portal.student.hsk-mock-exams.partials.history-tab')
+        </div>
+    </div>
+
+    <div id="leaderboard-section" class="space-y-4">
+        <x-lms.leaderboard-widget 
                 type="hsk" 
                 :showLevelFilter="true" 
                 :showFullModalButton="true" 

@@ -81,7 +81,21 @@ class HskMockExamController extends Controller
             ]);
         }
 
-        return view('portal.student.hsk-mock-exams.index', compact('hskLevels', 'completedExamsCount', 'highestScore', 'globalPassRate', 'totalExamsCount', 'totalAttempts', 'leaderboard', 'leaderboardLevel', 'currentUserRank', 'currentUserResult'));
+        $userHistory = $this->hskMockExamService->getUserExamHistory($userId);
+
+        return view('portal.student.hsk-mock-exams.index', compact(
+            'hskLevels',
+            'completedExamsCount',
+            'highestScore',
+            'globalPassRate',
+            'totalExamsCount',
+            'totalAttempts',
+            'leaderboard',
+            'leaderboardLevel',
+            'currentUserRank',
+            'currentUserResult',
+            'userHistory'
+        ));
     }
 
     /**
