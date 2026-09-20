@@ -18,6 +18,14 @@ class HskMockExamController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->filled('exam')) {
+            $exam = HskMockExam::with('hskLevel')->find($request->get('exam'));
+            if ($exam && $exam->hskLevel) {
+                $levelNumber = str_replace('hsk', '', strtolower($exam->hskLevel->level_code));
+                return redirect()->to(route('student.hsk-mock-exams.show', ['level' => $levelNumber]) . '?exam=' . $exam->id . '#exam-' . $exam->id);
+            }
+        }
+
         $userId = auth()->id();
 
         $hskLevels = $this->hskMockExamService->getHskLevels();
@@ -35,7 +43,7 @@ class HskMockExamController extends Controller
         $leaderboardLevel = $request->get('leaderboard_level');
         $timeframe = $request->get('timeframe', 'all_time');
         $leaderboardData = $this->hskMockExamService->getLeaderboard($leaderboardLevel, $leaderboardLimit, $userId, $timeframe);
-        
+
         $formatResultItem = function ($result, $index = null) {
             if (!$result) return null;
             $levelCode = strtolower($result->mockExam->hskLevel->level_code ?? 'hsk1');
@@ -81,7 +89,21 @@ class HskMockExamController extends Controller
             ]);
         }
 
-        return view('portal.student.hsk-mock-exams.index', compact('hskLevels', 'completedExamsCount', 'highestScore', 'globalPassRate', 'totalExamsCount', 'totalAttempts', 'leaderboard', 'leaderboardLevel', 'currentUserRank', 'currentUserResult'));
+        $userHistory = $this->hskMockExamService->getUserExamHistory($userId);
+
+        return view('portal.student.hsk-mock-exams.index', compact(
+            'hskLevels',
+            'completedExamsCount',
+            'highestScore',
+            'globalPassRate',
+            'totalExamsCount',
+            'totalAttempts',
+            'leaderboard',
+            'leaderboardLevel',
+            'currentUserRank',
+            'currentUserResult',
+            'userHistory'
+        ));
     }
 
     /**

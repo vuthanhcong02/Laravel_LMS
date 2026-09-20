@@ -1,10 +1,27 @@
-export default () => ({
-    levelTab: 'all', 
-    leaderboardFilter: 'all_time', 
-    leaderboardLevel: 'all',
-    loadingLeaderboard: false,
-    socialDockExpanded: false, 
-    leaderboard: window.hskLeaderboardData || [],
+export default () => {
+    const params = new URLSearchParams(window.location.search);
+    const initialTab = params.get('tab') || (params.has('history_page') ? 'history' : 'exams');
+
+    return {
+        mainTab: initialTab,
+        levelTab: 'all', 
+        leaderboardFilter: 'all_time', 
+        leaderboardLevel: 'all',
+        loadingLeaderboard: false,
+        socialDockExpanded: false, 
+        leaderboard: window.hskLeaderboardData || [],
+
+        switchMainTab(tab) {
+            this.mainTab = tab;
+            const url = new URL(window.location.href);
+            if (tab === 'history') {
+                url.searchParams.set('tab', 'history');
+            } else {
+                url.searchParams.delete('tab');
+                url.searchParams.delete('history_page');
+            }
+            window.history.replaceState({}, '', url.toString());
+        },
 
     get top1() {
         return this.leaderboard.find(item => item.rank === 1) || null;
@@ -116,4 +133,5 @@ export default () => ({
             this.loadingFullLeaderboard = false;
         }
     }
-});
+    };
+};

@@ -77,8 +77,11 @@
                     @endif
                     {{-- Text (Ruby) --}}
                     @if($question->title)
+                        @php
+                            $cleanTitle = preg_replace('/^\s*\d+[\.\、\．\:\：]\s*/u', '', $question->title);
+                        @endphp
                         <div class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 text-center sm:text-left break-words zh-text leading-relaxed">
-                            {!! renderHskRubyText($question->title) !!}
+                            {!! renderHskRubyText($cleanTitle) !!}
                         </div>
                     @endif
                 </div>

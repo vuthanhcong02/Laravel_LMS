@@ -33,7 +33,10 @@ abstract class BaseQuestionEditor extends Component
             'group.title' => 'nullable|string',
             'group.passage_text' => 'nullable|string',
             'questionTitles.*' => 'nullable|string',
-            'questionExplanations.*' => 'nullable|string',
+            'questionExplanations.*' => 'nullable',
+            'questionExplanations.*.vi' => 'nullable|string',
+            'questionExplanations.*.en' => 'nullable|string',
+            'questionExplanations.*.zh' => 'nullable|string',
             'optionContents.*' => 'nullable|string',
             'group.questions.*.is_example' => 'boolean',
             'group.questions.*.points' => 'nullable|numeric',
@@ -63,7 +66,7 @@ abstract class BaseQuestionEditor extends Component
 
         foreach ($this->group->questions as $idx => $question) {
             $this->questionTitles[$idx] = $question->title ?? '';
-            $this->questionExplanations[$idx] = $question->explanation ?? '';
+            $this->questionExplanations[$idx] = $question->explanation_translations;
             $this->questionIds[$idx] = $question->id;
             
             foreach ($question->options as $option) {
@@ -75,7 +78,7 @@ abstract class BaseQuestionEditor extends Component
     public function toggleExample($questionId)
     {
         $this->saveGroupData();
-        $q = HskMockExamQuestion::find($questionId);
+        $q = $this->group->questions()->where('id', $questionId)->first();
         if ($q) {
             $q->is_example = !$q->is_example;
             $q->save();
@@ -95,7 +98,15 @@ abstract class BaseQuestionEditor extends Component
                 $question = $this->group->questions->firstWhere('id', $qId);
                 if ($question) {
                     $question->title = $title;
-                    $question->explanation = $this->questionExplanations[$idx] ?? null;
+
+                    $exp = $this->questionExplanations[$idx] ?? null;
+                    if (is_array($exp)) {
+                        $hasAny = !empty(trim($exp['vi'] ?? '')) || !empty(trim($exp['en'] ?? '')) || !empty(trim($exp['zh'] ?? ''));
+                        $question->explanation = $hasAny ? json_encode($exp, JSON_UNESCAPED_UNICODE) : null;
+                    } else {
+                        $question->explanation = !empty(trim($exp ?? '')) ? (string) $exp : null;
+                    }
+
                     $question->save();
                 }
             }
@@ -123,7 +134,7 @@ abstract class BaseQuestionEditor extends Component
         $this->validate();
         $this->saveGroupData();
         
-        $this->dispatch('notify', msg: 'Lưu thành công!', type: 'success');
+        $this->dispatch('notify', msg: __('Lưu thành công!'), type: 'success');
         $this->loadGroupData();
     }
 
@@ -145,7 +156,7 @@ abstract class BaseQuestionEditor extends Component
     public function deleteQuestion($questionId)
     {
         $this->saveGroupData();
-        $q = HskMockExamQuestion::find($questionId);
+        $q = $this->group->questions()->where('id', $questionId)->first();
         if ($q) {
             $q->delete();
         }
@@ -154,7 +165,7 @@ abstract class BaseQuestionEditor extends Component
 
     public function updatedQuestionImages($file, $questionId)
     {
-        $q = HskMockExamQuestion::find($questionId);
+        $q = $this->group->questions()->where('id', $questionId)->first();
         if (!$q || !$file) return;
 
         $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
@@ -169,7 +180,9 @@ abstract class BaseQuestionEditor extends Component
 
     public function updatedOptionImages($file, $optionId)
     {
-        $opt = HskMockExamOption::find($optionId);
+        $opt = HskMockExamOption::whereHas('question', function ($q) {
+            $q->where('hsk_mock_exam_question_group_id', $this->group->id);
+        })->where('id', $optionId)->first();
         if (!$opt || !$file) return;
 
         $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';

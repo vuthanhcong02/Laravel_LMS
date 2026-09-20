@@ -110,16 +110,18 @@
                     </div>
                     <div class="flex-1 text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed min-w-0 zh-text">
                         @if ($question->title)
+                            @php
+                                $cleanTitle = preg_replace('/^\s*\d+[\.\、\．\:\：]\s*/u', '', $question->title);
+                            @endphp
                             <div class="flex flex-wrap items-end gap-x-2 gap-y-1">
-                                {!! renderHskRubyText($question->title) !!}
+                                {!! renderHskRubyText($cleanTitle) !!}
                             </div>
                         @else
                             <span class="text-xs font-semibold italic text-slate-400">{{ __('Chọn đáp án') }}:</span>
                         @endif
                     </div>
                 </div>
-                {{-- Right: Options (A-F inline) --}}
-                <div class="flex flex-wrap lg:justify-end items-center gap-2.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#e8e2d9] dark:border-[#2d2926]">
+                <div class="flex flex-wrap items-center gap-2.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#e8e2d9] dark:border-[#2d2926] justify-start">
                     @foreach ($question->options as $option)
                         @php $optContent = trim($option->content ?? ''); @endphp
                         @if (in_array($optContent, $excludedLetters))

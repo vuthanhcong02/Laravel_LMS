@@ -164,8 +164,12 @@ class SentenceStudyService
             ->get();
 
         $modeNames = [
+            'dien-tu' => __('Điền từ vào chỗ trống'),
             'cloze' => __('Điền từ vào chỗ trống'),
+            'nghe-chep' => __('Nghe & Chép chính tả'),
+            'chep-chinh-ta' => __('Nghe & Chép chính tả'),
             'dictation' => __('Nghe & Chép chính tả'),
+            'ghep-cau' => __('Ghép câu'),
             'scramble' => __('Ghép câu'),
         ];
 

@@ -40,6 +40,7 @@ import sentenceBuilder from './alpine/components/sentence-builder.js';
 import sentenceTopicSearch from './alpine/components/sentence-topic-search.js';
 import hskIndex from './hsk-index.js';
 import examTimer from './hsk-take.js';
+import hskExamList from './alpine/components/hsk-exam-list.js';
 
 if (!window.Alpine) {
     window.Alpine = Alpine;
@@ -81,6 +82,7 @@ if (!window.Alpine) {
     Alpine.data('hskResultViewer', hskResultViewer);
     Alpine.data('sentenceBuilder', sentenceBuilder);
     Alpine.data('sentenceTopicSearch', sentenceTopicSearch);
+    Alpine.data('hskExamList', hskExamList);
 
     Alpine.start();
 }

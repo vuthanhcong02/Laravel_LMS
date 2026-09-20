@@ -20,7 +20,7 @@ class SubmitHskMockExamRequest extends FormRequest
     {
         return [
             'answers'   => 'nullable|array|max:500',
-            'answers.*' => 'nullable|string|max:10',
+            'answers.*' => 'nullable|string|max:200',
         ];
     }
 }

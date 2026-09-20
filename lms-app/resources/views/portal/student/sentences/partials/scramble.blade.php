@@ -1,4 +1,4 @@
-<template x-if="mode === 'scramble' && status !== 'completed' && currentSentence">
+<template x-if="(mode === 'scramble' || mode === 'ghep-cau') && status !== 'completed' && currentSentence">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
 
         <div class="bg-white dark:bg-[#181615] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926] p-5 shadow-xs flex flex-col justify-between space-y-4 h-full">

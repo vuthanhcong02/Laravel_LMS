@@ -153,6 +153,9 @@ class HskMockExamService
                 'writing' => ['correct' => 0, 'total' => 0],
             ];
 
+            $userAnswersBatch = [];
+            $now = now();
+
             foreach ($exam->sections as $section) {
                 $skill = strtolower($section->skill_type); // 'listening', 'reading', 'writing'
                 if (!isset($scores[$skill])) {
@@ -202,23 +205,34 @@ class HskMockExamService
                                 } else {
                                     // If no option matches, check if it matches the correct option's content directly
                                     $correctOption = $question->options->firstWhere('is_correct', true);
-                                    if ($correctOption && strtoupper(trim($correctOption->content ?? '')) === strtoupper($textAnswer)) {
-                                        $isCorrect = true;
-                                        $scores[$skill]['correct']++;
+                                    if ($correctOption) {
+                                        $cleanOpt = rtrim(preg_replace('/\s+/u', '', mb_strtoupper($correctOption->content ?? '', 'UTF-8')), "。！？.!? \t\n\r\0\x0B");
+                                        $cleanAns = rtrim(preg_replace('/\s+/u', '', mb_strtoupper($textAnswer, 'UTF-8')), "。！？.!? \t\n\r\0\x0B");
+                                        if ($cleanOpt !== '' && $cleanOpt === $cleanAns) {
+                                            $isCorrect = true;
+                                            $scores[$skill]['correct']++;
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        HskMockExamUserAnswer::create([
+                        $userAnswersBatch[] = [
                             'hsk_mock_exam_result_id' => $result->id,
                             'hsk_mock_exam_question_id' => $question->id,
                             'selected_option_id' => $selectedOptionId,
                             'text_answer' => $textAnswer,
                             'is_correct' => $isCorrect,
-                        ]);
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
                     }
                 }
+            }
+
+            // Bulk insert all answers to avoid N separate queries
+            if (!empty($userAnswersBatch)) {
+                HskMockExamUserAnswer::insert($userAnswersBatch);
             }
 
             // Calculate standard HSK scores (each section out of 100 points)
@@ -283,6 +297,22 @@ class HskMockExamService
                 'userAnswers.question.hskMockExamSection'
             ])
             ->firstOrFail();
+    }
+
+    /**
+     * Get paginated exam history for a user
+     */
+    public function getUserExamHistory(?int $userId, int $perPage = 8)
+    {
+        if (!$userId) {
+            return new \Illuminate\Pagination\LengthAwarePaginator([], 0, $perPage);
+        }
+
+        return HskMockExamResult::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->with(['mockExam.hskLevel'])
+            ->latest('completed_at')
+            ->paginate($perPage, ['*'], 'history_page');
     }
 
     /**

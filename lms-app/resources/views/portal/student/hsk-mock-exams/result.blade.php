@@ -690,18 +690,21 @@
                                         @endif
                                     </div>
 
-                                    <!-- Explanation Box if available -->
-                                    @if (!empty($question->explanation))
+                                    <!-- Multilingual Explanation Box -->
+                                    @php
+                                        $expText = $question->getExplanationText('vi');
+                                    @endphp
+
+                                    @if (!empty(trim($expText ?? '')))
                                         <div class="sm:pl-10 pt-1">
-                                            <div
-                                                class="p-4 rounded-2xl bg-[#faf8f5] dark:bg-[#201d1a] border border-[#e8e2d9] dark:border-[#2d2926] space-y-1.5">
+                                            <div class="p-4 rounded-2xl bg-[#faf8f5] dark:bg-[#201d1a] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2 shadow-2xs">
                                                 <div class="flex items-center gap-2 text-xs font-bold text-[#e07a5f]">
                                                     <i class="fa-solid fa-lightbulb"></i>
                                                     <span>{{ __('Giải thích chi tiết') }}</span>
                                                 </div>
-                                                <div
-                                                    class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                                                    {!! nl2br(trim($question->explanation)) !!}
+
+                                                <div class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
+                                                    {!! nl2br(e(trim($expText))) !!}
                                                 </div>
                                             </div>
                                         </div>

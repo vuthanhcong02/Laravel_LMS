@@ -69,11 +69,11 @@
                             <span x-show="!sidebarCollapsed" class="truncate">{{ __('Luyện thi HSK') }}</span>
                         </a>
                         @php
-                            $isSentencesActive = request()->routeIs('sentences.*') || request()->routeIs('student.sentences.*') || request()->is('luyen-ghep-cau*') || request()->is('luyen-tap*');
-                            $currentMode = request()->query('mode', 'scramble');
-                            $isScrambleActive = $isSentencesActive && $currentMode === 'scramble';
-                            $isClozeActive = $isSentencesActive && $currentMode === 'cloze';
-                            $isDictationActive = $isSentencesActive && $currentMode === 'dictation';
+                            $isSentencesActive = request()->routeIs('sentences.*') || request()->routeIs('student.sentences.*') || request()->is('luyen-ghep-cau*') || request()->is('luyen-tap-ngau-nhien*');
+                            $currentMode = request()->query('mode', 'ghep-cau');
+                            $isScrambleActive = $isSentencesActive && in_array($currentMode, ['ghep-cau', 'scramble']);
+                            $isClozeActive = $isSentencesActive && in_array($currentMode, ['dien-tu', 'cloze']);
+                            $isDictationActive = $isSentencesActive && in_array($currentMode, ['nghe-chep', 'chep-chinh-ta', 'dictation']);
                         @endphp
                         <div x-data="{ open: {{ $isSentencesActive ? 'true' : 'false' }} }">
                             <button @click="open = !open" 
@@ -88,17 +88,17 @@
                                 <i x-show="!sidebarCollapsed && open" class="fa-solid fa-chevron-up text-xs text-[#e07a5f]"></i>
                             </button>
                             <div x-show="open && !sidebarCollapsed" x-transition.opacity.duration.200ms class="pl-7 pr-1 mt-1 space-y-1">
-                                <a href="{{ route('sentences.index', ['mode' => 'scramble']) }}" 
+                                <a href="{{ route('sentences.index', ['mode' => 'ghep-cau']) }}" 
                                    class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors {{ $isScrambleActive ? 'text-[#e07a5f] bg-[#e07a5f]/10 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50' }}">
                                     <i class="fa-solid fa-puzzle-piece text-[11px] w-3.5 text-center"></i>
                                     <span>{{ __('Ghép câu') }}</span>
                                 </a>
-                                <a href="{{ route('sentences.index', ['mode' => 'cloze']) }}" 
+                                <a href="{{ route('sentences.index', ['mode' => 'dien-tu']) }}" 
                                    class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors {{ $isClozeActive ? 'text-[#e07a5f] bg-[#e07a5f]/10 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50' }}">
                                     <i class="fa-solid fa-pen-to-square text-[11px] w-3.5 text-center"></i>
                                     <span>{{ __('Điền từ vào chỗ trống') }}</span>
                                 </a>
-                                <a href="{{ route('sentences.index', ['mode' => 'dictation']) }}" 
+                                <a href="{{ route('sentences.index', ['mode' => 'nghe-chep']) }}" 
                                    class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors {{ $isDictationActive ? 'text-[#e07a5f] bg-[#e07a5f]/10 font-semibold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50' }}">
                                     <i class="fa-solid fa-headphones text-[11px] w-3.5 text-center"></i>
                                     <span>{{ __('Nghe & Chép chính tả') }}</span>

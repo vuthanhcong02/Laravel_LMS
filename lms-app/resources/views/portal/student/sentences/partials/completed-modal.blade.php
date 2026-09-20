@@ -74,15 +74,15 @@
 
         <div class="pt-1">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-[410px] mx-auto">
-                @if($mode === 'scramble')
+                @if($mode === 'scramble' || $mode === 'ghep-cau')
                     <button @click="restartPractice()"
                             class="w-full py-2.5 px-3.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold shadow-xs transition-all btn-tactile flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-rotate-right text-[11px]"></i>
                         <span x-text="'{{ __('Làm lại ') }}' + sentences.length + ' {{ __('câu này') }}'"></span>
                     </button>
 
-                    <a href="{{ route('sentences.index', ['mode' => 'scramble', 'level' => $level]) }}"
-                       class="w-full py-2.5 px-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-200 hover:text-[#e07a5f] text-xs font-bold transition-all btn-tactile flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    <a href="{{ route('sentences.index', ['mode' => 'ghep-cau', 'level' => $level]) }}"
+                        class="w-full py-2.5 px-3.5 rounded-xl bg-[#f8f6f3] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-200 hover:text-[#e07a5f] text-xs font-bold transition-all btn-tactile flex items-center justify-center gap-1.5 whitespace-nowrap">
                         <i class="fa-solid fa-list-check text-xs"></i>
                         <span>{{ __('Quay về trang chủ đề') }}</span>
                     </a>
