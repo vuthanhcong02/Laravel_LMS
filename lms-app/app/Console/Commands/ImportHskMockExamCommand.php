@@ -77,7 +77,7 @@ class ImportHskMockExamCommand extends Command
         $storagePath = storage_path('app/public/hsk_mock_exams/' . $examId);
         
         if (!File::isDirectory($storagePath)) {
-            File::makeDirectory($storagePath, 0755, true);
+            File::makeDirectory($storagePath, 0777, true, true);
         }
 
         // Copy audio and images folders
@@ -268,6 +268,14 @@ class ImportHskMockExamCommand extends Command
                             $qType = 'true_false';
                         }
 
+                        $expData = $qData['explanation'] ?? null;
+                        $explanationToSave = null;
+                        if (is_array($expData)) {
+                            $explanationToSave = json_encode($expData, JSON_UNESCAPED_UNICODE);
+                        } elseif (!empty($expData)) {
+                            $explanationToSave = json_encode(['vi' => (string) $expData], JSON_UNESCAPED_UNICODE);
+                        }
+
                         $question = HskMockExamQuestion::create([
                             'hsk_mock_exam_group_id' => $group->id,
                             'hsk_mock_exam_section_id' => $section->id,
@@ -276,6 +284,7 @@ class ImportHskMockExamCommand extends Command
                             'image' => $imagePath,
                             'audio_file' => $audioPath,
                             'points' => 1,
+                            'explanation' => $explanationToSave,
                             'order_index' => $globalQuestionOrder++,
                             'is_example' => $qData['is_example'] ?? false,
                         ]);
@@ -299,7 +308,7 @@ class ImportHskMockExamCommand extends Command
                                     }
                                 }
                                 
-                                if (in_array($groupType, ['listening_dialogue_choice', 'listening_image_choice', 'reading_passage_choice'])) {
+                                if (in_array($groupType, ['listening_dialogue_choice', 'listening_image_choice', 'reading_passage_choice', 'reading_multiple_choice'])) {
                                     $optText = trim(preg_replace('/^[A-F][\.\s]+/', '', $optText));
                                 }
                                 
@@ -315,6 +324,14 @@ class ImportHskMockExamCommand extends Command
                                     'order_index' => $idx + 1,
                                 ]);
                             }
+                        } elseif (isset($qData['correct_answer']) && $qData['correct_answer'] !== null && $qData['correct_answer'] !== '') {
+                            HskMockExamOption::create([
+                                'hsk_mock_exam_question_id' => $question->id,
+                                'content' => is_array($qData['correct_answer']) ? implode('', $qData['correct_answer']) : (string) $qData['correct_answer'],
+                                'image' => null,
+                                'is_correct' => true,
+                                'order_index' => 1,
+                            ]);
                         }
                     }
                 }

@@ -197,6 +197,14 @@ class HskMockExamService
                             $qType = 'true_false';
                         }
 
+                        $expData = $qData['explanation'] ?? null;
+                        $explanationToSave = null;
+                        if (is_array($expData)) {
+                            $explanationToSave = json_encode($expData, JSON_UNESCAPED_UNICODE);
+                        } elseif (!empty($expData)) {
+                            $explanationToSave = json_encode(['vi' => (string) $expData], JSON_UNESCAPED_UNICODE);
+                        }
+
                         $question = HskMockExamQuestion::create([
                             'hsk_mock_exam_group_id' => $group->id,
                             'hsk_mock_exam_section_id' => $section->id,
@@ -205,6 +213,7 @@ class HskMockExamService
                             'image' => $imagePath,
                             'audio_file' => $audioPath,
                             'points' => 1,
+                            'explanation' => $explanationToSave,
                             'order_index' => $globalQuestionOrder++,
                             'is_example' => $qData['is_example'] ?? false,
                         ]);
@@ -332,11 +341,29 @@ class HskMockExamService
                         if (!$question->is_example) {
                             $totalQuestions++;
                         }
-                        $question->update([
+                        $updateFields = [
                             'title' => $questionData['title'] ?? null,
                             'image' => $questionData['image'] ?? null,
                             'audio_file' => $questionData['audio_file'] ?? null,
-                        ]);
+                        ];
+                        if (array_key_exists('explanation', $questionData)) {
+                            $expVal = $questionData['explanation'];
+                            if (is_array($expVal)) {
+                                $hasText = false;
+                                foreach ($expVal as $t) {
+                                    if (!empty(trim((string)$t))) {
+                                        $hasText = true;
+                                        break;
+                                    }
+                                }
+                                $updateFields['explanation'] = $hasText ? json_encode($expVal, JSON_UNESCAPED_UNICODE) : null;
+                            } elseif (!empty(trim((string)$expVal))) {
+                                $updateFields['explanation'] = json_encode(['vi' => trim((string)$expVal)], JSON_UNESCAPED_UNICODE);
+                            } else {
+                                $updateFields['explanation'] = null;
+                            }
+                        }
+                        $question->update($updateFields);
 
                         if (!empty($questionData['options'])) {
                             foreach ($questionData['options'] as $optionData) {

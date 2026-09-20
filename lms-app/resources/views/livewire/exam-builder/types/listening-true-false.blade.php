@@ -47,6 +47,13 @@
                         </div>
                         
                         <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Văn bản / Câu phán đoán (Chữ Hán / Pinyin)</label>
+                            <textarea wire:model.defer="questionTitles.{{ $index }}" rows="2"
+                                placeholder="Ví dụ: 那块儿手表不是他的。"
+                                class="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-primary focus:border-primary px-3 py-2 font-medium zh-text"></textarea>
+                        </div>
+
+                        <div>
                             <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Đáp án Đúng</label>
                             <select wire:model="trueFalseAnswers.{{ $question->id }}" class="w-full p-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold">
                                 <option value="1">Đúng (True)</option>
@@ -54,12 +61,7 @@
                             </select>
                         </div>
                         
-                        <div class="mt-3">
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Giải thích đáp án (Tuỳ chọn)</label>
-                            <textarea wire:model.defer="questionExplanations.{{ $index }}" rows="2"
-                                placeholder="Nhập giải thích cho câu hỏi này..."
-                                class="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-primary focus:border-primary px-3 py-2"></textarea>
-                        </div>
+                        <x-lms.exam-builder.explanation-input :index="$index" />
                     </div>
                 </div>
             @endforeach
