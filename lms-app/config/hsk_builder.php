@@ -145,6 +145,17 @@ return [
             'component' => 'exam-builder.types.reading-passage-choice',
             'is_implemented' => true
         ],
+        'reading_multiple_choice' => [
+            'id' => 'reading_multiple_choice',
+            'section' => 'reading',
+            'name' => 'Đọc - Trắc nghiệm đoạn văn / câu ngắn',
+            'description' => 'Đọc câu hoặc đoạn văn ngắn và chọn đáp án đúng A, B, C.',
+            'has_audio' => false,
+            'has_group_image' => false,
+            'has_options' => true,
+            'component' => 'exam-builder.types.reading-passage-choice',
+            'is_implemented' => true
+        ],
         'reading_sentence_ordering' => [
             'id' => 'reading_sentence_ordering',
             'section' => 'reading',
@@ -158,6 +169,17 @@ return [
         ],
 
         // ---------- WRITING ----------
+        'writing_arrange_words' => [
+            'id' => 'writing_arrange_words',
+            'section' => 'writing',
+            'name' => 'Viết - Sắp xếp từ thành câu',
+            'description' => 'Cho các từ xáo trộn, học viên cần sắp xếp lại thành câu đúng ngữ pháp.',
+            'has_audio' => false,
+            'has_group_image' => false,
+            'has_options' => false,
+            'component' => 'exam-builder.types.writing-arrange-words',
+            'is_implemented' => true
+        ],
         'writing_sentence_building' => [
             'id' => 'writing_sentence_building',
             'section' => 'writing',
@@ -166,19 +188,30 @@ return [
             'has_audio' => false,
             'has_group_image' => false,
             'has_options' => false,
-            'component' => 'exam-builder.types.writing-sentence-building',
-            'is_implemented' => false
+            'component' => 'exam-builder.types.writing-arrange-words',
+            'is_implemented' => true
         ],
-        'writing_character_writing' => [
-            'id' => 'writing_character_writing',
+        'writing_characters' => [
+            'id' => 'writing_characters',
             'section' => 'writing',
-            'name' => 'Viết - Viết chữ Hán theo Pinyin',
+            'name' => 'Viết - Điền chữ Hán theo Pinyin',
             'description' => 'Cho câu có chứa pinyin, học viên viết chữ Hán tương ứng.',
             'has_audio' => false,
             'has_group_image' => false,
             'has_options' => false,
-            'component' => 'exam-builder.types.writing-character-writing',
-            'is_implemented' => false
+            'component' => 'exam-builder.types.writing-characters',
+            'is_implemented' => true
+        ],
+        'writing_character_writing' => [
+            'id' => 'writing_character_writing',
+            'section' => 'writing',
+            'name' => 'Viết - Điền chữ Hán theo Pinyin',
+            'description' => 'Cho câu có chứa pinyin, học viên viết chữ Hán tương ứng.',
+            'has_audio' => false,
+            'has_group_image' => false,
+            'has_options' => false,
+            'component' => 'exam-builder.types.writing-characters',
+            'is_implemented' => true
         ],
         'writing_picture_essay' => [
             'id' => 'writing_picture_essay',

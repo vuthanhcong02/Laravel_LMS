@@ -79,22 +79,22 @@
         @php
             $currentQNum = $qCount++;
         @endphp
-        <div class="q-card scroll-mt-24 bg-white dark:bg-[#181615] p-5 sm:p-6 rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-col md:flex-row gap-4 md:gap-6 md:items-center justify-between"
+        <div class="q-card scroll-mt-24 bg-white dark:bg-[#181615] p-4 sm:p-5 rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-wrap items-center gap-4 sm:gap-6"
              id="q-{{ $currentQNum }}">
-            <div class="flex items-center gap-4 min-w-[200px]">
+            <div class="flex items-center gap-3 shrink-0">
                 <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center shrink-0">
                     {{ $currentQNum }}
                 </div>
                 @if($question->audio_file)
                     <button type="button" 
                             onclick="playAudio('{{ hsk_storage_url($question->audio_file) }}', this)"
-                            class="flex-1 md:flex-none flex items-center justify-center gap-2 h-10 px-4 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] border border-[#fcdccf] dark:border-[#42271f] text-[#e07a5f] font-bold text-xs hover:bg-[#e07a5f] hover:text-white transition-all btn-tactile shadow-xs">
+                            class="flex items-center justify-center gap-2 h-10 px-4 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] border border-[#fcdccf] dark:border-[#42271f] text-[#e07a5f] font-bold text-xs hover:bg-[#e07a5f] hover:text-white transition-all btn-tactile shadow-xs">
                         <i class="fa-solid fa-volume-high text-xs"></i>
                         <span>{{ __('Nghe Audio') }}</span>
                     </button>
                 @endif
             </div>
-            <div class="flex-1 flex flex-wrap items-center gap-2.5 md:justify-end">
+            <div class="flex flex-wrap items-center gap-2.5 justify-start">
                 @foreach($imgLabels as $letter)
                     @if($letter === $exLetter) @continue @endif
                     <label class="cursor-pointer group block shrink-0 matching-label" data-group-id="{{ $group->id }}" data-letter="{{ $letter }}">

@@ -217,7 +217,7 @@
         <div class="flex-1 flex overflow-hidden relative">
             <!-- LEFT: SCROLLABLE QUESTIONS LIST -->
             <main class="flex-1 overflow-y-auto bg-[#f8f6f3] dark:bg-[#0e0c0b] scroll-smooth no-scrollbar" id="question-container">
-                <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 pb-28 space-y-8">
+                <div class="max-w-4xl mx-auto px-4 md:px-6 py-6 pb-28 space-y-8">
                     @php $qCount = 1; @endphp
                     @foreach ($exam->sections as $sectionIndex => $section)
                         @php

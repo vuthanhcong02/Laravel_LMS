@@ -27,10 +27,15 @@
     </div>
     @foreach ($examples as $ex)
         <div class="p-5 bg-white dark:bg-[#181615] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5">
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
                 @if($ex->image)
                     <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] p-2.5 border border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
                         <img src="{{ hsk_storage_url($ex->image) }}" class="w-full h-full object-contain rounded-xl" alt="Ex">
+                    </div>
+                @endif
+                @if ($ex->title)
+                    <div class="flex-1 text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed zh-text">
+                        {!! renderHskRubyText($ex->title) !!}
                     </div>
                 @endif
             </div>
@@ -71,8 +76,8 @@
         @endphp
         <div class="q-card scroll-mt-24 p-5 sm:p-6 bg-white dark:bg-[#181615] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5"
              id="q-{{ $currentQNum }}">
-            {{-- Left: Question Number & Uniform Fixed Image --}}
-            <div class="flex items-center gap-4 w-full sm:w-auto">
+            {{-- Left: Question Number, Image & Question Text --}}
+            <div class="flex items-center gap-4 flex-1 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-[#fff2ee] dark:bg-[#251d1a] text-[#e07a5f] font-bold text-xs flex items-center justify-center shrink-0">
                     {{ $currentQNum }}
                 </div>
@@ -83,9 +88,17 @@
                             alt="Question {{ $currentQNum }}">
                     </div>
                 @endif
+                @if ($question->title)
+                    @php
+                        $cleanTitle = preg_replace('/^\s*\d+[\.\、\．\:\：]\s*/u', '', $question->title);
+                    @endphp
+                    <div class="flex-1 text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed zh-text">
+                        {!! renderHskRubyText($cleanTitle) !!}
+                    </div>
+                @endif
             </div>
             {{-- Right: Audio (if any) & True/False Buttons --}}
-            <div class="flex flex-col sm:flex-row items-center justify-end gap-3 w-full sm:w-auto shrink-0">
+            <div class="flex flex-col sm:flex-row items-center justify-end gap-3 shrink-0">
                 @if ($question->audio_file)
                     <button type="button" 
                             onclick="playAudio('{{ hsk_storage_url($question->audio_file) }}', this)"

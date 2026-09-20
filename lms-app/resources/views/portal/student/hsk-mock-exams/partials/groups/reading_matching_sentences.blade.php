@@ -145,15 +145,18 @@
                 </div>
                 <div class="flex-1 text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed min-w-0 zh-text">
                     @if ($question->title)
+                        @php
+                            $cleanTitle = preg_replace('/^\s*\d+[\.\、\．\:\：]\s*/u', '', $question->title);
+                        @endphp
                         <div class="flex flex-wrap items-end gap-x-2 gap-y-1">
-                            {!! function_exists('renderHskRubyText') ? renderHskRubyText($question->title) : $question->title !!}
+                            {!! function_exists('renderHskRubyText') ? renderHskRubyText($cleanTitle) : $cleanTitle !!}
                         </div>
                     @else
                         <span class="text-xs font-semibold italic text-slate-400">{{ __('Chọn đáp án tương ứng') }}:</span>
                     @endif
                 </div>
             </div>
-            <div class="flex-1 lg:flex-none flex flex-wrap items-center gap-2.5 pt-2 lg:pt-0 lg:justify-end">
+            <div class="flex-1 lg:flex-none flex flex-wrap items-center gap-2.5 pt-2 lg:pt-0 justify-start">
                 @foreach($optLabels as $letter)
                     @if($letter === $exLetter) @continue @endif
                     <label class="cursor-pointer group block shrink-0 matching-label" data-group-id="{{ $group->id }}" data-letter="{{ $letter }}">

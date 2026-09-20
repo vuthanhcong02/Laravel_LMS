@@ -69,7 +69,7 @@
                             <span x-show="!sidebarCollapsed" class="truncate">{{ __('Luyện thi HSK') }}</span>
                         </a>
                         @php
-                            $isSentencesActive = request()->routeIs('sentences.*') || request()->routeIs('student.sentences.*') || request()->is('luyen-ghep-cau*') || request()->is('luyen-tap*');
+                            $isSentencesActive = request()->routeIs('sentences.*') || request()->routeIs('student.sentences.*') || request()->is('luyen-ghep-cau*') || request()->is('luyen-tap-ngau-nhien*');
                             $currentMode = request()->query('mode', 'scramble');
                             $isScrambleActive = $isSentencesActive && $currentMode === 'scramble';
                             $isClozeActive = $isSentencesActive && $currentMode === 'cloze';
