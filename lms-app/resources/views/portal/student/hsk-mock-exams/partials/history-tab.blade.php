@@ -135,7 +135,7 @@
 
                 @if ($userHistory->hasPages())
                     <div class="pt-2">
-                        {{ $userHistory->links() }}
+                        {{ $userHistory->withQueryString()->appends(['tab' => 'history'])->links() }}
                     </div>
                 @endif
             </div>
