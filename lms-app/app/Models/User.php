@@ -4,10 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\CustomFlashcard;
+use App\Models\FlashcardDeck;
 use App\Notifications\CustomResetPassword;
 use App\Notifications\CustomVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -138,6 +141,22 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     {
         return $this->belongsToMany(HskVocabulary::class, 'user_remembered_vocabularies', 'user_id', 'hsk_vocabulary_id')
             ->withTimestamps();
+    }
+
+    /**
+     * User's custom flashcard decks.
+     */
+    public function flashcardDecks(): HasMany
+    {
+        return $this->hasMany(FlashcardDeck::class)->orderBy('id', 'desc');
+    }
+
+    /**
+     * User's custom flashcards.
+     */
+    public function customFlashcards(): HasMany
+    {
+        return $this->hasMany(CustomFlashcard::class)->orderBy('id', 'desc');
     }
 
     /**

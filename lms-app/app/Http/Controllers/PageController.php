@@ -9,6 +9,7 @@ use App\Models\HskLevel;
 use App\Models\HskVocabulary;
 use App\Models\User;
 use App\Services\GamificationService;
+use App\Services\Student\CustomFlashcardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -176,7 +177,7 @@ class PageController extends Controller
     /**
      * Display the flashcards study view.
      */
-    public function getViewFlashcards(): View
+    public function getViewFlashcards(CustomFlashcardService $customFlashcardService): View
     {
         $allVocabularies = HskVocabulary::where('hsk_version', '3.0')
             ->select('id', 'word', 'pinyin', 'meaning', 'meaning_en', 'level', 'example', 'example_meaning')
@@ -185,10 +186,11 @@ class PageController extends Controller
         /** @var User $user */
         $user = auth()->user();
         $rememberedIds = $user ? $user->rememberedVocabularies()->pluck('hsk_vocabularies.id')->toArray() : [];
+        $myDecks = $user ? $customFlashcardService->getUserDecks($user->id) : collect();
 
         $vocabularies = $allVocabularies->groupBy('level');
 
-        return view('flashcard', compact('vocabularies', 'rememberedIds'));
+        return view('flashcard', compact('vocabularies', 'rememberedIds', 'myDecks'));
     }
 
     /**
