@@ -37,11 +37,17 @@ use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
 use App\Http\Controllers\Teacher\TeacherReportController;
 use App\Http\Controllers\Teacher\HskMockExamController as TeacherHskMockExamController;
+use App\Http\Controllers\Api\TtsController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- */
+
+// Edge-TTS neural speech synthesis endpoint
+Route::get('/api/tts', [TtsController::class, 'synthesize'])
+    ->middleware('throttle:60,1')
+    ->name('api.tts');
 
 // ─── Public pages ────────────────────────────────────────────────────────────
 Route::controller(PageController::class)->group(function () {
