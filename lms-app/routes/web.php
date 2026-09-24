@@ -29,6 +29,7 @@ use App\Http\Controllers\Student\StudentDashboardController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentQuizController;
 use App\Http\Controllers\Student\SentenceStudyController;
+use App\Http\Controllers\Student\CustomFlashcardController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\Teacher\ClassController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
@@ -37,11 +38,17 @@ use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
 use App\Http\Controllers\Teacher\TeacherReportController;
 use App\Http\Controllers\Teacher\HskMockExamController as TeacherHskMockExamController;
+use App\Http\Controllers\Api\TtsController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- */
+
+// Edge-TTS neural speech synthesis endpoint
+Route::get('/api/tts', [TtsController::class, 'synthesize'])
+    ->middleware('throttle:60,1')
+    ->name('api.tts');
 
 // ─── Public pages ────────────────────────────────────────────────────────────
 Route::controller(PageController::class)->group(function () {
@@ -76,6 +83,24 @@ Route::get('/luyen-ghep-cau', [SentenceStudyController::class, 'index'])->name('
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
+
+    // Custom Flashcard Decks & Cards routes (Requires authentication)
+    Route::prefix('api/custom-flashcards')->group(function () {
+        Route::get('/decks', [CustomFlashcardController::class, 'getDecks'])->name('custom-flashcards.decks.index');
+        Route::get('/decks/check-word', [CustomFlashcardController::class, 'getDecksWithWordCheck'])->name('custom-flashcards.decks.check-word');
+        Route::post('/decks', [CustomFlashcardController::class, 'storeDeck'])->name('custom-flashcards.decks.store');
+        Route::get('/decks/{id}', [CustomFlashcardController::class, 'getDeck'])->name('custom-flashcards.decks.show');
+        Route::put('/decks/{id}', [CustomFlashcardController::class, 'updateDeck'])->name('custom-flashcards.decks.update');
+        Route::delete('/decks/{id}', [CustomFlashcardController::class, 'destroyDeck'])->name('custom-flashcards.decks.destroy');
+        Route::post('/decks/{id}/reset', [CustomFlashcardController::class, 'resetProgress'])->name('custom-flashcards.decks.reset');
+        Route::post('/decks/{id}/import', [CustomFlashcardController::class, 'importCards'])->name('custom-flashcards.decks.import');
+        Route::post('/decks/{id}/add-hsk-word', [CustomFlashcardController::class, 'addHskWord'])->name('custom-flashcards.decks.add-hsk-word');
+
+        Route::post('/decks/{id}/cards', [CustomFlashcardController::class, 'storeCard'])->name('custom-flashcards.cards.store');
+        Route::put('/cards/{id}', [CustomFlashcardController::class, 'updateCard'])->name('custom-flashcards.cards.update');
+        Route::delete('/cards/{id}', [CustomFlashcardController::class, 'destroyCard'])->name('custom-flashcards.cards.destroy');
+        Route::post('/cards/{id}/toggle-remember', [CustomFlashcardController::class, 'toggleRemember'])->name('custom-flashcards.cards.toggle-remember');
+    });
 
     // Sentence practice routes (Requires authentication)
     Route::get('/luyen-tap-ngau-nhien', [SentenceStudyController::class, 'random'])->name('sentences.random');

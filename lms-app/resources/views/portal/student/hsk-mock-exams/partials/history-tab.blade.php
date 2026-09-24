@@ -22,10 +22,12 @@
                 {{ __('Hệ thống tự động lưu trữ mọi lần làm bài thi thử HSK, bảng điểm chi tiết từng kỹ năng và đáp án giải thích để bạn tiện ôn tập.') }}
             </p>
             <div class="pt-2">
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold transition-all shadow-sm">
+                <button type="button"
+                        @click="$dispatch('open-auth-modal', { tab: 'login' })"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold transition-all shadow-sm cursor-pointer">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i>
                     <span>{{ __('Đăng nhập ngay') }}</span>
-                </a>
+                </button>
             </div>
         </div>
     @else

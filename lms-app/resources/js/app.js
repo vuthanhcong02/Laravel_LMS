@@ -41,6 +41,11 @@ import sentenceTopicSearch from './alpine/components/sentence-topic-search.js';
 import hskIndex from './hsk-index.js';
 import examTimer from './hsk-take.js';
 import hskExamList from './alpine/components/hsk-exam-list.js';
+import customFlashcardApp from './alpine/components/custom-flashcard.js';
+import flashcardApp from './alpine/components/flashcard-app.js';
+
+window.customFlashcardApp = customFlashcardApp;
+window.flashcardApp = flashcardApp;
 
 if (!window.Alpine) {
     window.Alpine = Alpine;
@@ -83,6 +88,8 @@ if (!window.Alpine) {
     Alpine.data('sentenceBuilder', sentenceBuilder);
     Alpine.data('sentenceTopicSearch', sentenceTopicSearch);
     Alpine.data('hskExamList', hskExamList);
+    Alpine.data('customFlashcardApp', customFlashcardApp);
+    Alpine.data('flashcardApp', flashcardApp);
 
     Alpine.start();
 }
