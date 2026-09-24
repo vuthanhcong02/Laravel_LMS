@@ -7,10 +7,11 @@
         </button>
 
         <div class="flex items-center gap-1.5">
-            <button @click="openCreateCardModal()"
-                    class="px-2.5 py-1 rounded-lg bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-semibold shadow-2xs transition-all flex items-center gap-1 btn-tactile cursor-pointer">
+            <button @click="openImportModal()"
+                    class="px-2.5 py-1 rounded-lg bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5 btn-tactile cursor-pointer"
+                    :title="'{{ __('Thêm từ vựng vào bộ thẻ') }}'">
                 <i class="fa-solid fa-plus text-[10px]"></i>
-                <span>{{ __('Thêm từ vựng mới') }}</span>
+                <span>{{ __('Thêm từ vựng') }}</span>
             </button>
             <button @click="openEditDeckModal(selectedDeck)"
                     class="w-7 h-7 rounded-lg bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] hover:border-[#e07a5f] text-xs flex items-center justify-center transition-all btn-tactile cursor-pointer"
@@ -84,7 +85,8 @@
                     <span>
                         <span x-text="selectedDeck.remembered_cards_count ?? 0"></span>/<span x-text="selectedDeck.total_cards_count ?? (selectedDeck.flashcards ? selectedDeck.flashcards.length : 0)"></span> {{ __('đã thuộc') }}
                     </span>
-                    <button @click="resetDeckProgress()"
+                    <button x-show="(selectedDeck.remembered_cards_count ?? 0) > 0"
+                            @click="resetDeckProgress()"
                             class="text-[#e07a5f] hover:underline font-semibold cursor-pointer"
                             :title="'{{ __('Đặt lại tiến độ danh mục này') }}'">
                         {{ __('Học lại') }}
@@ -182,7 +184,7 @@
                         {{ __('Hãy thêm các từ vựng tiếng Trung đầu tiên vào bộ thẻ này để bắt đầu học.') }}
                     </p>
                 </div>
-                <button @click="openCreateCardModal()"
+                <button @click="openImportModal()"
                         class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile shadow-xs flex items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-plus"></i>
                     <span>{{ __('Thêm từ vựng ngay') }}</span>
@@ -384,26 +386,100 @@
 
                 <template x-if="studyCards().length === 0">
                     <div class="lms-card p-10 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl text-center flex flex-col items-center justify-center gap-4">
-                        <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-center text-amber-500 text-2xl shadow-xs">
-                            <i class="fa-solid fa-trophy"></i>
-                        </div>
+                        <!-- Icon theo từng bộ lọc -->
+                        <template x-if="studyFilter === 'learned'">
+                            <div class="w-16 h-16 rounded-2xl bg-[#fff2ee] dark:bg-[#2a221f] text-[#e07a5f] flex items-center justify-center text-2xl shadow-xs">
+                                <i class="fa-solid fa-book-bookmark"></i>
+                            </div>
+                        </template>
+                        <template x-if="studyFilter === 'unlearned'">
+                            <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-center text-amber-500 text-2xl shadow-xs">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                        </template>
+                        <template x-if="studyFilter === 'all'">
+                            <div class="w-16 h-16 rounded-2xl bg-[#fff2ee] dark:bg-[#2a221f] text-[#e07a5f] flex items-center justify-center text-2xl shadow-xs">
+                                <i class="fa-solid fa-plus-circle"></i>
+                            </div>
+                        </template>
+
+                        <!-- Tiêu đề & mô tả theo từng bộ lọc -->
                         <div class="space-y-1.5 max-w-md">
-                            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                                {{ __('Không có thẻ nào trong mục lọc này') }}
-                            </h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">
-                                {{ __('Bạn đã hoàn thành các từ trong mục này hoặc chưa có từ nào phù hợp với bộ lọc hiện tại.') }}
-                            </p>
+                            <template x-if="studyFilter === 'learned'">
+                                <div>
+                                    <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                                        {{ __('Chưa có từ vựng nào đã thuộc') }}
+                                    </h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        {{ __('Hãy luyện tập ở mục "Chưa thuộc" và đánh dấu ghi nhớ khi bạn đã thuộc từ vựng nhé!') }}
+                                    </p>
+                                </div>
+                            </template>
+                            <template x-if="studyFilter === 'unlearned'">
+                                <div>
+                                    <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                                        {{ __('Xuất sắc! Bạn đã thuộc toàn bộ từ vựng!') }}
+                                    </h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        {{ __('Tất cả các thẻ trong bộ này đã được bạn ghi nhớ thành công.') }}
+                                    </p>
+                                </div>
+                            </template>
+                            <template x-if="studyFilter === 'all'">
+                                <div>
+                                    <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                                        {{ __('Bộ thẻ này chưa có từ vựng') }}
+                                    </h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        {{ __('Hãy thêm các từ vựng mới vào bộ thẻ để bắt đầu học flashcard.') }}
+                                    </p>
+                                </div>
+                            </template>
                         </div>
+
+                        <!-- Các nút hành động tương ứng -->
                         <div class="flex items-center gap-2.5">
-                            <button @click="studyFilter = 'all'; currentIndex = 0"
-                                    class="px-4 py-2 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 text-xs font-bold btn-tactile">
-                                {{ __('Xem tất cả từ') }}
-                            </button>
-                            <button @click="resetDeckProgress()"
-                                    class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile shadow-xs">
-                                {{ __('Đặt lại tiến độ học') }}
-                            </button>
+                            {{-- Khi ở tab "Đã thuộc" nhưng chưa có từ nào --}}
+                            <template x-if="studyFilter === 'learned'">
+                                <div class="flex items-center gap-2.5">
+                                    <button @click="studyFilter = 'unlearned'; currentIndex = 0"
+                                            class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile shadow-xs flex items-center gap-2 cursor-pointer">
+                                        <i class="fa-solid fa-layer-group"></i>
+                                        <span>{{ __('Luyện tập từ chưa thuộc') }}</span>
+                                    </button>
+                                    <button @click="studyFilter = 'all'; currentIndex = 0"
+                                            class="px-4 py-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 text-xs font-bold btn-tactile cursor-pointer">
+                                        <span>{{ __('Xem tất cả từ') }}</span>
+                                    </button>
+                                </div>
+                            </template>
+
+                            {{-- Khi ở tab "Chưa thuộc" nhưng hết từ (100% đã thuộc) --}}
+                            <template x-if="studyFilter === 'unlearned'">
+                                <div class="flex items-center gap-2.5">
+                                    <button @click="studyFilter = 'all'; currentIndex = 0"
+                                            class="px-4 py-2.5 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 text-xs font-bold btn-tactile cursor-pointer">
+                                        <span>{{ __('Xem tất cả từ') }}</span>
+                                    </button>
+                                    <button x-show="(selectedDeck.flashcards || []).some(c => c.is_remembered)"
+                                            @click="resetDeckProgress()"
+                                            class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile shadow-xs flex items-center gap-2 cursor-pointer">
+                                        <i class="fa-solid fa-rotate-right"></i>
+                                        <span>{{ __('Đặt lại tiến độ học') }}</span>
+                                    </button>
+                                </div>
+                            </template>
+
+                            {{-- Khi ở tab "Tất cả" nhưng không có thẻ nào --}}
+                            <template x-if="studyFilter === 'all'">
+                                <div class="flex items-center gap-2.5">
+                                    <button @click="openImportModal()"
+                                            class="px-5 py-2.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile shadow-xs flex items-center gap-2 cursor-pointer">
+                                        <i class="fa-solid fa-plus"></i>
+                                        <span>{{ __('Thêm từ vựng ngay') }}</span>
+                                    </button>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </template>
@@ -453,7 +529,7 @@
                         {{ __('Hãy nhấn vào nút bên dưới để thêm các từ vựng đầu tiên kèm phiên âm và câu ví dụ.') }}
                     </p>
                 </div>
-                <button @click="openCreateCardModal()"
+                <button @click="openImportModal()"
                         class="px-4 py-2 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold btn-tactile flex items-center gap-2 shadow-xs cursor-pointer">
                     <i class="fa-solid fa-plus"></i>
                     <span>{{ __('Thêm từ đầu tiên') }}</span>

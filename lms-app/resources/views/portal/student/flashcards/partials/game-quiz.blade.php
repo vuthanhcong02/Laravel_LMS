@@ -1,21 +1,23 @@
 <div class="space-y-5 max-w-2xl mx-auto py-2">
-    <div class="flex items-center justify-between">
-        <div class="inline-flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] flex items-center justify-center text-xs shadow-xs">
+    <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="w-10 h-10 rounded-2xl bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] flex items-center justify-center text-base font-bold shrink-0 shadow-xs">
                 <i class="fa-solid fa-circle-question"></i>
             </div>
             <div>
-                <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Trắc Nghiệm Nhanh') }}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ __('Chọn nghĩa tiếng Việt chính xác cho chữ Hán.') }}</p>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">{{ __('Trắc Nghiệm Nhanh') }}</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Chọn nghĩa tiếng Việt chính xác cho chữ Hán.') }}</p>
             </div>
         </div>
 
-        <button type="button"
-                @click="initQuiz()"
-                class="w-8 h-8 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-500 hover:text-[#e07a5f] hover:border-[#e07a5f] text-xs flex items-center justify-center transition-all btn-tactile cursor-pointer"
-                :title="'{{ __('Làm lại') }}'">
-            <i class="fa-solid fa-rotate-right"></i>
-        </button>
+        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <button type="button"
+                    @click="initQuiz()"
+                    class="w-8 h-8 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-500 hover:text-[#e07a5f] hover:border-[#e07a5f] text-xs flex items-center justify-center transition-all btn-tactile cursor-pointer"
+                    :title="'{{ __('Làm lại') }}'">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
     </div>
 
     <template x-if="!quizQuestions || quizQuestions.length === 0">
@@ -53,7 +55,7 @@
 
             <div class="lms-card p-6 sm:p-8 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl text-center space-y-4 shadow-xs">
                 <div class="flex items-center justify-between">
-                    <span class="px-2.5 py-1 rounded-lg bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest"
+                    <span class="px-2.5 py-1 rounded-lg bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                           x-text="'{{ __('Từ vựng') }}'"></span>
 
                     <button type="button"
@@ -64,10 +66,10 @@
                     </button>
                 </div>
 
-                <div class="space-y-2 py-3">
-                    <div class="text-5xl sm:text-7xl font-bold zh-text text-slate-900 dark:text-white tracking-wide"
+                <div class="space-y-2 py-2 sm:py-3">
+                    <div class="text-4xl sm:text-5xl font-bold zh-text text-slate-900 dark:text-white tracking-wide"
                          x-text="currentQuizQuestion ? currentQuizQuestion.word : ''"></div>
-                    <div class="text-sm sm:text-base font-bold text-[#e07a5f]"
+                    <div class="text-sm sm:text-base font-semibold text-[#e07a5f]"
                          x-text="'[' + (currentQuizQuestion && currentQuizQuestion.pinyin ? currentQuizQuestion.pinyin : '') + ']'"></div>
                 </div>
 
@@ -86,11 +88,11 @@
                                 (opt.isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold ring-1 ring-emerald-500' :
                                 (quizSelectedOption === opt ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-500 text-rose-700 dark:text-rose-300' : 'opacity-50 bg-white dark:bg-[#181615] border-[#e8e2d9] dark:border-[#2d2926] text-slate-500'))
                             ]"
-                            class="p-4 rounded-2xl border text-left text-xs sm:text-sm font-semibold transition-all flex items-center justify-between btn-tactile shadow-xs cursor-pointer">
+                            class="p-4 rounded-2xl border text-left text-sm font-semibold transition-all flex items-center justify-between btn-tactile shadow-xs cursor-pointer min-h-[58px]">
                         <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-lg bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-[11px] font-bold flex items-center justify-center text-slate-500 shrink-0"
+                            <span class="w-6 h-6 rounded-lg bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-bold flex items-center justify-center text-slate-500 shrink-0"
                                   x-text="String.fromCharCode(65 + oIdx)"></span>
-                            <span x-text="typeof opt === 'object' ? (opt.text || opt.meaning || opt.word) : opt"></span>
+                            <span class="text-sm font-semibold" x-text="typeof opt === 'object' ? (opt.text || opt.meaning || opt.word) : opt"></span>
                         </div>
                         <template x-if="quizIsAnswered && opt.isCorrect">
                             <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
@@ -107,12 +109,12 @@
                      :class="(quizSelectedOption && quizSelectedOption.isCorrect) ? 'bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' : 'bg-rose-50/80 dark:bg-rose-950/20 border-rose-300 dark:border-rose-800'">
                     <div class="space-y-1 text-left w-full sm:w-auto">
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold"
+                            <span class="text-sm font-bold"
                                   :class="(quizSelectedOption && quizSelectedOption.isCorrect) ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'"
                                   x-text="(quizSelectedOption && quizSelectedOption.isCorrect) ? '{{ __('Chính xác!') }}' : '{{ __('Chưa chính xác!') }}'"></span>
                         </div>
                         <template x-if="currentQuizQuestion && currentQuizQuestion.example">
-                            <p class="text-[11px] text-slate-600 dark:text-slate-400 italic"
+                            <p class="text-xs text-slate-600 dark:text-slate-400 italic"
                                x-text="'Ví dụ: ' + currentQuizQuestion.example"></p>
                         </template>
                     </div>

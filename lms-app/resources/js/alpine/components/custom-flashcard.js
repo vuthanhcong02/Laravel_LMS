@@ -129,6 +129,15 @@ export default function customFlashcardApp(config = {}) {
         },
         isSubmittingCard: false,
 
+        // Bulk Vocabulary Import State
+        showImportModal: false,
+        importTab: 'paste', // 'paste' or 'file'
+        rawImportText: '',
+        importDelimiter: 'auto', // 'auto', 'tab', 'dash', 'comma'
+        parsedImportCards: [],
+        isImportPreviewing: false,
+        isSubmittingImport: false,
+
         /**
          * Initialize the component, bind keyboard navigation and query params.
          */
@@ -845,29 +854,13 @@ export default function customFlashcardApp(config = {}) {
                 const audioUrl = `/api/tts?text=${encodeURIComponent(text)}&voice=zh-CN-XiaoxiaoNeural`;
                 this.currentAudio = new Audio(audioUrl);
                 this.currentAudio.play().catch((err) => {
-                    console.warn('Edge-TTS playback interrupted or failed, using browser fallback:', err);
-                    this.fallbackSpeak(text);
+                    // Suppress abort errors from rapid clicking
+                    if (err.name !== 'AbortError') {
+                        console.warn('Edge-TTS playback interrupted:', err);
+                    }
                 });
             } catch (e) {
-                this.fallbackSpeak(text);
-            }
-        },
-
-        /**
-         * Fallback speech synthesis using browser native Web Speech API.
-         */
-        fallbackSpeak(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'zh-CN';
-                const voices = window.speechSynthesis.getVoices();
-                const zhVoice = voices.find(v => v.lang && (v.lang.includes('zh') || v.lang.includes('ZH')));
-                if (zhVoice) {
-                    utterance.voice = zhVoice;
-                }
-                utterance.rate = 0.85;
-                window.speechSynthesis.speak(utterance);
+                console.warn('Edge-TTS error:', e);
             }
         },
 
@@ -903,7 +896,7 @@ export default function customFlashcardApp(config = {}) {
          */
         handleKeyDown(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            if (this.showDeckModal || this.showCardModal) return;
+            if (this.showDeckModal || this.showCardModal || this.showImportModal) return;
 
             // Only trigger shortcuts if actively in custom deck study mode
             if (this.activeMainTab === 'my_decks' && this.selectedDeck && this.deckSubTab === 'study') {
@@ -917,6 +910,422 @@ export default function customFlashcardApp(config = {}) {
                     e.preventDefault();
                     this.prevCard();
                 }
+            }
+        },
+
+        // ==========================================
+        // BULK VOCABULARY IMPORT METHODS
+        // ==========================================
+
+        /**
+         * Open import modal.
+         */
+        openImportModal() {
+            if (!this.isLoggedIn) {
+                this.requireLogin();
+                return;
+            }
+            this.showImportModal = true;
+            this.importTab = 'paste';
+            this.rawImportText = '';
+            this.importDelimiter = 'auto';
+            this.parsedImportCards = [];
+            this.isImportPreviewing = false;
+            this.isSubmittingImport = false;
+        },
+
+        /**
+         * Close import modal and smoothly reset state after transition completes.
+         */
+        closeImportModal() {
+            this.showImportModal = false;
+            // Delay resetting preview state until modal transition completes (250ms)
+            // to avoid layout contraction and flashing of stage 1 during fade-out
+            setTimeout(() => {
+                this.isImportPreviewing = false;
+                this.isSubmittingImport = false;
+                this.parsedImportCards = [];
+            }, 300);
+        },
+
+        /**
+         * Insert helpful sample text for quick testing.
+         */
+        insertSampleImportText() {
+            this.rawImportText =
+                "你好\tnǐ hǎo\tXin chào\t你好！很高兴认识你。\tXin chào! Rất vui được gặp bạn.\n" +
+                "谢谢\txièxie\tCảm ơn bạn\t非常感谢你的帮助。\tCảm ơn sự giúp đỡ của bạn rất nhiều.\n" +
+                "再见\tzàijiàn\tTạm biệt\t明天学校见！\tHẹn gặp lại ở trường vào ngày mai!\n" +
+                "苹果\tpíngguǒ\tQuả táo\t我想买三斤红苹果。\tTôi muốn mua 1.5kg táo đỏ.\n" +
+                "朋友\tpéngyou\tBạn bè\t他是我的好朋友。\tAnh ấy là người bạn tốt của tôi.";
+        },
+
+        /**
+         * Generate Pinyin on-the-fly for card in preview table.
+         */
+        refreshPreviewPinyin(card) {
+            if (!card.word || !card.word.trim()) return;
+            if (typeof window.pinyinPro !== 'undefined' && typeof window.pinyinPro.pinyin === 'function') {
+                try {
+                    card.pinyin = window.pinyinPro.pinyin(card.word.trim());
+                } catch (e) {
+                    console.warn('Pinyin generation error:', e);
+                }
+            }
+        },
+
+        /**
+         * Re-evaluate duplicates in parsedImportCards against current deck and within preview list.
+         */
+        recomputeDuplicates() {
+            const existingWords = new Set(
+                (this.selectedDeck?.flashcards || []).map(c => (c.word || '').trim().toLowerCase())
+            );
+            const seen = new Set();
+
+            for (const card of this.parsedImportCards) {
+                const wordKey = (card.word || '').trim().toLowerCase();
+                if (!wordKey) {
+                    card.isDuplicate = false;
+                    continue;
+                }
+                if (existingWords.has(wordKey) || seen.has(wordKey)) {
+                    card.isDuplicate = true;
+                } else {
+                    card.isDuplicate = false;
+                    seen.add(wordKey);
+                }
+            }
+        },
+
+        get newImportCardsCount() {
+            return (this.parsedImportCards || []).filter(c => !c.isDuplicate && (c.word || '').trim()).length;
+        },
+
+        get duplicateImportCardsCount() {
+            return (this.parsedImportCards || []).filter(c => c.isDuplicate).length;
+        },
+
+        /**
+         * Remove single card from preview table.
+         */
+        removePreviewCard(index) {
+            this.parsedImportCards.splice(index, 1);
+            if (this.parsedImportCards.length === 0) {
+                this.isImportPreviewing = false;
+            } else {
+                this.recomputeDuplicates();
+            }
+        },
+
+        /**
+         * Process and validate user raw text before opening preview table.
+         */
+        processAndPreviewImport() {
+            const text = (this.rawImportText || '').trim();
+            if (!text) {
+                this.showAlert({
+                    title: 'Chưa có dữ liệu',
+                    message: 'Vui lòng dán hoặc nhập danh sách từ vựng trước khi tiếp tục.',
+                    type: 'warning'
+                });
+                return;
+            }
+
+            const cards = this.parseRawImportText(text, this.importDelimiter);
+            if (cards.length === 0) {
+                this.showAlert({
+                    title: 'Không thể nhận diện từ vựng',
+                    message: 'Không tìm thấy dòng từ vựng hợp lệ nào. Vui lòng kiểm tra lại cấu trúc (Ví dụ: Từ [Tab hoặc -] Nghĩa).',
+                    type: 'error'
+                });
+                return;
+            }
+
+            this.parsedImportCards = cards;
+            this.recomputeDuplicates();
+            this.isImportPreviewing = true;
+        },
+
+        /**
+         * Parse raw text lines into structured cards array.
+         */
+        parseRawImportText(text, delimiterMode) {
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            const results = [];
+
+            for (const line of lines) {
+                // Determine separator for this line
+                let parts = [];
+                if (delimiterMode === 'tab' || (delimiterMode === 'auto' && line.includes('\t'))) {
+                    parts = line.split('\t').map(p => p.trim());
+                } else if (delimiterMode === 'dash' || (delimiterMode === 'auto' && (line.includes(' - ') || line.includes(' — ') || line.includes(' – ')))) {
+                    parts = line.split(/\s*[-—–]\s*/).map(p => p.trim());
+                } else if (delimiterMode === 'comma' || (delimiterMode === 'auto' && line.includes(','))) {
+                    parts = line.split(',').map(p => p.trim());
+                } else {
+                    // Fallback: split by multiple consecutive whitespace or single dash
+                    parts = line.split(/\s{2,}|[-—–]/).map(p => p.trim()).filter(Boolean);
+                }
+
+                if (parts.length >= 2) {
+                    const word = parts[0];
+                    let pinyin = '';
+                    let meaning = '';
+                    let example = '';
+                    let example_meaning = '';
+
+                    if (parts.length === 2) {
+                        meaning = parts[1];
+                    } else if (parts.length === 3) {
+                        pinyin = parts[1];
+                        meaning = parts[2];
+                    } else if (parts.length === 4) {
+                        pinyin = parts[1];
+                        meaning = parts[2];
+                        example = parts[3];
+                    } else if (parts.length >= 5) {
+                        pinyin = parts[1];
+                        meaning = parts[2];
+                        example = parts[3];
+                        example_meaning = parts[4];
+                    }
+
+                    // Auto generate Pinyin if empty
+                    if (!pinyin && typeof window.pinyinPro !== 'undefined' && typeof window.pinyinPro.pinyin === 'function') {
+                        try {
+                            pinyin = window.pinyinPro.pinyin(word);
+                        } catch (e) {
+                            pinyin = '';
+                        }
+                    }
+
+                    if (word && meaning) {
+                        results.push({
+                            word: word,
+                            pinyin: pinyin,
+                            meaning: meaning,
+                            example: example,
+                            example_meaning: example_meaning,
+                        });
+                    }
+                }
+            }
+
+            return results;
+        },
+
+        /**
+         * Download ready-to-use CSV template with UTF-8 BOM encoding.
+         */
+        downloadCsvTemplate() {
+            const csvContent = "\uFEFFChữ Hán,Phiên âm Pinyin,Ý nghĩa,Câu ví dụ,Dịch câu ví dụ\n" +
+                "你好,nǐ hǎo,Xin chào,你好！很高兴认识你。,Xin chào! Rất vui được biết bạn.\n" +
+                "谢谢,xièxie,Cảm ơn bạn,谢谢你的帮助。,Cảm ơn sự giúp đỡ của bạn.\n" +
+                "再见,zàijiàn,Tạm biệt,明天见，再见！,Ngày mai gặp lại, tạm biệt!\n" +
+                "苹果,píngguǒ,Quả táo,我想买苹果。,Tôi muốn mua táo.\n" +
+                "朋友,péngyou,Bạn bè,他是我的好朋友。,Anh ấy là bạn thân của tôi.\n";
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'mau_nhap_tu_vung_xiaomu.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        },
+
+        /**
+         * Handle CSV file selection and client-side parsing.
+         */
+        handleCsvFileSelect(event) {
+            const file = event.target.files ? event.target.files[0] : null;
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                this.showAlert({
+                    title: 'Tệp tin quá lớn',
+                    message: 'Vui lòng chọn tệp tin CSV có dung lượng dưới 2MB.',
+                    type: 'error'
+                });
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const parsedCards = this.parseCsvContent(text);
+                    if (parsedCards.length === 0) {
+                        this.showAlert({
+                            title: 'Không tìm thấy dữ liệu',
+                            message: 'Không thể đọc được dòng từ vựng hợp lệ nào trong tệp CSV này. Vui lòng sử dụng tệp mẫu để có kết quả chính xác nhất.',
+                            type: 'error'
+                        });
+                        return;
+                    }
+                    this.parsedImportCards = parsedCards;
+                    this.recomputeDuplicates();
+                    this.isImportPreviewing = true;
+                } catch (err) {
+                    console.error('CSV Parsing Error:', err);
+                    this.showAlert({
+                        title: 'Lỗi đọc tệp tin',
+                        message: 'Đã có lỗi khi phân tích nội dung tệp CSV.',
+                        type: 'error'
+                    });
+                } finally {
+                    event.target.value = '';
+                }
+            };
+
+            reader.readAsText(file, 'UTF-8');
+        },
+
+        /**
+         * Parse CSV formatted text with quote handling.
+         */
+        parseCsvContent(csvText) {
+            const cleanText = csvText.replace(/^\uFEFF/, ''); // Strip BOM
+            const lines = cleanText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            const cards = [];
+
+            let startIndex = 0;
+            if (lines.length > 0) {
+                const firstLower = lines[0].toLowerCase();
+                if (firstLower.includes('chữ hán') || firstLower.includes('word') || firstLower.includes('pinyin')) {
+                    startIndex = 1; // Skip header line
+                }
+            }
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const row = this.parseCsvRow(lines[i]);
+                if (row.length >= 2) {
+                    const word = (row[0] || '').trim();
+                    let pinyin = (row[1] || '').trim();
+                    let meaning = (row[2] || '').trim();
+                    let example = (row[3] || '').trim();
+                    let example_meaning = (row[4] || '').trim();
+
+                    // If row has only 2 columns: word & meaning
+                    if (row.length === 2) {
+                        meaning = (row[1] || '').trim();
+                        pinyin = '';
+                    }
+
+                    if (!pinyin && word && typeof window.pinyinPro !== 'undefined' && typeof window.pinyinPro.pinyin === 'function') {
+                        try {
+                            pinyin = window.pinyinPro.pinyin(word);
+                        } catch (e) {
+                            pinyin = '';
+                        }
+                    }
+
+                    if (word && meaning) {
+                        cards.push({
+                            word: word,
+                            pinyin: pinyin,
+                            meaning: meaning,
+                            example: example,
+                            example_meaning: example_meaning,
+                        });
+                    }
+                }
+            }
+
+            return cards;
+        },
+
+        /**
+         * Parse single CSV line accounting for commas inside quotes.
+         */
+        parseCsvRow(line) {
+            const fields = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"' || char === "'") {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    fields.push(current.trim().replace(/^["']|["']$/g, ''));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            fields.push(current.trim().replace(/^["']|["']$/g, ''));
+            return fields;
+        },
+
+        /**
+         * Submit bulk cards import payload to backend API.
+         */
+        async submitImportCards() {
+            if (!this.selectedDeck || this.parsedImportCards.length === 0) return;
+
+            // Only submit valid cards that are not duplicates
+            const cardsToImport = this.parsedImportCards.filter(c => !c.isDuplicate && (c.word || '').trim());
+            if (cardsToImport.length === 0) {
+                this.showAlert({
+                    title: 'Không có từ mới',
+                    message: 'Tất cả các từ trong danh sách này đều đã tồn tại trong bộ thẻ.',
+                    type: 'info'
+                });
+                return;
+            }
+
+            this.isSubmittingImport = true;
+
+            try {
+                const response = await fetch(`/api/custom-flashcards/decks/${this.selectedDeck.id}/import`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.getCsrfToken(),
+                    },
+                    body: JSON.stringify({
+                        cards: cardsToImport,
+                    }),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    this.closeImportModal();
+                    if (result.deck) {
+                        this.selectedDeck = result.deck;
+                    } else {
+                        await this.openDeck(this.selectedDeck);
+                    }
+                    await this.fetchDecks();
+
+                    // Show toast notification
+                    window.dispatchEvent(new CustomEvent('show-toast', {
+                        detail: {
+                            message: result.message || `Đã nhập thành công ${result.imported_count} từ vựng! 🎉`,
+                            type: result.imported_count > 0 ? 'success' : 'info'
+                        }
+                    }));
+                } else {
+                    this.showAlert({
+                        title: 'Lỗi nhập dữ liệu',
+                        message: result.message || 'Không thể lưu danh sách từ vựng vào bộ thẻ lúc này.',
+                        type: 'error'
+                    });
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                this.showAlert({
+                    title: 'Lỗi kết nối',
+                    message: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
+                    type: 'error'
+                });
+            } finally {
+                this.isSubmittingImport = false;
             }
         },
     };

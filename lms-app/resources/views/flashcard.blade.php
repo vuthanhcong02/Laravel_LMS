@@ -27,6 +27,7 @@
                 currentIndex: 0,
                 flipped: false,
                 autoplayAudio: false,
+                currentAudio: null,
                 isShuffled: false,
                 isShuffling: false,
                 shuffledWordsList: [],
@@ -255,17 +256,24 @@
                 speak(customText = null) {
                     let text = customText || (this.currentWord().word || '');
                     if (!text) return;
-                    if ('speechSynthesis' in window) {
-                        window.speechSynthesis.cancel();
-                        let utterance = new SpeechSynthesisUtterance(text);
-                        utterance.lang = 'zh-CN';
-                        let voices = window.speechSynthesis.getVoices();
-                        let zhVoice = voices.find(v => v.lang && (v.lang.includes('zh') || v.lang.includes('ZH')));
-                        if (zhVoice) {
-                            utterance.voice = zhVoice;
-                        }
-                        utterance.rate = 0.85;
-                        window.speechSynthesis.speak(utterance);
+
+                    // Stop any currently playing audio instance
+                    if (this.currentAudio) {
+                        this.currentAudio.pause();
+                        this.currentAudio.currentTime = 0;
+                    }
+
+                    try {
+                        const audioUrl = `/api/tts?text=${encodeURIComponent(text)}&voice=zh-CN-XiaoxiaoNeural`;
+                        this.currentAudio = new Audio(audioUrl);
+                        this.currentAudio.play().catch((err) => {
+                            // Suppress interrupted play errors when switching cards quickly
+                            if (err.name !== 'AbortError') {
+                                console.warn('Edge-TTS playback interrupted:', err);
+                            }
+                        });
+                    } catch (e) {
+                        console.warn('Edge-TTS error:', e);
                     }
                 },
                 renderRuby(text) {
@@ -336,7 +344,7 @@
                             'bg-[#e07a5f] text-white shadow-xs' :
                             'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                     <i class="fa-solid fa-layer-group text-xs"></i>
-                    <span>{{ __('HSK Chuẩn (1-9)') }}</span>
+                    <span>{{ __('Từ vựng HSK (1-9)') }}</span>
                 </button>
 
                 <button type="button"
@@ -347,14 +355,6 @@
                             'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                     <i class="fa-solid fa-folder-plus text-xs"></i>
                     <span>{{ __('Bộ thẻ của bạn') }}</span>
-                    @auth
-                        @if(isset($myDecks) && count($myDecks) > 0)
-                            <span class="px-1.5 py-0.5 rounded-md text-[10px]"
-                                  :class="activeMainTab === 'my_decks' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
-                                {{ count($myDecks) }}
-                            </span>
-                        @endif
-                    @endauth
                 </button>
             </div>
         </div>
@@ -768,6 +768,7 @@
 
             @include('portal.student.flashcards.partials.deck-modal')
             @include('portal.student.flashcards.partials.card-modal')
+            @include('portal.student.flashcards.partials.import-modal')
             @include('portal.student.flashcards.partials.dialog-modal')
         </div>
     </div>

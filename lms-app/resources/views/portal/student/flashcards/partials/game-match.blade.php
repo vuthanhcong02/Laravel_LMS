@@ -1,4 +1,4 @@
-<div class="space-y-5 max-w-3xl mx-auto py-2">
+<div class="space-y-5 max-w-2xl mx-auto py-2">
     <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
         <div class="flex items-center gap-3 w-full sm:w-auto">
             <div class="w-10 h-10 rounded-2xl bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] flex items-center justify-center text-base font-bold shrink-0 shadow-xs">
@@ -57,7 +57,7 @@
 
             <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-1">
                 <div class="space-y-2.5">
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-1">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-1">
                         {{ __('Chữ Hán') }}
                     </div>
                     <template x-for="item in (matchLeftItems || [])" :key="'l_' + item.id">
@@ -69,9 +69,9 @@
                              ]"
                              class="p-3.5 sm:p-4 rounded-2xl border transition-all duration-150 cursor-pointer flex items-center justify-between select-none h-[64px] sm:h-[72px]">
                             <div class="flex items-center gap-2">
-                                <span class="text-base sm:text-xl font-bold zh-text text-slate-900 dark:text-white" x-text="item.word"></span>
+                                <span class="text-lg sm:text-xl font-bold zh-text text-slate-900 dark:text-white" x-text="item.word"></span>
                                 <template x-if="item.pinyin">
-                                    <span class="text-[11px] font-bold text-[#e07a5f]" x-text="'[' + item.pinyin + ']'"></span>
+                                    <span class="text-xs sm:text-sm font-semibold text-[#e07a5f]" x-text="'[' + item.pinyin + ']'"></span>
                                 </template>
                             </div>
                             <button type="button"
@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="space-y-2.5">
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-1">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-1">
                         {{ __('Ý Nghĩa Tiếng Việt') }}
                     </div>
                     <template x-for="item in (matchRightItems || [])" :key="'r_' + item.id">
@@ -96,7 +96,7 @@
                                  item.isWrong ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/30 text-rose-600 animate-shake' : ''
                              ]"
                              class="p-3.5 sm:p-4 rounded-2xl border transition-all duration-150 cursor-pointer flex items-center justify-between select-none h-[64px] sm:h-[72px]">
-                            <span class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-2" x-text="item.meaning"></span>
+                            <span class="text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-2" x-text="item.meaning"></span>
                             <template x-if="item.isMatched">
                                 <i class="fa-solid fa-check text-emerald-500 text-xs shrink-0"></i>
                             </template>

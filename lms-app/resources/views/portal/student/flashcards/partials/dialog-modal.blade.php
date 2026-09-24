@@ -1,5 +1,5 @@
 <!-- CONFIRMATION & ALERT DIALOG MODAL (Clean Inline SVG to prevent FontAwesome JS DOM collision) -->
-<div x-show="showDialogModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
+<div x-show="showDialogModal" class="fixed inset-0 z-[70] flex items-center justify-center p-4" x-cloak>
     <!-- Backdrop overlay -->
     <div x-show="showDialogModal"
          x-transition:enter="transition ease-out duration-200"

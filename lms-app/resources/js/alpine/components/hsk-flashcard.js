@@ -341,8 +341,10 @@ export default function hskFlashcardApp(config = {}) {
                 const audioUrl = `/api/tts?text=${encodeURIComponent(text)}&voice=zh-CN-XiaoxiaoNeural`;
                 this.currentAudio = new Audio(audioUrl);
                 this.currentAudio.play().catch((err) => {
-                    console.warn('Edge-TTS playback interrupted or failed, using browser fallback:', err);
-                    this.fallbackSpeak(text);
+                    if (err.name !== 'AbortError') {
+                        console.warn('Edge-TTS playback interrupted or failed, using browser fallback:', err);
+                        this.fallbackSpeak(text);
+                    }
                 });
             } catch (e) {
                 this.fallbackSpeak(text);
