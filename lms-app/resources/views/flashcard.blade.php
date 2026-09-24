@@ -38,307 +38,6 @@
         window.hskVocabularies = @json($vocabularies);
         window.hskRememberedIds = @json($rememberedIds ?? []);
         window.myDecksData = @json($myDecks ?? []);
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('flashcardApp', () => ({
-                isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
-                vocabularies: window.hskVocabularies || {},
-                activeTab: 'study', // 'study' or 'remembered'
-                activeLevel: 1,
-                currentIndex: 0,
-                flipped: false,
-                autoplayAudio: false,
-                currentAudio: null,
-                isShuffled: false,
-                isShuffling: false,
-                shuffledWordsList: [],
-                levels: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                rememberedIds: (window.hskRememberedIds || []).map(Number),
-                rememberedPage: 1,
-                rememberedPerPage: 18,
-                isLeaving: false,
-                isFilterDrawerOpen: false,
-                requireLogin() {
-                    window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { tab: 'login' } }));
-                },
-                currentWords() {
-                    let allWords = this.vocabularies[this.activeLevel] || [];
-                    let unremembered = allWords.filter(w => !this.rememberedIds.includes(Number(w.id)));
-                    if (this.isShuffled) {
-                        return this.shuffledWordsList.filter(w => !this.rememberedIds.includes(Number(w.id)));
-                    }
-                    return unremembered;
-                },
-                rememberedWords() {
-                    let allWords = this.vocabularies[this.activeLevel] || [];
-                    return allWords.filter(w => this.rememberedIds.includes(Number(w.id)));
-                },
-                rememberedTotalPages() {
-                    return Math.ceil(this.rememberedWords().length / this.rememberedPerPage) || 1;
-                },
-                paginatedRememberedWords() {
-                    let words = this.rememberedWords();
-                    let total = this.rememberedTotalPages();
-                    if (this.rememberedPage > total) {
-                        this.rememberedPage = total;
-                    }
-                    let start = (this.rememberedPage - 1) * this.rememberedPerPage;
-                    return words.slice(start, start + this.rememberedPerPage);
-                },
-                goToRememberedPage(p) {
-                    if (p >= 1 && p <= this.rememberedTotalPages()) {
-                        this.rememberedPage = p;
-                    }
-                },
-                currentWord() {
-                    return this.currentWords()[this.currentIndex] || {};
-                },
-                totalInScope() {
-                    return (this.vocabularies[this.activeLevel] || []).length;
-                },
-                rememberedInScope() {
-                    let allWords = this.vocabularies[this.activeLevel] || [];
-                    return allWords.filter(w => this.rememberedIds.includes(Number(w.id))).length;
-                },
-                getProgressPercentage() {
-                    let total = this.totalInScope();
-                    if (total === 0) return 0;
-                    return Math.round((this.rememberedInScope() / total) * 100);
-                },
-                flipCard() {
-                    if (this.currentWords().length === 0) return;
-                    this.flipped = !this.flipped;
-                },
-                shuffle() {
-                    this.flipped = false;
-                    if (this.isShuffled) {
-                        this.isShuffled = false;
-                        this.shuffledWordsList = [];
-                        this.currentIndex = 0;
-                    } else {
-                        let words = (this.vocabularies[this.activeLevel] || []).filter(w => !this.rememberedIds.includes(Number(w.id)));
-                        if (words.length <= 1) return;
-                        this.isShuffling = true;
-                        setTimeout(() => {
-                            for (let i = words.length - 1; i > 0; i--) {
-                                const j = Math.floor(Math.random() * (i + 1));
-                                [words[i], words[j]] = [words[j], words[i]];
-                            }
-                            this.shuffledWordsList = words;
-                            this.isShuffled = true;
-                            this.currentIndex = 0;
-                            this.isShuffling = false;
-                            if (this.autoplayAudio && this.currentWords().length > 0) {
-                                setTimeout(() => {
-                                    this.speak();
-                                }, 300);
-                            }
-                        }, 200);
-                    }
-                },
-                nextWord() {
-                    if (this.currentWords().length === 0) return;
-                    this.flipped = false;
-                    setTimeout(() => {
-                        this.currentIndex = (this.currentIndex + 1) % this.currentWords().length;
-                        if (this.autoplayAudio) {
-                            setTimeout(() => {
-                                this.speak();
-                            }, 300);
-                        }
-                    }, 150);
-                },
-                prevWord() {
-                    if (this.currentWords().length === 0) return;
-                    this.flipped = false;
-                    setTimeout(() => {
-                        this.currentIndex = (this.currentIndex - 1 + this.currentWords().length) % this.currentWords().length;
-                        if (this.autoplayAudio) {
-                            setTimeout(() => {
-                                this.speak();
-                            }, 300);
-                        }
-                    }, 150);
-                },
-                changeLevel(level) {
-                    this.activeLevel = level;
-                    this.currentIndex = 0;
-                    this.flipped = false;
-                    this.isShuffled = false;
-                    this.shuffledWordsList = [];
-                    this.rememberedPage = 1;
-                    if (this.autoplayAudio && this.currentWords().length > 0) {
-                        setTimeout(() => {
-                            this.speak();
-                        }, 350);
-                    }
-                },
-                markAsRemembered(word, id) {
-                    if (!this.isLoggedIn) {
-                        this.requireLogin();
-                        return;
-                    }
-                    if (this.isLeaving || !id) return;
-                    let numId = Number(id);
-                    if (!this.rememberedIds.includes(numId)) {
-                        this.isLeaving = true;
-                        setTimeout(() => {
-                            this.rememberedIds.push(numId);
-                            fetch('/flashcards/remember', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                },
-                                body: JSON.stringify({
-                                    vocabulary_id: numId
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (!data.success) {
-                                    if (data.require_login) {
-                                        this.requireLogin();
-                                    }
-                                    console.error('API Error:', data.message);
-                                }
-                            })
-                            .catch(error => console.error('Connection Error:', error));
-                            if (this.currentIndex >= this.currentWords().length) {
-                                this.currentIndex = 0;
-                            }
-                            this.flipped = false;
-                            this.isLeaving = false;
-                            setTimeout(() => {
-                                if (this.autoplayAudio && this.currentWords().length > 0) {
-                                    this.speak();
-                                }
-                            }, 150);
-                        }, 200);
-                    }
-                },
-                unrememberWord(id) {
-                    if (!this.isLoggedIn) {
-                        this.requireLogin();
-                        return;
-                    }
-                    let numId = Number(id);
-                    fetch('/flashcards/unremember', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            vocabulary_id: numId
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            this.rememberedIds = this.rememberedIds.filter(itemId => itemId !== numId);
-                            if (this.currentIndex >= this.currentWords().length) {
-                                this.currentIndex = 0;
-                            }
-                        } else if (data.require_login) {
-                            this.requireLogin();
-                        }
-                    })
-                    .catch(error => console.error('Connection Error:', error));
-                },
-                resetScopeProgress() {
-                    if (!this.isLoggedIn) {
-                        this.requireLogin();
-                        return;
-                    }
-                    fetch('/flashcards/reset', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            level: this.activeLevel
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            let levelIds = (this.vocabularies[this.activeLevel] || []).map(w => Number(w.id));
-                            this.rememberedIds = this.rememberedIds.filter(id => !levelIds.includes(id));
-                            this.currentIndex = 0;
-                            this.flipped = false;
-                        } else if (data.require_login) {
-                            this.requireLogin();
-                        }
-                    })
-                    .catch(error => console.error('Connection Error:', error));
-                },
-                speak(customText = null) {
-                    let text = customText || (this.currentWord().word || '');
-                    if (!text) return;
-
-                    // Stop any currently playing audio instance
-                    if (this.currentAudio) {
-                        this.currentAudio.pause();
-                        this.currentAudio.currentTime = 0;
-                    }
-
-                    try {
-                        const audioUrl = `/api/tts?text=${encodeURIComponent(text)}&voice=zh-CN-XiaoxiaoNeural`;
-                        this.currentAudio = new Audio(audioUrl);
-                        this.currentAudio.play().catch((err) => {
-                            // Suppress interrupted play errors when switching cards quickly
-                            if (err.name !== 'AbortError') {
-                                console.warn('Edge-TTS playback interrupted:', err);
-                            }
-                        });
-                    } catch (e) {
-                        console.warn('Edge-TTS error:', e);
-                    }
-                },
-                renderRuby(text) {
-                    if (!text || typeof text !== 'string') return '';
-                    if (typeof pinyinPro === 'undefined' || !pinyinPro.pinyin) {
-                        return `<span class="text-sm sm:text-base font-bold zh-text text-slate-800 dark:text-slate-100">${text}</span>`;
-                    }
-                    try {
-                        let tokens = pinyinPro.pinyin(text, { type: 'all' });
-                        let html = '<div class="inline-flex flex-wrap items-end gap-x-[1.5px] gap-y-1.5 align-bottom leading-normal">';
-                        for (let token of tokens) {
-                            if (token.isZh) {
-                                html += `<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-[1.5px]"><span class="text-sm sm:text-base font-bold zh-text text-slate-800 dark:text-slate-100">${token.origin}</span><rt class="text-[10px] sm:text-[11px] font-semibold text-[#e07a5f] dark:text-[#f4978e] mb-1 select-none tracking-normal">${token.pinyin}</rt></ruby>`;
-                            } else if (token.origin === ' ') {
-                                html += `<span class="mx-1"> </span>`;
-                            } else {
-                                html += `<span class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mt-auto self-end mb-[2px]">${token.origin}</span>`;
-                            }
-                        }
-                        html += '</div>';
-                        return html;
-                    } catch (e) {
-                        return `<span class="text-sm sm:text-base font-bold zh-text text-slate-800 dark:text-slate-100">${text}</span>`;
-                    }
-                },
-                handleKey(e) {
-                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-                    if (this.activeTab === 'study') {
-                        if (e.code === 'Space') {
-                            e.preventDefault();
-                            this.flipCard();
-                        } else if (e.code === 'ArrowRight') {
-                            e.preventDefault();
-                            this.nextWord();
-                        } else if (e.code === 'ArrowLeft') {
-                            e.preventDefault();
-                            this.prevWord();
-                        }
-                    }
-                },
-                init() {
-                    window.addEventListener('keydown', (e) => this.handleKey(e));
-                }
-            }));
-        });
     </script>
 
     <div x-data="{
@@ -381,7 +80,7 @@
         </div>
 
         <div x-show="activeMainTab === 'tu-vung-hsk'">
-            <div x-data="flashcardApp" class="space-y-6">
+            <div x-data="flashcardApp({ isLoggedIn: {{ auth()->check() ? 'true' : 'false' }} })" class="space-y-6">
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
             <div class="absolute right-4 -bottom-6 text-9xl font-extrabold text-[#e07a5f]/5 pointer-events-none select-none zh-text">
                 记
@@ -503,12 +202,21 @@
                                         <div class="w-full flex justify-between items-center text-xs">
                                             <span class="px-2.5 py-0.5 rounded-full bg-[#fff2ee] dark:bg-[#2a221f] text-[#e07a5f] font-bold text-[11px]"
                                                   x-text="'HSK ' + activeLevel"></span>
-                                            <button @click.stop="markAsRemembered(currentWord().word, currentWord().id)"
-                                                    class="px-2.5 py-1 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-semibold border border-[#e8e2d9] dark:border-[#2d2926] hover:border-emerald-300 dark:hover:border-emerald-800/80 btn-tactile flex items-center gap-1.5 transition-all shadow-xs"
-                                                    :title="'{{ __('Đánh dấu từ này đã thuộc') }}'">
-                                                <i class="fa-regular fa-circle-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
-                                                <span>{{ __('Đánh dấu đã thuộc') }}</span>
-                                            </button>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button"
+                                                        @click.stop="openAddToDeckModal(currentWord())"
+                                                        class="px-2.5 py-1 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] hover:bg-amber-50 dark:hover:bg-amber-950/40 text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 text-xs font-semibold border border-[#e8e2d9] dark:border-[#2d2926] hover:border-amber-300 dark:hover:border-amber-800/80 btn-tactile flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                                                        :title="'{{ __('Lưu từ này vào bộ thẻ của bạn') }}'">
+                                                    <i class="fa-solid fa-folder-plus text-amber-500 text-xs"></i>
+                                                    <span class="hidden sm:inline">{{ __('Thêm vào bộ thẻ') }}</span>
+                                                </button>
+                                                <button @click.stop="markAsRemembered(currentWord().word, currentWord().id)"
+                                                        class="px-2.5 py-1 rounded-xl bg-[#f8f6f3] dark:bg-[#201d1b] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-semibold border border-[#e8e2d9] dark:border-[#2d2926] hover:border-emerald-300 dark:hover:border-emerald-800/80 btn-tactile flex items-center gap-1.5 transition-all shadow-xs"
+                                                        :title="'{{ __('Đánh dấu từ này đã thuộc') }}'">
+                                                    <i class="fa-regular fa-circle-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                                                    <span>{{ __('Đánh dấu đã thuộc') }}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="text-center space-y-3 my-auto">
                                             <div class="text-5xl sm:text-6xl font-bold zh-text text-slate-900 dark:text-white tracking-wider"
@@ -532,10 +240,19 @@
                                                     <i class="fa-solid fa-volume-high text-xs"></i>
                                                 </button>
                                             </div>
-                                            <button @click.stop="flipped = false" class="text-xs font-bold text-[#e07a5f] hover:text-[#c86349] btn-tactile flex items-center gap-1">
-                                                <i class="fa-solid fa-rotate-left text-[11px]"></i>
-                                                <span>{{ __('Lật lại mặt trước') }}</span>
-                                            </button>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button"
+                                                        @click.stop="openAddToDeckModal(currentWord())"
+                                                        class="text-xs font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 btn-tactile flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 cursor-pointer shadow-2xs"
+                                                        :title="'{{ __('Lưu từ này vào bộ thẻ của bạn') }}'">
+                                                    <i class="fa-solid fa-folder-plus text-[11px]"></i>
+                                                    <span>{{ __('Thêm vào bộ thẻ') }}</span>
+                                                </button>
+                                                <button @click.stop="flipped = false" class="text-xs font-bold text-[#e07a5f] hover:text-[#c86349] btn-tactile flex items-center gap-1">
+                                                    <i class="fa-solid fa-rotate-left text-[11px]"></i>
+                                                    <span>{{ __('Lật lại mặt trước') }}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="w-full my-auto space-y-3 max-h-[190px] sm:max-h-[210px] overflow-y-auto no-scrollbar pr-1">
                                             <div class="p-2.5 rounded-xl bg-white/80 dark:bg-[#181615]/80 border border-[#e8e2d9] dark:border-[#2d2926]">
@@ -648,12 +365,21 @@
                                             <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                                                 <i class="fa-solid fa-circle-check text-xs"></i> {{ __('Đã thuộc') }}
                                             </span>
-                                            <button @click="unrememberWord(item.id)"
-                                                    class="text-[11px] font-bold text-slate-400 hover:text-[#e07a5f] btn-tactile flex items-center gap-1"
-                                                    :title="'{{ __('Bỏ đánh dấu và chuyển về danh sách học') }}'">
-                                                <i class="fa-solid fa-rotate-left"></i>
-                                                <span>{{ __('Học lại từ này') }}</span>
-                                            </button>
+                                            <div class="flex items-center gap-2.5">
+                                                <button type="button"
+                                                        @click="openAddToDeckModal(item)"
+                                                        class="text-[11px] font-bold text-slate-400 hover:text-amber-500 btn-tactile flex items-center gap-1 cursor-pointer"
+                                                        :title="'{{ __('Lưu từ này vào bộ thẻ của bạn') }}'">
+                                                    <i class="fa-solid fa-folder-plus text-[10px]"></i>
+                                                    <span>{{ __('Lưu thẻ') }}</span>
+                                                </button>
+                                                <button @click="unrememberWord(item.id)"
+                                                        class="text-[11px] font-bold text-slate-400 hover:text-[#e07a5f] btn-tactile flex items-center gap-1"
+                                                        :title="'{{ __('Bỏ đánh dấu và chuyển về danh sách học') }}'">
+                                                    <i class="fa-solid fa-rotate-left"></i>
+                                                    <span>{{ __('Học lại từ này') }}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </template>
@@ -764,8 +490,10 @@
                 </div>
             </div>
         </div>
+
+        @include('portal.student.flashcards.partials.add-to-deck-modal')
     </div>
-    </div>
+</div>
 
     <!-- MY DECKS TAB -->
     <div x-show="activeMainTab === 'bo-the-cua-ban'">

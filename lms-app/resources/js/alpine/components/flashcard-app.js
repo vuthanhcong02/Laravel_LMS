@@ -33,6 +33,21 @@ export default function flashcardApp(config = {}) {
         isFilterDrawerOpen: false,
 
         // ==========================================
+        // ADD TO DECK MODAL STATE
+        // ==========================================
+        showAddToDeckModal: false,
+        addToDeckWord: null,
+        userDecksForModal: [],
+        isLoadingDecksForModal: false,
+        isAddingToDeckId: null,
+        addedDeckIds: [],
+        showQuickCreateDeck: false,
+        quickDeckTitle: '',
+        quickDeckIcon: 'fa-layer-group',
+        quickDeckColor: '#e07a5f',
+        isQuickCreating: false,
+
+        // ==========================================
         // CUSTOM DECKS STATE
         // ==========================================
         decks: config.initialDecks || [],
@@ -1104,7 +1119,7 @@ export default function flashcardApp(config = {}) {
         // ==========================================
         handleKeyDown(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            if (this.showDeckModal || this.showCardModal) return;
+            if (this.showDeckModal || this.showCardModal || this.showAddToDeckModal) return;
 
             if ((this.activeMainTab === 'tu-vung-hsk' || this.activeMainTab === 'hsk') && this.activeTab === 'study' && this.practiceMode === 'flashcard') {
                 if (e.code === 'Space') {
@@ -1128,6 +1143,149 @@ export default function flashcardApp(config = {}) {
                     e.preventDefault();
                     this.prevCard();
                 }
+            }
+        },
+
+        // ==========================================
+        // ADD TO DECK METHODS
+        // ==========================================
+        requireLogin() {
+            window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { tab: 'login' } }));
+        },
+
+        async openAddToDeckModal(word) {
+            if (!this.isLoggedIn) {
+                this.requireLogin();
+                return;
+            }
+
+            if (!word || !word.word) return;
+
+            this.addToDeckWord = word;
+            this.showAddToDeckModal = true;
+            this.isLoadingDecksForModal = true;
+            this.showQuickCreateDeck = false;
+            this.quickDeckTitle = '';
+            this.quickDeckIcon = 'fa-layer-group';
+            this.quickDeckColor = '#e07a5f';
+            this.addedDeckIds = [];
+
+            try {
+                const response = await fetch(`/api/custom-flashcards/decks/check-word?word=${encodeURIComponent(word.word.trim())}`, {
+                    headers: { 'Accept': 'application/json' },
+                });
+                const data = await response.json();
+                if (data.success && Array.isArray(data.decks)) {
+                    this.userDecksForModal = data.decks;
+                    this.addedDeckIds = data.decks.filter(d => d.has_word).map(d => d.id);
+                } else {
+                    this.userDecksForModal = [];
+                }
+            } catch (err) {
+                console.error('Failed to load decks for word check:', err);
+                this.userDecksForModal = [];
+            } finally {
+                this.isLoadingDecksForModal = false;
+            }
+        },
+
+        async addWordToSpecificDeck(deckId) {
+            if (!this.addToDeckWord || this.isAddingToDeckId) return;
+
+            this.isAddingToDeckId = deckId;
+
+            try {
+                const payload = {
+                    hsk_vocabulary_id: this.addToDeckWord.id || null,
+                    word: this.addToDeckWord.word,
+                    pinyin: this.addToDeckWord.pinyin || '',
+                    meaning: this.addToDeckWord.meaning || '',
+                    example: this.addToDeckWord.example || '',
+                    example_meaning: this.addToDeckWord.example_meaning || '',
+                };
+
+                const response = await fetch(`/api/custom-flashcards/decks/${deckId}/add-hsk-word`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.getCsrfToken(),
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    if (!this.addedDeckIds.includes(deckId)) {
+                        this.addedDeckIds.push(deckId);
+                    }
+
+                    // Increment card count in modal list
+                    const targetDeck = this.userDecksForModal.find(d => d.id === deckId);
+                    if (targetDeck && !data.already_exists) {
+                        targetDeck.total_cards = (targetDeck.total_cards || 0) + 1;
+                    }
+
+                    // Notify custom-flashcard app component
+                    window.dispatchEvent(new CustomEvent('deck-cards-updated', { detail: { deckId } }));
+
+                    // Trigger toast notification
+                    window.dispatchEvent(new CustomEvent('show-toast', {
+                        detail: {
+                            message: data.message || `Đã thêm từ [${this.addToDeckWord.word}] vào bộ thẻ! 🎉`,
+                            type: 'success',
+                        }
+                    }));
+                } else {
+                    alert(data.message || 'Không thể thêm từ vựng vào bộ thẻ lúc này.');
+                }
+            } catch (err) {
+                console.error('Failed to add word to deck:', err);
+            } finally {
+                this.isAddingToDeckId = null;
+            }
+        },
+
+        async quickCreateDeckAndAddWord() {
+            const title = this.quickDeckTitle.trim();
+            if (!title || this.isQuickCreating) return;
+
+            this.isQuickCreating = true;
+
+            try {
+                const createResponse = await fetch('/api/custom-flashcards/decks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.getCsrfToken(),
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        color: this.quickDeckColor || '#e07a5f',
+                        icon: this.quickDeckIcon || 'fa-book-open',
+                    }),
+                });
+
+                const createData = await createResponse.json();
+                if (createData.success && createData.deck) {
+                    const newDeck = createData.deck;
+                    newDeck.total_cards = 0;
+                    this.userDecksForModal.unshift(newDeck);
+                    this.quickDeckTitle = '';
+                    this.quickDeckIcon = 'fa-layer-group';
+                    this.quickDeckColor = '#e07a5f';
+                    this.showQuickCreateDeck = false;
+
+                    // Immediately add word to the newly created deck
+                    await this.addWordToSpecificDeck(newDeck.id);
+                } else {
+                    alert(createData.message || 'Không thể tạo bộ thẻ mới lúc này.');
+                }
+            } catch (err) {
+                console.error('Failed to quick create deck:', err);
+            } finally {
+                this.isQuickCreating = false;
             }
         },
     };

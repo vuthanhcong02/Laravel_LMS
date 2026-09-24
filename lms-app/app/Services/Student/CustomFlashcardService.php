@@ -4,6 +4,7 @@ namespace App\Services\Student;
 
 use App\Models\CustomFlashcard;
 use App\Models\FlashcardDeck;
+use App\Models\HskVocabulary;
 use App\Models\User;
 use App\Services\GamificationService;
 use Illuminate\Database\Eloquent\Collection;
@@ -305,6 +306,87 @@ class CustomFlashcardService
             'imported_count' => $importedCount,
             'skipped_count' => $skippedCount,
             'deck' => $updatedDeck,
+        ];
+    }
+
+    /**
+     * Retrieve user decks and check whether a specific word exists in each deck.
+     */
+    public function getDecksWithWordCheck(?int $userId, string $word): Collection
+    {
+        if (!$userId) {
+            return new Collection();
+        }
+
+        $trimmedWord = trim($word);
+
+        return FlashcardDeck::where('user_id', $userId)
+            ->withCount([
+                'flashcards as total_cards',
+                'flashcards as has_word_count' => function ($query) use ($trimmedWord) {
+                    $query->where('word', $trimmedWord);
+                }
+            ])
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($deck) {
+                $deck->has_word = ($deck->has_word_count ?? 0) > 0;
+                unset($deck->has_word_count);
+                return $deck;
+            });
+    }
+
+    /**
+     * Add an HSK vocabulary item or custom word payload into a user's deck.
+     */
+    public function addHskWordToDeck(int $deckId, int $userId, array $data): array
+    {
+        $deck = FlashcardDeck::where('id', $deckId)
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        $hskWord = !empty($data['hsk_vocabulary_id'])
+            ? HskVocabulary::find($data['hsk_vocabulary_id'])
+            : null;
+
+        $word = $hskWord ? trim($hskWord->word) : trim($data['word']);
+        $pinyin = $hskWord ? trim($hskWord->pinyin ?? '') : trim($data['pinyin'] ?? '');
+        $meaning = $hskWord ? trim($hskWord->meaning ?? '') : trim($data['meaning'] ?? '');
+        $example = $hskWord
+            ? ($hskWord->example ? trim($hskWord->example) : null)
+            : (!empty($data['example']) ? trim($data['example']) : null);
+        $exampleMeaning = $hskWord
+            ? ($hskWord->example_meaning ? trim($hskWord->example_meaning) : null)
+            : (!empty($data['example_meaning']) ? trim($data['example_meaning']) : null);
+
+        // Check if card with identical word already exists in this deck
+        $existing = CustomFlashcard::where('deck_id', $deck->id)
+            ->where('word', $word)
+            ->first();
+
+        if ($existing) {
+            return [
+                'already_exists' => true,
+                'card' => $existing,
+                'deck' => $deck,
+            ];
+        }
+
+        $card = CustomFlashcard::create([
+            'deck_id' => $deck->id,
+            'user_id' => $userId,
+            'word' => $word,
+            'pinyin' => $pinyin,
+            'meaning' => $meaning,
+            'example' => $example,
+            'example_meaning' => $exampleMeaning,
+            'is_remembered' => false,
+        ]);
+
+        return [
+            'already_exists' => false,
+            'card' => $card,
+            'deck' => $deck,
         ];
     }
 }

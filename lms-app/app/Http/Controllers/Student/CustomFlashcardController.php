@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Student\AddHskWordToDeckRequest;
+use App\Http\Requests\Student\CheckWordInDecksRequest;
 use App\Http\Requests\Student\ImportCustomFlashcardsRequest;
 use App\Http\Requests\Student\StoreCustomFlashcardRequest;
 use App\Http\Requests\Student\StoreFlashcardDeckRequest;
@@ -190,6 +192,47 @@ class CustomFlashcardController extends Controller
             'message' => $message,
             'imported_count' => $imported,
             'skipped_count' => $skipped,
+            'deck' => $result['deck'],
+        ]);
+    }
+
+    /**
+     * Get user decks with indication whether a word exists in each deck.
+     */
+    public function getDecksWithWordCheck(CheckWordInDecksRequest $request): JsonResponse
+    {
+        $userId = auth()->id();
+        $decks = $this->customFlashcardService->getDecksWithWordCheck($userId, $request->validated('word'));
+
+        return response()->json([
+            'success' => true,
+            'decks' => $decks,
+        ]);
+    }
+
+    /**
+     * Add an HSK vocabulary item to a specific deck.
+     */
+    public function addHskWord(AddHskWordToDeckRequest $request, int $id): JsonResponse
+    {
+        $userId = auth()->id();
+        $result = $this->customFlashcardService->addHskWordToDeck($id, $userId, $request->validated());
+
+        if ($result['already_exists']) {
+            return response()->json([
+                'success' => true,
+                'already_exists' => true,
+                'message' => __('Từ này đã có trong bộ thẻ.'),
+                'card' => $result['card'],
+                'deck' => $result['deck'],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'already_exists' => false,
+            'message' => __('Đã thêm từ vựng vào bộ thẻ thành công!'),
+            'card' => $result['card'],
             'deck' => $result['deck'],
         ]);
     }

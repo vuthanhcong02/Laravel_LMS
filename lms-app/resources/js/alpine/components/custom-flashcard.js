@@ -163,6 +163,13 @@ export default function customFlashcardApp(config = {}) {
             if (this.isLoggedIn && this.decks.length === 0) {
                 this.fetchDecks();
             }
+
+            // Listen for words added to decks from HSK tab to refresh decks list
+            window.addEventListener('deck-cards-updated', () => {
+                if (this.isLoggedIn) {
+                    this.fetchDecks();
+                }
+            });
         },
 
         /**

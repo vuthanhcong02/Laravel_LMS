@@ -87,12 +87,14 @@ Route::middleware(['auth'])->group(function () {
     // Custom Flashcard Decks & Cards routes (Requires authentication)
     Route::prefix('api/custom-flashcards')->group(function () {
         Route::get('/decks', [CustomFlashcardController::class, 'getDecks'])->name('custom-flashcards.decks.index');
+        Route::get('/decks/check-word', [CustomFlashcardController::class, 'getDecksWithWordCheck'])->name('custom-flashcards.decks.check-word');
         Route::post('/decks', [CustomFlashcardController::class, 'storeDeck'])->name('custom-flashcards.decks.store');
         Route::get('/decks/{id}', [CustomFlashcardController::class, 'getDeck'])->name('custom-flashcards.decks.show');
         Route::put('/decks/{id}', [CustomFlashcardController::class, 'updateDeck'])->name('custom-flashcards.decks.update');
         Route::delete('/decks/{id}', [CustomFlashcardController::class, 'destroyDeck'])->name('custom-flashcards.decks.destroy');
         Route::post('/decks/{id}/reset', [CustomFlashcardController::class, 'resetProgress'])->name('custom-flashcards.decks.reset');
         Route::post('/decks/{id}/import', [CustomFlashcardController::class, 'importCards'])->name('custom-flashcards.decks.import');
+        Route::post('/decks/{id}/add-hsk-word', [CustomFlashcardController::class, 'addHskWord'])->name('custom-flashcards.decks.add-hsk-word');
 
         Route::post('/decks/{id}/cards', [CustomFlashcardController::class, 'storeCard'])->name('custom-flashcards.cards.store');
         Route::put('/cards/{id}', [CustomFlashcardController::class, 'updateCard'])->name('custom-flashcards.cards.update');
