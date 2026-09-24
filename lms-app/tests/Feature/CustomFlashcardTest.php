@@ -204,4 +204,134 @@ class CustomFlashcardTest extends TestCase
             'remembered_at' => null,
         ]);
     }
+
+    /**
+     * Test user can import multiple cards to deck with auto pinyin.
+     */
+    public function test_user_can_import_cards_to_deck(): void
+    {
+        $deck = FlashcardDeck::create([
+            'user_id' => $this->user1->id,
+            'title' => 'Import Target Deck',
+        ]);
+
+        $payload = [
+            'cards' => [
+                [
+                    'word' => '你好',
+                    'meaning' => 'Xin chào',
+                    // pinyin omitted to test auto generation
+                ],
+                [
+                    'word' => '谢谢',
+                    'pinyin' => 'xièxie',
+                    'meaning' => 'Cảm ơn bạn',
+                    'example' => '谢谢你的帮助。',
+                    'example_meaning' => 'Cảm ơn sự giúp đỡ của bạn.',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($this->user1)->postJson(route('custom-flashcards.decks.import', $deck->id), $payload);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'imported_count' => 2,
+            ]);
+
+        $this->assertDatabaseHas('custom_flashcards', [
+            'deck_id' => $deck->id,
+            'user_id' => $this->user1->id,
+            'word' => '你好',
+            'meaning' => 'Xin chào',
+        ]);
+
+        $this->assertDatabaseHas('custom_flashcards', [
+            'deck_id' => $deck->id,
+            'user_id' => $this->user1->id,
+            'word' => '谢谢',
+            'pinyin' => 'xièxie',
+        ]);
+    }
+
+    /**
+     * Test user cannot import cards into another user's deck.
+     */
+    public function test_user_cannot_import_to_other_users_deck(): void
+    {
+        $deck = FlashcardDeck::create([
+            'user_id' => $this->user1->id,
+            'title' => 'User1 Deck',
+        ]);
+
+        $response = $this->actingAs($this->user2)->postJson(route('custom-flashcards.decks.import', $deck->id), [
+            'cards' => [
+                ['word' => '入侵', 'meaning' => 'Xâm nhập trái phép'],
+            ],
+        ]);
+
+        $response->assertStatus(404);
+    }
+
+    /**
+     * Test import cards validates required fields.
+     */
+    public function test_import_cards_validates_required_fields(): void
+    {
+        $deck = FlashcardDeck::create([
+            'user_id' => $this->user1->id,
+            'title' => 'Validate Deck',
+        ]);
+
+        $response = $this->actingAs($this->user1)->postJson(route('custom-flashcards.decks.import', $deck->id), [
+            'cards' => [
+                ['word' => '', 'meaning' => ''],
+            ],
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['cards.0.word', 'cards.0.meaning']);
+    }
+
+    /**
+     * Test import cards automatically skips duplicate words already in deck or repeated in payload.
+     */
+    public function test_import_cards_automatically_skips_duplicate_words(): void
+    {
+        $deck = FlashcardDeck::create([
+            'user_id' => $this->user1->id,
+            'title' => 'Dedup Deck',
+        ]);
+
+        // Existing word in deck
+        CustomFlashcard::create([
+            'deck_id' => $deck->id,
+            'user_id' => $this->user1->id,
+            'word' => '苹果',
+            'pinyin' => 'píngguǒ',
+            'meaning' => 'Quả táo',
+        ]);
+
+        $payload = [
+            'cards' => [
+                ['word' => '苹果', 'meaning' => 'Quả táo (duplicate)'], // Duplicate with existing in deck
+                ['word' => '香蕉', 'meaning' => 'Quả chuối'], // New word #1
+                ['word' => '香蕉', 'meaning' => 'Quả chuối lặp'], // Duplicate within same payload
+                ['word' => '西瓜', 'meaning' => 'Dưa hấu'], // New word #2
+            ],
+        ];
+
+        $response = $this->actingAs($this->user1)->postJson(route('custom-flashcards.decks.import', $deck->id), $payload);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'imported_count' => 2,
+                'skipped_count' => 2,
+            ]);
+
+        // Total cards in deck should be 3 (1 initial + 2 imported, 0 duplicates)
+        $this->assertEquals(3, CustomFlashcard::where('deck_id', $deck->id)->count());
+    }
 }

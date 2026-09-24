@@ -92,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/decks/{id}', [CustomFlashcardController::class, 'updateDeck'])->name('custom-flashcards.decks.update');
         Route::delete('/decks/{id}', [CustomFlashcardController::class, 'destroyDeck'])->name('custom-flashcards.decks.destroy');
         Route::post('/decks/{id}/reset', [CustomFlashcardController::class, 'resetProgress'])->name('custom-flashcards.decks.reset');
+        Route::post('/decks/{id}/import', [CustomFlashcardController::class, 'importCards'])->name('custom-flashcards.decks.import');
 
         Route::post('/decks/{id}/cards', [CustomFlashcardController::class, 'storeCard'])->name('custom-flashcards.cards.store');
         Route::put('/cards/{id}', [CustomFlashcardController::class, 'updateCard'])->name('custom-flashcards.cards.update');

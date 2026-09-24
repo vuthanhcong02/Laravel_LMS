@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\GamificationService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Overtrue\Pinyin\Pinyin;
 
 class CustomFlashcardService
 {
@@ -219,5 +220,91 @@ class CustomFlashcardService
             ]);
 
         return true;
+    }
+
+    /**
+     * Batch import multiple vocabulary cards into a deck, automatically skipping duplicate words.
+     */
+    public function importCards(int $deckId, int $userId, array $cards): array
+    {
+        $deck = FlashcardDeck::where('id', $deckId)
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        $now = now();
+        $importedCount = 0;
+        $skippedCount = 0;
+
+        // Fetch existing words in this deck (normalized to lowercase) to skip duplicates
+        $existingWords = CustomFlashcard::where('deck_id', $deck->id)
+            ->pluck('word')
+            ->map(fn($w) => mb_strtolower(trim($w)))
+            ->flip()
+            ->toArray();
+
+        DB::transaction(function () use ($deck, $userId, $cards, $now, &$importedCount, &$skippedCount, &$existingWords) {
+            $insertBatch = [];
+
+            foreach ($cards as $item) {
+                $word = trim($item['word'] ?? '');
+                $meaning = trim($item['meaning'] ?? '');
+
+                if (empty($word) || empty($meaning)) {
+                    continue;
+                }
+
+                $wordKey = mb_strtolower($word);
+
+                // Automatically skip duplicates (already in deck or duplicated within the same import payload)
+                if (isset($existingWords[$wordKey])) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // Register word key to avoid duplicates within the same batch
+                $existingWords[$wordKey] = true;
+
+                // If pinyin is not provided, generate automatically
+                $pinyin = trim($item['pinyin'] ?? '');
+                if (empty($pinyin)) {
+                    try {
+                        $pinyin = Pinyin::sentence($word);
+                    } catch (\Throwable $e) {
+                        $pinyin = '';
+                    }
+                }
+
+                $insertBatch[] = [
+                    'deck_id' => $deck->id,
+                    'user_id' => $userId,
+                    'word' => $word,
+                    'pinyin' => $pinyin,
+                    'meaning' => $meaning,
+                    'example' => !empty($item['example']) ? trim($item['example']) : null,
+                    'example_meaning' => !empty($item['example_meaning']) ? trim($item['example_meaning']) : null,
+                    'is_remembered' => false,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+
+                $importedCount++;
+            }
+
+            if (!empty($insertBatch)) {
+                // Insert in chunks of 100 for database efficiency
+                foreach (array_chunk($insertBatch, 100) as $chunk) {
+                    CustomFlashcard::insert($chunk);
+                }
+            }
+        });
+
+        // Retrieve fresh deck with cards for responsive frontend state
+        $updatedDeck = $this->getDeckWithCards($deck->id, $userId);
+
+        return [
+            'imported_count' => $importedCount,
+            'skipped_count' => $skippedCount,
+            'deck' => $updatedDeck,
+        ];
     }
 }

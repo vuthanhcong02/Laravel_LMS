@@ -33,7 +33,7 @@ class TtsService
     {
         $this->storagePath = storage_path('app/public/tts');
         if (!File::exists($this->storagePath)) {
-            File::makeDirectory($this->storagePath, 0755, true);
+            File::makeDirectory($this->storagePath, 0775, true);
         }
     }
 
@@ -75,10 +75,13 @@ class TtsService
         // Execute edge-tts CLI safely with parameter array (prevents shell injection)
         $process = new Process([
             'edge-tts',
-            '--voice', $voice,
+            '--voice',
+            $voice,
             '--rate=' . $rate,
-            '--text', $cleanText,
-            '--write-media', $filePath,
+            '--text',
+            $cleanText,
+            '--write-media',
+            $filePath,
         ]);
 
         $process->setTimeout(15);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Student\ImportCustomFlashcardsRequest;
 use App\Http\Requests\Student\StoreCustomFlashcardRequest;
 use App\Http\Requests\Student\StoreFlashcardDeckRequest;
 use App\Services\Student\CustomFlashcardService;
@@ -155,6 +156,41 @@ class CustomFlashcardController extends Controller
         return response()->json([
             'success' => true,
             'message' => __('Đã đặt lại tiến độ học của bộ thẻ này.'),
+        ]);
+    }
+
+    /**
+     * Bulk import cards into a deck.
+     */
+    public function importCards(ImportCustomFlashcardsRequest $request, int $deckId): JsonResponse
+    {
+        $cards = $request->validated()['cards'];
+        $result = $this->customFlashcardService->importCards($deckId, auth()->id(), $cards);
+
+        $imported = $result['imported_count'];
+        $skipped = $result['skipped_count'];
+
+        if ($imported > 0 && $skipped > 0) {
+            $message = __('Đã nhập thành công :imported từ mới (tự động bỏ qua :skipped từ trùng lặp)!', [
+                'imported' => $imported,
+                'skipped' => $skipped,
+            ]);
+        } elseif ($imported === 0 && $skipped > 0) {
+            $message = __('Tất cả :skipped từ đều đã có sẵn trong bộ thẻ này.', [
+                'skipped' => $skipped,
+            ]);
+        } else {
+            $message = __('Nhập thành công :count từ vựng vào bộ thẻ!', [
+                'count' => $imported,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'imported_count' => $imported,
+            'skipped_count' => $skipped,
+            'deck' => $result['deck'],
         ]);
     }
 }
