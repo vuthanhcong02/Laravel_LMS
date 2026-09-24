@@ -9,7 +9,7 @@ export default function flashcardApp(config = {}) {
         // ==========================================
         // MAIN NAVIGATION STATE
         // ==========================================
-        activeMainTab: config.initialTab || 'hsk', // 'hsk' or 'my_decks'
+        activeMainTab: config.initialTab || 'tu-vung-hsk', // 'tu-vung-hsk' or 'bo-the-cua-ban'
         isLoggedIn: config.isLoggedIn || false,
         practiceMode: 'flashcard', // 'flashcard', 'quiz', or 'match'
 
@@ -127,10 +127,10 @@ export default function flashcardApp(config = {}) {
             // Read tab query parameter from URL
             const urlParams = new URLSearchParams(window.location.search);
             const tabParam = urlParams.get('tab');
-            if (tabParam === 'my_decks' || tabParam === 'my-decks') {
-                this.activeMainTab = 'my_decks';
+            if (['bo-the-cua-ban', 'bo-the', 'my_decks', 'my-decks'].includes(tabParam)) {
+                this.activeMainTab = 'bo-the-cua-ban';
             } else {
-                this.activeMainTab = 'hsk';
+                this.activeMainTab = 'tu-vung-hsk';
             }
 
             // Keyboard navigation listener
@@ -146,8 +146,8 @@ export default function flashcardApp(config = {}) {
             this.activeMainTab = tab;
             this.practiceMode = 'flashcard';
             const url = new URL(window.location);
-            if (tab === 'my_decks') {
-                url.searchParams.set('tab', 'my_decks');
+            if (tab === 'bo-the-cua-ban' || tab === 'bo-the' || tab === 'my_decks') {
+                url.searchParams.set('tab', 'bo-the-cua-ban');
                 if (this.isLoggedIn && this.decks.length === 0) {
                     this.fetchDecks();
                 }
@@ -177,7 +177,7 @@ export default function flashcardApp(config = {}) {
 
         // Helper: retrieve vocabulary list based on active view for games
         getActiveVocabList() {
-            if (this.activeMainTab === 'hsk') {
+            if (this.activeMainTab === 'tu-vung-hsk' || this.activeMainTab === 'hsk') {
                 return this.vocabularies[this.activeLevel] || [];
             }
             return (this.selectedDeck && this.selectedDeck.flashcards) ? this.selectedDeck.flashcards : [];
@@ -240,7 +240,7 @@ export default function flashcardApp(config = {}) {
         },
 
         flipCard() {
-            if (this.activeMainTab === 'hsk') {
+            if (this.activeMainTab === 'tu-vung-hsk' || this.activeMainTab === 'hsk') {
                 if (this.currentWords().length === 0) return;
                 this.flipped = !this.flipped;
             } else {
@@ -251,7 +251,7 @@ export default function flashcardApp(config = {}) {
 
         shuffle() {
             this.flipped = false;
-            if (this.activeMainTab === 'hsk') {
+            if (this.activeMainTab === 'tu-vung-hsk' || this.activeMainTab === 'hsk') {
                 if (this.isShuffled) {
                     this.isShuffled = false;
                     this.shuffledWordsList = [];
@@ -1034,7 +1034,7 @@ export default function flashcardApp(config = {}) {
         speak(customText = null) {
             let text = customText;
             if (!text) {
-                if (this.activeMainTab === 'hsk') {
+                if (this.activeMainTab === 'tu-vung-hsk' || this.activeMainTab === 'hsk') {
                     text = this.currentWord().word;
                 } else {
                     const card = this.currentCard();
@@ -1106,7 +1106,7 @@ export default function flashcardApp(config = {}) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             if (this.showDeckModal || this.showCardModal) return;
 
-            if (this.activeMainTab === 'hsk' && this.activeTab === 'study' && this.practiceMode === 'flashcard') {
+            if ((this.activeMainTab === 'tu-vung-hsk' || this.activeMainTab === 'hsk') && this.activeTab === 'study' && this.practiceMode === 'flashcard') {
                 if (e.code === 'Space') {
                     e.preventDefault();
                     this.flipCard();
@@ -1117,7 +1117,7 @@ export default function flashcardApp(config = {}) {
                     e.preventDefault();
                     this.prevWord();
                 }
-            } else if (this.activeMainTab === 'my_decks' && this.selectedDeck && this.deckSubTab === 'study' && this.practiceMode === 'flashcard') {
+            } else if ((this.activeMainTab === 'bo-the-cua-ban' || this.activeMainTab === 'my_decks') && this.selectedDeck && this.deckSubTab === 'study' && this.practiceMode === 'flashcard') {
                 if (e.code === 'Space') {
                     e.preventDefault();
                     this.flipCard();

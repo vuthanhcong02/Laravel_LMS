@@ -11,8 +11,8 @@ export default function customFlashcardApp(config = {}) {
             function(text) { this.speak(text); }
         ),
 
-        // Main tabs: 'hsk' or 'my_decks'
-        activeMainTab: config.initialTab || 'my_decks',
+        // Main tabs: 'tu-vung-hsk' or 'bo-the-cua-ban'
+        activeMainTab: config.initialTab || 'bo-the-cua-ban',
         isLoggedIn: config.isLoggedIn || false,
 
         // User decks list
@@ -145,12 +145,19 @@ export default function customFlashcardApp(config = {}) {
             // Check URL search parameters for initial tab or deck
             const urlParams = new URLSearchParams(window.location.search);
             const tabParam = urlParams.get('tab');
-            if (tabParam === 'my_decks' || tabParam === 'my-decks') {
-                this.activeMainTab = 'my_decks';
+            if (['bo-the-cua-ban', 'bo-the', 'my_decks', 'my-decks'].includes(tabParam)) {
+                this.activeMainTab = 'bo-the-cua-ban';
             }
 
             // Bind keyboard shortcuts for study mode
             window.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
+            // Listen for breadcrumb click to return to deck list
+            window.addEventListener('close-selected-deck', () => {
+                if (this.selectedDeck) {
+                    this.closeDeck();
+                }
+            });
 
             // If user is logged in and decks list is empty, fetch fresh decks
             if (this.isLoggedIn && this.decks.length === 0) {
@@ -159,15 +166,26 @@ export default function customFlashcardApp(config = {}) {
         },
 
         /**
+         * Dispatch event to update breadcrumb title.
+         */
+        notifyDeckChanged(title) {
+            window.dispatchEvent(new CustomEvent('deck-changed', { detail: { title } }));
+        },
+
+        /**
          * Switch main tab and sync URL without refreshing.
          */
         switchMainTab(tab) {
             this.activeMainTab = tab;
             const url = new URL(window.location);
-            if (tab === 'my_decks') {
-                url.searchParams.set('tab', 'my_decks');
+            if (tab === 'bo-the-cua-ban' || tab === 'bo-the' || tab === 'my_decks') {
+                url.searchParams.set('tab', 'bo-the-cua-ban');
+                if (this.selectedDeck) {
+                    this.notifyDeckChanged(this.selectedDeck.title);
+                }
             } else {
                 url.searchParams.delete('tab');
+                this.notifyDeckChanged(null);
             }
             window.history.replaceState({}, '', url);
         },
@@ -269,6 +287,7 @@ export default function customFlashcardApp(config = {}) {
                 icon: deck.icon || 'fa-book-open',
                 flashcards: deck.flashcards || [],
             };
+            this.notifyDeckChanged(this.selectedDeck.title);
             this.isLoadingDeckDetails = true;
             this.currentIndex = 0;
             this.flipped = false;
@@ -291,6 +310,7 @@ export default function customFlashcardApp(config = {}) {
                         color: data.deck.color || this.selectedDeck.color,
                         icon: data.deck.icon || this.selectedDeck.icon,
                     };
+                    this.notifyDeckChanged(this.selectedDeck.title);
                 } else {
                     this.showAlert({
                         title: 'Lỗi tải bộ thẻ',
@@ -316,6 +336,7 @@ export default function customFlashcardApp(config = {}) {
         closeDeck() {
             clearInterval(this.matchTimerInterval);
             this.selectedDeck = null;
+            this.notifyDeckChanged(null);
             this.deckSubTab = 'study';
             this.practiceMode = 'flashcard';
             this.fetchDecks();
@@ -392,6 +413,7 @@ export default function customFlashcardApp(config = {}) {
                         this.selectedDeck.description = this.deckForm.description;
                         this.selectedDeck.color = this.deckForm.color;
                         this.selectedDeck.icon = this.deckForm.icon;
+                        this.notifyDeckChanged(this.selectedDeck.title);
                     }
                     await this.fetchDecks();
                 } else {
@@ -446,6 +468,7 @@ export default function customFlashcardApp(config = {}) {
                 if (result.success) {
                     if (this.selectedDeck && this.selectedDeck.id === deckId) {
                         this.selectedDeck = null;
+                        this.notifyDeckChanged(null);
                     }
                     await this.fetchDecks();
                 } else {
@@ -899,7 +922,7 @@ export default function customFlashcardApp(config = {}) {
             if (this.showDeckModal || this.showCardModal || this.showImportModal) return;
 
             // Only trigger shortcuts if actively in custom deck study mode
-            if (this.activeMainTab === 'my_decks' && this.selectedDeck && this.deckSubTab === 'study') {
+            if ((this.activeMainTab === 'bo-the-cua-ban' || this.activeMainTab === 'my_decks') && this.selectedDeck && this.deckSubTab === 'study') {
                 if (e.code === 'Space') {
                     e.preventDefault();
                     this.flipCard();

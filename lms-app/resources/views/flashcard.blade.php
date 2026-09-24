@@ -1,10 +1,30 @@
 @extends('layouts.lms')
 @section('title', __('Thẻ ghi nhớ Flashcards HSK - Tiếng Trung XiaoMu LMS'))
 @section('header-left')
-    <x-lms.breadcrumb :links="[
-        ['label' => __('Trang chủ'), 'url' => route('home')],
-        ['label' => __('Thẻ ghi nhớ'), 'url' => null]
-    ]" />
+    <div x-data="{ deckTitle: '' }"
+         @deck-changed.window="deckTitle = $event.detail?.title || ''"
+         class="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+        <a href="{{ route('home') }}" class="hover:text-[#e07a5f] transition-colors shrink-0">
+            {{ __('Trang chủ') }}
+        </a>
+        <span class="shrink-0">/</span>
+        <template x-if="deckTitle">
+            <div class="flex items-center gap-2 min-w-0">
+                <button type="button"
+                        @click="window.dispatchEvent(new CustomEvent('close-selected-deck'))"
+                        class="hover:text-[#e07a5f] transition-colors cursor-pointer shrink-0">
+                    {{ __('Thẻ ghi nhớ') }}
+                </button>
+                <span class="shrink-0">/</span>
+                <span class="text-slate-800 dark:text-slate-200 truncate max-w-[150px] sm:max-w-[250px] md:max-w-xs font-bold"
+                      :title="deckTitle"
+                      x-text="deckTitle"></span>
+            </div>
+        </template>
+        <template x-if="!deckTitle">
+            <span class="text-slate-800 dark:text-slate-200">{{ __('Thẻ ghi nhớ') }}</span>
+        </template>
+    </div>
 @endsection
 @section('custom-css')
     .perspective-1000 { perspective: 1000px; }
@@ -322,14 +342,15 @@
     </script>
 
     <div x-data="{
-        activeMainTab: '{{ request('tab', 'hsk') }}',
+        activeMainTab: '{{ in_array(request('tab'), ['bo-the-cua-ban', 'bo-the', 'my_decks', 'my-decks']) ? 'bo-the-cua-ban' : 'tu-vung-hsk' }}',
         switchMainTab(tab) {
             this.activeMainTab = tab;
             const url = new URL(window.location);
-            if (tab === 'my_decks') {
-                url.searchParams.set('tab', 'my_decks');
+            if (tab === 'bo-the-cua-ban') {
+                url.searchParams.set('tab', 'bo-the-cua-ban');
             } else {
                 url.searchParams.delete('tab');
+                window.dispatchEvent(new CustomEvent('deck-changed', { detail: { title: null } }));
             }
             window.history.replaceState({}, '', url);
         }
@@ -338,9 +359,9 @@
         <div class="flex items-center justify-between border-b border-[#e8e2d9] dark:border-[#2d2926] pb-3">
             <div class="inline-flex items-center gap-1.5 p-1 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-2xl shadow-xs">
                 <button type="button"
-                        @click="switchMainTab('hsk')"
+                        @click="switchMainTab('tu-vung-hsk')"
                         class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 btn-tactile cursor-pointer"
-                        :class="activeMainTab === 'hsk' ?
+                        :class="activeMainTab === 'tu-vung-hsk' ?
                             'bg-[#e07a5f] text-white shadow-xs' :
                             'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                     <i class="fa-solid fa-layer-group text-xs"></i>
@@ -348,9 +369,9 @@
                 </button>
 
                 <button type="button"
-                        @click="switchMainTab('my_decks')"
+                        @click="switchMainTab('bo-the-cua-ban')"
                         class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 btn-tactile cursor-pointer"
-                        :class="activeMainTab === 'my_decks' ?
+                        :class="activeMainTab === 'bo-the-cua-ban' ?
                             'bg-[#e07a5f] text-white shadow-xs' :
                             'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                     <i class="fa-solid fa-folder-plus text-xs"></i>
@@ -359,7 +380,7 @@
             </div>
         </div>
 
-        <div x-show="activeMainTab === 'hsk'">
+        <div x-show="activeMainTab === 'tu-vung-hsk'">
             <div x-data="flashcardApp" class="space-y-6">
         <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] relative overflow-hidden group">
             <div class="absolute right-4 -bottom-6 text-9xl font-extrabold text-[#e07a5f]/5 pointer-events-none select-none zh-text">
@@ -747,7 +768,7 @@
     </div>
 
     <!-- MY DECKS TAB -->
-    <div x-show="activeMainTab === 'my_decks'">
+    <div x-show="activeMainTab === 'bo-the-cua-ban'">
         <div x-data="customFlashcardApp({ isLoggedIn: {{ auth()->check() ? 'true' : 'false' }}, initialDecks: window.myDecksData || [] })" class="space-y-6">
             <div x-show="!selectedDeck"
                  x-transition:enter="transition ease-out duration-200"
