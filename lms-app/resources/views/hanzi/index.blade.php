@@ -194,7 +194,7 @@
                 <button type="button" @click="goToStep1()" 
                         class="text-xs font-semibold text-slate-500 hover:text-[#e07a5f] dark:text-slate-400 dark:hover:text-[#e07a5f] transition-colors cursor-pointer flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                    <span>{{ __('← Xem tất cả 214 Bộ thủ') }}</span>
+                    <span>{{ __('Xem tất cả 214 Bộ thủ') }}</span>
                 </button>
             </div>
             
@@ -254,7 +254,7 @@
         <div class="flex items-center justify-end text-xs text-slate-500 dark:text-slate-400">
             <button type="button" @click="goToStep2()" class="hover:text-[#e07a5f] transition-colors cursor-pointer flex items-center gap-1.5 font-semibold">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                <span>{{ __('← Danh sách chữ bộ ') }}<strong x-text="currentRadicalData ? currentRadicalData.radical : ''"></strong></span>
+                <span>{{ __('Danh sách chữ bộ ') }}<strong x-text="currentRadicalData ? currentRadicalData.radical : ''"></strong></span>
             </button>
         </div>
 
