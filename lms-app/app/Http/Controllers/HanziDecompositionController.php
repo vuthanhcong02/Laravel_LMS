@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Radicals214Data;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,8 +16,9 @@ class HanziDecompositionController extends Controller
     {
         $radicalGroups = $this->getRadicalGroups();
         $demoRadicals = $this->getDemoRadicals();
+        $radicals214 = Radicals214Data::getAll();
 
-        return view('hanzi.index', compact('radicalGroups', 'demoRadicals'));
+        return view('hanzi.index', compact('radicalGroups', 'demoRadicals', 'radicals214'));
     }
 
     /**

@@ -8,19 +8,26 @@
  */
 export function hanziDecompositionApp(initialData = {}) {
     return {
-        // Cấu trúc dữ liệu theo Nhóm Bộ thủ
+        // Cấu trúc dữ liệu theo Nhóm Bộ thủ & 214 Bộ thủ Khang Hy
         radicalGroups: initialData.radicalGroups || {},
         radicals: initialData.radicals || [],
+        radicals214: initialData.radicals214 || {},
         
         // Luồng 3 bước: 1: Chọn Bộ thủ | 2: Danh sách Chữ Hán thuộc bộ | 3: Chi tiết Chiết tự
         step: 1,
+        activeMainTab: 'radicals', // 'radicals' (Theo bộ thủ) | 'dictionary' (Từ điển)
+        sortType: 'stroke', // 'stroke' (Số nét) | 'alphabet' (A -> Z) | 'frequency' (Tần suất)
+        detailTab: 'stroke_order', // 'stroke_order' | 'structure' | 'meaning_usage' | 'map' | 'sino_viet' | 'mnemonic' | 'naming'
+        isFavorite: false,
         radicalSearchFilter: '',
         strokeFilter: 'all',
         hoveredRadical: null,
 
         // Trạng thái Bộ thủ và Chữ Hán đang chọn
-        selectedRadicalId: 'ren',
-        selectedCharKey: '休',
+        selectedRadicalId: 'gun',
+        selectedCharKey: '丨',
+        currentRadicalData: null,
+        currentCharacterData: null,
         currentChar: null,
         activeTab: 'explorer', // 'explorer' | 'stroke_studio' | 'quiz' | 'radicals'
         searchQuery: '',
@@ -210,27 +217,32 @@ export function hanziDecompositionApp(initialData = {}) {
         // KHỞI TẠO & LIFECYCLE
         // =========================================================================
         init() {
+            // Tìm bộ thủ mặc định từ radicals214 (ưu tiên bộ 丨 cổn như hình)
+            const firstStrokeGroup = Object.values(this.radicals214)[0];
+            if (firstStrokeGroup && firstStrokeGroup.items && firstStrokeGroup.items.length > 0) {
+                this.currentRadicalData = firstStrokeGroup.items[0]; // Bộ 丨
+                this.selectedRadicalId = this.currentRadicalData.id;
+                if (this.currentRadicalData.characters && this.currentRadicalData.characters.length > 0) {
+                    this.currentCharacterData = this.currentRadicalData.characters[0];
+                    this.selectedCharKey = this.currentCharacterData.char;
+                }
+            }
+
             // Kiểm tra query param 'bo' và 'char' trên URL
             const params = new URLSearchParams(window.location.search);
             const boParam = params.get('bo');
             const charParam = params.get('char');
 
-            if (boParam && this.radicalGroups[boParam]) {
-                this.selectedRadicalId = boParam;
-                if (charParam && this.radicalGroups[boParam].characters[charParam]) {
-                    this.selectedCharKey = charParam;
-                    this.currentChar = this.radicalGroups[boParam].characters[charParam];
-                    this.step = 3; // Vào thẳng chi tiết chữ
+            if (boParam) {
+                this.findAndSelectRadical(boParam);
+                if (charParam) {
+                    this.findAndSelectCharacter(charParam);
+                    this.step = 3;
                 } else {
-                    this.step = 2; // Vào danh sách chữ của bộ
+                    this.step = 2;
                 }
             } else {
-                // Mặc định ở Bước 1: Danh sách các bộ thủ
                 this.step = 1;
-                const groupKeys = Object.keys(this.radicalGroups);
-                if (groupKeys.length > 0) {
-                    this.selectedRadicalId = groupKeys[0];
-                }
             }
 
             // Lắng nghe khi chuyển tab sang Luyện viết để kích hoạt Canvas
@@ -248,11 +260,10 @@ export function hanziDecompositionApp(initialData = {}) {
                 const currentBo = updatedParams.get('bo');
                 const currentCharParam = updatedParams.get('char');
 
-                if (currentBo && this.radicalGroups[currentBo]) {
-                    this.selectedRadicalId = currentBo;
-                    if (currentCharParam && this.radicalGroups[currentBo].characters[currentCharParam]) {
-                        this.selectedCharKey = currentCharParam;
-                        this.currentChar = this.radicalGroups[currentBo].characters[currentCharParam];
+                if (currentBo) {
+                    this.findAndSelectRadical(currentBo);
+                    if (currentCharParam) {
+                        this.findAndSelectCharacter(currentCharParam);
                         this.step = 3;
                     } else {
                         this.step = 2;
@@ -263,52 +274,117 @@ export function hanziDecompositionApp(initialData = {}) {
             });
         },
 
+        findAndSelectRadical(radicalIdOrChar) {
+            // Tìm trong radicals214
+            for (const group of Object.values(this.radicals214)) {
+                for (const item of group.items) {
+                    if (item.id === radicalIdOrChar || item.radical === radicalIdOrChar || item.sino_vietnamese === radicalIdOrChar) {
+                        this.currentRadicalData = item;
+                        this.selectedRadicalId = item.id;
+                        return;
+                    }
+                }
+            }
+            if (this.radicalGroups[radicalIdOrChar]) {
+                this.selectedRadicalId = radicalIdOrChar;
+            }
+        },
+
+        findAndSelectCharacter(charKey) {
+            if (this.currentRadicalData && this.currentRadicalData.characters) {
+                const found = this.currentRadicalData.characters.find(c => c.char === charKey);
+                if (found) {
+                    this.currentCharacterData = found;
+                    this.selectedCharKey = found.char;
+                    this.syncCurrentChar(found);
+                    return;
+                }
+            }
+            if (this.radicalGroups[this.selectedRadicalId]?.characters?.[charKey]) {
+                this.currentChar = this.radicalGroups[this.selectedRadicalId].characters[charKey];
+                this.selectedCharKey = charKey;
+            }
+        },
+
+        // Đồng bộ dữ liệu chi tiết cho chữ đang chọn
+        syncCurrentChar(charItem) {
+            if (this.radicalGroups[this.selectedRadicalId]?.characters?.[charItem.char]) {
+                this.currentChar = this.radicalGroups[this.selectedRadicalId].characters[charItem.char];
+            } else {
+                this.currentChar = {
+                    character: charItem.char,
+                    pinyin: charItem.pinyin,
+                    sino_vietnamese: charItem.sino_vietnamese,
+                    meaning: charItem.meaning,
+                    stroke_count: charItem.stroke_count,
+                    tone: charItem.tone || '1',
+                    hsk_level: charItem.hsk || 1,
+                    formation_type: 'Hội ý (会意)',
+                    radical_relation: (this.currentRadicalData?.radical || '') + ' là bộ thủ chính cấu thành chữ này.',
+                    traditional_quote: 'Chữ ' + charItem.char + ' trong Hán tự.',
+                    mnemonic_poem: 'Nét chữ ' + charItem.char + ' tựa dáng hình xưa\nBút hoa nở thắm nắng trưa rạng ngời.',
+                    components: [
+                        {
+                            character: this.currentRadicalData?.radical || charItem.char,
+                            name: 'Bộ ' + (this.currentRadicalData?.sino_vietnamese || ''),
+                            sino_vietnamese: this.currentRadicalData?.sino_vietnamese || '',
+                            meaning: this.currentRadicalData?.meaning || '',
+                            position: 'Bộ thủ chính',
+                            role: 'Biểu ý',
+                            explanation: this.currentRadicalData?.description || ''
+                        }
+                    ],
+                    stroke_steps: [
+                        { step: 1, name: 'Nét 1', pinyin: 'shù', highlight: 'Thân chữ' }
+                    ],
+                    compounds: []
+                };
+            }
+        },
+
         // =========================================================================
         // ĐIỀU HƯỚNG 3 BƯỚC (3-STEP DRILL-DOWN & DRILL-UP)
         // =========================================================================
         
-        // Bước 1 -> Bước 2: Chọn một Bộ thủ
-        chooseRadical(radicalId) {
-            if (this.radicalGroups[radicalId]) {
-                this.selectedRadicalId = radicalId;
-                this.step = 2;
-                this.activeTab = 'explorer';
-                this.speak(this.radicalGroups[radicalId].radical);
+        // Bước 1 -> Bước 2: Chọn một Bộ thủ từ bảng 214 bộ thủ (hoặc nhóm)
+        chooseRadical214(radicalItem) {
+            this.currentRadicalData = radicalItem;
+            this.selectedRadicalId = radicalItem.id;
+            this.step = 2;
+            this.activeTab = 'explorer';
+            this.speak(radicalItem.radical);
 
-                try {
-                    const url = new URL(window.location);
-                    url.searchParams.set('bo', radicalId);
-                    url.searchParams.delete('char');
-                    window.history.pushState({}, '', url);
-                } catch (e) {}
+            try {
+                const url = new URL(window.location);
+                url.searchParams.set('bo', radicalItem.id);
+                url.searchParams.delete('char');
+                window.history.pushState({}, '', url);
+            } catch (e) {}
 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
         // Bước 2 -> Bước 3: Chọn một Chữ Hán thuộc bộ
-        chooseCharacter(charKey) {
-            const currentGroup = this.radicalGroups[this.selectedRadicalId];
-            if (currentGroup && currentGroup.characters[charKey]) {
-                this.selectedCharKey = charKey;
-                this.currentChar = currentGroup.characters[charKey];
-                this.step = 3;
-                this.resetStrokePlayer();
-                this.clearCanvas();
-                this.speak(this.currentChar.character);
+        chooseCharacter214(charItem) {
+            this.currentCharacterData = charItem;
+            this.selectedCharKey = charItem.char;
+            this.syncCurrentChar(charItem);
+            this.step = 3;
+            this.resetStrokePlayer();
+            this.clearCanvas();
+            this.speak(charItem.char);
 
-                try {
-                    const url = new URL(window.location);
-                    url.searchParams.set('bo', this.selectedRadicalId);
-                    url.searchParams.set('char', charKey);
-                    window.history.pushState({}, '', url);
-                } catch (e) {}
+            try {
+                const url = new URL(window.location);
+                url.searchParams.set('bo', this.selectedRadicalId);
+                url.searchParams.set('char', charItem.char);
+                window.history.pushState({}, '', url);
+            } catch (e) {}
 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
-        // Quay lại Bước 1: Danh sách các Bộ thủ
+        // Nút quay lại cấp 1: Danh sách các Bộ thủ
         goToStep1() {
             this.step = 1;
             try {
@@ -320,7 +396,7 @@ export function hanziDecompositionApp(initialData = {}) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
-        // Quay lại Bước 2: Danh sách các chữ thuộc Bộ thủ đang chọn
+        // Nút quay lại cấp 2: Danh sách các chữ thuộc Bộ thủ đang chọn
         goToStep2() {
             this.step = 2;
             try {
@@ -332,15 +408,83 @@ export function hanziDecompositionApp(initialData = {}) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
-        // Alias tương thích
+        // Các hàm alias tương thích
+        chooseRadical(radicalId) {
+            this.findAndSelectRadical(radicalId);
+            if (this.currentRadicalData) {
+                this.chooseRadical214(this.currentRadicalData);
+            } else {
+                this.step = 2;
+            }
+        },
         openRadicalDetail(radicalId) {
             this.chooseRadical(radicalId);
+        },
+        chooseCharacter(charKey) {
+            this.findAndSelectCharacter(charKey);
+            if (this.currentCharacterData) {
+                this.chooseCharacter214(this.currentCharacterData);
+            } else {
+                this.step = 3;
+            }
+        },
+        selectCharacter(charKey) {
+            this.chooseCharacter(charKey);
         },
         backToRadicalList() {
             this.goToStep1();
         },
-        selectCharacter(charKey) {
-            this.chooseCharacter(charKey);
+        toggleFavorite() {
+            this.isFavorite = !this.isFavorite;
+        },
+
+        // =========================================================================
+        // GETTERS & BỘ LỌC CHO 214 BỘ THỦ & DANH SÁCH CHỮ HÁN
+        // =========================================================================
+        get filtered214Grouped() {
+            const q = (this.radicalSearchFilter || '').toLowerCase().trim();
+            if (!q) return this.radicals214;
+
+            const result = {};
+            Object.entries(this.radicals214).forEach(([strokeKey, group]) => {
+                const matchingItems = group.items.filter(item => {
+                    return item.radical.toLowerCase().includes(q) ||
+                           item.sino_vietnamese.toLowerCase().includes(q) ||
+                           item.pinyin.toLowerCase().includes(q) ||
+                           (item.meaning && item.meaning.toLowerCase().includes(q)) ||
+                           (item.characters && item.characters.some(c => c.char.includes(q) || (c.meaning && c.meaning.toLowerCase().includes(q))));
+                });
+                if (matchingItems.length > 0) {
+                    result[strokeKey] = {
+                        ...group,
+                        items: matchingItems
+                    };
+                }
+            });
+            return result;
+        },
+
+        get sortedRadicalCharacters() {
+            const chars = this.currentRadicalData?.characters || [];
+            let list = [...chars];
+
+            if (this.sortType === 'alphabet') {
+                list.sort((a, b) => (a.pinyin || '').localeCompare(b.pinyin || ''));
+            } else if (this.sortType === 'frequency') {
+                list.sort((a, b) => (a.hsk || 99) - (b.hsk || 99));
+            } else {
+                // Mặc định sắp xếp theo số nét
+                list.sort((a, b) => (a.stroke_count || 1) - (b.stroke_count || 1));
+            }
+            return list;
+        },
+
+        get total214Count() {
+            let total = 0;
+            Object.values(this.radicals214).forEach(group => {
+                total += (group.items || []).length;
+            });
+            return total || 214;
         },
 
         // =========================================================================
