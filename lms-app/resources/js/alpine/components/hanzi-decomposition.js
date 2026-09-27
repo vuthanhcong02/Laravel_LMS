@@ -8,7 +8,12 @@ export function hanziDecompositionApp(initialData = {}) {
         radicalGroups: initialData.radicalGroups || {},
         radicals: initialData.radicals || [],
         
-        // Trạng thái Bộ thủ và Chữ Hán đang chọn
+        // Điều hướng cấp bậc: 'list' (Tổng hợp các Bộ thủ) | 'detail' (Chi tiết Bộ thủ & Chữ Hán)
+        viewLevel: 'list',
+        radicalSearchFilter: '',
+        strokeFilter: 'all',
+
+        // Trạng thái Bộ thủ và Chữ Hán đang chọn trong màn hình chi tiết
         selectedRadicalId: 'ren',
         selectedCharKey: '休',
         currentChar: null,
@@ -62,7 +67,7 @@ export function hanziDecompositionApp(initialData = {}) {
         ],
 
         // =========================================================================
-        // BỘ LỌC 214 BỘ THỦ
+        // BỘ LỌC 214 BỘ THỦ KHANG HY
         // =========================================================================
         radicalSearch: '',
         selectedStrokeFilter: 'all',
@@ -200,13 +205,29 @@ export function hanziDecompositionApp(initialData = {}) {
         // KHỞI TẠO & LIFECYCLE
         // =========================================================================
         init() {
-            const groupKeys = Object.keys(this.radicalGroups);
-            if (groupKeys.length > 0) {
-                this.selectedRadicalId = groupKeys[0];
-                const charKeys = Object.keys(this.radicalGroups[this.selectedRadicalId]?.characters || {});
+            // Kiểm tra query param 'bo' trên URL nếu người dùng truy cập trực tiếp
+            const params = new URLSearchParams(window.location.search);
+            const boParam = params.get('bo');
+
+            if (boParam && this.radicalGroups[boParam]) {
+                this.selectedRadicalId = boParam;
+                const charKeys = Object.keys(this.radicalGroups[boParam].characters || {});
                 if (charKeys.length > 0) {
                     this.selectedCharKey = charKeys[0];
-                    this.currentChar = this.radicalGroups[this.selectedRadicalId].characters[this.selectedCharKey];
+                    this.currentChar = this.radicalGroups[boParam].characters[this.selectedCharKey];
+                }
+                this.viewLevel = 'detail';
+            } else {
+                // Mặc định ở màn hình Danh mục Bộ thủ tổng hợp
+                this.viewLevel = 'list';
+                const groupKeys = Object.keys(this.radicalGroups);
+                if (groupKeys.length > 0) {
+                    this.selectedRadicalId = groupKeys[0];
+                    const charKeys = Object.keys(this.radicalGroups[this.selectedRadicalId]?.characters || {});
+                    if (charKeys.length > 0) {
+                        this.selectedCharKey = charKeys[0];
+                        this.currentChar = this.radicalGroups[this.selectedRadicalId].characters[this.selectedCharKey];
+                    }
                 }
             }
 
@@ -218,10 +239,64 @@ export function hanziDecompositionApp(initialData = {}) {
                     });
                 }
             });
+
+            // Xử lý nút Back/Forward của trình duyệt
+            window.addEventListener('popstate', () => {
+                const updatedParams = new URLSearchParams(window.location.search);
+                const currentBo = updatedParams.get('bo');
+                if (currentBo && this.radicalGroups[currentBo]) {
+                    this.selectedRadicalId = currentBo;
+                    const charKeys = Object.keys(this.radicalGroups[currentBo].characters || {});
+                    if (charKeys.length > 0) {
+                        this.selectedCharKey = charKeys[0];
+                        this.currentChar = this.radicalGroups[currentBo].characters[this.selectedCharKey];
+                    }
+                    this.viewLevel = 'detail';
+                } else {
+                    this.viewLevel = 'list';
+                }
+            });
         },
 
         // =========================================================================
-        // GETTERS & ĐIỀU HƯỚNG BỘ THỦ
+        // ĐIỀU HƯỚNG BỘ THỦ (DRILL-DOWN & DRILL-UP)
+        // =========================================================================
+        openRadicalDetail(radicalId) {
+            if (this.radicalGroups[radicalId]) {
+                this.selectedRadicalId = radicalId;
+                const charKeys = Object.keys(this.radicalGroups[radicalId].characters || {});
+                if (charKeys.length > 0) {
+                    this.selectedCharKey = charKeys[0];
+                    this.currentChar = this.radicalGroups[radicalId].characters[this.selectedCharKey];
+                }
+                this.viewLevel = 'detail';
+                this.activeTab = 'explorer';
+                this.resetStrokePlayer();
+                this.speak(this.radicalGroups[radicalId].radical);
+
+                try {
+                    const url = new URL(window.location);
+                    url.searchParams.set('bo', radicalId);
+                    window.history.pushState({}, '', url);
+                } catch (e) {}
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        },
+
+        backToRadicalList() {
+            this.viewLevel = 'list';
+            try {
+                const url = new URL(window.location);
+                url.searchParams.delete('bo');
+                window.history.pushState({}, '', url);
+            } catch (e) {}
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        // =========================================================================
+        // GETTERS & BỘ LỌC
         // =========================================================================
         get currentRadical() {
             return this.radicalGroups[this.selectedRadicalId] || null;
@@ -230,6 +305,34 @@ export function hanziDecompositionApp(initialData = {}) {
         get currentRadicalCharacters() {
             if (!this.currentRadical || !this.currentRadical.characters) return [];
             return Object.values(this.currentRadical.characters);
+        },
+
+        get filteredRadicalGroups() {
+            const q = (this.radicalSearchFilter || '').toLowerCase().trim();
+            const stroke = this.strokeFilter;
+
+            return Object.values(this.radicalGroups).filter(g => {
+                const matchQuery = !q ||
+                    g.radical.toLowerCase().includes(q) ||
+                    g.original.toLowerCase().includes(q) ||
+                    g.name.toLowerCase().includes(q) ||
+                    g.sino_vietnamese.toLowerCase().includes(q) ||
+                    g.meaning.toLowerCase().includes(q) ||
+                    g.pinyin.toLowerCase().includes(q) ||
+                    Object.keys(g.characters || {}).some(charKey => charKey.includes(q));
+
+                const matchStroke = stroke === 'all' || g.stroke_count === parseInt(stroke);
+
+                return matchQuery && matchStroke;
+            });
+        },
+
+        get totalCharacterCount() {
+            let total = 0;
+            Object.values(this.radicalGroups).forEach(g => {
+                total += Object.keys(g.characters || {}).length;
+            });
+            return total;
         },
 
         get allCharactersFlat() {
@@ -278,17 +381,6 @@ export function hanziDecompositionApp(initialData = {}) {
             });
         },
 
-        selectRadical(radicalId) {
-            if (this.radicalGroups[radicalId]) {
-                this.selectedRadicalId = radicalId;
-                const charKeys = Object.keys(this.radicalGroups[radicalId].characters || {});
-                if (charKeys.length > 0) {
-                    this.selectCharacter(charKeys[0]);
-                }
-                this.speak(this.radicalGroups[radicalId].radical);
-            }
-        },
-
         selectCharacter(charKey, radicalId = null) {
             if (radicalId && this.radicalGroups[radicalId]) {
                 this.selectedRadicalId = radicalId;
@@ -298,6 +390,7 @@ export function hanziDecompositionApp(initialData = {}) {
             if (currentGroup && currentGroup.characters[charKey]) {
                 this.selectedCharKey = charKey;
                 this.currentChar = currentGroup.characters[charKey];
+                this.viewLevel = 'detail';
                 this.resetStrokePlayer();
                 this.clearCanvas();
                 this.speak(this.currentChar.character);
@@ -305,7 +398,6 @@ export function hanziDecompositionApp(initialData = {}) {
         },
 
         jumpToRadicalFrom214(r) {
-            // Tìm nhóm bộ thủ tương ứng nếu có trong hệ thống
             let foundGroupId = null;
 
             if (this.radicalGroups[r.id]) {
@@ -320,10 +412,8 @@ export function hanziDecompositionApp(initialData = {}) {
             }
 
             if (foundGroupId) {
-                this.selectRadical(foundGroupId);
-                this.activeTab = 'explorer';
+                this.openRadicalDetail(foundGroupId);
             } else {
-                // Nếu chưa có nhóm chữ chiết tự đầy đủ, phát âm bộ thủ
                 this.speak(r.radical);
             }
         },
