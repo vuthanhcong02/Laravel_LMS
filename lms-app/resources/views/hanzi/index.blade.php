@@ -81,11 +81,55 @@
     <!-- ========================================================================= -->
     <div x-show="activeTab === 'explorer' && step === 1" class="space-y-5" x-cloak>
         
+        <!-- HERO BANNER TỔNG QUAN PHÂN HỆ CHIẾT TỰ (CHUẨN THEME XIAOMU LMS) -->
+        <div class="lms-card p-5 sm:p-6 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] border border-[#fcdccf] dark:border-[#3d2822] rounded-3xl relative overflow-hidden group shadow-xs">
+            <!-- Faint Watermark Hanzi -->
+            <div class="absolute right-4 -bottom-6 text-9xl font-extrabold text-[#e07a5f]/5 pointer-events-none select-none zh-text">
+                部
+            </div>
+
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
+                <!-- Cụm thông tin giới thiệu -->
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] text-xs font-bold shadow-2xs">
+                        <i class="fa-solid fa-shapes text-[#e07a5f]"></i>
+                        <span>{{ __('Chiết tự & Tự nguyên Hán ngữ') }}</span>
+                    </div>
+
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
+                        {{ __('Tra Cứu Chiết Tự & 214 Bộ Thủ Khang Hy') }}
+                    </h1>
+
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {{ __('Giải mã cấu tạo chữ Hán theo từng bộ thủ, hiểu sâu bản chất tự nguyên, thứ tự thuận bút chuẩn và mẹo ghi nhớ nhớ lâu.') }}
+                    </p>
+                </div>
+
+                <!-- Thống kê nhanh & CTA Pills -->
+                <div class="flex items-center gap-3 flex-wrap shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-[#231e1a]/90 border border-[#fcdccf] dark:border-[#3d2822] text-center shadow-2xs min-w-[76px]">
+                            <span class="text-base font-bold text-[#e07a5f] block">214</span>
+                            <span class="text-[10px] text-slate-400 font-medium uppercase">{{ __('Bộ thủ') }}</span>
+                        </div>
+                        <div class="px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-[#231e1a]/90 border border-[#fcdccf] dark:border-[#3d2822] text-center shadow-2xs min-w-[76px]">
+                            <span class="text-base font-bold text-slate-800 dark:text-slate-100 block">1 - 17</span>
+                            <span class="text-[10px] text-slate-400 font-medium uppercase">{{ __('Số nét') }}</span>
+                        </div>
+                        <div class="px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-[#231e1a]/90 border border-[#fcdccf] dark:border-[#3d2822] text-center shadow-2xs min-w-[76px]">
+                            <span class="text-base font-bold text-slate-800 dark:text-slate-100 block">7</span>
+                            <span class="text-[10px] text-slate-400 font-medium uppercase">{{ __('Quy tắc') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Header: Tiêu đề "Theo bộ thủ (214)" & Số lượng -->
         <div class="flex items-center justify-between pt-1">
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                <span>{{ __('Theo bộ thủ (214)') }}</span>
-            </h1>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                <span>{{ __('Danh mục 214 Bộ Thủ Khang Hy') }}</span>
+            </h2>
             <span class="px-2.5 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] text-xs font-bold shadow-2xs" 
                   x-text="total214Count + ' {{ __('bộ thủ') }}'"></span>
         </div>
