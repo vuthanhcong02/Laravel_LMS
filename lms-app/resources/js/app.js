@@ -38,6 +38,7 @@ import gamificationLeaderboard from './alpine/components/gamification-leaderboar
 import hskResultViewer from './alpine/components/hsk-result-viewer.js';
 import sentenceBuilder from './alpine/components/sentence-builder.js';
 import sentenceTopicSearch from './alpine/components/sentence-topic-search.js';
+import hanziDecompositionApp from './alpine/components/hanzi-decomposition.js';
 import hskIndex from './hsk-index.js';
 import examTimer from './hsk-take.js';
 import hskExamList from './alpine/components/hsk-exam-list.js';
@@ -87,6 +88,7 @@ if (!window.Alpine) {
     Alpine.data('userProfilePage', userProfilePage);
     Alpine.data('passwordUpdateForm', passwordUpdateForm);
     Alpine.data('avatarUpload', avatarUpload);
+    Alpine.data('hanziDecompositionApp', hanziDecompositionApp);
 
     // Auth components
     Alpine.data('authLoginPage', authLoginPage);

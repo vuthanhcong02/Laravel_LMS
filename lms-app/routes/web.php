@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\HskMockExamController as AdminHskMockExamController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\HanziDecompositionController;
 use App\Http\Controllers\PinyinController;
 use App\Http\Controllers\PinyinQuizController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
@@ -64,6 +65,8 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/bang-phien-am-pinyin', [PinyinController::class, 'index'])->name('pinyin.index');
     Route::get('/luyen-tap-pinyin', [PinyinQuizController::class, 'index'])->name('pinyin.quiz');
     Route::post('/luyen-tap-pinyin/submit', [PinyinQuizController::class, 'submit'])->name('pinyin.quiz.submit');
+    Route::get('/chiet-tu', [HanziDecompositionController::class, 'index'])->name('hanzi.index');
+    Route::get('/api/chiet-tu/search', [HanziDecompositionController::class, 'search'])->name('hanzi.search');
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
     Route::get('/trang-chu', 'getDemoHome')->name('home');
