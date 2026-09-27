@@ -150,66 +150,106 @@
             </div>
         </div>
 
-        <!-- LƯỚI THẺ TỔNG HỢP CÁC BỘ THỦ (RADICAL GRID CARDS) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <template x-for="group in filteredRadicalGroups" :key="group.id">
-                <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between space-y-4 cursor-pointer group relative overflow-hidden"
-                     @click="openRadicalDetail(group.id)">
-                    
-                    <!-- Faint Watermark Ký tự bộ góc card -->
-                    <div class="absolute -right-3 -bottom-4 text-7xl font-bold text-[#e07a5f]/5 pointer-events-none select-none zh-text group-hover:scale-110 transition-transform">
-                        <span x-text="group.radical"></span>
-                    </div>
+        <!-- BẢNG MA TRẬN Ô VUÔNG BỘ THỦ COMPACT (PERIODIC TABLE OF RADICALS) -->
+        <div class="lms-card p-4 sm:p-5 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] hover:transform-none hover:translate-y-0 space-y-4">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-[#e8e2d9] dark:border-[#2d2926]">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#e07a5f]"></span>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                        {{ __('Bảng Ma Trận Bộ Thủ Cốt Lõi (Theo Nét Bút)') }}
+                    </h3>
+                </div>
+                <span class="text-[11px] text-slate-400 italic hidden sm:inline">
+                    {{ __('Bấm vào từng ô để đi vào chiết tự • Số trên góc là lượng chữ chiết tự') }}
+                </span>
+            </div>
 
-                    <div class="space-y-3 relative z-10">
-                        <!-- Top Header: Avatar Ký tự Bộ to & Tên bộ -->
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-2xl bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] flex items-center justify-center text-3xl font-bold zh-text group-hover:scale-105 transition-transform shadow-2xs">
-                                    <span x-text="group.radical"></span>
-                                </div>
-                                <div>
-                                    <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#e07a5f] transition-colors" x-text="group.name"></h3>
-                                    <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                        <span class="font-semibold text-[#e07a5f]" x-text="group.pinyin"></span>
-                                        <span>•</span>
-                                        <span x-text="group.stroke_count + ' nét'"></span>
+            <!-- Các hàng ma trận gom theo số nét -->
+            <div class="space-y-4">
+                <template x-for="strokeRow in strokeGroupedRadicals" :key="strokeRow.stroke">
+                    <div class="space-y-2">
+                        <!-- Nhãn số nét của hàng -->
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] text-[10px] font-bold uppercase tracking-wider"
+                                  x-text="strokeRow.label"></span>
+                            <div class="h-px flex-1 bg-[#e8e2d9]/60 dark:bg-[#2d2926]"></div>
+                            <span class="text-[10px] text-slate-400" x-text="strokeRow.items.length + ' {{ __('bộ') }}'"></span>
+                        </div>
+
+                        <!-- Lưới các ô vuông Bộ thủ Compact (Tile Grid) -->
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5">
+                            <template x-for="group in strokeRow.items" :key="group.id">
+                                <div class="p-2 sm:p-2.5 rounded-xl border transition-all duration-150 flex flex-col items-center justify-between text-center cursor-pointer group relative overflow-hidden btn-tactile min-h-[82px]"
+                                     :class="hoveredRadical === group 
+                                         ? 'bg-[#fff2ee] dark:bg-[#2c221e] border-[#e07a5f] shadow-xs ring-2 ring-[#e07a5f]/20 -translate-y-0.5' 
+                                         : 'bg-[#fcfaf7] dark:bg-[#23201e] border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] hover:bg-[#fff2ee]/60 dark:hover:bg-[#2c221e]/60 hover:-translate-y-0.5'"
+                                     @mouseenter="hoveredRadical = group"
+                                     @mouseleave="if (hoveredRadical === group) hoveredRadical = null"
+                                     @click="openRadicalDetail(group.id)">
+                                    
+                                    <!-- Badge góc trên báo số chữ Hán chiết tự -->
+                                    <span class="absolute top-1 right-1 px-1.5 py-0.2 rounded-full bg-[#e07a5f] text-white text-[9px] font-bold leading-tight shadow-2xs"
+                                          x-text="Object.keys(group.characters || {}).length"></span>
+
+                                    <!-- Ký tự Bộ thủ to, rõ -->
+                                    <span class="text-2xl sm:text-3xl font-bold zh-text text-slate-800 dark:text-slate-100 group-hover:text-[#e07a5f] group-hover:scale-110 transition-transform py-0.5" 
+                                          x-text="group.radical"></span>
+
+                                    <!-- Tên âm Hán-Việt & Pinyin -->
+                                    <div class="w-full min-w-0">
+                                        <span class="text-xs font-bold text-slate-900 dark:text-white truncate block group-hover:text-[#e07a5f]" x-text="group.sino_vietnamese"></span>
+                                        <span class="text-[10px] text-slate-400 block truncate" x-text="group.pinyin"></span>
                                     </div>
                                 </div>
-                            </div>
-
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] border border-[#fcdccf] dark:border-[#4a2e26]"
-                                  x-text="Object.keys(group.characters || {}).length + ' chữ'"></span>
-                        </div>
-
-                        <!-- Ý nghĩa tóm tắt -->
-                        <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed" x-text="group.meaning"></p>
-
-                        <!-- Khẩu quyết mẹo nhớ dạng chữ nghiêng -->
-                        <div class="p-2 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9]/60 dark:border-[#2d2926]">
-                            <p class="text-[11px] text-slate-700 dark:text-slate-300 italic font-medium line-clamp-2" x-text="'“' + group.mnemonic + '”'"></p>
-                        </div>
-                    </div>
-
-                    <!-- Footer: Các chữ Hán tiêu biểu trong bộ & Nút vào xem -->
-                    <div class="pt-3 border-t border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-between relative z-10">
-                        <!-- Preview các chữ Hán trong bộ -->
-                        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
-                            <template x-for="(charItem, charKey) in group.characters" :key="charKey">
-                                <span class="w-6 h-6 rounded-md bg-[#f8f6f3] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-bold zh-text text-slate-700 dark:text-slate-200 flex items-center justify-center group-hover:border-[#e07a5f]/40" 
-                                      x-text="charItem.character"></span>
                             </template>
                         </div>
-
-                        <!-- CTA Link -->
-                        <span class="text-xs font-bold text-[#e07a5f] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1 shrink-0 ml-2">
-                            <span>{{ __('Khám phá') }}</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </span>
                     </div>
+                </template>
+            </div>
 
-                </div>
-            </template>
+            <!-- THANH XEM TRƯỚC TỨC THÌ (INTERACTIVE QUICK PREVIEW DOCK) -->
+            <div class="pt-3 border-t border-[#e8e2d9] dark:border-[#2d2926]">
+                <template x-if="hoveredRadical">
+                    <div class="p-3 rounded-xl bg-gradient-to-r from-[#fff7f4] via-white to-[#fffaf7] dark:from-[#23201e] dark:via-[#181615] dark:to-[#221c19] border border-[#fcdccf] dark:border-[#4a2e26] flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] text-[#e07a5f] flex items-center justify-center text-2xl font-bold zh-text shrink-0 shadow-2xs">
+                                <span x-text="hoveredRadical.radical"></span>
+                            </div>
+                            <div class="min-w-0 space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white" x-text="hoveredRadical.name"></h4>
+                                    <span class="text-xs text-[#e07a5f] font-semibold" x-text="'(' + hoveredRadical.pinyin + ' • ' + hoveredRadical.stroke_count + ' nét)'"></span>
+                                </div>
+                                <p class="text-xs text-slate-600 dark:text-slate-300 truncate" x-text="hoveredRadical.meaning + ' • ' + hoveredRadical.mnemonic"></p>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách các chữ thuộc bộ đó & CTA -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            <div class="flex items-center gap-1">
+                                <template x-for="(charItem, charKey) in hoveredRadical.characters" :key="charKey">
+                                    <span class="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-bold zh-text text-slate-800 dark:text-slate-100" 
+                                          x-text="charItem.character"></span>
+                                </template>
+                            </div>
+                            <button type="button" @click="openRadicalDetail(hoveredRadical.id)" 
+                                    class="px-3 py-1 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold transition-all shadow-xs btn-tactile cursor-pointer flex items-center gap-1">
+                                <span>{{ __('Vào xem') }}</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="!hoveredRadical">
+                    <div class="p-2.5 rounded-xl bg-[#fcfaf7] dark:bg-[#1f1c1a] border border-[#e8e2d9]/60 dark:border-[#2d2926] text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-pointer text-[#e07a5f] text-xs"></i>
+                        <span>{{ __('Rê chuột vào bất kỳ ô bộ thủ nào để xem trước ý nghĩa • Nhấn chuột để đi vào chiết tự chi tiết.') }}</span>
+                    </div>
+                </template>
+            </div>
+
         </div>
 
         <!-- Trạng thái trống nếu không tìm thấy bộ thủ -->

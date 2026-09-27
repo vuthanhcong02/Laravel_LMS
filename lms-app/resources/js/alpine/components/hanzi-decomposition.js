@@ -12,6 +12,7 @@ export function hanziDecompositionApp(initialData = {}) {
         viewLevel: 'list',
         radicalSearchFilter: '',
         strokeFilter: 'all',
+        hoveredRadical: null,
 
         // Trạng thái Bộ thủ và Chữ Hán đang chọn trong màn hình chi tiết
         selectedRadicalId: 'ren',
@@ -325,6 +326,27 @@ export function hanziDecompositionApp(initialData = {}) {
 
                 return matchQuery && matchStroke;
             });
+        },
+
+        get strokeGroupedRadicals() {
+            const filtered = this.filteredRadicalGroups;
+            const groupsMap = {};
+
+            filtered.forEach(item => {
+                const stroke = item.stroke_count || 1;
+                if (!groupsMap[stroke]) {
+                    groupsMap[stroke] = [];
+                }
+                groupsMap[stroke].push(item);
+            });
+
+            const strokeNumbers = Object.keys(groupsMap).map(Number).sort((a, b) => a - b);
+            
+            return strokeNumbers.map(stroke => ({
+                stroke: stroke,
+                label: stroke + ' Nét',
+                items: groupsMap[stroke]
+            }));
         },
 
         get totalCharacterCount() {
