@@ -201,21 +201,33 @@
             <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" x-text="(sortedRadicalCharacters.length) + ' {{ __('chữ Hán liên quan') }}'"></p>
         </div>
 
-        <!-- Thanh Sắp xếp: "Sắp xếp: [Số nét] [Độ phổ biến]" -->
-        <div class="flex items-center gap-2 pt-1">
-            <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mr-1">{{ __('Sắp xếp:') }}</span>
-            
-            <button type="button" @click="sortType = 'stroke'" 
-                    class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
-                    :class="sortType === 'stroke' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
-                {{ __('Số nét') }}
-            </button>
+        <!-- Thanh Công cụ: [Sắp xếp] & [Ô Tìm kiếm chữ trong bộ] -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <!-- Thanh Sắp xếp: "Sắp xếp: [Số nét] [Độ phổ biến]" -->
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mr-1">{{ __('Sắp xếp:') }}</span>
+                
+                <button type="button" @click="sortType = 'stroke'" 
+                        class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
+                        :class="sortType === 'stroke' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    {{ __('Số nét') }}
+                </button>
 
-            <button type="button" @click="sortType = 'frequency'" 
-                    class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
-                    :class="sortType === 'frequency' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
-                {{ __('Độ phổ biến') }}
-            </button>
+                <button type="button" @click="sortType = 'frequency'" 
+                        class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
+                        :class="sortType === 'frequency' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    {{ __('Độ phổ biến') }}
+                </button>
+            </div>
+
+            <!-- Ô Tìm kiếm Chữ Hán trong Bộ này -->
+            <div class="relative w-full sm:w-64">
+                <input type="text" 
+                       x-model="charSearchFilter"
+                       placeholder="{{ __('Tìm chữ, pinyin, nghĩa...') }}" 
+                       class="w-full px-3.5 py-1.5 pr-8 rounded-xl text-xs bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-hidden focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/15 shadow-2xs transition-all">
+                <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-[11px] text-slate-400 pointer-events-none"></i>
+            </div>
         </div>
 
         <!-- LƯỚI CARD CHỮ HÁN DẠNG NẰM NGANG (THEME XIAOMU LMS) -->
@@ -235,6 +247,15 @@
                     </div>
                 </div>
             </template>
+
+            <!-- Trạng thái trống nếu không tìm thấy chữ -->
+            <div x-show="sortedRadicalCharacters.length === 0" class="col-span-full p-8 text-center bg-white dark:bg-[#181615] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926] space-y-2 shadow-xs">
+                <i class="fa-solid fa-filter text-2xl text-slate-400"></i>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Không tìm thấy chữ Hán nào phù hợp trong bộ này.') }}</p>
+                <button type="button" @click="charSearchFilter = ''" class="px-3.5 py-1.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold cursor-pointer transition-all shadow-xs btn-tactile">
+                    {{ __('Đặt lại tìm kiếm') }}
+                </button>
+            </div>
         </div>
 
     </div>

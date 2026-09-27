@@ -16,10 +16,11 @@ export function hanziDecompositionApp(initialData = {}) {
         // Luồng 3 bước: 1: Chọn Bộ thủ | 2: Danh sách Chữ Hán thuộc bộ | 3: Chi tiết Chiết tự
         step: 1,
         activeMainTab: 'radicals', // 'radicals' (Theo bộ thủ) | 'dictionary' (Từ điển)
-        sortType: 'stroke', // 'stroke' (Số nét) | 'alphabet' (A -> Z) | 'frequency' (Tần suất)
+        sortType: 'stroke', // 'stroke' (Số nét) | 'frequency' (Độ phổ biến)
         detailTab: 'stroke_order', // 'stroke_order' | 'structure' | 'meaning_usage' | 'map' | 'sino_viet' | 'mnemonic' | 'naming'
         isFavorite: false,
         radicalSearchFilter: '',
+        charSearchFilter: '',
         strokeFilter: 'all',
         hoveredRadical: null,
 
@@ -495,9 +496,17 @@ export function hanziDecompositionApp(initialData = {}) {
             const chars = this.currentRadicalData?.characters || [];
             let list = [...chars];
 
-            if (this.sortType === 'alphabet') {
-                list.sort((a, b) => (a.pinyin || '').localeCompare(b.pinyin || ''));
-            } else if (this.sortType === 'frequency') {
+            const q = (this.charSearchFilter || '').toLowerCase().trim();
+            if (q) {
+                list = list.filter(c => {
+                    return c.char.toLowerCase().includes(q) ||
+                           (c.pinyin && c.pinyin.toLowerCase().includes(q)) ||
+                           (c.sino_vietnamese && c.sino_vietnamese.toLowerCase().includes(q)) ||
+                           (c.meaning && c.meaning.toLowerCase().includes(q));
+                });
+            }
+
+            if (this.sortType === 'frequency') {
                 list.sort((a, b) => (a.hsk || 99) - (b.hsk || 99));
             } else {
                 // Mặc định sắp xếp theo số nét
