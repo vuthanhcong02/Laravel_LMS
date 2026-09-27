@@ -201,7 +201,7 @@
             <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" x-text="(sortedRadicalCharacters.length) + ' {{ __('chữ Hán liên quan') }}'"></p>
         </div>
 
-        <!-- Thanh Sắp xếp: "Sắp xếp: [Số nét] [Tần suất]" -->
+        <!-- Thanh Sắp xếp: "Sắp xếp: [Số nét] [Độ phổ biến]" -->
         <div class="flex items-center gap-2 pt-1">
             <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mr-1">{{ __('Sắp xếp:') }}</span>
             
@@ -214,7 +214,7 @@
             <button type="button" @click="sortType = 'frequency'" 
                     class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
                     :class="sortType === 'frequency' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
-                {{ __('Tần suất') }}
+                {{ __('Độ phổ biến') }}
             </button>
         </div>
 
