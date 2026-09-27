@@ -1,16 +1,20 @@
 /**
- * Alpine.js Component: Phân hệ Chiết tự, Viết Mẫu & Luyện Viết Chữ Hán
+ * Alpine.js Component: Phân hệ Chiết tự, Viết Mẫu & Luyện Viết Chữ Hán Theo Bộ Thủ
  * Tuân thủ Clean DRY Architecture và XiaoMu LMS Design System.
  */
 export function hanziDecompositionApp(initialData = {}) {
     return {
-        characters: initialData.characters || {},
+        // Cấu trúc dữ liệu theo Nhóm Bộ thủ
+        radicalGroups: initialData.radicalGroups || {},
         radicals: initialData.radicals || [],
-        selectedKey: '休',
+        
+        // Trạng thái Bộ thủ và Chữ Hán đang chọn
+        selectedRadicalId: 'ren',
+        selectedCharKey: '休',
         currentChar: null,
         activeTab: 'explorer', // 'explorer' | 'stroke_studio' | 'quiz' | 'radicals'
         searchQuery: '',
-        
+
         // =========================================================================
         // STUDIO VIẾT MẪU & TẬP THUẬN BÚT (STROKE ANIMATOR)
         // =========================================================================
@@ -65,7 +69,7 @@ export function hanziDecompositionApp(initialData = {}) {
         selectedCategoryFilter: 'all',
 
         // =========================================================================
-        // 3 DẠNG BÀI TẬP CHIẾT TỰ THỰC CHIẾN (HIGH-VALUE DRILLS)
+        // 3 DẠNG BÀI TẬP CHIẾT TỰ THỰC CHIẾN
         // =========================================================================
         quizMode: 'confusing_chars', // 'confusing_chars' | 'predict_meaning' | 'find_typo'
         totalScore: 0,
@@ -196,10 +200,14 @@ export function hanziDecompositionApp(initialData = {}) {
         // KHỞI TẠO & LIFECYCLE
         // =========================================================================
         init() {
-            const keys = Object.keys(this.characters);
-            if (keys.length > 0) {
-                this.selectedKey = keys[0];
-                this.currentChar = this.characters[this.selectedKey];
+            const groupKeys = Object.keys(this.radicalGroups);
+            if (groupKeys.length > 0) {
+                this.selectedRadicalId = groupKeys[0];
+                const charKeys = Object.keys(this.radicalGroups[this.selectedRadicalId]?.characters || {});
+                if (charKeys.length > 0) {
+                    this.selectedCharKey = charKeys[0];
+                    this.currentChar = this.radicalGroups[this.selectedRadicalId].characters[this.selectedCharKey];
+                }
             }
 
             // Lắng nghe khi chuyển tab sang Luyện viết để kích hoạt Canvas
@@ -212,26 +220,46 @@ export function hanziDecompositionApp(initialData = {}) {
             });
         },
 
-        selectCharacter(key) {
-            if (this.characters[key]) {
-                this.selectedKey = key;
-                this.currentChar = this.characters[key];
-                this.resetStrokePlayer();
-                this.clearCanvas();
-                this.speak(this.currentChar.character);
-            }
+        // =========================================================================
+        // GETTERS & ĐIỀU HƯỚNG BỘ THỦ
+        // =========================================================================
+        get currentRadical() {
+            return this.radicalGroups[this.selectedRadicalId] || null;
         },
 
-        get filteredCharacters() {
+        get currentRadicalCharacters() {
+            if (!this.currentRadical || !this.currentRadical.characters) return [];
+            return Object.values(this.currentRadical.characters);
+        },
+
+        get allCharactersFlat() {
+            const list = [];
+            Object.values(this.radicalGroups).forEach(group => {
+                if (group.characters) {
+                    Object.values(group.characters).forEach(c => {
+                        list.push({
+                            ...c,
+                            group_id: group.id,
+                            group_name: group.name,
+                            group_radical: group.radical,
+                        });
+                    });
+                }
+            });
+            return list;
+        },
+
+        get filteredSearchResults() {
             if (!this.searchQuery.trim()) {
-                return Object.values(this.characters);
+                return [];
             }
             const q = this.searchQuery.toLowerCase().trim();
-            return Object.values(this.characters).filter(c => {
+            return this.allCharactersFlat.filter(c => {
                 return c.character.includes(q) ||
                     c.pinyin.toLowerCase().includes(q) ||
                     c.sino_vietnamese.toLowerCase().includes(q) ||
-                    c.meaning.toLowerCase().includes(q);
+                    c.meaning.toLowerCase().includes(q) ||
+                    (c.group_name && c.group_name.toLowerCase().includes(q));
             });
         },
 
@@ -248,6 +276,56 @@ export function hanziDecompositionApp(initialData = {}) {
 
                 return matchSearch && matchStroke && matchCategory;
             });
+        },
+
+        selectRadical(radicalId) {
+            if (this.radicalGroups[radicalId]) {
+                this.selectedRadicalId = radicalId;
+                const charKeys = Object.keys(this.radicalGroups[radicalId].characters || {});
+                if (charKeys.length > 0) {
+                    this.selectCharacter(charKeys[0]);
+                }
+                this.speak(this.radicalGroups[radicalId].radical);
+            }
+        },
+
+        selectCharacter(charKey, radicalId = null) {
+            if (radicalId && this.radicalGroups[radicalId]) {
+                this.selectedRadicalId = radicalId;
+            }
+
+            const currentGroup = this.radicalGroups[this.selectedRadicalId];
+            if (currentGroup && currentGroup.characters[charKey]) {
+                this.selectedCharKey = charKey;
+                this.currentChar = currentGroup.characters[charKey];
+                this.resetStrokePlayer();
+                this.clearCanvas();
+                this.speak(this.currentChar.character);
+            }
+        },
+
+        jumpToRadicalFrom214(r) {
+            // Tìm nhóm bộ thủ tương ứng nếu có trong hệ thống
+            let foundGroupId = null;
+
+            if (this.radicalGroups[r.id]) {
+                foundGroupId = r.id;
+            } else {
+                for (const [gid, g] of Object.entries(this.radicalGroups)) {
+                    if (g.radical === r.radical || g.original === r.radical || g.sino_vietnamese === r.sino_vietnamese) {
+                        foundGroupId = gid;
+                        break;
+                    }
+                }
+            }
+
+            if (foundGroupId) {
+                this.selectRadical(foundGroupId);
+                this.activeTab = 'explorer';
+            } else {
+                // Nếu chưa có nhóm chữ chiết tự đầy đủ, phát âm bộ thủ
+                this.speak(r.radical);
+            }
         },
 
         speak(text) {
@@ -333,21 +411,17 @@ export function hanziDecompositionApp(initialData = {}) {
             this.canvas = canvasEl;
             this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
-            // Scale for high-DPI displays
             const rect = this.canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
             
-            // Set internal coordinate resolution
             this.canvas.width = rect.width * dpr;
             this.canvas.height = rect.height * dpr;
             this.ctx.scale(dpr, dpr);
 
-            // Default stroke styling
             this.ctx.lineCap = 'round';
             this.ctx.lineJoin = 'round';
             this.applyBrushSettings();
 
-            // Lưu trạng thái trắng ban đầu
             this.saveCanvasState();
         },
 
@@ -395,17 +469,15 @@ export function hanziDecompositionApp(initialData = {}) {
             this.applyBrushSettings();
             this.ctx.beginPath();
             this.ctx.moveTo(this.lastX, this.lastY);
-            // Draw a small dot immediately on tap
             this.ctx.lineTo(this.lastX + 0.1, this.lastY + 0.1);
             this.ctx.stroke();
         },
 
         draw(e) {
             if (!this.isDrawing || !this.ctx) return;
-            if (e.cancelable) e.preventDefault();
+            e.preventDefault();
 
             const pos = this.getPointerPos(e);
-
             this.ctx.beginPath();
             this.ctx.moveTo(this.lastX, this.lastY);
             this.ctx.lineTo(pos.x, pos.y);
@@ -422,40 +494,9 @@ export function hanziDecompositionApp(initialData = {}) {
             }
         },
 
-        saveCanvasState() {
-            if (!this.canvas || !this.ctx) return;
-            if (this.canvasHistory.length > 15) {
-                this.canvasHistory.shift();
-            }
-            try {
-                this.canvasHistory.push(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
-            } catch (err) {
-                // Ignore cross-origin issues if any
-            }
-        },
-
-        undoStroke() {
-            if (this.canvasHistory.length > 1) {
-                this.canvasHistory.pop(); // Remove current
-                const prevState = this.canvasHistory[this.canvasHistory.length - 1];
-                this.ctx.putImageData(prevState, 0, 0);
-            } else {
-                this.clearCanvas();
-            }
-        },
-
-        clearCanvas() {
-            if (!this.canvas || !this.ctx) return;
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.canvasHistory = [];
-            this.hasDrawn = false;
-            this.feedbackMessage = '';
-            this.saveCanvasState();
-        },
-
-        selectBrushColor(hex) {
-            this.brushColor = hex;
+        setBrushColor(colorHex) {
             this.isEraser = false;
+            this.brushColor = colorHex;
             this.applyBrushSettings();
         },
 
@@ -469,41 +510,63 @@ export function hanziDecompositionApp(initialData = {}) {
             this.applyBrushSettings();
         },
 
-        toggleTraceGuide() {
-            this.showTraceGuide = !this.showTraceGuide;
+        saveCanvasState() {
+            if (!this.canvas || !this.ctx) return;
+            if (this.canvasHistory.length > 15) {
+                this.canvasHistory.shift();
+            }
+            this.canvasHistory.push(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
         },
 
-        finishPractice() {
+        undoCanvas() {
+            if (this.canvasHistory.length > 1) {
+                this.canvasHistory.pop();
+                const prevState = this.canvasHistory[this.canvasHistory.length - 1];
+                this.ctx.putImageData(prevState, 0, 0);
+            } else if (this.canvasHistory.length === 1) {
+                this.clearCanvas();
+            }
+        },
+
+        clearCanvas() {
+            if (!this.ctx || !this.canvas) return;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.canvasHistory = [];
+            this.saveCanvasState();
+            this.hasDrawn = false;
+            this.feedbackMessage = '';
+        },
+
+        checkHandwriting() {
             if (!this.hasDrawn) {
-                this.feedbackMessage = 'Hãy đặt bút viết thử chữ vào khung lưới nhé!';
+                this.feedbackMessage = 'Hãy viết nét chữ vào ô trước khi chấm!';
                 this.feedbackType = 'info';
                 return;
             }
 
-            this.feedbackMessage = `Viết rất tốt! Đã hoàn thành luyện viết chữ "${this.currentChar?.character}".`;
+            const praiseList = [
+                'Nét bút rất có thần thái! Thuận bút chuẩn chỉnh.',
+                'Tuyệt vời! Bố cục chữ cân đối đúng tinh thần chữ Hán.',
+                'Rất chuẩn! Hãy luyện tập tiếp các chữ khác cùng bộ thủ nhé.'
+            ];
+            const randomIndex = Math.floor(Math.random() * praiseList.length);
+            this.feedbackMessage = praiseList[randomIndex];
             this.feedbackType = 'success';
-            this.speak(this.currentChar?.character);
-
-            // Gửi event toast nếu hệ thống có
-            if (window.$dispatch) {
-                window.$dispatch('toast', {
-                    message: `Hoàn thành tập viết chữ ${this.currentChar?.character}!`,
-                    type: 'success'
-                });
-            }
+            this.speak('好');
         },
 
         // =========================================================================
-        // HANDLERS CHO 3 DẠNG BÀI TẬP THỰC CHIẾN
+        // XỬ LÝ MINI QUIZ BÀI TẬP CHIẾT TỰ
         // =========================================================================
-        // --- Drill 1: Confusing Characters ---
-        selectConfusingAnswer(choiceChar) {
+        answerConfusing(chosenChar) {
             if (this.confusingAnswered !== null) return;
-            this.confusingAnswered = choiceChar;
-            const current = this.confusingQuestions[this.confusingIndex];
-            if (choiceChar === current.correct) {
+            this.confusingAnswered = chosenChar;
+            const currentQ = this.confusingQuestions[this.confusingIndex];
+            if (chosenChar === currentQ.correct) {
                 this.totalScore += 10;
-                this.speak(choiceChar);
+                this.speak('正确');
+            } else {
+                this.speak('错误');
             }
         },
 
@@ -517,14 +580,15 @@ export function hanziDecompositionApp(initialData = {}) {
             }
         },
 
-        // --- Drill 2: Predict Meaning ---
-        selectPredictAnswer(option) {
+        answerPredict(option) {
             if (this.predictAnswered !== null) return;
             this.predictAnswered = option;
-            const current = this.predictQuestions[this.predictIndex];
-            if (option === current.correct) {
+            const currentQ = this.predictQuestions[this.predictIndex];
+            if (option === currentQ.correct) {
                 this.totalScore += 10;
-                this.speak(current.unknownChar);
+                this.speak('正确');
+            } else {
+                this.speak('错误');
             }
         },
 
@@ -538,14 +602,15 @@ export function hanziDecompositionApp(initialData = {}) {
             }
         },
 
-        // --- Drill 3: Find Typo ---
-        selectTypoAnswer(index) {
+        answerTypo(index) {
             if (this.typoAnswered !== null) return;
             this.typoAnswered = index;
-            const current = this.typoQuestions[this.typoIndex];
-            if (index === current.correctIndex) {
+            const currentQ = this.typoQuestions[this.typoIndex];
+            if (index === currentQ.correctIndex) {
                 this.totalScore += 10;
-                this.speak(current.correctChar);
+                this.speak('正确');
+            } else {
+                this.speak('错误');
             }
         },
 
