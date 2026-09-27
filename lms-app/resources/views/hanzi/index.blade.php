@@ -339,20 +339,13 @@
                     </div>
                 </div>
 
-                <!-- Cụm bên phải: Nút Yêu thích, Tải GIF, Chia sẻ, Phát âm -->
+                <!-- Cụm bên phải: Nút Yêu thích, Chia sẻ, Phát âm -->
                 <div class="flex items-center gap-2 self-start md:self-center shrink-0">
                     <!-- Nút Trái tim Favorite -->
                     <button type="button" @click="toggleFavorite()" 
                             class="w-9 h-9 rounded-xl bg-white dark:bg-[#23201e] hover:bg-[#fff2ee] dark:hover:bg-[#2c221e] border border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-center transition-all cursor-pointer shadow-2xs btn-tactile"
                             :title="isFavorite ? 'Bỏ thích' : 'Yêu thích'">
                         <i class="fa-solid fa-heart text-xs" :class="isFavorite ? 'text-rose-500' : 'text-slate-400'"></i>
-                    </button>
-
-                    <!-- Nút Tải GIF -->
-                    <button type="button" @click="speak(currentCharacterData ? currentCharacterData.char : '')" 
-                            class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#23201e] hover:bg-[#fff2ee] dark:hover:bg-[#2c221e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-200 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs btn-tactile">
-                        <i class="fa-solid fa-download text-[11px] text-[#e07a5f]"></i>
-                        <span>{{ __('Tải GIF') }}</span>
                     </button>
 
                     <!-- Nút Chia sẻ -->
