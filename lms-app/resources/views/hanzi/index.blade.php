@@ -2,22 +2,22 @@
 @section('title', __('Chiết Tự Chữ Hán Theo Bộ Thủ - Tiếng Trung XiaoMu'))
 
 @section('header-left')
-    <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
-        <a href="{{ route('home') }}" class="hover:text-white transition-colors">{{ __('Học tập') }}</a>
-        <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+    <div class="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+        <a href="{{ route('home') }}" class="hover:text-[#e07a5f] transition-colors">{{ __('Học tập') }}</a>
+        <i class="fa-solid fa-chevron-right text-[9px] text-slate-400 dark:text-slate-600"></i>
         
         <template x-if="step === 1">
-            <span class="text-slate-200 font-semibold">{{ __('Theo bộ thủ (214)') }}</span>
+            <span class="text-slate-800 dark:text-slate-200 font-semibold">{{ __('Theo bộ thủ (214)') }}</span>
         </template>
 
         <template x-if="step >= 2">
             <div class="flex items-center gap-2">
-                <button type="button" @click="goToStep1()" class="hover:text-white transition-colors cursor-pointer text-slate-400">
-                    {{ __('Từ điển') }}
+                <button type="button" @click="goToStep1()" class="hover:text-[#e07a5f] transition-colors cursor-pointer text-slate-500 dark:text-slate-400">
+                    {{ __('Bộ thủ') }}
                 </button>
-                <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+                <i class="fa-solid fa-chevron-right text-[9px] text-slate-400 dark:text-slate-600"></i>
                 <button type="button" @click="goToStep2()" class="transition-colors cursor-pointer"
-                        :class="step === 2 ? 'text-white font-bold' : 'text-slate-400 hover:text-white'">
+                        :class="step === 2 ? 'text-[#e07a5f] font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-[#e07a5f]'">
                     <span>{{ __('Bộ ') }}</span><span x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
                 </button>
             </div>
@@ -25,8 +25,8 @@
 
         <template x-if="step === 3 && currentCharacterData">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
-                <span class="text-[#38bdf8] font-bold" x-text="currentCharacterData.char"></span>
+                <i class="fa-solid fa-chevron-right text-[9px] text-slate-400 dark:text-slate-600"></i>
+                <span class="text-[#e07a5f] font-bold zh-text text-sm" x-text="currentCharacterData.char"></span>
             </div>
         </template>
     </div>
@@ -37,19 +37,19 @@
      class="max-w-6xl mx-auto space-y-5">
 
     <!-- ========================================================================= -->
-    <!-- TOP TOGGLE TAB & GLOBAL BAR (MẪU ẢNH 1) -->
+    <!-- TOP TOGGLE TAB & GLOBAL BAR (THEME XIAOMU LMS) -->
     <!-- ========================================================================= -->
     <div class="flex items-center justify-between gap-4">
         <!-- Toggle: [Theo bộ thủ] vs [Từ điển] -->
-        <div class="inline-flex items-center p-1 rounded-xl bg-[#1e1c1a] dark:bg-[#181615] border border-[#2d2926]">
+        <div class="inline-flex items-center p-1 rounded-xl bg-[#f1ede7] dark:bg-[#1e1c1a] border border-[#e8e2d9] dark:border-[#2d2926]">
             <button type="button" @click="activeMainTab = 'radicals'; goToStep1()" 
                     class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
-                    :class="activeMainTab === 'radicals' ? 'bg-[#2d2926] text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'">
+                    :class="activeMainTab === 'radicals' ? 'bg-white dark:bg-[#2d2926] text-[#e07a5f] shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'">
                 {{ __('Theo bộ thủ') }}
             </button>
             <button type="button" @click="activeMainTab = 'dictionary'" 
                     class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
-                    :class="activeMainTab === 'dictionary' ? 'bg-[#2d2926] text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'">
+                    :class="activeMainTab === 'dictionary' ? 'bg-white dark:bg-[#2d2926] text-[#e07a5f] shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'">
                 {{ __('Từ điển') }}
             </button>
         </div>
@@ -57,19 +57,19 @@
         <!-- Các nút bổ trợ: 7 Quy tắc & Tabs chức năng -->
         <div class="flex items-center gap-2">
             <button type="button" @click="showRulesModal = true"
-                    class="px-3 py-1.5 rounded-xl bg-[#1e1c1a] hover:bg-[#282522] border border-[#2d2926] text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+                    class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile">
                 <i class="fa-solid fa-graduation-cap text-[#e07a5f]"></i>
                 <span class="hidden sm:inline">{{ __('7 Quy tắc viết') }}</span>
             </button>
             <button type="button" @click="activeTab = 'stroke_studio'"
-                    class="px-3 py-1.5 rounded-xl bg-[#1e1c1a] hover:bg-[#282522] border border-[#2d2926] text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-                    :class="activeTab === 'stroke_studio' ? 'border-[#e07a5f] text-white' : ''">
+                    class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile"
+                    :class="activeTab === 'stroke_studio' ? 'border-[#e07a5f] text-[#e07a5f] dark:text-[#e07a5f]' : ''">
                 <i class="fa-solid fa-pen-nib text-[#e07a5f]"></i>
                 <span class="hidden sm:inline">{{ __('Luyện viết') }}</span>
             </button>
             <button type="button" @click="activeTab = 'quiz'"
-                    class="px-3 py-1.5 rounded-xl bg-[#1e1c1a] hover:bg-[#282522] border border-[#2d2926] text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-                    :class="activeTab === 'quiz' ? 'border-[#e07a5f] text-white' : ''">
+                    class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile"
+                    :class="activeTab === 'quiz' ? 'border-[#e07a5f] text-[#e07a5f] dark:text-[#e07a5f]' : ''">
                 <i class="fa-solid fa-puzzle-piece text-[#e07a5f]"></i>
                 <span class="hidden sm:inline">{{ __('Luyện tập') }}</span>
             </button>
@@ -77,16 +77,17 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MÀN HÌNH CẤP 1: THEO BỘ THỦ (214) (MẪU ẢNH 1 CHÍNH XÁC 100%) -->
+    <!-- MÀN HÌNH CẤP 1: THEO BỘ THỦ (214) (BIẾN TẤU CHUẨN XIAOMU LMS) -->
     <!-- ========================================================================= -->
     <div x-show="activeTab === 'explorer' && step === 1" class="space-y-5" x-cloak>
         
         <!-- Header: Tiêu đề "Theo bộ thủ (214)" & Số lượng -->
         <div class="flex items-center justify-between pt-1">
-            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                {{ __('Theo bộ thủ (214)') }}
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                <span>{{ __('Theo bộ thủ (214)') }}</span>
             </h1>
-            <span class="text-xs text-slate-400 font-semibold" x-text="total214Count + ' {{ __('bộ') }}'"></span>
+            <span class="px-2.5 py-1 rounded-full bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] text-xs font-bold shadow-2xs" 
+                  x-text="total214Count + ' {{ __('bộ thủ') }}'"></span>
         </div>
 
         <!-- Thanh Tìm kiếm Bộ thủ: "Tìm bộ thủ - glyph, Hán - Việt, nghĩa..." -->
@@ -94,8 +95,8 @@
             <input type="text" 
                    x-model="radicalSearchFilter"
                    placeholder="{{ __('Tìm bộ thủ - glyph, Hán - Việt, nghĩa...') }}" 
-                   class="w-full px-4 py-2.5 rounded-xl text-xs sm:text-sm bg-[#161413] border border-[#2d2926] text-white placeholder-slate-500 focus:outline-hidden focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/30 transition-all">
-            <i class="fa-solid fa-magnifying-glass absolute right-4 top-3 text-xs text-slate-500 pointer-events-none"></i>
+                   class="w-full px-4 py-2.5 rounded-2xl text-xs sm:text-sm bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-hidden focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/15 shadow-2xs transition-all">
+            <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-xs text-slate-400 pointer-events-none"></i>
         </div>
 
         <!-- DANH SÁCH BỘ THỦ PHÂN THEO SỐ NÉT (1 nét (6), 2 nét (23), 3 nét (31)...) -->
@@ -103,25 +104,28 @@
             <template x-for="(group, strokeKey) in filtered214Grouped" :key="strokeKey">
                 <div class="space-y-2.5">
                     <!-- Tên nhóm số nét: "1 nét (6)" -->
-                    <div class="text-xs font-semibold text-slate-400" 
-                         x-text="group.name + ' (' + group.items.length + ')'"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400" 
+                              x-text="group.name + ' (' + group.items.length + ')'"></span>
+                        <div class="flex-1 h-px bg-[#e8e2d9] dark:bg-[#2d2926]"></div>
+                    </div>
 
                     <!-- Lưới các ô card bộ thủ -->
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 sm:gap-3">
                         <template x-for="item in group.items" :key="item.id">
-                            <div class="p-3 rounded-2xl bg-[#181615] hover:bg-[#22201e] border border-[#2d2926] hover:border-[#38bdf8]/70 flex flex-col items-center justify-between text-center cursor-pointer group transition-all duration-150 min-h-[92px]"
+                            <div class="p-3 rounded-2xl bg-white dark:bg-[#181615] hover:bg-[#fff9f7] dark:hover:bg-[#201a18] border border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] hover:shadow-md flex flex-col items-center justify-between text-center cursor-pointer group transition-all duration-200 min-h-[96px] shadow-2xs btn-tactile"
                                  @click="chooseRadical214(item)">
                                 
                                 <!-- Ký tự bộ thủ to ở trên -->
-                                <span class="text-2xl sm:text-3xl font-bold zh-text text-white group-hover:scale-110 transition-transform py-0.5" 
+                                <span class="text-2xl sm:text-3xl font-bold zh-text text-slate-800 dark:text-slate-100 group-hover:text-[#e07a5f] group-hover:scale-110 transition-all py-0.5" 
                                       x-text="item.radical"></span>
 
                                 <!-- Tên âm Hán-Việt ở giữa -->
-                                <span class="text-xs font-medium text-slate-300 block truncate w-full" 
+                                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 block truncate w-full" 
                                       x-text="item.sino_vietnamese"></span>
 
                                 <!-- Số chữ thuộc bộ ở dưới (VD: 8 chữ, 20 chữ) -->
-                                <span class="text-[10px] text-slate-500 block truncate" 
+                                <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 block truncate" 
                                       x-text="(item.characters?.length || item.char_count || 0) + ' {{ __('chữ') }}'"></span>
                             </div>
                         </template>
@@ -131,10 +135,10 @@
         </div>
 
         <!-- Trạng thái trống nếu không tìm thấy bộ thủ -->
-        <div x-show="Object.keys(filtered214Grouped).length === 0" class="p-8 text-center bg-[#181615] rounded-2xl border border-[#2d2926] space-y-2">
-            <i class="fa-solid fa-filter text-2xl text-slate-500"></i>
-            <p class="text-xs text-slate-400">{{ __('Không tìm thấy bộ thủ nào phù hợp.') }}</p>
-            <button type="button" @click="radicalSearchFilter = ''" class="px-3 py-1 rounded-lg bg-[#38bdf8] text-slate-900 text-xs font-bold cursor-pointer">
+        <div x-show="Object.keys(filtered214Grouped).length === 0" class="p-8 text-center bg-white dark:bg-[#181615] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926] space-y-2 shadow-xs">
+            <i class="fa-solid fa-filter text-2xl text-slate-400"></i>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Không tìm thấy bộ thủ nào phù hợp.') }}</p>
+            <button type="button" @click="radicalSearchFilter = ''" class="px-3.5 py-1.5 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold cursor-pointer transition-all shadow-xs btn-tactile">
                 {{ __('Đặt lại tìm kiếm') }}
             </button>
         </div>
@@ -142,74 +146,74 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MÀN HÌNH CẤP 2: CHỮ HÁN BỘ [X] (MẪU ẢNH 2 CHÍNH XÁC 100%) -->
+    <!-- MÀN HÌNH CẤP 2: CHỮ HÁN BỘ [X] (BIẾN TẤU CHUẨN XIAOMU LMS) -->
     <!-- ========================================================================= -->
     <div x-show="activeTab === 'explorer' && step === 2" class="space-y-5" x-cloak>
         
         <!-- Breadcrumb & Tiêu đề "Chữ Hán bộ 丨" -->
-        <div class="space-y-1">
-            <div class="text-xs text-slate-400 flex items-center gap-1.5">
-                <button type="button" @click="goToStep1()" class="hover:text-white cursor-pointer transition-colors">{{ __('Từ điển') }}</button>
+        <div class="space-y-1.5">
+            <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <button type="button" @click="goToStep1()" class="hover:text-[#e07a5f] cursor-pointer transition-colors">{{ __('214 Bộ thủ') }}</button>
                 <span>/</span>
-                <span class="text-slate-300">{{ __('Bộ') }}</span>
-                <span class="text-white font-bold zh-text" x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
+                <span class="text-slate-600 dark:text-slate-300">{{ __('Bộ') }}</span>
+                <span class="text-[#e07a5f] font-bold zh-text text-sm" x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
             </div>
 
             <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pt-1">
                 <div class="flex items-baseline gap-3">
-                    <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                         <span>{{ __('Chữ Hán bộ') }}</span>
-                        <span class="zh-text text-2xl sm:text-3xl text-white" x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
+                        <span class="zh-text text-2xl sm:text-3xl text-[#e07a5f]" x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
                     </h1>
                 </div>
                 <!-- Nút quay lại danh sách bộ -->
                 <button type="button" @click="goToStep1()" 
-                        class="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-1">
+                        class="text-xs font-semibold text-slate-500 hover:text-[#e07a5f] dark:text-slate-400 dark:hover:text-[#e07a5f] transition-colors cursor-pointer flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left text-[10px]"></i>
                     <span>{{ __('← Xem tất cả 214 Bộ thủ') }}</span>
                 </button>
             </div>
             
-            <p class="text-xs text-slate-400" x-text="(sortedRadicalCharacters.length) + ' {{ __('chữ') }}'"></p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" x-text="(sortedRadicalCharacters.length) + ' {{ __('chữ Hán liên quan') }}'"></p>
         </div>
 
         <!-- Thanh Sắp xếp: "Sắp xếp: [Số nét] [A → Z] [Tần suất]" -->
         <div class="flex items-center gap-2 pt-1">
-            <span class="text-xs text-slate-400 font-medium mr-1">{{ __('Sắp xếp:') }}</span>
+            <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mr-1">{{ __('Sắp xếp:') }}</span>
             
             <button type="button" @click="sortType = 'stroke'" 
-                    class="px-3 py-1 rounded-full text-xs transition-all cursor-pointer"
-                    :class="sortType === 'stroke' ? 'bg-[#38bdf8] text-slate-900 font-bold shadow-xs' : 'bg-transparent text-slate-400 hover:text-slate-200'">
+                    class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
+                    :class="sortType === 'stroke' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Số nét') }}
             </button>
 
             <button type="button" @click="sortType = 'alphabet'" 
-                    class="px-3 py-1 rounded-full text-xs transition-all cursor-pointer"
-                    :class="sortType === 'alphabet' ? 'bg-[#38bdf8] text-slate-900 font-bold shadow-xs' : 'bg-transparent text-slate-400 hover:text-slate-200'">
+                    class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
+                    :class="sortType === 'alphabet' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('A → Z') }}
             </button>
 
             <button type="button" @click="sortType = 'frequency'" 
-                    class="px-3 py-1 rounded-full text-xs transition-all cursor-pointer"
-                    :class="sortType === 'frequency' ? 'bg-[#38bdf8] text-slate-900 font-bold shadow-xs' : 'bg-transparent text-slate-400 hover:text-slate-200'">
+                    class="px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer btn-tactile"
+                    :class="sortType === 'frequency' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#23201e] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Tần suất') }}
             </button>
         </div>
 
-        <!-- LƯỚI CARD CHỮ HÁN DẠNG NẰM NGANG (NHƯ HÌNH ẢNH 2) -->
+        <!-- LƯỚI CARD CHỮ HÁN DẠNG NẰM NGANG (THEME XIAOMU LMS) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             <template x-for="charItem in sortedRadicalCharacters" :key="charItem.char">
-                <div class="p-3.5 rounded-2xl bg-[#181615] hover:bg-[#22201e] border border-[#2d2926] hover:border-[#38bdf8]/70 flex items-center gap-3.5 cursor-pointer group transition-all duration-150"
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-[#181615] hover:bg-[#fff9f7] dark:hover:bg-[#201a18] border border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] hover:shadow-md flex items-center gap-3.5 cursor-pointer group transition-all duration-200 shadow-2xs btn-tactile"
                      @click="chooseCharacter214(charItem)">
                     
                     <!-- Ký tự chữ to bên trái -->
-                    <span class="text-3xl sm:text-4xl font-bold zh-text text-white group-hover:text-[#38bdf8] transition-colors shrink-0" 
+                    <span class="text-3xl sm:text-4xl font-bold zh-text text-slate-800 dark:text-slate-100 group-hover:text-[#e07a5f] group-hover:scale-105 transition-all shrink-0" 
                           x-text="charItem.char"></span>
 
                     <!-- Cột thông tin bên phải: Pinyin ở trên, Nghĩa ở dưới -->
                     <div class="min-w-0 flex-1">
-                        <span class="text-xs font-semibold text-slate-200 block" x-text="charItem.pinyin"></span>
-                        <span class="text-xs text-slate-400 block truncate mt-0.5" x-text="charItem.meaning"></span>
+                        <span class="text-xs font-bold text-[#e07a5f] block" x-text="charItem.pinyin"></span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400 block truncate mt-0.5" x-text="charItem.meaning"></span>
                     </div>
                 </div>
             </template>
@@ -218,46 +222,46 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MÀN HÌNH CẤP 3: CHI TIẾT CHỮ HÁN (MẪU ẢNH 3 CHÍNH XÁC 100%) -->
+    <!-- MÀN HÌNH CẤP 3: CHI TIẾT CHỮ HÁN (HERO BANNER & CỘT NỘI DUNG XIAOMU LMS) -->
     <!-- ========================================================================= -->
     <div x-show="activeTab === 'explorer' && step === 3" class="space-y-4" x-cloak>
         
         <!-- Breadcrumb cấp 3 -->
-        <div class="flex items-center justify-between text-xs text-slate-400">
+        <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <div class="flex items-center gap-1.5">
-                <button type="button" @click="goToStep1()" class="hover:text-white cursor-pointer">{{ __('Từ điển') }}</button>
+                <button type="button" @click="goToStep1()" class="hover:text-[#e07a5f] cursor-pointer transition-colors">{{ __('214 Bộ thủ') }}</button>
                 <span>/</span>
-                <button type="button" @click="goToStep2()" class="hover:text-white cursor-pointer">
+                <button type="button" @click="goToStep2()" class="hover:text-[#e07a5f] cursor-pointer transition-colors">
                     <span>{{ __('Bộ ') }}</span><span x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
                 </button>
                 <span>/</span>
-                <span class="text-white font-bold zh-text" x-text="currentCharacterData ? currentCharacterData.char : ''"></span>
+                <span class="text-[#e07a5f] font-bold zh-text text-sm" x-text="currentCharacterData ? currentCharacterData.char : ''"></span>
             </div>
 
             <!-- Nút quay lại danh sách chữ -->
-            <button type="button" @click="goToStep2()" class="hover:text-white transition-colors cursor-pointer flex items-center gap-1">
+            <button type="button" @click="goToStep2()" class="hover:text-[#e07a5f] transition-colors cursor-pointer flex items-center gap-1.5 font-semibold">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
                 <span>{{ __('← Danh sách chữ bộ ') }}<strong x-text="currentRadicalData ? currentRadicalData.radical : ''"></strong></span>
             </button>
         </div>
 
-        <!-- HERO BANNER BLUEPRINT (NHƯ ẢNH 3) -->
-        <div class="relative rounded-2xl bg-gradient-to-r from-[#0d1b2a] via-[#1b263b] to-[#0f172a] border border-sky-950 p-6 sm:p-7 overflow-hidden shadow-md">
-            <!-- Họa tiết lưới blueprint mờ ảo -->
-            <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20" xmlns="http://www.w3.org/2000/svg">
+        <!-- HERO BANNER XIAOMU LMS (WARM CREAM / TERRACOTTA / CHARCOAL) -->
+        <div class="relative rounded-3xl bg-gradient-to-br from-[#fff7f4] via-[#ffffff] to-[#fff2ee] dark:from-[#201a18] dark:via-[#181615] dark:to-[#241c19] border border-[#fcdccf] dark:border-[#3d2822] p-6 sm:p-7 overflow-hidden shadow-xs">
+            <!-- Họa tiết ô mễ mờ trang nhã -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-15 dark:opacity-10" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#38bdf8" stroke-width="0.7"/>
+                    <pattern id="xiaomu-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+                        <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#e07a5f" stroke-width="0.8"/>
                     </pattern>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#blueprint-grid)" />
+                <rect width="100%" height="100%" fill="url(#xiaomu-grid)" />
             </svg>
 
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <!-- Cụm bên trái: Chữ to + 2 Ô Thông tin + Dải tags -->
                 <div class="flex flex-col sm:flex-row sm:items-center gap-6">
-                    <!-- Ký tự chữ Hán siêu to -->
-                    <div class="text-7xl sm:text-8xl font-bold zh-text text-white select-none shrink-0 drop-shadow-sm"
+                    <!-- Ký tự chữ Hán siêu to màu Terracotta -->
+                    <div class="text-7xl sm:text-8xl font-bold zh-text text-[#e07a5f] select-none shrink-0 drop-shadow-xs"
                          x-text="currentCharacterData ? currentCharacterData.char : (currentChar ? currentChar.character : '')">
                     </div>
 
@@ -265,27 +269,27 @@
                     <div class="space-y-3">
                         <div class="flex flex-wrap items-center gap-3">
                             <!-- Box Nghĩa tiếng Việt -->
-                            <div class="px-4 py-2.5 rounded-xl bg-[#1e293b]/70 border border-slate-700/60 backdrop-blur-xs min-w-[160px]">
-                                <span class="text-[10px] font-bold tracking-wider uppercase text-slate-400 block">{{ __('NGHĨA TIẾNG VIỆT') }}</span>
-                                <h3 class="text-base sm:text-lg font-bold text-white mt-0.5" 
+                            <div class="px-4 py-2.5 rounded-2xl bg-white/90 dark:bg-[#231e1a]/90 border border-[#fcdccf] dark:border-[#3d2822] shadow-xs backdrop-blur-xs min-w-[160px]">
+                                <span class="text-[10px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-400 block">{{ __('NGHĨA TIẾNG VIỆT') }}</span>
+                                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5" 
                                     x-text="currentCharacterData ? currentCharacterData.meaning : (currentChar ? currentChar.meaning : '')"></h3>
                             </div>
 
                             <!-- Box Âm Hán Việt -->
-                            <div class="px-4 py-2.5 rounded-xl bg-[#1e293b]/70 border border-slate-700/60 backdrop-blur-xs min-w-[140px]">
-                                <span class="text-[10px] font-bold tracking-wider uppercase text-slate-400 block">{{ __('ÂM HÁN VIỆT') }}</span>
-                                <h3 class="text-base sm:text-lg font-bold text-white mt-0.5" 
+                            <div class="px-4 py-2.5 rounded-2xl bg-white/90 dark:bg-[#231e1a]/90 border border-[#fcdccf] dark:border-[#3d2822] shadow-xs backdrop-blur-xs min-w-[140px]">
+                                <span class="text-[10px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-400 block">{{ __('ÂM HÁN VIỆT') }}</span>
+                                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5" 
                                     x-text="currentCharacterData ? currentCharacterData.sino_vietnamese : (currentChar ? currentChar.sino_vietnamese : '')"></h3>
                             </div>
                         </div>
 
                         <!-- Dải metadata tags: [1 chữ] [# 1 nét] [Thanh điệu: 3 V] -->
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="px-2.5 py-0.5 rounded-full bg-slate-800/80 border border-slate-700 text-xs text-slate-300 font-semibold"
+                            <span class="px-3 py-1 rounded-full bg-white dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-xs text-[#e07a5f] font-semibold shadow-2xs"
                                   x-text="'1 chữ'"></span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-slate-800/80 border border-slate-700 text-xs text-slate-300 font-semibold"
+                            <span class="px-3 py-1 rounded-full bg-white dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-xs text-[#e07a5f] font-semibold shadow-2xs"
                                   x-text="'# ' + (currentCharacterData?.stroke_count || currentChar?.stroke_count || 1) + ' nét'"></span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-slate-800/80 border border-slate-700 text-xs text-slate-300 font-semibold"
+                            <span class="px-3 py-1 rounded-full bg-white dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-xs text-[#e07a5f] font-semibold shadow-2xs"
                                   x-text="'Thanh điệu: ' + (currentCharacterData?.tone || '1')"></span>
                         </div>
                     </div>
@@ -295,28 +299,28 @@
                 <div class="flex items-center gap-2 self-start md:self-center shrink-0">
                     <!-- Nút Trái tim Favorite -->
                     <button type="button" @click="toggleFavorite()" 
-                            class="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all cursor-pointer"
+                            class="w-9 h-9 rounded-xl bg-white dark:bg-[#23201e] hover:bg-[#fff2ee] dark:hover:bg-[#2c221e] border border-[#e8e2d9] dark:border-[#2d2926] flex items-center justify-center transition-all cursor-pointer shadow-2xs btn-tactile"
                             :title="isFavorite ? 'Bỏ thích' : 'Yêu thích'">
                         <i class="fa-solid fa-heart text-xs" :class="isFavorite ? 'text-rose-500' : 'text-slate-400'"></i>
                     </button>
 
                     <!-- Nút Tải GIF -->
                     <button type="button" @click="speak(currentCharacterData ? currentCharacterData.char : '')" 
-                            class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
-                        <i class="fa-solid fa-download text-[11px]"></i>
+                            class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#23201e] hover:bg-[#fff2ee] dark:hover:bg-[#2c221e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-200 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs btn-tactile">
+                        <i class="fa-solid fa-download text-[11px] text-[#e07a5f]"></i>
                         <span>{{ __('Tải GIF') }}</span>
                     </button>
 
                     <!-- Nút Chia sẻ -->
                     <button type="button" @click="if (navigator.share) { navigator.share({ title: 'Chiết tự chữ Hán', url: window.location.href }); }" 
-                            class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
-                        <i class="fa-solid fa-share-nodes text-[11px]"></i>
+                            class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#23201e] hover:bg-[#fff2ee] dark:hover:bg-[#2c221e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-200 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs btn-tactile">
+                        <i class="fa-solid fa-share-nodes text-[11px] text-[#e07a5f]"></i>
                         <span>{{ __('Chia sẻ') }}</span>
                     </button>
 
-                    <!-- Nút Phát âm -->
+                    <!-- Nút Phát âm (Terracotta Button) -->
                     <button type="button" @click="speak(currentCharacterData ? currentCharacterData.char : '')"
-                            class="w-9 h-9 rounded-xl bg-[#38bdf8] text-slate-950 font-bold flex items-center justify-center hover:bg-sky-400 transition-all cursor-pointer"
+                            class="w-9 h-9 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white font-bold flex items-center justify-center shadow-xs transition-all cursor-pointer btn-tactile"
                             title="{{ __('Phát âm') }}">
                         <i class="fa-solid fa-volume-high text-xs"></i>
                     </button>
@@ -324,72 +328,72 @@
             </div>
         </div>
 
-        <!-- DÒNG THÔNG BÁO HOÀN THIỆN (NHƯ ẢNH 3) -->
-        <div class="p-3 rounded-xl bg-[#231e17] border border-[#483928] text-xs text-[#fbbf24] flex items-center gap-2">
-            <i class="fa-solid fa-circle-info text-xs"></i>
+        <!-- DÒNG THÔNG BÁO HOÀN THIỆN -->
+        <div class="p-3 rounded-2xl bg-[#fffbf0] dark:bg-[#241e14] border border-[#fde68a] dark:border-[#533f1c] text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2.5 shadow-2xs">
+            <i class="fa-solid fa-circle-info text-amber-600 dark:text-amber-400 text-xs"></i>
             <span>{{ __('Trang chữ này đang được hoàn thiện. Một số phần (tự nguyên, mẹo nhớ Hán-Việt, từ ghép...) sẽ xuất hiện sớm.') }}</span>
         </div>
 
-        <!-- THANH TABS TÍNH NĂNG (NHƯ ẢNH 3) -->
+        <!-- THANH TABS TÍNH NĂNG (THEME XIAOMU LMS) -->
         <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
             <button type="button" @click="detailTab = 'stroke_order'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                    :class="detailTab === 'stroke_order' ? 'bg-[#2d2926] text-white font-bold' : 'text-slate-400 hover:text-white'">
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 btn-tactile"
+                    :class="detailTab === 'stroke_order' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#1e1c1a] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Bút thuận') }}
             </button>
             <button type="button" @click="detailTab = 'structure'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                    :class="detailTab === 'structure' ? 'bg-[#2d2926] text-white font-bold' : 'text-slate-400 hover:text-white'">
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 btn-tactile"
+                    :class="detailTab === 'structure' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#1e1c1a] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Cấu tạo') }}
             </button>
             <button type="button" @click="detailTab = 'meaning_usage'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                    :class="detailTab === 'meaning_usage' ? 'bg-[#2d2926] text-white font-bold' : 'text-slate-400 hover:text-white'">
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 btn-tactile"
+                    :class="detailTab === 'meaning_usage' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#1e1c1a] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Nghĩa & cách dùng') }}
             </button>
             <button type="button" @click="detailTab = 'map'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                    :class="detailTab === 'map' ? 'bg-[#2d2926] text-white font-bold' : 'text-slate-400 hover:text-white'">
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 btn-tactile"
+                    :class="detailTab === 'map' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#1e1c1a] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Bản đồ') }}
             </button>
             <button type="button" @click="detailTab = 'sino_viet'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                    :class="detailTab === 'sino_viet' ? 'bg-[#2d2926] text-white font-bold' : 'text-slate-400 hover:text-white'">
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 btn-tactile"
+                    :class="detailTab === 'sino_viet' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#1e1c1a] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Hán - Việt') }}
             </button>
             <button type="button" @click="detailTab = 'mnemonic'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                    :class="detailTab === 'mnemonic' ? 'bg-[#2d2926] text-white font-bold' : 'text-slate-400 hover:text-white'">
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 btn-tactile"
+                    :class="detailTab === 'mnemonic' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#1e1c1a] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Mẹo cộng đồng') }}
             </button>
             <button type="button" @click="detailTab = 'naming'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                    :class="detailTab === 'naming' ? 'bg-[#2d2926] text-white font-bold' : 'text-slate-400 hover:text-white'">
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 btn-tactile"
+                    :class="detailTab === 'naming' ? 'bg-[#e07a5f] text-white font-bold shadow-xs' : 'bg-[#f1ede7] dark:bg-[#1e1c1a] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Đặt tên') }}
             </button>
         </div>
 
-        <!-- 2 CỘT NỘI DUNG CHÍNH (NHƯ ẢNH 3) -->
+        <!-- 2 CỘT NỘI DUNG CHÍNH (THEME XIAOMU LMS) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             
             <!-- CỘT 1 (BÊN TRÁI): THỨ TỰ VIẾT NÉT CHỮ & KHUNG LUYỆN TẬP (5 COLS) -->
             <div class="lg:col-span-5 space-y-4">
-                <div class="p-5 rounded-2xl bg-[#181615] border border-[#2d2926] space-y-4">
+                <div class="p-5 rounded-3xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] space-y-4 shadow-xs">
                     
                     <!-- Header: Thứ tự viết nét chữ & Tuỳ chỉnh nâng cao -->
-                    <div class="flex items-center justify-between pb-3 border-b border-[#2d2926]">
-                        <h4 class="text-sm font-bold text-white">{{ __('Thứ tự viết nét chữ') }}</h4>
+                    <div class="flex items-center justify-between pb-3 border-b border-[#e8e2d9] dark:border-[#2d2926]">
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Thứ tự viết nét chữ') }}</h4>
                         <button type="button" @click="showRulesModal = true" 
-                                class="text-xs text-slate-400 hover:text-[#38bdf8] transition-colors flex items-center gap-1 cursor-pointer">
+                                class="text-xs text-slate-500 hover:text-[#e07a5f] dark:text-slate-400 dark:hover:text-[#e07a5f] transition-colors flex items-center gap-1 cursor-pointer">
                             <i class="fa-solid fa-gear text-[11px]"></i>
                             <span>{{ __('Tuỳ chỉnh nâng cao') }}</span>
                         </button>
                     </div>
 
                     <!-- Khung mô phỏng nét viết chữ Hán -->
-                    <div class="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto rounded-2xl bg-[#141211] border border-[#2d2926] flex items-center justify-center overflow-hidden shadow-inner group">
-                        <!-- Đường kẻ ô mễ mờ -->
-                        <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20" xmlns="http://www.w3.org/2000/svg">
+                    <div class="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto rounded-2xl bg-[#fffaf5] dark:bg-[#1c1816] border-2 border-[#e8e2d9] dark:border-[#382823] flex items-center justify-center overflow-hidden shadow-inner group select-none">
+                        <!-- Đường kẻ ô mễ mờ sắc terracotta -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-25 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
                             <line x1="0" y1="0" x2="100%" y2="100%" stroke="#e07a5f" stroke-dasharray="4 4" stroke-width="1.5" />
                             <line x1="100%" y1="0" x2="0" y2="100%" stroke="#e07a5f" stroke-dasharray="4 4" stroke-width="1.5" />
                             <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#e07a5f" stroke-dasharray="4 4" stroke-width="1.5" />
@@ -397,29 +401,29 @@
                         </svg>
 
                         <!-- Chữ mờ nền -->
-                        <div class="absolute inset-0 flex items-center justify-center text-7xl sm:text-8xl font-bold text-white/10 zh-text select-none">
+                        <div class="absolute inset-0 flex items-center justify-center text-7xl sm:text-8xl font-bold text-slate-900/10 dark:text-white/10 zh-text select-none">
                             <span x-text="currentCharacterData ? currentCharacterData.char : (currentChar ? currentChar.character : '')"></span>
                         </div>
 
                         <!-- Chữ hiển thị nét viết -->
-                        <div class="relative z-10 text-7xl sm:text-8xl font-bold text-slate-200 zh-text select-none transition-all duration-300"
-                             :class="isPlayingStrokes ? 'scale-105 text-[#38bdf8]' : ''">
+                        <div class="relative z-10 text-7xl sm:text-8xl font-bold text-slate-800 dark:text-slate-100 zh-text select-none transition-all duration-300"
+                             :class="isPlayingStrokes ? 'scale-105 text-[#e07a5f] dark:text-[#e07a5f]' : ''">
                             <span x-text="currentCharacterData ? currentCharacterData.char : (currentChar ? currentChar.character : '')"></span>
                         </div>
                     </div>
 
-                    <!-- 2 Nút hành động: [▶ Xem viết] & [✎ Luyện tập] (NHƯ ẢNH 3) -->
+                    <!-- 2 Nút hành động: [▶ Xem viết] & [✎ Luyện tập] -->
                     <div class="grid grid-cols-2 gap-3 pt-2">
-                        <!-- Nút Xem viết (Nút tối) -->
+                        <!-- Nút Xem viết -->
                         <button type="button" @click="toggleStrokeAutoPlay()" 
-                                class="py-2.5 px-4 rounded-xl bg-[#23201e] hover:bg-[#2d2926] border border-[#38332f] text-slate-200 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
-                            <i class="fa-solid text-[11px]" :class="isPlayingStrokes ? 'fa-pause' : 'fa-play'"></i>
+                                class="py-2.5 px-4 rounded-xl bg-[#f8f6f3] dark:bg-[#23201e] hover:bg-[#f1ede7] dark:hover:bg-[#2d2926] border border-[#e8e2d9] dark:border-[#38332f] text-slate-700 dark:text-slate-200 hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs btn-tactile">
+                            <i class="fa-solid text-[11px] text-[#e07a5f]" :class="isPlayingStrokes ? 'fa-pause' : 'fa-play'"></i>
                             <span x-text="isPlayingStrokes ? '{{ __('Tạm dừng') }}' : '{{ __('Xem viết') }}'"></span>
                         </button>
 
-                        <!-- Nút Luyện tập (Nút màu xanh pastel nổi bật) -->
+                        <!-- Nút Luyện tập (Terracotta Nổi bật) -->
                         <button type="button" @click="activeTab = 'stroke_studio'" 
-                                class="py-2.5 px-4 rounded-xl bg-[#38bdf8] hover:bg-sky-400 text-slate-950 text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer">
+                                class="py-2.5 px-4 rounded-xl bg-[#e07a5f] hover:bg-[#c86349] text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer btn-tactile">
                             <i class="fa-solid fa-pencil text-[11px]"></i>
                             <span>{{ __('Luyện tập') }}</span>
                         </button>
@@ -428,42 +432,42 @@
                 </div>
             </div>
 
-            <!-- CỘT 2 (BÊN PHẢI): BỘ THỦ, THÀNH PHẦN & LOẠI TỪ CÁCH DÙNG (7 COLS - NHƯ ẢNH 3) -->
+            <!-- CỘT 2 (BÊN PHẢI): BỘ THỦ, THÀNH PHẦN & LOẠI TỪ CÁCH DÙNG (7 COLS) -->
             <div class="lg:col-span-7 space-y-4">
                 
                 <!-- Card 1: Bộ thủ & thành phần -->
-                <div class="p-5 rounded-2xl bg-[#181615] border border-[#2d2926] space-y-3">
-                    <h4 class="text-sm font-bold text-white">{{ __('Bộ thủ & thành phần') }}</h4>
+                <div class="p-5 rounded-3xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] space-y-3 shadow-xs">
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Bộ thủ & thành phần') }}</h4>
                     
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-1 rounded-md bg-[#23201e] border border-[#38332f] text-xs font-bold text-slate-200">
-                            {{ __('BỘ THỦ:') }} <span class="zh-text text-sm text-[#38bdf8] ml-1" x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="px-3 py-1 rounded-xl bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-xs font-bold text-[#e07a5f]">
+                            {{ __('BỘ THỦ:') }} <span class="zh-text text-sm ml-1" x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
                         </span>
-                        <span class="px-2.5 py-1 rounded-md bg-[#23201e] border border-[#38332f] text-xs font-bold text-slate-200">
-                            {{ __('SỐ NÉT:') }} <span class="text-white ml-1" x-text="(currentRadicalData?.stroke_count || 1) + ' nét'"></span>
+                        <span class="px-3 py-1 rounded-xl bg-[#f8f6f3] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#38332f] text-xs font-bold text-slate-700 dark:text-slate-200">
+                            {{ __('SỐ NÉT:') }} <span class="text-[#e07a5f] ml-1" x-text="(currentRadicalData?.stroke_count || 1) + ' nét'"></span>
                         </span>
                     </div>
 
-                    <p class="text-xs text-slate-300 leading-relaxed font-normal pt-1" 
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal pt-1" 
                        x-text="currentRadicalData ? (currentRadicalData.description || currentRadicalData.meaning) : ''"></p>
                 </div>
 
                 <!-- Card 2: Loại từ & cách dùng -->
-                <div class="p-5 rounded-2xl bg-[#181615] border border-[#2d2926] space-y-3">
-                    <div class="flex items-center gap-2">
-                        <h4 class="text-sm font-bold text-white">{{ __('Loại từ & cách dùng') }}</h4>
-                        <span class="px-2 py-0.5 rounded-md bg-[#1e293b] text-[#38bdf8] text-[11px] font-bold"
+                <div class="p-5 rounded-3xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] space-y-3 shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Loại từ & cách dùng') }}</h4>
+                        <span class="px-2.5 py-0.5 rounded-lg bg-[#fff2ee] dark:bg-[#2c221e] border border-[#fcdccf] dark:border-[#4a2e26] text-[#e07a5f] text-[11px] font-bold"
                               x-text="currentRadicalData ? (currentRadicalData.word_type || 'Danh từ 名词') : 'Danh từ 名词'"></span>
                     </div>
 
-                    <div class="p-3.5 rounded-xl bg-[#23201e] border border-[#2d2926] text-xs text-slate-300 space-y-2">
-                        <p class="text-slate-300 leading-relaxed font-normal" 
+                    <div class="p-3.5 rounded-2xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-xs text-slate-600 dark:text-slate-300 space-y-2">
+                        <p class="leading-relaxed font-normal" 
                            x-text="currentRadicalData ? (currentRadicalData.word_type_desc || currentRadicalData.description) : 'Tên gọi của một nét viết; dùng làm bộ thủ chứ không đứng riêng thành từ.'"></p>
                     </div>
 
                     <div class="pt-2 text-xs space-y-1">
-                        <span class="font-bold text-slate-200 block" x-text="currentRadicalData ? (currentRadicalData.word_type || 'Danh từ 名词') : 'Danh từ 名词'"></span>
-                        <p class="text-slate-400 leading-relaxed text-[11px]">
+                        <span class="font-bold text-slate-800 dark:text-slate-200 block" x-text="currentRadicalData ? (currentRadicalData.word_type || 'Danh từ 名词') : 'Danh từ 名词'"></span>
+                        <p class="text-slate-500 dark:text-slate-400 leading-relaxed text-[11px]">
                             {{ __('Chỉ sự vật, nơi chốn hoặc đặc trưng cấu tạo chữ trong Hán ngữ.') }}
                         </p>
                     </div>
@@ -471,13 +475,13 @@
 
                 <!-- Card 3: Thơ Mẹo Nhớ Dân Gian (nếu có) -->
                 <template x-if="currentChar && currentChar.mnemonic_poem">
-                    <div class="p-5 rounded-2xl bg-[#181615] border border-[#2d2926] space-y-2">
+                    <div class="p-5 rounded-3xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] space-y-2 shadow-xs">
                         <h4 class="text-sm font-bold text-[#e07a5f] flex items-center gap-2">
                             <i class="fa-solid fa-scroll text-xs"></i>
                             <span>{{ __('Thơ Mẹo Nhớ Dân Gian') }}</span>
                         </h4>
-                        <div class="p-3.5 rounded-xl bg-[#23201e] border border-[#2d2926] text-center">
-                            <p class="text-xs font-semibold text-slate-200 italic leading-relaxed whitespace-pre-line" 
+                        <div class="p-3.5 rounded-2xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-center">
+                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-200 italic leading-relaxed whitespace-pre-line" 
                                x-text="currentChar.mnemonic_poem"></p>
                         </div>
                     </div>
@@ -820,7 +824,7 @@
              x-transition:leave="ease-in duration-150"
              x-transition:leave-start="opacity-100 scale-100 translate-y-0"
              x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-             class="relative w-full max-w-2xl bg-white dark:bg-[#181615] rounded-2xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-2xl p-5 sm:p-6 space-y-5 z-10 my-8">
+             class="relative w-full max-w-2xl bg-white dark:bg-[#181615] rounded-3xl border border-[#e8e2d9] dark:border-[#2d2926] shadow-2xl p-5 sm:p-6 space-y-5 z-10 my-8">
             
             <div class="flex items-center justify-between pb-3.5 border-b border-[#e8e2d9] dark:border-[#2d2926]">
                 <div class="flex items-center gap-3">
@@ -841,7 +845,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto no-scrollbar pr-1">
                 <template x-for="rule in strokeRulesGuide" :key="rule.id">
-                    <div class="p-3.5 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] transition-all space-y-1.5 flex flex-col justify-between">
+                    <div class="p-3.5 rounded-2xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] hover:border-[#e07a5f] transition-all space-y-1.5 flex flex-col justify-between">
                         <div class="space-y-1">
                             <div class="flex items-center justify-between">
                                 <span class="text-[11px] font-bold text-[#e07a5f] uppercase tracking-wider" x-text="'Quy tắc ' + rule.id"></span>
@@ -870,3 +874,4 @@
 
 </div>
 @endsection
+
