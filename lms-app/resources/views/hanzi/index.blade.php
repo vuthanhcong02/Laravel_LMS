@@ -2,31 +2,35 @@
 @section('title', __('Chiết Tự Chữ Hán Theo Bộ Thủ - Tiếng Trung XiaoMu'))
 
 @section('header-left')
-    <div class="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-        <a href="{{ route('home') }}" class="hover:text-[#e07a5f] transition-colors">{{ __('Học tập') }}</a>
-        <i class="fa-solid fa-chevron-right text-[9px] text-slate-400 dark:text-slate-600"></i>
+    <div x-data="{ step: 1, radical: '', radicalName: '', char: '' }"
+         @hanzi-nav-changed.window="step = $event.detail.step; radical = $event.detail.radical; radicalName = $event.detail.radicalName; char = $event.detail.char"
+         class="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+        <a href="{{ route('home') }}" class="hover:text-[#e07a5f] transition-colors shrink-0">{{ __('Học tập') }}</a>
+        <span class="shrink-0 text-slate-400">/</span>
         
-        <template x-if="step === 1">
-            <span class="text-slate-800 dark:text-slate-200 font-semibold">{{ __('Theo bộ thủ (214)') }}</span>
-        </template>
+        <button type="button" 
+                @click="window.dispatchEvent(new CustomEvent('hanzi-go-step', { detail: { step: 1 } }))"
+                class="hover:text-[#e07a5f] transition-colors cursor-pointer shrink-0"
+                :class="step === 1 ? 'text-slate-800 dark:text-slate-200 font-bold' : ''">
+            {{ __('214 Bộ thủ') }}
+        </button>
 
-        <template x-if="step >= 2">
+        <template x-if="step >= 2 && radical">
             <div class="flex items-center gap-2">
-                <button type="button" @click="goToStep1()" class="hover:text-[#e07a5f] transition-colors cursor-pointer text-slate-500 dark:text-slate-400">
-                    {{ __('Bộ thủ') }}
-                </button>
-                <i class="fa-solid fa-chevron-right text-[9px] text-slate-400 dark:text-slate-600"></i>
-                <button type="button" @click="goToStep2()" class="transition-colors cursor-pointer"
-                        :class="step === 2 ? 'text-[#e07a5f] font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-[#e07a5f]'">
-                    <span>{{ __('Bộ ') }}</span><span x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
+                <span class="shrink-0 text-slate-400">/</span>
+                <button type="button" 
+                        @click="window.dispatchEvent(new CustomEvent('hanzi-go-step', { detail: { step: 2 } }))"
+                        class="hover:text-[#e07a5f] transition-colors cursor-pointer"
+                        :class="step === 2 ? 'text-[#e07a5f] font-bold' : ''">
+                    <span>{{ __('Bộ ') }}</span><span class="zh-text text-sm font-bold" x-text="radical"></span>
                 </button>
             </div>
         </template>
 
-        <template x-if="step === 3 && currentCharacterData">
+        <template x-if="step === 3 && char">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-chevron-right text-[9px] text-slate-400 dark:text-slate-600"></i>
-                <span class="text-[#e07a5f] font-bold zh-text text-sm" x-text="currentCharacterData.char"></span>
+                <span class="shrink-0 text-slate-400">/</span>
+                <span class="text-[#e07a5f] font-bold zh-text text-base" x-text="char"></span>
             </div>
         </template>
     </div>
@@ -37,43 +41,26 @@
      class="max-w-6xl mx-auto space-y-5">
 
     <!-- ========================================================================= -->
-    <!-- TOP TOGGLE TAB & GLOBAL BAR (THEME XIAOMU LMS) -->
+    <!-- TOP ACTION BAR: CÁC NÚT TIỆN ÍCH BỔ TRỢ -->
     <!-- ========================================================================= -->
-    <div class="flex items-center justify-between gap-4">
-        <!-- Toggle: [Theo bộ thủ] vs [Từ điển] -->
-        <div class="inline-flex items-center p-1 rounded-xl bg-[#f1ede7] dark:bg-[#1e1c1a] border border-[#e8e2d9] dark:border-[#2d2926]">
-            <button type="button" @click="activeMainTab = 'radicals'; goToStep1()" 
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
-                    :class="activeMainTab === 'radicals' ? 'bg-white dark:bg-[#2d2926] text-[#e07a5f] shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'">
-                {{ __('Theo bộ thủ') }}
-            </button>
-            <button type="button" @click="activeMainTab = 'dictionary'" 
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
-                    :class="activeMainTab === 'dictionary' ? 'bg-white dark:bg-[#2d2926] text-[#e07a5f] shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'">
-                {{ __('Từ điển') }}
-            </button>
-        </div>
-
-        <!-- Các nút bổ trợ: 7 Quy tắc & Tabs chức năng -->
-        <div class="flex items-center gap-2">
-            <button type="button" @click="showRulesModal = true"
-                    class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile">
-                <i class="fa-solid fa-graduation-cap text-[#e07a5f]"></i>
-                <span class="hidden sm:inline">{{ __('7 Quy tắc viết') }}</span>
-            </button>
-            <button type="button" @click="activeTab = 'stroke_studio'"
-                    class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile"
-                    :class="activeTab === 'stroke_studio' ? 'border-[#e07a5f] text-[#e07a5f] dark:text-[#e07a5f]' : ''">
-                <i class="fa-solid fa-pen-nib text-[#e07a5f]"></i>
-                <span class="hidden sm:inline">{{ __('Luyện viết') }}</span>
-            </button>
-            <button type="button" @click="activeTab = 'quiz'"
-                    class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile"
-                    :class="activeTab === 'quiz' ? 'border-[#e07a5f] text-[#e07a5f] dark:text-[#e07a5f]' : ''">
-                <i class="fa-solid fa-puzzle-piece text-[#e07a5f]"></i>
-                <span class="hidden sm:inline">{{ __('Luyện tập') }}</span>
-            </button>
-        </div>
+    <div class="flex items-center justify-end gap-2">
+        <button type="button" @click="showRulesModal = true"
+                class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile">
+            <i class="fa-solid fa-graduation-cap text-[#e07a5f]"></i>
+            <span class="hidden sm:inline">{{ __('7 Quy tắc viết') }}</span>
+        </button>
+        <button type="button" @click="activeTab = 'stroke_studio'"
+                class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile"
+                :class="activeTab === 'stroke_studio' ? 'border-[#e07a5f] text-[#e07a5f] dark:text-[#e07a5f]' : ''">
+            <i class="fa-solid fa-pen-nib text-[#e07a5f]"></i>
+            <span class="hidden sm:inline">{{ __('Luyện viết') }}</span>
+        </button>
+        <button type="button" @click="activeTab = 'quiz'"
+                class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#181615] hover:bg-[#fff7f4] dark:hover:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] text-slate-700 dark:text-slate-300 hover:text-[#e07a5f] dark:hover:text-[#e07a5f] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs btn-tactile"
+                :class="activeTab === 'quiz' ? 'border-[#e07a5f] text-[#e07a5f] dark:text-[#e07a5f]' : ''">
+            <i class="fa-solid fa-puzzle-piece text-[#e07a5f]"></i>
+            <span class="hidden sm:inline">{{ __('Luyện tập') }}</span>
+        </button>
     </div>
 
     <!-- ========================================================================= -->
@@ -194,15 +181,8 @@
     <!-- ========================================================================= -->
     <div x-show="activeTab === 'explorer' && step === 2" class="space-y-5" x-cloak>
         
-        <!-- Breadcrumb & Tiêu đề "Chữ Hán bộ 丨" -->
+        <!-- Tiêu đề & Nút quay lại -->
         <div class="space-y-1.5">
-            <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <button type="button" @click="goToStep1()" class="hover:text-[#e07a5f] cursor-pointer transition-colors">{{ __('214 Bộ thủ') }}</button>
-                <span>/</span>
-                <span class="text-slate-600 dark:text-slate-300">{{ __('Bộ') }}</span>
-                <span class="text-[#e07a5f] font-bold zh-text text-sm" x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
-            </div>
-
             <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pt-1">
                 <div class="flex items-baseline gap-3">
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -270,19 +250,8 @@
     <!-- ========================================================================= -->
     <div x-show="activeTab === 'explorer' && step === 3" class="space-y-4" x-cloak>
         
-        <!-- Breadcrumb cấp 3 -->
-        <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <div class="flex items-center gap-1.5">
-                <button type="button" @click="goToStep1()" class="hover:text-[#e07a5f] cursor-pointer transition-colors">{{ __('214 Bộ thủ') }}</button>
-                <span>/</span>
-                <button type="button" @click="goToStep2()" class="hover:text-[#e07a5f] cursor-pointer transition-colors">
-                    <span>{{ __('Bộ ') }}</span><span x-text="currentRadicalData ? currentRadicalData.radical : ''"></span>
-                </button>
-                <span>/</span>
-                <span class="text-[#e07a5f] font-bold zh-text text-sm" x-text="currentCharacterData ? currentCharacterData.char : ''"></span>
-            </div>
-
-            <!-- Nút quay lại danh sách chữ -->
+        <!-- Nút quay lại danh sách chữ -->
+        <div class="flex items-center justify-end text-xs text-slate-500 dark:text-slate-400">
             <button type="button" @click="goToStep2()" class="hover:text-[#e07a5f] transition-colors cursor-pointer flex items-center gap-1.5 font-semibold">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
                 <span>{{ __('← Danh sách chữ bộ ') }}<strong x-text="currentRadicalData ? currentRadicalData.radical : ''"></strong></span>

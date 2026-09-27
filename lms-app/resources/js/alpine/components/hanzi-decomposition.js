@@ -245,6 +245,14 @@ export function hanziDecompositionApp(initialData = {}) {
                 this.step = 1;
             }
 
+            this.dispatchNavChange();
+
+            // Lắng nghe sự kiện click Breadcrumb từ Header
+            window.addEventListener('hanzi-go-step', (e) => {
+                if (e.detail?.step === 1) this.goToStep1();
+                if (e.detail?.step === 2) this.goToStep2();
+            });
+
             // Lắng nghe khi chuyển tab sang Luyện viết để kích hoạt Canvas
             this.$watch('activeTab', (newTab) => {
                 if (newTab === 'stroke_studio') {
@@ -271,7 +279,22 @@ export function hanziDecompositionApp(initialData = {}) {
                 } else {
                     this.step = 1;
                 }
+                this.dispatchNavChange();
             });
+        },
+
+        // Đồng bộ trạng thái breadcrumb lên Header
+        dispatchNavChange() {
+            try {
+                window.dispatchEvent(new CustomEvent('hanzi-nav-changed', {
+                    detail: {
+                        step: this.step,
+                        radical: this.currentRadicalData?.radical || '',
+                        radicalName: this.currentRadicalData?.sino_vietnamese || '',
+                        char: this.currentCharacterData?.char || (this.currentChar?.character || '')
+                    }
+                }));
+            } catch (e) {}
         },
 
         findAndSelectRadical(radicalIdOrChar) {
@@ -361,6 +384,7 @@ export function hanziDecompositionApp(initialData = {}) {
                 window.history.pushState({}, '', url);
             } catch (e) {}
 
+            this.dispatchNavChange();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
@@ -381,6 +405,7 @@ export function hanziDecompositionApp(initialData = {}) {
                 window.history.pushState({}, '', url);
             } catch (e) {}
 
+            this.dispatchNavChange();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
@@ -393,6 +418,7 @@ export function hanziDecompositionApp(initialData = {}) {
                 url.searchParams.delete('char');
                 window.history.pushState({}, '', url);
             } catch (e) {}
+            this.dispatchNavChange();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
@@ -405,6 +431,7 @@ export function hanziDecompositionApp(initialData = {}) {
                 url.searchParams.delete('char');
                 window.history.pushState({}, '', url);
             } catch (e) {}
+            this.dispatchNavChange();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
