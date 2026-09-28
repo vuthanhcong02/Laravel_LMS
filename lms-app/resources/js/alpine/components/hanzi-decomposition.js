@@ -376,7 +376,6 @@ export function hanziDecompositionApp(initialData = {}) {
             this.selectedRadicalId = radicalItem.id;
             this.step = 2;
             this.activeTab = 'explorer';
-            this.speak(radicalItem.radical);
 
             try {
                 const url = new URL(window.location);
@@ -397,7 +396,6 @@ export function hanziDecompositionApp(initialData = {}) {
             this.step = 3;
             this.resetStrokePlayer();
             this.clearCanvas();
-            this.speak(charItem.char);
 
             try {
                 const url = new URL(window.location);
@@ -646,8 +644,6 @@ export function hanziDecompositionApp(initialData = {}) {
 
             if (foundGroupId) {
                 this.chooseRadical(foundGroupId);
-            } else {
-                this.speak(r.radical);
             }
         },
 
