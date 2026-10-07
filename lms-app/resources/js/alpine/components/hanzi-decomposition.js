@@ -1,3 +1,5 @@
+import HanziWriter from 'hanzi-writer';
+
 /**
  * Alpine.js Component: Phân hệ Chiết tự, Viết Mẫu & Luyện Viết Chữ Hán Theo Bộ Thủ
  * Tuân thủ Clean DRY Architecture và XiaoMu LMS Design System.
@@ -8,16 +10,38 @@
  */
 export function hanziDecompositionApp(initialData = {}) {
     return {
-        // Cấu trúc dữ liệu theo Nhóm Bộ thủ & 214 Bộ thủ Khang Hy
+        // HanziWriter stroke animation instance
+        hanziWriter: null,
+        writerChar: '',
+        currentAudio: null,
+        isPlayingAudio: false,
+
+        // Cấu trúc dữ liệu theo Nhóm Bộ thủ & 214 Bộ thủ Khang Hy & 6 Cấp độ HSK
         radicalGroups: initialData.radicalGroups || {},
         radicals: initialData.radicals || [],
         radicals214: initialData.radicals214 || {},
+        hskGroups: initialData.hskGroups || {},
         
-        // Luồng 3 bước: 1: Chọn Bộ thủ | 2: Danh sách Chữ Hán thuộc bộ | 3: Chi tiết Chiết tự
+        // Bộ lọc cấp độ HSK trực tiếp: 'all' (214 Bộ thủ) | 1..6 (Chữ Hán theo cấp HSK)
+        hskFilter: 'all',
+        selectedHskLevel: 1,
+        selectedHskFilterInRadical: 'all', // 'all' | 1 | 2 | 3 | 4 | 5 | 6
+        hskSearchFilter: '',
+        hskSortType: 'stroke', // 'stroke' | 'pinyin'
+        fromViewMode: 'radicals', // 'radicals' | 'hsk'
+        isFiltering: false,
+        hskDisplayLimit: 48,
+
+        // Cache kết quả lọc 214 Bộ thủ để phản hồi tức thời O(1), chống giật lag
+        cachedFiltered214Grouped: {},
+        cachedFilteredRadicalsCount: 214,
+        cachedFilteredCharsCount: 0,
+
+        // Luồng 3 bước: 1: Danh sách Bộ thủ/HSK | 2: Danh sách Chữ Hán thuộc bộ | 3: Chi tiết Chiết tự
         step: 1,
-        activeMainTab: 'radicals', // 'radicals' (Theo bộ thủ) | 'dictionary' (Từ điển)
-        sortType: 'stroke', // 'stroke' (Số nét) | 'frequency' (Độ phổ biến)
-        detailTab: 'stroke_order', // 'stroke_order' | 'structure' | 'meaning_usage' | 'map' | 'sino_viet' | 'mnemonic' | 'naming'
+        activeMainTab: 'radicals', // 'radicals' (Theo bộ thủ) | 'dictionary' (Từ điển HSK)
+        sortType: 'stroke',
+        detailTab: 'stroke_order',
         isFavorite: false,
         radicalSearchFilter: '',
         charSearchFilter: '',
@@ -39,6 +63,7 @@ export function hanziDecompositionApp(initialData = {}) {
         currentStrokeStep: 1,
         isPlayingStrokes: false,
         strokeTimer: null,
+        writerLoopTimeout: null,
         strokeSpeed: 850, // ms per stroke (850ms default)
         selectedStrokeInfo: null,
         showRulesModal: false, // Quản lý bật/tắt Modal Popup 7 Quy tắc bút thuận
@@ -62,7 +87,7 @@ export function hanziDecompositionApp(initialData = {}) {
         isDrawing: false,
         lastX: 0,
         lastY: 0,
-        brushColor: '#1c1917', // Màu mực mặc định: Đen thư pháp
+        brushColor: '#e07a5f', // Màu mực mặc định: Chu sa XiaoMu (#e07a5f), hiển thị sắc nét trên cả Light & Dark mode
         brushSize: 8,          // Độ dày nét vẽ: 4 | 8 | 14
         isEraser: false,
         showTraceGuide: true,  // Bật/tắt nét chữ mờ hướng dẫn
@@ -71,12 +96,14 @@ export function hanziDecompositionApp(initialData = {}) {
         feedbackMessage: '',
         feedbackType: '', // 'success' | 'info'
 
-        // Bảng màu bút mực thư pháp
+        // Bảng màu bút mực thư pháp (Tương phản cao, rực rỡ và rõ nét trên cả Dark & Light mode)
         brushColors: [
-            { name: 'Mực tàu', hex: '#1c1917', border: 'border-slate-800' },
             { name: 'Chu sa', hex: '#e07a5f', border: 'border-[#e07a5f]' },
-            { name: 'Chàm biếc', hex: '#0284c7', border: 'border-sky-600' },
-            { name: 'Trúc thanh', hex: '#16a34a', border: 'border-green-600' },
+            { name: 'Bạch ngọc', hex: '#ffffff', border: 'border-slate-300' },
+            { name: 'Hoàng kim', hex: '#fbbf24', border: 'border-amber-400' },
+            { name: 'Chàm biếc', hex: '#38bdf8', border: 'border-sky-400' },
+            { name: 'Trúc thanh', hex: '#4ade80', border: 'border-green-400' },
+            { name: 'Hồng đào', hex: '#f472b6', border: 'border-pink-400' },
         ],
 
         // =========================================================================
@@ -229,13 +256,30 @@ export function hanziDecompositionApp(initialData = {}) {
                 }
             }
 
-            // Kiểm tra query param 'bo' và 'char' trên URL
+            // Tiền lập chỉ mục (Pre-indexing) cho 214 bộ thủ để lọc siêu tốc O(1)
+            this.indexRadicalsData();
+            this.updateFiltered214();
+
+            // Kiểm tra query param 'bo', 'char', 'hsk' trên URL
             const params = new URLSearchParams(window.location.search);
             const boParam = params.get('bo');
             const charParam = params.get('char');
+            const hskParam = params.get('hsk');
 
-            if (boParam) {
+            if (hskParam) {
+                this.hskFilter = parseInt(hskParam) || 1;
+                this.selectedHskLevel = this.hskFilter;
+                this.fromViewMode = 'hsk';
+                if (charParam) {
+                    this.findAndSelectCharacter(charParam);
+                    this.step = 3;
+                } else {
+                    this.step = 1;
+                }
+            } else if (boParam) {
                 this.findAndSelectRadical(boParam);
+                this.hskFilter = 'all';
+                this.fromViewMode = 'radicals';
                 if (charParam) {
                     this.findAndSelectCharacter(charParam);
                     this.step = 3;
@@ -244,14 +288,40 @@ export function hanziDecompositionApp(initialData = {}) {
                 }
             } else {
                 this.step = 1;
+                this.hskFilter = 'all';
             }
 
+            this.updateFiltered214();
             this.dispatchNavChange();
+
+            // Tự động cập nhật cache lọc khi từ khóa hoặc cấp độ HSK thay đổi
+            this.$watch('radicalSearchFilter', () => this.updateFiltered214());
+            this.$watch('hskFilter', () => this.updateFiltered214());
 
             // Lắng nghe sự kiện click Breadcrumb từ Header
             window.addEventListener('hanzi-go-step', (e) => {
-                if (e.detail?.step === 1) this.goToStep1();
+                if (e.detail?.step === 1) this.goToStep1(e.detail?.reset ?? false);
                 if (e.detail?.step === 2) this.goToStep2();
+            });
+
+            // Lắng nghe khi đổi chữ Hán hoặc sang Bước 3 để tự động khởi tạo HanziWriter
+            this.$watch('step', (newStep) => {
+                if (newStep === 3) {
+                    this.$nextTick(() => {
+                        const targetChar = this.currentCharacterData?.char || this.currentChar?.character || '';
+                        if (targetChar && this.writerChar !== targetChar) {
+                            this.initOrUpdateHanziWriter(targetChar);
+                        }
+                    });
+                }
+            });
+
+            this.$watch('selectedCharKey', (newKey) => {
+                if (this.step === 3 && newKey && this.writerChar !== newKey) {
+                    this.$nextTick(() => {
+                        this.initOrUpdateHanziWriter(newKey);
+                    });
+                }
             });
 
             // Lắng nghe khi chuyển tab sang Luyện viết để kích hoạt Canvas
@@ -259,6 +329,13 @@ export function hanziDecompositionApp(initialData = {}) {
                 if (newTab === 'stroke_studio') {
                     this.$nextTick(() => {
                         this.setupCanvas();
+                    });
+                } else if (newTab === 'explorer' && this.step === 3) {
+                    this.$nextTick(() => {
+                        const targetChar = this.currentCharacterData?.char || this.currentChar?.character || '';
+                        if (targetChar) {
+                            this.initOrUpdateHanziWriter(targetChar);
+                        }
                     });
                 }
             });
@@ -268,20 +345,75 @@ export function hanziDecompositionApp(initialData = {}) {
                 const updatedParams = new URLSearchParams(window.location.search);
                 const currentBo = updatedParams.get('bo');
                 const currentCharParam = updatedParams.get('char');
+                const currentHsk = updatedParams.get('hsk');
 
-                if (currentBo) {
-                    this.findAndSelectRadical(currentBo);
+                if (currentHsk) {
+                    this.selectedHskLevel = parseInt(currentHsk) || 1;
+                    this.activeViewMode = 'hsk';
+                    this.fromViewMode = 'hsk';
                     if (currentCharParam) {
                         this.findAndSelectCharacter(currentCharParam);
                         this.step = 3;
+                        this.$nextTick(() => {
+                            this.initOrUpdateHanziWriter(currentCharParam);
+                        });
+                    } else {
+                        this.step = 1;
+                    }
+                } else if (currentBo) {
+                    this.findAndSelectRadical(currentBo);
+                    this.activeViewMode = 'radicals';
+                    this.fromViewMode = 'radicals';
+                    if (currentCharParam) {
+                        this.findAndSelectCharacter(currentCharParam);
+                        this.step = 3;
+                        this.$nextTick(() => {
+                            this.initOrUpdateHanziWriter(currentCharParam);
+                        });
                     } else {
                         this.step = 2;
                     }
                 } else {
                     this.step = 1;
+                    this.activeViewMode = 'radicals';
                 }
                 this.dispatchNavChange();
             });
+
+            // Lắng nghe sự kiện người dùng chuyển tab trình duyệt để bảo vệ trạng thái chữ viết
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    // Khi người dùng rời tab: tạm dừng animation
+                    if (this.hanziWriter && this.isPlayingStrokes) {
+                        try {
+                            this.hanziWriter.pauseAnimation();
+                        } catch (e) {}
+                    }
+                } else {
+                    // Khi người dùng quay lại tab sau vài phút:
+                    if (this.step === 3 && this.hanziWriter) {
+                        try {
+                            if (this.isPlayingStrokes) {
+                                this.hanziWriter.loopCharacterAnimation();
+                            } else {
+                                this.hanziWriter.showCharacter();
+                            }
+                        } catch (e) {
+                            this.hanziWriter.showCharacter();
+                        }
+                    }
+                }
+            });
+
+            // Đảm bảo khởi tạo HanziWriter nếu URL mở trực tiếp ở Bước 3
+            if (this.step === 3) {
+                this.$nextTick(() => {
+                    const targetChar = this.currentCharacterData?.char || this.currentChar?.character || '';
+                    if (targetChar) {
+                        this.initOrUpdateHanziWriter(targetChar);
+                    }
+                });
+            }
         },
 
         // Đồng bộ trạng thái breadcrumb lên Header
@@ -290,6 +422,9 @@ export function hanziDecompositionApp(initialData = {}) {
                 window.dispatchEvent(new CustomEvent('hanzi-nav-changed', {
                     detail: {
                         step: this.step,
+                        viewMode: this.activeViewMode,
+                        fromViewMode: this.fromViewMode,
+                        hskLevel: this.selectedHskLevel,
                         radical: this.currentRadicalData?.radical || '',
                         radicalName: this.currentRadicalData?.sino_vietnamese || '',
                         char: this.currentCharacterData?.char || (this.currentChar?.character || '')
@@ -374,13 +509,83 @@ export function hanziDecompositionApp(initialData = {}) {
         chooseRadical214(radicalItem) {
             this.currentRadicalData = radicalItem;
             this.selectedRadicalId = radicalItem.id;
+            // Nếu đang lọc theo HSK thì truyền luôn cấp HSK đó sang bộ lọc trong Bước 2
+            if (this.hskFilter !== 'all') {
+                this.selectedHskFilterInRadical = this.hskFilter;
+            } else {
+                this.selectedHskFilterInRadical = 'all';
+            }
             this.step = 2;
+            this.fromViewMode = 'radicals';
             this.activeTab = 'explorer';
 
             try {
                 const url = new URL(window.location);
                 url.searchParams.set('bo', radicalItem.id);
                 url.searchParams.delete('char');
+                if (this.hskFilter !== 'all') {
+                    url.searchParams.set('hsk', this.hskFilter);
+                } else {
+                    url.searchParams.delete('hsk');
+                }
+                window.history.pushState({}, '', url);
+            } catch (e) {}
+
+            this.dispatchNavChange();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        // Lọc theo Cấp độ HSK ('all' | 1..6) trực tiếp trên danh mục 214 bộ thủ
+        setHskFilter(level) {
+            this.isFiltering = true;
+            if (level === 'all') {
+                this.hskFilter = 'all';
+                try {
+                    const url = new URL(window.location);
+                    url.searchParams.delete('hsk');
+                    window.history.pushState({}, '', url);
+                } catch (e) {}
+            } else {
+                this.hskFilter = parseInt(level) || 1;
+                this.selectedHskLevel = this.hskFilter;
+                try {
+                    const url = new URL(window.location);
+                    url.searchParams.set('hsk', this.selectedHskLevel);
+                    window.history.pushState({}, '', url);
+                } catch (e) {}
+            }
+            this.updateFiltered214();
+            this.dispatchNavChange();
+            this.$nextTick(() => {
+                this.isFiltering = false;
+            });
+        },
+
+        chooseHskLevel(level) {
+            this.setHskFilter(level);
+        },
+
+        // Chọn Chữ Hán từ danh sách HSK -> Mở thẳng Chi tiết Chiết tự (Bước 3)
+        chooseCharacterFromHsk(charItem) {
+            this.currentCharacterData = charItem;
+            this.selectedCharKey = charItem.char;
+            this.fromViewMode = 'hsk';
+            
+            // Tìm bộ thủ của chữ này nếu có
+            if (charItem.radical_id) {
+                this.findAndSelectRadical(charItem.radical_id);
+            }
+
+            this.syncCurrentChar(charItem);
+            this.step = 3;
+            this.currentStrokeStep = 1;
+            this.isPlayingStrokes = true;
+            this.clearCanvas();
+
+            try {
+                const url = new URL(window.location);
+                url.searchParams.set('hsk', this.selectedHskLevel);
+                url.searchParams.set('char', charItem.char);
                 window.history.pushState({}, '', url);
             } catch (e) {}
 
@@ -392,15 +597,18 @@ export function hanziDecompositionApp(initialData = {}) {
         chooseCharacter214(charItem) {
             this.currentCharacterData = charItem;
             this.selectedCharKey = charItem.char;
+            this.fromViewMode = 'radicals';
             this.syncCurrentChar(charItem);
             this.step = 3;
-            this.resetStrokePlayer();
+            this.currentStrokeStep = 1;
+            this.isPlayingStrokes = true;
             this.clearCanvas();
 
             try {
                 const url = new URL(window.location);
                 url.searchParams.set('bo', this.selectedRadicalId);
                 url.searchParams.set('char', charItem.char);
+                url.searchParams.delete('hsk');
                 window.history.pushState({}, '', url);
             } catch (e) {}
 
@@ -408,26 +616,49 @@ export function hanziDecompositionApp(initialData = {}) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
-        // Nút quay lại cấp 1: Danh sách các Bộ thủ
-        goToStep1() {
+        // Nút quay lại cấp 1: Danh sách các Bộ thủ / Cấp độ HSK
+        goToStep1(reset = false) {
             this.step = 1;
+            if (reset) {
+                this.activeMainTab = 'radicals';
+                this.hskFilter = 'all';
+                this.fromViewMode = 'radicals';
+                this.activeTab = 'explorer';
+                this.radicalSearchFilter = '';
+                this.hskSearchFilter = '';
+                this.selectedStrokeFilter = 'all';
+            }
             try {
                 const url = new URL(window.location);
                 url.searchParams.delete('bo');
                 url.searchParams.delete('char');
+                if (reset) {
+                    url.searchParams.delete('hsk');
+                }
                 window.history.pushState({}, '', url);
             } catch (e) {}
             this.dispatchNavChange();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
-        // Nút quay lại cấp 2: Danh sách các chữ thuộc Bộ thủ đang chọn
+        // Nút quay lại cấp 2: Danh sách các chữ thuộc Bộ thủ đang chọn hoặc HSK
         goToStep2() {
-            this.step = 2;
+            if (this.fromViewMode === 'hsk') {
+                this.step = 1;
+                this.activeViewMode = 'hsk';
+            } else {
+                this.step = 2;
+            }
+
             try {
                 const url = new URL(window.location);
-                url.searchParams.set('bo', this.selectedRadicalId);
-                url.searchParams.delete('char');
+                if (this.fromViewMode === 'hsk') {
+                    url.searchParams.set('hsk', this.selectedHskLevel);
+                    url.searchParams.delete('char');
+                } else {
+                    url.searchParams.set('bo', this.selectedRadicalId);
+                    url.searchParams.delete('char');
+                }
                 window.history.pushState({}, '', url);
             } catch (e) {}
             this.dispatchNavChange();
@@ -465,34 +696,115 @@ export function hanziDecompositionApp(initialData = {}) {
         },
 
         // =========================================================================
-        // GETTERS & BỘ LỌC CHO 214 BỘ THỦ & DANH SÁCH CHỮ HÁN
+        // TIỀN LẬP CHỈ MỤC & TỐI ƯU HÓA HIỆU NĂNG BỘ LỌC 214 BỘ THỦ O(1)
         // =========================================================================
-        get filtered214Grouped() {
+        indexRadicalsData() {
+            if (!this.radicals214) return;
+            Object.values(this.radicals214).forEach(group => {
+                (group.items || []).forEach(item => {
+                    const chars = item.characters || [];
+                    item.hskCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, all: chars.length };
+                    
+                    const searchTokens = [
+                        item.radical || '',
+                        item.sino_vietnamese || '',
+                        item.pinyin || '',
+                        item.meaning || '',
+                        item.original || ''
+                    ];
+
+                    for (let i = 0; i < chars.length; i++) {
+                        const c = chars[i];
+                        const lvl = c.hsk || 1;
+                        if (item.hskCounts[lvl] !== undefined) {
+                            item.hskCounts[lvl]++;
+                        }
+                        if (c.char) searchTokens.push(c.char);
+                        if (c.pinyin) searchTokens.push(c.pinyin);
+                        if (c.sino_vietnamese) searchTokens.push(c.sino_vietnamese);
+                        if (c.meaning) searchTokens.push(c.meaning);
+                    }
+
+                    item.searchIndex = searchTokens.join(' ').toLowerCase();
+                });
+            });
+        },
+
+        updateFiltered214() {
             const q = (this.radicalSearchFilter || '').toLowerCase().trim();
-            if (!q) return this.radicals214;
+            const hsk = this.hskFilter; // 'all' | 1..6
+            const isAll = hsk === 'all';
+            const targetHsk = isAll ? null : parseInt(hsk);
 
             const result = {};
-            Object.entries(this.radicals214).forEach(([strokeKey, group]) => {
-                const matchingItems = group.items.filter(item => {
-                    return item.radical.toLowerCase().includes(q) ||
-                           item.sino_vietnamese.toLowerCase().includes(q) ||
-                           item.pinyin.toLowerCase().includes(q) ||
-                           (item.meaning && item.meaning.toLowerCase().includes(q)) ||
-                           (item.characters && item.characters.some(c => c.char.includes(q) || (c.meaning && c.meaning.toLowerCase().includes(q))));
-                });
+            let totalRadicals = 0;
+            let totalChars = 0;
+
+            if (!this.radicals214) {
+                this.cachedFiltered214Grouped = {};
+                this.cachedFilteredRadicalsCount = 0;
+                this.cachedFilteredCharsCount = 0;
+                return;
+            }
+
+            for (const [strokeKey, group] of Object.entries(this.radicals214)) {
+                const matchingItems = [];
+                const items = group.items || [];
+
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    
+                    // 1. Kiểm tra nhanh số chữ theo HSK với O(1)
+                    const count = isAll ? (item.hskCounts?.all ?? item.characters?.length ?? 0) : (item.hskCounts?.[targetHsk] ?? 0);
+                    if (!isAll && count === 0) continue;
+
+                    // 2. Kiểm tra tìm kiếm nhanh qua searchIndex
+                    if (q && item.searchIndex && !item.searchIndex.includes(q)) {
+                        continue;
+                    }
+
+                    matchingItems.push({
+                        ...item,
+                        displayCharCount: count
+                    });
+                    totalChars += count;
+                }
+
                 if (matchingItems.length > 0) {
                     result[strokeKey] = {
                         ...group,
                         items: matchingItems
                     };
+                    totalRadicals += matchingItems.length;
                 }
-            });
-            return result;
+            }
+
+            this.cachedFiltered214Grouped = result;
+            this.cachedFilteredRadicalsCount = totalRadicals;
+            this.cachedFilteredCharsCount = totalChars;
+        },
+
+        get filtered214Grouped() {
+            return this.cachedFiltered214Grouped;
+        },
+
+        get currentFilteredRadicalsCount() {
+            return this.cachedFilteredRadicalsCount;
+        },
+
+        get currentFilteredCharsCount() {
+            return this.cachedFilteredCharsCount;
         },
 
         get sortedRadicalCharacters() {
             const chars = this.currentRadicalData?.characters || [];
             let list = [...chars];
+
+            // Bộ lọc theo cấp độ HSK trong màn hình bộ thủ
+            if (this.selectedHskFilterInRadical !== 'all') {
+                const targetHsk = parseInt(this.selectedHskFilterInRadical);
+                list = list.filter(c => (c.hsk || 1) === targetHsk);
+            }
 
             const q = (this.charSearchFilter || '').toLowerCase().trim();
             if (q) {
@@ -513,12 +825,112 @@ export function hanziDecompositionApp(initialData = {}) {
             return list;
         },
 
+        // Danh sách thông tin 6 cấp độ HSK
+        get hskStats() {
+            const levels = [1, 2, 3, 4, 5, 6];
+            return levels.map(lvl => {
+                const grp = this.hskGroups[lvl] || {};
+                return {
+                    level: lvl,
+                    name: grp.name || ('HSK ' + lvl),
+                    level_name: grp.level_name || ('Cấp ' + lvl),
+                    desc: grp.desc || '',
+                    color: grp.color || '#e07a5f',
+                    badge_bg: grp.badge_bg || '#fff2ee',
+                    badge_text: grp.badge_text || '#c86349',
+                    badge_border: grp.badge_border || '#fcdccf',
+                    count: grp.count || (grp.items || []).length || 0,
+                };
+            });
+        },
+
+        // Nhóm HSK hiện tại đang được chọn
+        get currentHskGroup() {
+            if (this.hskFilter === 'all') {
+                let allItems = [];
+                let totalCount = 0;
+                Object.values(this.hskGroups || {}).forEach(group => {
+                    const items = group.items || [];
+                    allItems = allItems.concat(items);
+                    totalCount += group.count || items.length;
+                });
+                return {
+                    level: 'all',
+                    name: 'Tất cả cấp độ (HSK 1 – 6)',
+                    level_name: 'Toàn bộ HSK',
+                    desc: 'Toàn bộ danh bạ Hán tự từ HSK 1 đến HSK 6',
+                    color: '#e07a5f',
+                    count: totalCount || allItems.length,
+                    items: allItems
+                };
+            }
+
+            const targetLvl = parseInt(this.hskFilter) || this.selectedHskLevel || 1;
+            return this.hskGroups[targetLvl] || {
+                level: targetLvl,
+                name: 'HSK ' + targetLvl,
+                level_name: 'Cấp ' + targetLvl,
+                desc: '',
+                color: '#e07a5f',
+                count: 0,
+                items: []
+            };
+        },
+
+        // Danh sách chữ Hán thuộc cấp HSK đang chọn kèm bộ lọc & sắp xếp
+        get filteredHskCharacters() {
+            const grp = this.currentHskGroup;
+            let list = [...(grp.items || [])];
+
+            const q = (this.hskSearchFilter || '').toLowerCase().trim();
+            if (q) {
+                list = list.filter(c => {
+                    return c.char.toLowerCase().includes(q) ||
+                           (c.pinyin && c.pinyin.toLowerCase().includes(q)) ||
+                           (c.sino_vietnamese && c.sino_vietnamese.toLowerCase().includes(q)) ||
+                           (c.meaning && c.meaning.toLowerCase().includes(q)) ||
+                           (c.radical && c.radical.includes(q)) ||
+                           (c.radical_name && c.radical_name.toLowerCase().includes(q));
+                });
+            }
+
+            if (this.hskSortType === 'pinyin') {
+                list.sort((a, b) => (a.pinyin || '').localeCompare(b.pinyin || ''));
+            } else if (this.hskSortType === 'frequency') {
+                list.sort((a, b) => (a.frequency_rank || a.stroke_count || 1) - (b.frequency_rank || b.stroke_count || 1));
+            } else {
+                // Mặc định sắp xếp theo cấp HSK rồi đến số nét
+                list.sort((a, b) => {
+                    if (a.hsk !== b.hsk) return (a.hsk || 1) - (b.hsk || 1);
+                    return (a.stroke_count || 1) - (b.stroke_count || 1);
+                });
+            }
+
+            return list;
+        },
+
+        get paginatedHskCharacters() {
+            return this.filteredHskCharacters.slice(0, this.hskDisplayLimit);
+        },
+
+        loadMoreHskChars() {
+            this.hskDisplayLimit += 48;
+        },
+
         get total214Count() {
             let total = 0;
             Object.values(this.radicals214).forEach(group => {
                 total += (group.items || []).length;
             });
             return total || 214;
+        },
+
+        get totalHskCharactersCount() {
+            let total = 0;
+            Object.values(this.hskGroups).forEach(group => {
+                total += (group.items || []).length || (group.count || 0);
+            });
+            return total || 3335;
         },
 
         // =========================================================================
@@ -648,6 +1060,46 @@ export function hanziDecompositionApp(initialData = {}) {
         },
 
         speak(text) {
+            const target = text || (this.currentCharacterData?.char || this.currentChar?.character || '');
+            if (!target) return;
+
+            // Dừng âm thanh đang phát trước đó nếu có
+            if (this.currentAudio) {
+                this.currentAudio.pause();
+                this.currentAudio.currentTime = 0;
+            }
+
+            this.isPlayingAudio = true;
+
+            try {
+                // Phát âm qua Edge-TTS Azure Neural AI chuẩn Xiaoxiao
+                const audioUrl = `/api/tts?text=${encodeURIComponent(target)}&voice=zh-CN-XiaoxiaoNeural`;
+                this.currentAudio = new Audio(audioUrl);
+
+                this.currentAudio.onended = () => {
+                    this.isPlayingAudio = false;
+                };
+
+                this.currentAudio.onerror = () => {
+                    this.isPlayingAudio = false;
+                    this.speakBrowserFallback(target);
+                };
+
+                this.currentAudio.play().catch((err) => {
+                    if (err.name !== 'AbortError') {
+                        console.warn('Edge-TTS playback interrupted, using browser fallback:', err);
+                        this.isPlayingAudio = false;
+                        this.speakBrowserFallback(target);
+                    }
+                });
+            } catch (e) {
+                console.warn('Edge-TTS error:', e);
+                this.isPlayingAudio = false;
+                this.speakBrowserFallback(target);
+            }
+        },
+
+        speakBrowserFallback(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
@@ -688,36 +1140,149 @@ export function hanziDecompositionApp(initialData = {}) {
             this.currentStrokeStep = stepNum;
         },
 
+        // =========================================================================
+        // STUDIO VIẾT MẪU & ANIMATION THUẬN BÚT (HANZI WRITER INTEGRATION)
+        // =========================================================================
+        initOrUpdateHanziWriter(targetChar) {
+            if (!targetChar) return;
+            const el = document.getElementById('hanziStrokeAnimator');
+            if (!el) {
+                setTimeout(() => this.initOrUpdateHanziWriter(targetChar), 100);
+                return;
+            }
+
+            // Nếu đã khởi tạo đúng chữ này rồi và hanziWriter đang sẵn sàng
+            if (this.writerChar === targetChar && this.hanziWriter) {
+                this.isPlayingStrokes = true;
+                try {
+                    this.hanziWriter.loopCharacterAnimation();
+                } catch (e) {
+                    try {
+                        this.hanziWriter.animateCharacter();
+                    } catch (err) {
+                        this.hanziWriter.showCharacter();
+                    }
+                }
+                return;
+            }
+
+            // Hủy writer cũ nếu có để tránh conflict animation loop
+            if (this.hanziWriter) {
+                try {
+                    this.hanziWriter.cancelQuiz();
+                } catch (e) {}
+                this.hanziWriter = null;
+            }
+
+            el.innerHTML = '';
+            this.writerChar = targetChar;
+            this.isPlayingStrokes = true; // Luôn bật tự động viết khi mở chữ
+            const isDark = document.documentElement.classList.contains('dark');
+
+            try {
+                const writer = HanziWriter.create(el, targetChar, {
+                    width: 200,
+                    height: 200,
+                    padding: 15,
+                    showOutline: true,
+                    strokeAnimationSpeed: 1.2,
+                    delayBetweenStrokes: 180,
+                    delayBetweenLoops: 1500, // Nghỉ 1.5 giây giữa các lần viết để ngắm chữ
+                    strokeColor: '#e07a5f',
+                    radicalColor: '#e07a5f',
+                    outlineColor: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.22)',
+                    showCharacter: false, // Ẩn ban đầu để chạy hoạt họa nét viết
+                    charDataLoader: (char, onComplete, onError) => {
+                        fetch(`/api/chiet-tu/stroke-data/${encodeURIComponent(char)}`)
+                            .then(res => {
+                                if (!res.ok) throw new Error('API network failed');
+                                return res.json();
+                            })
+                            .then(data => {
+                                if (data && data.strokes && data.strokes.length > 0 && data.strokes[0].length > 25) {
+                                    onComplete(data);
+                                } else {
+                                    throw new Error('Incomplete local stroke data, fetching CDN');
+                                }
+                            })
+                            .catch(() => {
+                                fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(char)}.json`)
+                                    .then(res => res.json())
+                                    .then(data => onComplete(data))
+                                    .catch(err => {
+                                        console.warn('CDN HanziWriter data fetch failed:', err);
+                                        if (onError) onError(err);
+                                    });
+                            });
+                    }
+                });
+
+                this.hanziWriter = writer;
+
+                // Kích hoạt animation tự động viết nét liên tục
+                writer.loopCharacterAnimation().catch(err => {
+                    console.warn('HanziWriter loop failed, falling back:', err);
+                    if (this.isPlayingStrokes) {
+                        try {
+                            writer.showCharacter();
+                        } catch (e) {}
+                    }
+                });
+            } catch (err) {
+                console.error('HanziWriter initialization error:', err);
+            }
+        },
+
         toggleStrokeAutoPlay() {
+            const targetChar = this.currentCharacterData?.char || this.currentChar?.character || '';
+            if (!targetChar) return;
+
+            if (!this.hanziWriter || this.writerChar !== targetChar) {
+                this.initOrUpdateHanziWriter(targetChar);
+                return;
+            }
+
             if (this.isPlayingStrokes) {
                 this.stopStrokeAutoPlay();
             } else {
-                this.isPlayingStrokes = true;
-                const max = this.currentChar?.stroke_steps?.length || this.currentChar?.stroke_count || 1;
-                this.strokeTimer = setInterval(() => {
-                    if (this.currentStrokeStep < max) {
-                        this.currentStrokeStep++;
-                    } else {
-                        this.currentStrokeStep = 1;
+                this.resumeStrokeAutoPlay();
+            }
+        },
+
+        resumeStrokeAutoPlay() {
+            this.isPlayingStrokes = true;
+            if (this.hanziWriter) {
+                try {
+                    this.hanziWriter.loopCharacterAnimation();
+                } catch (e) {
+                    try {
+                        this.hanziWriter.animateCharacter({
+                            onComplete: () => {
+                                if (this.isPlayingStrokes && this.hanziWriter) {
+                                    setTimeout(() => this.resumeStrokeAutoPlay(), 1500);
+                                }
+                            }
+                        });
+                    } catch (err) {
+                        this.hanziWriter.showCharacter();
                     }
-                }, this.strokeSpeed);
+                }
             }
         },
 
         stopStrokeAutoPlay() {
             this.isPlayingStrokes = false;
-            if (this.strokeTimer) {
-                clearInterval(this.strokeTimer);
-                this.strokeTimer = null;
+            if (this.hanziWriter) {
+                try {
+                    this.hanziWriter.pauseAnimation();
+                    // Khi tạm dừng: luôn hiển thị chữ hoàn chỉnh trên ô mễ
+                    this.hanziWriter.showCharacter();
+                } catch (e) {}
             }
         },
 
         setStrokeSpeed(speedMs) {
             this.strokeSpeed = speedMs;
-            if (this.isPlayingStrokes) {
-                this.stopStrokeAutoPlay();
-                this.toggleStrokeAutoPlay();
-            }
         },
 
         // =========================================================================
@@ -857,21 +1422,111 @@ export function hanziDecompositionApp(initialData = {}) {
         },
 
         checkHandwriting() {
-            if (!this.hasDrawn) {
+            if (!this.canvas || !this.ctx || !this.hasDrawn) {
                 this.feedbackMessage = 'Hãy viết nét chữ vào ô trước khi chấm!';
                 this.feedbackType = 'info';
                 return;
             }
 
-            const praiseList = [
-                'Nét bút rất có thần thái! Thuận bút chuẩn chỉnh.',
-                'Tuyệt vời! Bố cục chữ cân đối đúng tinh thần chữ Hán.',
-                'Rất chuẩn! Hãy luyện tập tiếp các chữ khác cùng bộ thủ nhé.'
-            ];
-            const randomIndex = Math.floor(Math.random() * praiseList.length);
-            this.feedbackMessage = praiseList[randomIndex];
-            this.feedbackType = 'success';
-            this.speak('好');
+            const targetChar = this.currentCharacterData?.char || this.currentChar?.character || '';
+            if (!targetChar) {
+                this.feedbackMessage = 'Chưa chọn chữ Hán để luyện viết.';
+                this.feedbackType = 'info';
+                return;
+            }
+
+            const width = this.canvas.width;
+            const height = this.canvas.height;
+            if (width === 0 || height === 0) return;
+
+            // 1. Trích xuất dữ liệu pixel nét vẽ của người dùng
+            const userImgData = this.ctx.getImageData(0, 0, width, height).data;
+            let userPixelCount = 0;
+            const userGrid = new Uint8Array(width * height);
+
+            for (let i = 0; i < userImgData.length; i += 4) {
+                const alpha = userImgData[i + 3];
+                if (alpha > 40) {
+                    const pixelIndex = i / 4;
+                    userGrid[pixelIndex] = 1;
+                    userPixelCount++;
+                }
+            }
+
+            // Ngưỡng tối thiểu pixel để coi là đã vẽ đủ nét
+            if (userPixelCount < 100) {
+                this.feedbackMessage = 'Nét vẽ quá ít hoặc chưa hoàn thành chữ "' + targetChar + '". Hãy viết đầy đủ nét nhé!';
+                this.feedbackType = 'warning';
+                return;
+            }
+
+            // 2. Render chữ mẫu lên Offscreen Canvas để tạo Mask chuẩn
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = width;
+            offCanvas.height = height;
+            const offCtx = offCanvas.getContext('2d');
+            
+            const fontSize = Math.round(width * 0.55);
+            offCtx.font = `bold ${fontSize}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
+            offCtx.textAlign = 'center';
+            offCtx.textBaseline = 'middle';
+            offCtx.fillStyle = '#ffffff';
+            offCtx.fillText(targetChar, width / 2, height / 2);
+
+            // Mở rộng viền nét mẫu (Dilation) để tạo vùng dung sai tự nhiên cho nét cọ
+            offCtx.lineWidth = Math.max(12, Math.round(width * 0.08));
+            offCtx.strokeStyle = '#ffffff';
+            offCtx.strokeText(targetChar, width / 2, height / 2);
+
+            const targetImgData = offCtx.getImageData(0, 0, width, height).data;
+            let targetPixelCount = 0;
+            let overlapCount = 0;
+            let outsideCount = 0;
+
+            for (let i = 0; i < targetImgData.length; i += 4) {
+                const isTarget = targetImgData[i + 3] > 40;
+                const pixelIndex = i / 4;
+                const isUser = userGrid[pixelIndex] === 1;
+
+                if (isTarget) targetPixelCount++;
+                if (isUser && isTarget) overlapCount++;
+                if (isUser && !isTarget) outsideCount++;
+            }
+
+            if (targetPixelCount === 0) {
+                this.feedbackMessage = 'Đã ghi nhận nét viết!';
+                this.feedbackType = 'success';
+                return;
+            }
+
+            // Tính tỷ lệ bao phủ (Coverage) và độ chính xác (Precision)
+            const coverage = (overlapCount / targetPixelCount) * 100;
+            const precision = (overlapCount / (overlapCount + outsideCount)) * 100;
+
+            // Đánh giá dựa trên độ sai lệch và nét vẽ thừa (như nét vẽ lung tung/sai chữ)
+            if (precision < 45 || outsideCount > overlapCount * 1.1) {
+                this.feedbackMessage = `Chưa đạt: Nét vẽ bị lệch nhiều hoặc có nét thừa không đúng với chữ "${targetChar}". Hãy đồ theo nét mờ và viết lại nhé!`;
+                this.feedbackType = 'error';
+                return;
+            }
+
+            if (coverage < 30) {
+                this.feedbackMessage = `Chưa hoàn thành: Bạn mới viết được khoảng ${Math.round(coverage)}% các nét của chữ "${targetChar}". Hãy bổ sung nét còn thiếu nhé!`;
+                this.feedbackType = 'warning';
+                return;
+            }
+
+            // Tính điểm tổng hợp (0 - 100)
+            const score = Math.min(98, Math.round(coverage * 0.4 + precision * 0.6));
+
+            if (score >= 70) {
+                this.feedbackMessage = `Xuất sắc (${score}đ)! Nét chữ "${targetChar}" rất chuẩn, bố cục cân đối và đúng quy cách.`;
+                this.feedbackType = 'success';
+                this.speak('真棒');
+            } else {
+                this.feedbackMessage = `Khá tốt (${score}đ): Nét chữ "${targetChar}" cơ bản đúng dáng nhưng cần nắn nót thêm để chuẩn hơn.`;
+                this.feedbackType = 'info';
+            }
         },
 
         // =========================================================================

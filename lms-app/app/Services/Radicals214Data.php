@@ -2,801 +2,107 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\File;
+
 class Radicals214Data
 {
     /**
-     * Lấy toàn bộ 214 Bộ thủ Khang Hy phân nhóm theo số nét
-     * Kèm theo danh sách các Chữ Hán tiêu biểu của từng bộ
+     * Lấy toàn bộ 214 Bộ thủ Khang Hy phân nhóm theo số nét (1 - 17 nét) từ tệp dữ liệu JSON
+     *
+     * @return array<int, array{name: string, count: int, items: array}>
      */
     public static function getAll(): array
     {
-        return [
-            1 => [
-                'name' => '1 nét',
-                'count' => 6,
-                'items' => [
-                    [
-                        'id' => 'gun',
-                        'radical' => '丨',
-                        'sino_vietnamese' => 'cổn',
-                        'pinyin' => 'gǔn',
-                        'stroke_count' => 1,
-                        'tone' => '3 V',
-                        'char_count' => 8,
-                        'meaning' => 'nét sổ thẳng',
-                        'description' => '丨 là nét sổ dọc, nghĩa gốc là "xuyên suốt từ trên xuống dưới". Bộ thủ số 2 này gom những chữ có một nét dọc chạy xuyên qua thân chữ.',
-                        'word_type' => 'Danh từ 名词',
-                        'word_type_desc' => 'Tên gọi của một nét viết; dùng làm bộ thủ chứ không đứng riêng thành từ.',
-                        'characters' => [
-                            ['char' => '丨', 'pinyin' => 'gǔn', 'sino_vietnamese' => 'cổn', 'meaning' => 'nét sổ thẳng', 'stroke_count' => 1, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '个', 'pinyin' => 'gè', 'sino_vietnamese' => 'cá', 'meaning' => 'cái, quả, con', 'stroke_count' => 3, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '丫', 'pinyin' => 'yā', 'sino_vietnamese' => 'nha', 'meaning' => 'xoè ra; chẽ đôi', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '丰', 'pinyin' => 'fēng', 'sino_vietnamese' => 'phong', 'meaning' => 'đầy; thịnh; được mùa; đẹp', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 4],
-                            ['char' => '书', 'pinyin' => 'shū', 'sino_vietnamese' => 'thư', 'meaning' => 'sách; thư tín', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '中', 'pinyin' => 'zhōng', 'sino_vietnamese' => 'trung', 'meaning' => 'ở giữa; ở bên trong', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '串', 'pinyin' => 'chuàn', 'sino_vietnamese' => 'xuyến', 'meaning' => 'suốt, xâu, chuỗi', 'stroke_count' => 7, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '临', 'pinyin' => 'lín', 'sino_vietnamese' => 'lâm', 'meaning' => 'ở trên soi xuống; sát, gần kề; kịp', 'stroke_count' => 9, 'tone' => '2 /', 'hsk' => 4],
-                        ],
-                    ],
-                    [
-                        'id' => 'quyet',
-                        'radical' => '亅',
-                        'sino_vietnamese' => 'quyết',
-                        'pinyin' => 'jué',
-                        'stroke_count' => 1,
-                        'tone' => '2 /',
-                        'char_count' => 5,
-                        'meaning' => 'nét sổ có móc',
-                        'description' => 'Nét sổ dọc có móc ngược lên ở chân.',
-                        'word_type' => 'Danh từ 名词',
-                        'word_type_desc' => 'Tên gọi nét sổ móc trong thư pháp.',
-                        'characters' => [
-                            ['char' => '亅', 'pinyin' => 'jué', 'sino_vietnamese' => 'quyết', 'meaning' => 'nét móc', 'stroke_count' => 1, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '了', 'pinyin' => 'le', 'sino_vietnamese' => 'liễu', 'meaning' => 'rồi; đã xong', 'stroke_count' => 2, 'tone' => '0', 'hsk' => 1],
-                            ['char' => '予', 'pinyin' => 'yǔ', 'sino_vietnamese' => 'dư', 'meaning' => 'cho, ban cho', 'stroke_count' => 4, 'tone' => '3 V', 'hsk' => 4],
-                            ['char' => '争', 'pinyin' => 'zhēng', 'sino_vietnamese' => 'tranh', 'meaning' => 'tranh giành, tranh đua', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '事', 'pinyin' => 'shì', 'sino_vietnamese' => 'sự', 'meaning' => 'sự việc, công việc', 'stroke_count' => 8, 'tone' => '4 \\', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'phiet',
-                        'radical' => '丿',
-                        'sino_vietnamese' => 'phiệt',
-                        'pinyin' => 'piě',
-                        'stroke_count' => 1,
-                        'tone' => '3 V',
-                        'char_count' => 16,
-                        'meaning' => 'nét phẩy nghiêng trái',
-                        'description' => 'Nét phẩy cong từ trên xuống dưới chếch sang bên trái.',
-                        'word_type' => 'Danh từ 名词',
-                        'word_type_desc' => 'Nét phẩy trong các nét cơ bản chữ Hán.',
-                        'characters' => [
-                            ['char' => '丿', 'pinyin' => 'piě', 'sino_vietnamese' => 'phiệt', 'meaning' => 'nét phẩy', 'stroke_count' => 1, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '九', 'pinyin' => 'jiǔ', 'sino_vietnamese' => 'cửu', 'meaning' => 'số chín (9)', 'stroke_count' => 2, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '乃', 'pinyin' => 'nǎi', 'sino_vietnamese' => 'nãi', 'meaning' => 'bèn, là, mới là', 'stroke_count' => 2, 'tone' => '3 V', 'hsk' => 4],
-                            ['char' => '千', 'pinyin' => 'qiān', 'sino_vietnamese' => 'thiên', 'meaning' => 'nghìn, một ngàn', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '升', 'pinyin' => 'shēng', 'sino_vietnamese' => 'thăng', 'meaning' => 'lên, thăng tiến; lít', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '重', 'pinyin' => 'zhòng', 'sino_vietnamese' => 'trọng', 'meaning' => 'nặng; quan trọng', 'stroke_count' => 9, 'tone' => '4 \\', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'nhat',
-                        'radical' => '一',
-                        'sino_vietnamese' => 'nhất',
-                        'pinyin' => 'yī',
-                        'stroke_count' => 1,
-                        'tone' => '1 ¯',
-                        'char_count' => 28,
-                        'meaning' => 'số một, bắt đầu, thống nhất',
-                        'description' => 'Bộ Nhất phác họa một nét ngang, cội nguồn sinh ra vạn vật.',
-                        'word_type' => 'Số từ 数词',
-                        'word_type_desc' => 'Số đếm cơ bản nhất biểu thị sự khởi đầu và toàn vẹn.',
-                        'characters' => [
-                            ['char' => '一', 'pinyin' => 'yī', 'sino_vietnamese' => 'nhất', 'meaning' => 'số một (1)', 'stroke_count' => 1, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '丁', 'pinyin' => 'dīng', 'sino_vietnamese' => 'đinh', 'meaning' => 'con trai, người lớn; can Đinh', 'stroke_count' => 2, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '七', 'pinyin' => 'qī', 'sino_vietnamese' => 'thất', 'meaning' => 'số bảy (7)', 'stroke_count' => 2, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '万', 'pinyin' => 'wàn', 'sino_vietnamese' => 'vạn', 'meaning' => 'mười nghìn (10.000)', 'stroke_count' => 3, 'tone' => '4 \\', 'hsk' => 2],
-                            ['char' => '丈', 'pinyin' => 'zhàng', 'sino_vietnamese' => 'trượng', 'meaning' => 'thước trượng; trượng phu', 'stroke_count' => 3, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '三', 'pinyin' => 'sān', 'sino_vietnamese' => 'tam', 'meaning' => 'số ba (3)', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '下', 'pinyin' => 'xià', 'sino_vietnamese' => 'hạ', 'meaning' => 'dưới; xuống', 'stroke_count' => 3, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '不', 'pinyin' => 'bù', 'sino_vietnamese' => 'bất', 'meaning' => 'không, chẳng', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '与', 'pinyin' => 'yǔ', 'sino_vietnamese' => 'dữ', 'meaning' => 'và; cùng với', 'stroke_count' => 3, 'tone' => '3 V', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'at',
-                        'radical' => '乙',
-                        'sino_vietnamese' => 'ất',
-                        'pinyin' => 'yǐ',
-                        'stroke_count' => 1,
-                        'tone' => '3 V',
-                        'char_count' => 11,
-                        'meaning' => 'can Ất, uốn cong',
-                        'description' => 'Can thứ hai trong Thập Thiên Can, tượng hình mầm cây uốn lượn vươn lên.',
-                        'word_type' => 'Danh từ 名词',
-                        'word_type_desc' => 'Thiên can thứ 2 hoặc thứ hạng B.',
-                        'characters' => [
-                            ['char' => '乙', 'pinyin' => 'yǐ', 'sino_vietnamese' => 'ất', 'meaning' => 'can Ất; thứ hai', 'stroke_count' => 1, 'tone' => '3 V', 'hsk' => 3],
-                            ['char' => '也', 'pinyin' => 'yě', 'sino_vietnamese' => 'dã', 'meaning' => 'cũng; vậy', 'stroke_count' => 3, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '习', 'pinyin' => 'xí', 'sino_vietnamese' => 'tập', 'meaning' => 'học tập, quen thuộc', 'stroke_count' => 3, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '买', 'pinyin' => 'mǎi', 'sino_vietnamese' => 'mãi', 'meaning' => 'mua vào', 'stroke_count' => 6, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '乱', 'pinyin' => 'luàn', 'sino_vietnamese' => 'loạn', 'meaning' => 'bừa bãi, hỗn loạn', 'stroke_count' => 7, 'tone' => '4 \\', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'chu',
-                        'radical' => '丶',
-                        'sino_vietnamese' => 'chủ',
-                        'pinyin' => 'zhǔ',
-                        'stroke_count' => 1,
-                        'tone' => '3 V',
-                        'char_count' => 7,
-                        'meaning' => 'nét chấm, dấu chấm',
-                        'description' => 'Nét chấm nhỏ, biểu thị một điểm ngưng tụ của ngòi bút.',
-                        'word_type' => 'Danh từ 名词',
-                        'word_type_desc' => 'Nét chấm trong bút pháp Hán tự.',
-                        'characters' => [
-                            ['char' => '丶', 'pinyin' => 'zhǔ', 'sino_vietnamese' => 'chủ', 'meaning' => 'nét chấm', 'stroke_count' => 1, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '丸', 'pinyin' => 'wán', 'sino_vietnamese' => 'hoàn', 'meaning' => 'viên tròn, viên thuốc', 'stroke_count' => 3, 'tone' => '2 /', 'hsk' => 4],
-                            ['char' => '丹', 'pinyin' => 'dān', 'sino_vietnamese' => 'đan', 'meaning' => 'màu đỏ son; thuốc đan', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 4],
-                            ['char' => '主', 'pinyin' => 'zhǔ', 'sino_vietnamese' => 'chủ', 'meaning' => 'chủ nhân, chủ yếu', 'stroke_count' => 5, 'tone' => '3 V', 'hsk' => 2],
-                        ],
-                    ],
-                ],
-            ],
+        $path = database_path('data/hanzi/radicals_214.json');
 
-            2 => [
-                'name' => '2 nét',
-                'count' => 23,
-                'items' => [
-                    [
-                        'id' => 'bat',
-                        'radical' => '八',
-                        'sino_vietnamese' => 'bát',
-                        'pinyin' => 'bā',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 20,
-                        'meaning' => 'số tám; phân chia hai bên',
-                        'characters' => [
-                            ['char' => '八', 'pinyin' => 'bā', 'sino_vietnamese' => 'bát', 'meaning' => 'số tám (8)', 'stroke_count' => 2, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '公', 'pinyin' => 'gōng', 'sino_vietnamese' => 'công', 'meaning' => 'công cộng; ông', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '六', 'pinyin' => 'liù', 'sino_vietnamese' => 'lục', 'meaning' => 'số sáu (6)', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '共', 'pinyin' => 'gòng', 'sino_vietnamese' => 'cộng', 'meaning' => 'chung, cùng nhau', 'stroke_count' => 6, 'tone' => '4 \\', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'bao',
-                        'radical' => '勹',
-                        'sino_vietnamese' => 'bao',
-                        'pinyin' => 'bāo',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 11,
-                        'meaning' => 'bao bọc, ôm lấy',
-                        'characters' => [
-                            ['char' => '包', 'pinyin' => 'bāo', 'sino_vietnamese' => 'bao', 'meaning' => 'cái túi, bao gói', 'stroke_count' => 5, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '句', 'pinyin' => 'jù', 'sino_vietnamese' => 'câu', 'meaning' => 'câu cú', 'stroke_count' => 5, 'tone' => '4 \\', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'chuy',
-                        'radical' => '匕',
-                        'sino_vietnamese' => 'chuỷ',
-                        'pinyin' => 'bǐ',
-                        'stroke_count' => 2,
-                        'tone' => '3 V',
-                        'char_count' => 5,
-                        'meaning' => 'cái thìa, muỗng; dao găm',
-                        'characters' => [
-                            ['char' => '匕', 'pinyin' => 'bǐ', 'sino_vietnamese' => 'chuỷ', 'meaning' => 'cái thìa', 'stroke_count' => 2, 'tone' => '3 V', 'hsk' => 4],
-                            ['char' => '化', 'pinyin' => 'huà', 'sino_vietnamese' => 'hoá', 'meaning' => 'biến hoá, thay đổi', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '北', 'pinyin' => 'běi', 'sino_vietnamese' => 'bắc', 'meaning' => 'phía bắc', 'stroke_count' => 5, 'tone' => '3 V', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'bang',
-                        'radical' => '冫',
-                        'sino_vietnamese' => 'băng',
-                        'pinyin' => 'bīng',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 24,
-                        'meaning' => 'băng tuyết, giá lạnh',
-                        'characters' => [
-                            ['char' => '冬', 'pinyin' => 'dōng', 'sino_vietnamese' => 'đông', 'meaning' => 'mùa đông', 'stroke_count' => 5, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '冰', 'pinyin' => 'bīng', 'sino_vietnamese' => 'băng', 'meaning' => 'băng đá', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '冷', 'pinyin' => 'lěng', 'sino_vietnamese' => 'lãnh', 'meaning' => 'lạnh lẽo', 'stroke_count' => 7, 'tone' => '3 V', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'boc',
-                        'radical' => '卜',
-                        'sino_vietnamese' => 'bốc',
-                        'pinyin' => 'bǔ',
-                        'stroke_count' => 2,
-                        'tone' => '3 V',
-                        'char_count' => 9,
-                        'meaning' => 'bói toán, xem bói',
-                        'characters' => [
-                            ['char' => '卜', 'pinyin' => 'bǔ', 'sino_vietnamese' => 'bốc', 'meaning' => 'bói toán', 'stroke_count' => 2, 'tone' => '3 V', 'hsk' => 4],
-                            ['char' => '卡', 'pinyin' => 'kǎ', 'sino_vietnamese' => 'tạp', 'meaning' => 'thẻ, thiệp; kẹt', 'stroke_count' => 5, 'tone' => '3 V', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'xuong',
-                        'radical' => '厂',
-                        'sino_vietnamese' => 'xưởng',
-                        'pinyin' => 'chǎng',
-                        'stroke_count' => 2,
-                        'tone' => '3 V',
-                        'char_count' => 23,
-                        'meaning' => 'nhà xưởng; sườn núi cheo leo',
-                        'characters' => [
-                            ['char' => '厂', 'pinyin' => 'chǎng', 'sino_vietnamese' => 'xưởng', 'meaning' => 'nhà máy, xưởng', 'stroke_count' => 2, 'tone' => '3 V', 'hsk' => 3],
-                            ['char' => '历', 'pinyin' => 'lì', 'sino_vietnamese' => 'lịch', 'meaning' => 'lịch sử; trải qua', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 2],
-                            ['char' => '原', 'pinyin' => 'yuán', 'sino_vietnamese' => 'nguyên', 'meaning' => 'nguyên nhân; đồng bằng', 'stroke_count' => 10, 'tone' => '2 /', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'dao',
-                        'radical' => '刀',
-                        'sino_vietnamese' => 'đao',
-                        'pinyin' => 'dāo',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 62,
-                        'meaning' => 'con dao, cây đao, chặt chém',
-                        'characters' => [
-                            ['char' => '刀', 'pinyin' => 'dāo', 'sino_vietnamese' => 'đao', 'meaning' => 'con dao', 'stroke_count' => 2, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '分', 'pinyin' => 'fēn', 'sino_vietnamese' => 'phân', 'meaning' => 'chia, phút; điểm', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '切', 'pinyin' => 'qiē', 'sino_vietnamese' => 'thiết', 'meaning' => 'cắt, thái lát', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '别', 'pinyin' => 'bié', 'sino_vietnamese' => 'biệt', 'meaning' => 'đừng; phân biệt', 'stroke_count' => 7, 'tone' => '2 /', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'nhi',
-                        'radical' => '儿',
-                        'sino_vietnamese' => 'nhi',
-                        'pinyin' => 'ér',
-                        'stroke_count' => 2,
-                        'tone' => '2 /',
-                        'char_count' => 19,
-                        'meaning' => 'trẻ con; đuôi từ âm uốn lưỡi',
-                        'characters' => [
-                            ['char' => '儿', 'pinyin' => 'ér', 'sino_vietnamese' => 'nhi', 'meaning' => 'trẻ con; con trai', 'stroke_count' => 2, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '几', 'pinyin' => 'jǐ', 'sino_vietnamese' => 'kỷ', 'meaning' => 'mấy, bao nhiêu', 'stroke_count' => 2, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '先', 'pinyin' => 'xiān', 'sino_vietnamese' => 'tiên', 'meaning' => 'trước tiên', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'nhi2',
-                        'radical' => '二',
-                        'sino_vietnamese' => 'nhị',
-                        'pinyin' => 'èr',
-                        'stroke_count' => 2,
-                        'tone' => '4 \\',
-                        'char_count' => 11,
-                        'meaning' => 'số hai (2)',
-                        'characters' => [
-                            ['char' => '二', 'pinyin' => 'èr', 'sino_vietnamese' => 'nhị', 'meaning' => 'số hai (2)', 'stroke_count' => 2, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '于', 'pinyin' => 'yú', 'sino_vietnamese' => 'vu', 'meaning' => 'ở, đối với', 'stroke_count' => 3, 'tone' => '2 /', 'hsk' => 3],
-                            ['char' => '云', 'pinyin' => 'yún', 'sino_vietnamese' => 'vân', 'meaning' => 'mây', 'stroke_count' => 4, 'tone' => '2 /', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'phuong',
-                        'radical' => '匚',
-                        'sino_vietnamese' => 'phương',
-                        'pinyin' => 'fāng',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 9,
-                        'meaning' => 'hộp đựng đồ, thùng vuông',
-                        'characters' => [
-                            ['char' => '区', 'pinyin' => 'qū', 'sino_vietnamese' => 'khu', 'meaning' => 'khu vực', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '医', 'pinyin' => 'yī', 'sino_vietnamese' => 'y', 'meaning' => 'y học, bác sĩ', 'stroke_count' => 7, 'tone' => '1 ¯', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'ki',
-                        'radical' => '几',
-                        'sino_vietnamese' => 'kỉ',
-                        'pinyin' => 'jī',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 8,
-                        'meaning' => 'cái bàn nhỏ; suýt nữa',
-                        'characters' => [
-                            ['char' => '几', 'pinyin' => 'jī', 'sino_vietnamese' => 'kỉ', 'meaning' => 'bàn nhỏ', 'stroke_count' => 2, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '凡', 'pinyin' => 'fán', 'sino_vietnamese' => 'phàm', 'meaning' => 'phàm trần; hễ là', 'stroke_count' => 3, 'tone' => '2 /', 'hsk' => 4],
-                            ['char' => '凤', 'pinyin' => 'fèng', 'sino_vietnamese' => 'phượng', 'meaning' => 'chim phượng hoàng', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 4],
-                        ],
-                    ],
-                    [
-                        'id' => 'tiet',
-                        'radical' => '卩',
-                        'sino_vietnamese' => 'tiết',
-                        'pinyin' => 'jié',
-                        'stroke_count' => 2,
-                        'tone' => '2 /',
-                        'char_count' => 12,
-                        'meaning' => 'đốt tre; khớp xương; ấn tín',
-                        'characters' => [
-                            ['char' => '卫', 'pinyin' => 'wèi', 'sino_vietnamese' => 'vệ', 'meaning' => 'bảo vệ; vệ sinh', 'stroke_count' => 3, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '印', 'pinyin' => 'yìn', 'sino_vietnamese' => 'ấn', 'meaning' => 'in ấn; con dấu', 'stroke_count' => 5, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '却', 'pinyin' => 'què', 'sino_vietnamese' => 'khước', 'meaning' => 'nhưng, lại', 'stroke_count' => 7, 'tone' => '4 \\', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'quynh',
-                        'radical' => '冂',
-                        'sino_vietnamese' => 'quynh',
-                        'pinyin' => 'jiōng',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 7,
-                        'meaning' => 'vùng biên ải hoang vu xa xôi',
-                        'characters' => [
-                            ['char' => '内', 'pinyin' => 'nèi', 'sino_vietnamese' => 'nội', 'meaning' => 'bên trong, nội bộ', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '冈', 'pinyin' => 'gāng', 'sino_vietnamese' => 'cương', 'meaning' => 'gò đồi', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 4],
-                            ['char' => '同', 'pinyin' => 'tóng', 'sino_vietnamese' => 'đồng', 'meaning' => 'cùng nhau, giống nhau', 'stroke_count' => 6, 'tone' => '2 /', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'luc',
-                        'radical' => '力',
-                        'sino_vietnamese' => 'lực',
-                        'pinyin' => 'lì',
-                        'stroke_count' => 2,
-                        'tone' => '4 \\',
-                        'char_count' => 29,
-                        'meaning' => 'sức lực, sức mạnh, năng lực',
-                        'characters' => [
-                            ['char' => '力', 'pinyin' => 'lì', 'sino_vietnamese' => 'lực', 'meaning' => 'sức mạnh', 'stroke_count' => 2, 'tone' => '4 \\', 'hsk' => 2],
-                            ['char' => '加', 'pinyin' => 'jiā', 'sino_vietnamese' => 'gia', 'meaning' => 'cộng, thêm vào', 'stroke_count' => 5, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '动', 'pinyin' => 'dòng', 'sino_vietnamese' => 'động', 'meaning' => 'chuyển động; hành động', 'stroke_count' => 6, 'tone' => '4 \\', 'hsk' => 2],
-                            ['char' => '助', 'pinyin' => 'zhù', 'sino_vietnamese' => 'trợ', 'meaning' => 'giúp đỡ', 'stroke_count' => 7, 'tone' => '4 \\', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'mich',
-                        'radical' => '冖',
-                        'sino_vietnamese' => 'mịch',
-                        'pinyin' => 'mì',
-                        'stroke_count' => 2,
-                        'tone' => '4 \\',
-                        'char_count' => 9,
-                        'meaning' => 'khăn trùm, che phủ kín',
-                        'characters' => [
-                            ['char' => '军', 'pinyin' => 'jūn', 'sino_vietnamese' => 'quân', 'meaning' => 'quân đội', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '写', 'pinyin' => 'xiě', 'sino_vietnamese' => 'tả', 'meaning' => 'viết', 'stroke_count' => 5, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '农', 'pinyin' => 'nóng', 'sino_vietnamese' => 'nông', 'meaning' => 'nông nghiệp', 'stroke_count' => 6, 'tone' => '2 /', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'kham',
-                        'radical' => '凵',
-                        'sino_vietnamese' => 'khảm',
-                        'pinyin' => 'kǎn',
-                        'stroke_count' => 2,
-                        'tone' => '3 V',
-                        'char_count' => 8,
-                        'meaning' => 'cái hố sâu, miệng há to',
-                        'characters' => [
-                            ['char' => '凶', 'pinyin' => 'xiōng', 'sino_vietnamese' => 'hung', 'meaning' => 'hung ác; hung dữ', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 4],
-                            ['char' => '出', 'pinyin' => 'chū', 'sino_vietnamese' => 'xuất', 'meaning' => 'ra ngoài, xuất phát', 'stroke_count' => 5, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '击', 'pinyin' => 'jī', 'sino_vietnamese' => 'kích', 'meaning' => 'đánh, tấn công', 'stroke_count' => 5, 'tone' => '1 ¯', 'hsk' => 4],
-                        ],
-                    ],
-                    [
-                        'id' => 'nhan',
-                        'radical' => '人',
-                        'sino_vietnamese' => 'nhân',
-                        'pinyin' => 'rén',
-                        'stroke_count' => 2,
-                        'tone' => '2 /',
-                        'char_count' => 231,
-                        'meaning' => 'con người, nhân loại',
-                        'characters' => [
-                            ['char' => '人', 'pinyin' => 'rén', 'sino_vietnamese' => 'nhân', 'meaning' => 'con người', 'stroke_count' => 2, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '从', 'pinyin' => 'cóng', 'sino_vietnamese' => 'tòng', 'meaning' => 'từ, theo sau', 'stroke_count' => 4, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '今', 'pinyin' => 'jīn', 'sino_vietnamese' => 'kim', 'meaning' => 'hôm nay; hiện tại', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '他', 'pinyin' => 'tā', 'sino_vietnamese' => 'tha', 'meaning' => 'anh ấy, cậu ấy', 'stroke_count' => 5, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '休', 'pinyin' => 'xiū', 'sino_vietnamese' => 'hưu', 'meaning' => 'nghỉ ngơi', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '你', 'pinyin' => 'nǐ', 'sino_vietnamese' => 'nhĩ', 'meaning' => 'bạn, cậu', 'stroke_count' => 7, 'tone' => '3 V', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'nhap',
-                        'radical' => '入',
-                        'sino_vietnamese' => 'nhập',
-                        'pinyin' => 'rù',
-                        'stroke_count' => 2,
-                        'tone' => '4 \\',
-                        'char_count' => 3,
-                        'meaning' => 'vào trong, gia nhập',
-                        'characters' => [
-                            ['char' => '入', 'pinyin' => 'rù', 'sino_vietnamese' => 'nhập', 'meaning' => 'vào trong', 'stroke_count' => 2, 'tone' => '4 \\', 'hsk' => 2],
-                            ['char' => '内', 'pinyin' => 'nèi', 'sino_vietnamese' => 'nội', 'meaning' => 'bên trong', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'thap',
-                        'radical' => '十',
-                        'sino_vietnamese' => 'thập',
-                        'pinyin' => 'shí',
-                        'stroke_count' => 2,
-                        'tone' => '2 /',
-                        'char_count' => 18,
-                        'meaning' => 'số mười (10); đầy đủ toàn vẹn',
-                        'characters' => [
-                            ['char' => '十', 'pinyin' => 'shí', 'sino_vietnamese' => 'thập', 'meaning' => 'số mười (10)', 'stroke_count' => 2, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '千', 'pinyin' => 'qiān', 'sino_vietnamese' => 'thiên', 'meaning' => 'nghìn (1.000)', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '午', 'pinyin' => 'wǔ', 'sino_vietnamese' => 'ngọ', 'meaning' => 'buổi trưa; giờ Ngọ', 'stroke_count' => 4, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '华', 'pinyin' => 'huá', 'sino_vietnamese' => 'hoa', 'meaning' => 'hoa lệ; Trung Hoa', 'stroke_count' => 6, 'tone' => '2 /', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'khu',
-                        'radical' => '厶',
-                        'sino_vietnamese' => 'khư',
-                        'pinyin' => 'sī',
-                        'stroke_count' => 2,
-                        'tone' => '1 ¯',
-                        'char_count' => 5,
-                        'meaning' => 'riêng tư, tư lợi cá nhân',
-                        'characters' => [
-                            ['char' => '去', 'pinyin' => 'qù', 'sino_vietnamese' => 'khứ', 'meaning' => 'đi đến, rời đi', 'stroke_count' => 5, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '县', 'pinyin' => 'xiàn', 'sino_vietnamese' => 'huyện', 'meaning' => 'huyện, quận', 'stroke_count' => 7, 'tone' => '4 \\', 'hsk' => 4],
-                            ['char' => '参', 'pinyin' => 'cān', 'sino_vietnamese' => 'tham', 'meaning' => 'tham gia', 'stroke_count' => 8, 'tone' => '1 ¯', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'dau',
-                        'radical' => '亠',
-                        'sino_vietnamese' => 'đầu',
-                        'pinyin' => 'tóu',
-                        'stroke_count' => 2,
-                        'tone' => '2 /',
-                        'char_count' => 15,
-                        'meaning' => 'phần đỉnh đầu, chóp nón',
-                        'characters' => [
-                            ['char' => '六', 'pinyin' => 'liù', 'sino_vietnamese' => 'lục', 'meaning' => 'số sáu (6)', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '市', 'pinyin' => 'shì', 'sino_vietnamese' => 'thị', 'meaning' => 'thành phố; chợ', 'stroke_count' => 5, 'tone' => '4 \\', 'hsk' => 2],
-                            ['char' => '交', 'pinyin' => 'jiāo', 'sino_vietnamese' => 'giao', 'meaning' => 'giao lưu; nộp', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '京', 'pinyin' => 'jīng', 'sino_vietnamese' => 'kinh', 'meaning' => 'kinh đô Bắc Kinh', 'stroke_count' => 8, 'tone' => '1 ¯', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'he',
-                        'radical' => '匸',
-                        'sino_vietnamese' => 'hệ',
-                        'pinyin' => 'xì',
-                        'stroke_count' => 2,
-                        'tone' => '4 \\',
-                        'char_count' => 6,
-                        'meaning' => 'che giấu, bao bọc kín',
-                        'characters' => [
-                            ['char' => '匹', 'pinyin' => 'pǐ', 'sino_vietnamese' => 'thất', 'meaning' => 'con (ngựa); sánh kịp', 'stroke_count' => 4, 'tone' => '3 V', 'hsk' => 3],
-                            ['char' => '匿', 'pinyin' => 'nì', 'sino_vietnamese' => 'nặc', 'meaning' => 'nặc danh, ẩn giấu', 'stroke_count' => 10, 'tone' => '4 \\', 'hsk' => 5],
-                        ],
-                    ],
-                    [
-                        'id' => 'huu',
-                        'radical' => '又',
-                        'sino_vietnamese' => 'hựu',
-                        'pinyin' => 'yòu',
-                        'stroke_count' => 2,
-                        'tone' => '4 \\',
-                        'char_count' => 17,
-                        'meaning' => 'lại, nữa; bàn tay phải',
-                        'characters' => [
-                            ['char' => '又', 'pinyin' => 'yòu', 'sino_vietnamese' => 'hựu', 'meaning' => 'lại, vừa mới', 'stroke_count' => 2, 'tone' => '4 \\', 'hsk' => 2],
-                            ['char' => '双', 'pinyin' => 'shuāng', 'sino_vietnamese' => 'song', 'meaning' => 'đôi, cặp (hai chiếc)', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '友', 'pinyin' => 'yǒu', 'sino_vietnamese' => 'hữu', 'meaning' => 'bạn bè', 'stroke_count' => 4, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '发', 'pinyin' => 'fā', 'sino_vietnamese' => 'phát', 'meaning' => 'phát ra, gửi đi', 'stroke_count' => 5, 'tone' => '1 ¯', 'hsk' => 2],
-                        ],
-                    ],
-                ],
-            ],
+        if (!File::exists($path)) {
+            return [];
+        }
 
-            3 => [
-                'name' => '3 nét',
-                'count' => 31,
-                'items' => [
-                    [
-                        'id' => 'triet',
-                        'radical' => '屮',
-                        'sino_vietnamese' => 'triệt',
-                        'pinyin' => 'chè',
-                        'stroke_count' => 3,
-                        'tone' => '4 \\',
-                        'char_count' => 2,
-                        'meaning' => 'mầm cỏ mới nhú',
-                        'characters' => [
-                            ['char' => '屯', 'pinyin' => 'tún', 'sino_vietnamese' => 'truân', 'meaning' => 'đóng quân; gom góp', 'stroke_count' => 4, 'tone' => '2 /', 'hsk' => 4],
-                        ],
-                    ],
-                    [
-                        'id' => 'xich',
-                        'radical' => '彳',
-                        'sino_vietnamese' => 'xích',
-                        'pinyin' => 'chì',
-                        'stroke_count' => 3,
-                        'tone' => '4 \\',
-                        'char_count' => 33,
-                        'meaning' => 'bước chân ngắn, đi chậm',
-                        'characters' => [
-                            ['char' => '很', 'pinyin' => 'hěn', 'sino_vietnamese' => 'hẩn', 'meaning' => 'rất, quá', 'stroke_count' => 9, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '行', 'pinyin' => 'xíng', 'sino_vietnamese' => 'hành', 'meaning' => 'đi; được', 'stroke_count' => 6, 'tone' => '2 /', 'hsk' => 2],
-                            ['char' => '往', 'pinyin' => 'wǎng', 'sino_vietnamese' => 'vãng', 'meaning' => 'hướng về, đi đến', 'stroke_count' => 8, 'tone' => '3 V', 'hsk' => 2],
-                            ['char' => '德', 'pinyin' => 'dé', 'sino_vietnamese' => 'đức', 'meaning' => 'đạo đức, phẩm hạnh', 'stroke_count' => 15, 'tone' => '2 /', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'xuyen',
-                        'radical' => '巛',
-                        'sino_vietnamese' => 'xuyên',
-                        'pinyin' => 'chuān',
-                        'stroke_count' => 3,
-                        'tone' => '1 ¯',
-                        'char_count' => 5,
-                        'meaning' => 'sông ngòi, dòng chảy',
-                        'characters' => [
-                            ['char' => '川', 'pinyin' => 'chuān', 'sino_vietnamese' => 'xuyên', 'meaning' => 'dòng sông', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '州', 'pinyin' => 'zhōu', 'sino_vietnamese' => 'châu', 'meaning' => 'tiểu bang, tỉnh', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 3],
-                        ],
-                    ],
-                    [
-                        'id' => 'thon',
-                        'radical' => '寸',
-                        'sino_vietnamese' => 'thốn',
-                        'pinyin' => 'cùn',
-                        'stroke_count' => 3,
-                        'tone' => '4 \\',
-                        'char_count' => 9,
-                        'meaning' => 'tấc (đo chiều dài); tấc lòng',
-                        'characters' => [
-                            ['char' => '寸', 'pinyin' => 'cùn', 'sino_vietnamese' => 'thốn', 'meaning' => 'tấc đo', 'stroke_count' => 3, 'tone' => '4 \\', 'hsk' => 4],
-                            ['char' => '对', 'pinyin' => 'duì', 'sino_vietnamese' => 'đối', 'meaning' => 'đúng; đối với', 'stroke_count' => 5, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '封', 'pinyin' => 'fēng', 'sino_vietnamese' => 'phong', 'meaning' => 'bức (thư); niêm phong', 'stroke_count' => 9, 'tone' => '1 ¯', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'dai',
-                        'radical' => '大',
-                        'sino_vietnamese' => 'đại',
-                        'pinyin' => 'dà',
-                        'stroke_count' => 3,
-                        'tone' => '4 \\',
-                        'char_count' => 36,
-                        'meaning' => 'to lớn, vĩ đại',
-                        'characters' => [
-                            ['char' => '大', 'pinyin' => 'dà', 'sino_vietnamese' => 'đại', 'meaning' => 'to lớn', 'stroke_count' => 3, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '天', 'pinyin' => 'tiān', 'sino_vietnamese' => 'thiên', 'meaning' => 'trời, ngày', 'stroke_count' => 4, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '太', 'pinyin' => 'tài', 'sino_vietnamese' => 'thái', 'meaning' => 'quá, lắm', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'can',
-                        'radical' => '干',
-                        'sino_vietnamese' => 'cán',
-                        'pinyin' => 'gān',
-                        'stroke_count' => 3,
-                        'tone' => '1 ¯',
-                        'char_count' => 6,
-                        'meaning' => 'khô ráo; làm việc; can thiệp',
-                        'characters' => [
-                            ['char' => '干', 'pinyin' => 'gān', 'sino_vietnamese' => 'can', 'meaning' => 'khô; làm việc', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '平', 'pinyin' => 'píng', 'sino_vietnamese' => 'bình', 'meaning' => 'bằng phẳng, bình an', 'stroke_count' => 5, 'tone' => '2 /', 'hsk' => 3],
-                            ['char' => '年', 'pinyin' => 'nián', 'sino_vietnamese' => 'niên', 'meaning' => 'năm', 'stroke_count' => 6, 'tone' => '2 /', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'cong',
-                        'radical' => '工',
-                        'sino_vietnamese' => 'công',
-                        'pinyin' => 'gōng',
-                        'stroke_count' => 3,
-                        'tone' => '1 ¯',
-                        'char_count' => 8,
-                        'meaning' => 'thợ thủ công; công việc; công phu',
-                        'characters' => [
-                            ['char' => '工', 'pinyin' => 'gōng', 'sino_vietnamese' => 'công', 'meaning' => 'công nhân; công việc', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '左', 'pinyin' => 'zuǒ', 'sino_vietnamese' => 'tả', 'meaning' => 'bên trái', 'stroke_count' => 5, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '差', 'pinyin' => 'chà', 'sino_vietnamese' => 'sai', 'meaning' => 'kém; sai biệt', 'stroke_count' => 9, 'tone' => '4 \\', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'cung',
-                        'radical' => '弓',
-                        'sino_vietnamese' => 'cung',
-                        'pinyin' => 'gōng',
-                        'stroke_count' => 3,
-                        'tone' => '1 ¯',
-                        'char_count' => 18,
-                        'meaning' => 'cây cung; uốn cong',
-                        'characters' => [
-                            ['char' => '弓', 'pinyin' => 'gōng', 'sino_vietnamese' => 'cung', 'meaning' => 'cây cung', 'stroke_count' => 3, 'tone' => '1 ¯', 'hsk' => 4],
-                            ['char' => '引', 'pinyin' => 'yǐn', 'sino_vietnamese' => 'dẫn', 'meaning' => 'dẫn dắt; thu hút', 'stroke_count' => 4, 'tone' => '3 V', 'hsk' => 3],
-                            ['char' => '张', 'pinyin' => 'zhāng', 'sino_vietnamese' => 'trương', 'meaning' => 'tấm, tờ (lượng từ)', 'stroke_count' => 7, 'tone' => '1 ¯', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'khau',
-                        'radical' => '口',
-                        'sino_vietnamese' => 'khẩu',
-                        'pinyin' => 'kǒu',
-                        'stroke_count' => 3,
-                        'tone' => '3 V',
-                        'char_count' => 120,
-                        'meaning' => 'miệng, ăn uống, phát ngôn',
-                        'characters' => [
-                            ['char' => '口', 'pinyin' => 'kǒu', 'sino_vietnamese' => 'khẩu', 'meaning' => 'cái miệng', 'stroke_count' => 3, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '叫', 'pinyin' => 'jiào', 'sino_vietnamese' => 'khiếu', 'meaning' => 'gọi, tên là', 'stroke_count' => 5, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '吃', 'pinyin' => 'chī', 'sino_vietnamese' => 'ngật', 'meaning' => 'ăn', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '听', 'pinyin' => 'tīng', 'sino_vietnamese' => 'thính', 'meaning' => 'nghe', 'stroke_count' => 7, 'tone' => '1 ¯', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'tho',
-                        'radical' => '土',
-                        'sino_vietnamese' => 'thổ',
-                        'pinyin' => 'tǔ',
-                        'stroke_count' => 3,
-                        'tone' => '3 V',
-                        'char_count' => 45,
-                        'meaning' => 'đất đai, thổ nhưỡng',
-                        'characters' => [
-                            ['char' => '土', 'pinyin' => 'tǔ', 'sino_vietnamese' => 'thổ', 'meaning' => 'đất', 'stroke_count' => 3, 'tone' => '3 V', 'hsk' => 2],
-                            ['char' => '在', 'pinyin' => 'zài', 'sino_vietnamese' => 'tại', 'meaning' => 'ở, tại; đang', 'stroke_count' => 6, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '地', 'pinyin' => 'dì', 'sino_vietnamese' => 'địa', 'meaning' => 'mặt đất; nơi chốn', 'stroke_count' => 6, 'tone' => '4 \\', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'nu',
-                        'radical' => '女',
-                        'sino_vietnamese' => 'nữ',
-                        'pinyin' => 'nǚ',
-                        'stroke_count' => 3,
-                        'tone' => '3 V',
-                        'char_count' => 68,
-                        'meaning' => 'phụ nữ, con gái',
-                        'characters' => [
-                            ['char' => '女', 'pinyin' => 'nǚ', 'sino_vietnamese' => 'nữ', 'meaning' => 'con gái, nữ', 'stroke_count' => 3, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '好', 'pinyin' => 'hǎo', 'sino_vietnamese' => 'hảo', 'meaning' => 'tốt, đẹp, xong', 'stroke_count' => 6, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '如', 'pinyin' => 'rú', 'sino_vietnamese' => 'như', 'meaning' => 'như, giống như', 'stroke_count' => 6, 'tone' => '2 /', 'hsk' => 3],
-                            ['char' => '妈', 'pinyin' => 'mā', 'sino_vietnamese' => 'mã', 'meaning' => 'mẹ', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'thuy',
-                        'radical' => '氵',
-                        'sino_vietnamese' => 'thủy',
-                        'pinyin' => 'shuǐ',
-                        'stroke_count' => 3,
-                        'tone' => '3 V',
-                        'char_count' => 135,
-                        'meaning' => 'nước, sông hồ, chất lỏng',
-                        'characters' => [
-                            ['char' => '水', 'pinyin' => 'shuǐ', 'sino_vietnamese' => 'thủy', 'meaning' => 'nước', 'stroke_count' => 4, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '江', 'pinyin' => 'jiāng', 'sino_vietnamese' => 'giang', 'meaning' => 'dòng sông lớn', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 3],
-                            ['char' => '没', 'pinyin' => 'méi', 'sino_vietnamese' => 'một', 'meaning' => 'không có; chưa', 'stroke_count' => 7, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '海', 'pinyin' => 'hǎi', 'sino_vietnamese' => 'hải', 'meaning' => 'biển cả', 'stroke_count' => 10, 'tone' => '3 V', 'hsk' => 2],
-                            ['char' => '清', 'pinyin' => 'qīng', 'sino_vietnamese' => 'thanh', 'meaning' => 'trong suốt, thanh khiết', 'stroke_count' => 11, 'tone' => '1 ¯', 'hsk' => 2],
-                        ],
-                    ],
-                ],
-            ],
+        $list = json_decode(File::get($path), true) ?: [];
+        $grouped = [];
 
-            4 => [
-                'name' => '4 nét',
-                'count' => 34,
-                'items' => [
-                    [
-                        'id' => 'moc',
-                        'radical' => '木',
-                        'sino_vietnamese' => 'mộc',
-                        'pinyin' => 'mù',
-                        'stroke_count' => 4,
-                        'tone' => '4 \\',
-                        'char_count' => 140,
-                        'meaning' => 'cây cối, gỗ, thực vật',
-                        'characters' => [
-                            ['char' => '木', 'pinyin' => 'mù', 'sino_vietnamese' => 'mộc', 'meaning' => 'gỗ, cây cối', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '本', 'pinyin' => 'běn', 'sino_vietnamese' => 'bản', 'meaning' => 'gốc rễ; cuốn, quyển', 'stroke_count' => 5, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '机', 'pinyin' => 'jī', 'sino_vietnamese' => 'cơ', 'meaning' => 'máy móc, cơ hội', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 1],
-                            ['char' => '林', 'pinyin' => 'lín', 'sino_vietnamese' => 'lâm', 'meaning' => 'khu rừng', 'stroke_count' => 8, 'tone' => '2 /', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'nhat4',
-                        'radical' => '日',
-                        'sino_vietnamese' => 'nhật',
-                        'pinyin' => 'rì',
-                        'stroke_count' => 4,
-                        'tone' => '4 \\',
-                        'char_count' => 85,
-                        'meaning' => 'mặt trời, ban ngày, thời gian',
-                        'characters' => [
-                            ['char' => '日', 'pinyin' => 'rì', 'sino_vietnamese' => 'nhật', 'meaning' => 'mặt trời, ngày', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '早', 'pinyin' => 'zǎo', 'sino_vietnamese' => 'tảo', 'meaning' => 'sớm, buổi sáng', 'stroke_count' => 6, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '明', 'pinyin' => 'míng', 'sino_vietnamese' => 'minh', 'meaning' => 'sáng sủa; rõ ràng', 'stroke_count' => 8, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '时', 'pinyin' => 'shí', 'sino_vietnamese' => 'thời', 'meaning' => 'thời gian, giờ', 'stroke_count' => 7, 'tone' => '2 /', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'nguyet',
-                        'radical' => '月',
-                        'sino_vietnamese' => 'nguyệt',
-                        'pinyin' => 'yuè',
-                        'stroke_count' => 4,
-                        'tone' => '4 \\',
-                        'char_count' => 65,
-                        'meaning' => 'mặt trăng, tháng; thân thể',
-                        'characters' => [
-                            ['char' => '月', 'pinyin' => 'yuè', 'sino_vietnamese' => 'nguyệt', 'meaning' => 'mặt trăng, tháng', 'stroke_count' => 4, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '有', 'pinyin' => 'yǒu', 'sino_vietnamese' => 'hữu', 'meaning' => 'có', 'stroke_count' => 6, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '朋', 'pinyin' => 'péng', 'sino_vietnamese' => 'bằng', 'meaning' => 'bạn hữu', 'stroke_count' => 8, 'tone' => '2 /', 'hsk' => 1],
-                        ],
-                    ],
-                    [
-                        'id' => 'hoa',
-                        'radical' => '火',
-                        'sino_vietnamese' => 'hỏa',
-                        'pinyin' => 'huǒ',
-                        'stroke_count' => 4,
-                        'tone' => '3 V',
-                        'char_count' => 92,
-                        'meaning' => 'lửa, nhiệt độ, nấu nướng',
-                        'characters' => [
-                            ['char' => '火', 'pinyin' => 'huǒ', 'sino_vietnamese' => 'hỏa', 'meaning' => 'ngọn lửa', 'stroke_count' => 4, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '灯', 'pinyin' => 'dēng', 'sino_vietnamese' => 'đăng', 'meaning' => 'ngọn đèn', 'stroke_count' => 6, 'tone' => '1 ¯', 'hsk' => 2],
-                            ['char' => '点', 'pinyin' => 'diǎn', 'sino_vietnamese' => 'điểm', 'meaning' => 'giờ; chấm; chút ít', 'stroke_count' => 9, 'tone' => '3 V', 'hsk' => 1],
-                            ['char' => '热', 'pinyin' => 'rè', 'sino_vietnamese' => 'nhiệt', 'meaning' => 'nóng bức', 'stroke_count' => 10, 'tone' => '4 \\', 'hsk' => 1],
-                        ],
-                    ],
-                ],
-            ],
+        foreach ($list as $item) {
+            $stroke = (int) ($item['stroke_count'] ?? 1);
+            if (!isset($grouped[$stroke])) {
+                $grouped[$stroke] = [
+                    'name' => "{$stroke} nét",
+                    'count' => 0,
+                    'items' => [],
+                ];
+            }
 
-            5 => [
-                'name' => '5 nét',
-                'count' => 23,
-                'items' => [
-                    [
-                        'id' => 'dien',
-                        'radical' => '田',
-                        'sino_vietnamese' => 'điền',
-                        'pinyin' => 'tián',
-                        'stroke_count' => 5,
-                        'tone' => '2 /',
-                        'char_count' => 25,
-                        'meaning' => 'ruộng đất, thổ nhưỡng',
-                        'characters' => [
-                            ['char' => '田', 'pinyin' => 'tián', 'sino_vietnamese' => 'điền', 'meaning' => 'ruộng đất', 'stroke_count' => 5, 'tone' => '2 /', 'hsk' => 3],
-                            ['char' => '男', 'pinyin' => 'nán', 'sino_vietnamese' => 'nam', 'meaning' => 'đàn ông, nam giới', 'stroke_count' => 7, 'tone' => '2 /', 'hsk' => 1],
-                            ['char' => '画', 'pinyin' => 'huà', 'sino_vietnamese' => 'họa', 'meaning' => 'vẽ; bức tranh', 'stroke_count' => 8, 'tone' => '4 \\', 'hsk' => 2],
-                        ],
-                    ],
-                    [
-                        'id' => 'muc',
-                        'radical' => '目',
-                        'sino_vietnamese' => 'mục',
-                        'pinyin' => 'mù',
-                        'stroke_count' => 5,
-                        'tone' => '4 \\',
-                        'char_count' => 48,
-                        'meaning' => 'con mắt, nhìn ngắm',
-                        'characters' => [
-                            ['char' => '目', 'pinyin' => 'mù', 'sino_vietnamese' => 'mục', 'meaning' => 'con mắt; mục lục', 'stroke_count' => 5, 'tone' => '4 \\', 'hsk' => 3],
-                            ['char' => '看', 'pinyin' => 'kàn', 'sino_vietnamese' => 'khán', 'meaning' => 'nhìn, xem, đọc', 'stroke_count' => 9, 'tone' => '4 \\', 'hsk' => 1],
-                            ['char' => '眼', 'pinyin' => 'yǎn', 'sino_vietnamese' => 'nhãn', 'meaning' => 'con mắt', 'stroke_count' => 11, 'tone' => '3 V', 'hsk' => 2],
-                            ['char' => '睛', 'pinyin' => 'jīng', 'sino_vietnamese' => 'tinh', 'meaning' => 'tròng mắt', 'stroke_count' => 13, 'tone' => '1 ¯', 'hsk' => 2],
-                        ],
-                    ],
-                ],
-            ],
+            $grouped[$stroke]['items'][] = $item;
+            $grouped[$stroke]['count']++;
+        }
+
+        ksort($grouped);
+
+        return $grouped;
+    }
+
+    /**
+     * Lấy toàn bộ Chữ Hán phân nhóm theo 6 cấp độ HSK từ tệp JSON characters_dictionary.json
+     *
+     * @return array<int, array{level: int, name: string, level_name: string, desc: string, color: string, count: int, items: array}>
+     */
+    public static function getHskAll(): array
+    {
+        $path = database_path('data/hanzi/characters_dictionary.json');
+
+        $hskMeta = [
+            1 => ['name' => 'HSK 1', 'level_name' => 'Sơ cấp 1', 'desc' => 'Hán tự căn bản và thông dụng nhất cho người mới bắt đầu', 'color' => '#10b981', 'badge_bg' => '#ecfdf5', 'badge_text' => '#059669', 'badge_border' => '#a7f3d0'],
+            2 => ['name' => 'HSK 2', 'level_name' => 'Sơ cấp 2', 'desc' => 'Giao tiếp hàng ngày, mua sắm và hỏi đường thông dụng', 'color' => '#06b6d4', 'badge_bg' => '#ecfeff', 'badge_text' => '#0891b2', 'badge_border' => '#a5f3fc'],
+            3 => ['name' => 'HSK 3', 'level_name' => 'Trung cấp 1', 'desc' => 'Đọc hiểu đoạn văn, diễn đạt cảm xúc và ý kiến cá nhân', 'color' => '#3b82f6', 'badge_bg' => '#eff6ff', 'badge_text' => '#2563eb', 'badge_border' => '#bfdbfe'],
+            4 => ['name' => 'HSK 4', 'level_name' => 'Trung cấp 2', 'desc' => 'Thảo luận lưu loát nhiều chủ đề đời sống và công việc', 'color' => '#8b5cf6', 'badge_bg' => '#f5f3ff', 'badge_text' => '#7c3aed', 'badge_border' => '#ddd6fe'],
+            5 => ['name' => 'HSK 5', 'level_name' => 'Cao cấp 1', 'desc' => 'Đọc báo chí, xem phim ảnh và thuyết trình chuyên môn', 'color' => '#f59e0b', 'badge_bg' => '#fffbeb', 'badge_text' => '#d97706', 'badge_border' => '#fde68a'],
+            6 => ['name' => 'HSK 6', 'level_name' => 'Cao cấp 2', 'desc' => 'Diễn đạt phong phú tự nhiên, sử dụng thành ngữ chuẩn người bản xứ', 'color' => '#e07a5f', 'badge_bg' => '#fff2ee', 'badge_text' => '#c86349', 'badge_border' => '#fcdccf'],
         ];
+
+        $grouped = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $meta = $hskMeta[$i];
+            $grouped[$i] = [
+                'level' => $i,
+                'name' => $meta['name'],
+                'level_name' => $meta['level_name'],
+                'desc' => $meta['desc'],
+                'color' => $meta['color'],
+                'badge_bg' => $meta['badge_bg'],
+                'badge_text' => $meta['badge_text'],
+                'badge_border' => $meta['badge_border'],
+                'count' => 0,
+                'items' => [],
+            ];
+        }
+
+        if (!File::exists($path)) {
+            return $grouped;
+        }
+
+        $list = json_decode(File::get($path), true) ?: [];
+
+        foreach ($list as $c) {
+            $hsk = (int) ($c['hsk_level'] ?? 1);
+            if ($hsk < 1 || $hsk > 6) {
+                $hsk = 1;
+            }
+
+            $grouped[$hsk]['items'][] = [
+                'char' => $c['character'] ?? '',
+                'pinyin' => $c['pinyin'] ?? '',
+                'sino_vietnamese' => $c['sino_vietnamese'] ?? '',
+                'meaning' => $c['meaning'] ?? '',
+                'stroke_count' => (int) ($c['stroke_count'] ?? 1),
+                'tone' => $c['tone'] ?? '1',
+                'hsk' => $hsk,
+                'radical_id' => $c['radical_code'] ?? '',
+                'radical' => $c['radical'] ?? '',
+                'radical_name' => $c['radical_name'] ?? '',
+            ];
+            $grouped[$hsk]['count']++;
+        }
+
+        return $grouped;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\HanziDataService;
 use App\Services\Radicals214Data;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -9,6 +10,13 @@ use Illuminate\View\View;
 
 class HanziDecompositionController extends Controller
 {
+    protected HanziDataService $hanziService;
+
+    public function __construct(HanziDataService $hanziService)
+    {
+        $this->hanziService = $hanziService;
+    }
+
     /**
      * Hiển thị trang Chiết tự Chữ Hán theo cấu trúc Bộ thủ & Bảng Bộ thủ
      */
@@ -16,9 +24,75 @@ class HanziDecompositionController extends Controller
     {
         $radicalGroups = $this->getRadicalGroups();
         $demoRadicals = $this->getDemoRadicals();
-        $radicals214 = Radicals214Data::getAll();
+        $radicals214 = $this->hanziService->getRadicals214Grouped();
 
-        return view('hanzi.index', compact('radicalGroups', 'demoRadicals', 'radicals214'));
+        $hskGroups = $this->hanziService->getHskGrouped();
+
+        // Fallback sang dữ liệu tĩnh nếu DB chưa có bản ghi
+        if (empty($radicals214)) {
+            $radicals214 = Radicals214Data::getAll();
+        }
+
+        if (empty($hskGroups)) {
+            $hskGroups = Radicals214Data::getHskAll();
+        }
+
+        return view('hanzi.index', compact('radicalGroups', 'demoRadicals', 'radicals214', 'hskGroups'));
+    }
+
+    /**
+     * API lấy chi tiết chữ Hán (Chiết tự, Vector Nét viết, Câu ví dụ)
+     */
+    public function show(string $character): JsonResponse
+    {
+        $detail = $this->hanziService->getCharacterDetail($character);
+
+        if (!$detail) {
+            return response()->json(['message' => 'Không tìm thấy dữ liệu chữ Hán'], 404);
+        }
+
+        return response()->json($detail);
+    }
+
+    /**
+     * API lấy dữ liệu vector nét vẽ (SVG paths & medians) cho HanziWriter
+     */
+    public function strokeData(string $character): JsonResponse
+    {
+        $storage = app(\App\Services\HanziStrokeStorageService::class);
+        $data = $storage->getStrokeData($character);
+
+        // Kiểm tra xem dữ liệu nét vẽ có phải là vector thật (> 30 ký tự và chứa đường cong Q/C)
+        $hasRealStrokes = false;
+        if ($data && !empty($data['strokes']) && is_array($data['strokes'])) {
+            $firstStroke = $data['strokes'][0] ?? '';
+            if (strlen($firstStroke) > 30 && !str_starts_with($firstStroke, 'M 50 10') && !str_starts_with($firstStroke, 'M 10 10')) {
+                $hasRealStrokes = true;
+            }
+        }
+
+        // Nếu chưa có file vector thật, tải từ CDN và lưu cache vào storage phân cấp
+        if (!$hasRealStrokes) {
+            try {
+                $cdnUrl = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" . urlencode($character) . ".json";
+                $context = stream_context_create([
+                    'http' => ['timeout' => 4],
+                    'ssl' => ['verify_peer' => false, 'verify_peer_name' => false]
+                ]);
+                $cdnJson = @file_get_contents($cdnUrl, false, $context);
+                if ($cdnJson) {
+                    $parsed = json_decode($cdnJson, true);
+                    if ($parsed && !empty($parsed['strokes'])) {
+                        $storage->saveStrokeData($character, $parsed, 1, 'common');
+                        return response()->json($parsed);
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Ignore and return fallback
+            }
+        }
+
+        return response()->json($data ?: ['strokes' => [], 'medians' => []]);
     }
 
     /**

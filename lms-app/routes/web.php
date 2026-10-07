@@ -67,6 +67,8 @@ Route::controller(PageController::class)->group(function () {
     Route::post('/luyen-tap-pinyin/submit', [PinyinQuizController::class, 'submit'])->name('pinyin.quiz.submit');
     Route::get('/chiet-tu', [HanziDecompositionController::class, 'index'])->name('hanzi.index');
     Route::get('/api/chiet-tu/search', [HanziDecompositionController::class, 'search'])->name('hanzi.search');
+    Route::get('/api/chiet-tu/character/{character}', [HanziDecompositionController::class, 'show'])->name('hanzi.show');
+    Route::get('/api/chiet-tu/stroke-data/{character}', [HanziDecompositionController::class, 'strokeData'])->name('hanzi.stroke-data');
     Route::get('/thi-thu-hsk', [HskMockExamController::class, 'index'])->name('student.hsk-mock-exams.index');
     Route::get('/thi-thu-hsk/{level}', [HskMockExamController::class, 'show'])->name('student.hsk-mock-exams.show');
     Route::get('/trang-chu', 'getDemoHome')->name('home');
