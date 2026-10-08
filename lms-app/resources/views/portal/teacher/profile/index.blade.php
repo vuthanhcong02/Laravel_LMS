@@ -17,44 +17,38 @@
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto" x-data="{ tab: '{{ $initialTab }}' }">
         <div class="max-w-[1200px] mx-auto space-y-6">
 
-            {{-- Page Title --}}
-            <div>
-                <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Hồ sơ cá nhân</h1>
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Quản lý các thông tin cá nhân và bảo mật tài khoản.
-                </p>
-            </div>
+            <x-portal.page-header
+                :title="__('Hồ sơ cá nhân')"
+                :description="__('Quản lý các thông tin cá nhân và bảo mật tài khoản.')"
+            />
 
-            {{-- Flash Messages --}}
             <x-flash-message type="success" />
             <x-flash-message type="error" />
 
-            {{-- Tabs --}}
             <div class="flex border-b border-slate-200 dark:border-slate-700">
                 <button @click="tab = 'profile'"
                     :class="tab === 'profile' ? 'border-primary text-primary' :
                         'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
                     class="px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold border-b-2 -mb-px transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-base">manage_accounts</span> Thông tin chung
+                    <span class="material-symbols-outlined text-base">manage_accounts</span> {{ __('Thông tin chung') }}
                 </button>
                 <button @click="tab = 'security'"
                     :class="tab === 'security' ? 'border-primary text-primary' :
                         'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
                     class="px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold border-b-2 -mb-px transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-base">lock</span> Đổi mật khẩu
+                    <span class="material-symbols-outlined text-base">lock</span> {{ __('Đổi mật khẩu') }}
                 </button>
             </div>
 
-            {{-- TAB: Profile Info --}}
             <div x-show="tab === 'profile'" x-transition>
                 <form action="{{ route('teacher.profile.update') }}" method="POST" enctype="multipart/form-data"
-                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                     @csrf
                     @method('PUT')
 
-                    {{-- Avatar Section --}}
                     <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-6"
                         x-data="avatarPreview()">
-                        {{-- Avatar Display --}}
+
                         <div class="relative shrink-0">
                             @php
                                 $avatarUrl = Auth::user()->avatar_url;
@@ -80,8 +74,8 @@
                             </label>
                         </div>
                         <div class="space-y-1 text-center sm:text-left">
-                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Ảnh đại diện</p>
-                            <p class="text-xs text-slate-400">Định dạng: JPG, PNG, WebP. Max 2MB.</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">{{ __('Ảnh đại diện') }}</p>
+                            <p class="text-xs text-slate-400">{{ __('Định dạng: JPG, PNG, WebP. Tối đa 2MB.') }}</p>
                             <input id="avatar-input" type="file" name="avatar" accept="image/*" class="hidden"
                                 @change="onFileChange">
                             @error('avatar')
@@ -90,21 +84,20 @@
                         </div>
                     </div>
 
-                    {{-- Fields --}}
                     <div class="p-6 space-y-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                             <div class="space-y-1.5 sm:space-y-2">
-                                <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">Tên (First Name)</label>
+                                <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Tên (First Name)') }}</label>
                                 <input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}"
-                                    class="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('first_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white">
+                                    class="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('first_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-xl focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white">
                                 @error('first_name')
                                     <p class="text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div class="space-y-1.5 sm:space-y-2">
-                                <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">Họ (Last Name)</label>
+                                <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Họ (Last Name)') }}</label>
                                 <input type="text" name="last_name" value="{{ old('last_name', $user->last_name) }}"
-                                    class="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('last_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white">
+                                    class="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('last_name') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-xl focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white">
                                 @error('last_name')
                                     <p class="text-xs text-red-500">{{ $message }}</p>
                                 @enderror
@@ -112,9 +105,9 @@
                         </div>
 
                         <div class="space-y-1.5 sm:space-y-2">
-                            <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">Địa chỉ Email</label>
+                            <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Địa chỉ Email') }}</label>
                             <input type="email" name="email" value="{{ old('email', $user->email) }}"
-                                class="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('email') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white">
+                                class="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('email') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-xl focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white">
                             @error('email')
                                 <p class="text-xs text-red-500">{{ $message }}</p>
                             @enderror
@@ -122,31 +115,30 @@
 
                         <div class="pt-2 flex justify-end">
                             <button type="submit"
-                                class="px-5 sm:px-6 py-2 rounded-lg font-bold bg-primary text-white hover:bg-primary/90 transition-colors text-xs sm:text-sm">
-                                Lưu thay đổi
+                                class="px-5 sm:px-6 py-2 rounded-xl font-bold bg-primary text-white hover:bg-primary/90 transition-colors text-xs sm:text-sm shadow-sm">
+                                {{ __('Lưu thay đổi') }}
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
 
-            {{-- TAB: Security --}}
             <div x-show="tab === 'security'" x-transition style="display:none">
                 <form action="{{ route('teacher.profile.updatePassword') }}" method="POST"
-                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
+                    class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
                     @csrf
                     @method('PUT')
 
                     <div class="space-y-1.5 sm:space-y-2">
-                        <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">Mật khẩu hiện tại</label>
+                        <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Mật khẩu hiện tại') }}</label>
                         <div class="relative flex items-center">
                             <input type="password" id="teacher_current_password" name="current_password"
-                                class="w-full px-3.5 sm:px-4 pr-11 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('current_password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white"
-                                placeholder="Nhập mật khẩu hiện tại của bạn">
-                            <button type="button" 
+                                class="w-full px-3.5 sm:px-4 pr-11 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('current_password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-xl focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white"
+                                placeholder="{{ __('Nhập mật khẩu hiện tại của bạn') }}">
+                            <button type="button"
                                 onclick="togglePasswordVisibility('teacher_current_password', this)"
                                 class="absolute right-0 top-0 bottom-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
-                                aria-label="Hiện/ẩn mật khẩu">
+                                aria-label="{{ __('Hiện/ẩn mật khẩu') }}">
                                 <span class="material-symbols-outlined text-[18px] sm:text-[20px] select-none">visibility</span>
                             </button>
                         </div>
@@ -156,15 +148,15 @@
                     </div>
 
                     <div class="space-y-1.5 sm:space-y-2">
-                        <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">Mật khẩu mới</label>
+                        <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Mật khẩu mới') }}</label>
                         <div class="relative flex items-center">
                             <input type="password" id="teacher_password" name="password"
-                                class="w-full px-3.5 sm:px-4 pr-11 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-lg focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white"
-                                placeholder="Tối thiểu 8 ký tự">
-                            <button type="button" 
+                                class="w-full px-3.5 sm:px-4 pr-11 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border @error('password') border-red-500 @else border-slate-200 dark:border-slate-700 @enderror rounded-xl focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white"
+                                placeholder="{{ __('Tối thiểu 8 ký tự') }}">
+                            <button type="button"
                                 onclick="togglePasswordVisibility('teacher_password', this)"
                                 class="absolute right-0 top-0 bottom-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
-                                aria-label="Hiện/ẩn mật khẩu">
+                                aria-label="{{ __('Hiện/ẩn mật khẩu') }}">
                                 <span class="material-symbols-outlined text-[18px] sm:text-[20px] select-none">visibility</span>
                             </button>
                         </div>
@@ -174,15 +166,15 @@
                     </div>
 
                     <div class="space-y-1.5 sm:space-y-2">
-                        <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">Nhập lại mật khẩu mới</label>
+                        <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Nhập lại mật khẩu mới') }}</label>
                         <div class="relative flex items-center">
                             <input type="password" id="teacher_password_confirmation" name="password_confirmation"
-                                class="w-full px-3.5 sm:px-4 pr-11 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white"
-                                placeholder="Khớp với mật khẩu vừa nhập">
-                            <button type="button" 
+                                class="w-full px-3.5 sm:px-4 pr-11 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-primary focus:border-primary text-xs sm:text-sm text-slate-900 dark:text-white"
+                                placeholder="{{ __('Khớp với mật khẩu vừa nhập') }}">
+                            <button type="button"
                                 onclick="togglePasswordVisibility('teacher_password_confirmation', this)"
                                 class="absolute right-0 top-0 bottom-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
-                                aria-label="Hiện/ẩn mật khẩu">
+                                aria-label="{{ __('Hiện/ẩn mật khẩu') }}">
                                 <span class="material-symbols-outlined text-[18px] sm:text-[20px] select-none">visibility</span>
                             </button>
                         </div>
@@ -190,8 +182,8 @@
 
                     <div class="pt-2 flex justify-end">
                         <button type="submit"
-                            class="px-5 sm:px-6 py-2 rounded-lg font-bold bg-primary text-white hover:bg-primary/90 transition-colors text-xs sm:text-sm">
-                            Đổi mật khẩu
+                            class="px-5 sm:px-6 py-2 rounded-xl font-bold bg-primary text-white hover:bg-primary/90 transition-colors text-xs sm:text-sm shadow-sm">
+                            {{ __('Đổi mật khẩu') }}
                         </button>
                     </div>
                 </form>

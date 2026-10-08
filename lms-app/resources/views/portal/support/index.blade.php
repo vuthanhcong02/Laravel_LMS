@@ -25,20 +25,17 @@
 @section('content')
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[1400px] mx-auto space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 mt-5">
-                <div class="space-y-2">
-                    <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-4xl">support_agent</span>
-                        Trung tâm Hỗ trợ
-                    </h1>
-                    <p class="text-slate-500 dark:text-slate-400 font-bold">Xem và quản lý các yêu cầu hỗ trợ của bạn.</p>
-                </div>
-                <a href="{{ route('support.create') }}"
-                    class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[20px]">add</span>
-                    Tạo yêu cầu mới
-                </a>
-            </div>
+            <x-portal.page-header
+                :title="__('Trung tâm Hỗ trợ')"
+                :description="__('Xem và quản lý các yêu cầu hỗ trợ của bạn.')">
+                <x-slot:actions>
+                    <a href="{{ route('support.create') }}"
+                        class="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-[20px]">add</span>
+                        {{ __('Tạo yêu cầu mới') }}
+                    </a>
+                </x-slot:actions>
+            </x-portal.page-header>
 
             <x-flash-message type="success" />
             <x-flash-message type="error" />
@@ -116,7 +113,7 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- Pagination -->
+
                 @if($tickets->hasPages())
                     <div class="p-4 border-t border-slate-200 dark:border-slate-800">
                         {{ $tickets->links() }}

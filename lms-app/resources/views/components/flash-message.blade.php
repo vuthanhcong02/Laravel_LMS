@@ -4,41 +4,43 @@
     $message ??= session($type);
 
     $styles = [
-        'success' => 'bg-emerald-100 border-emerald-200 text-emerald-800',
-        'error'   => 'bg-red-100 border-red-200 text-red-800',
-        'warning' => 'bg-yellow-100 border-yellow-200 text-yellow-800',
-        'info'    => 'bg-blue-100 border-blue-200 text-blue-800',
+        'success' =>
+            'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-300',
+        'error' =>
+            'bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-900 dark:text-rose-300',
+        'warning' =>
+            'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/40 dark:border-amber-900 dark:text-amber-300',
+        'info' =>
+            'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/40 dark:border-blue-900 dark:text-blue-300',
     ];
 
     $icons = [
         'success' => 'check_circle',
-        'error'   => 'cancel',
+        'error' => 'error',
         'warning' => 'warning',
-        'info'    => 'info',
+        'info' => 'info',
     ];
 
     $class = $styles[$type] ?? $styles['success'];
-    $icon  = $icons[$type]  ?? $icons['success'];
+    $icon = $icons[$type] ?? $icons['success'];
 @endphp
 
-@if($message)
-    <div
-        x-data="lmsFlashToast(4000)"
-        x-show="show"
-        x-transition:leave="transition ease-in duration-300"
-        x-transition:leave-start="opacity-100 translate-y-0"
+@if ($message)
+    <div x-data="lmsFlashToast(5000)" x-show="show" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-2"
-        class="flex items-center gap-3 p-4 border rounded-lg shadow-sm {{ $class }}">
-        <span class="material-symbols-outlined text-base shrink-0">{{ $icon }}</span>
-        <span class="text-sm font-medium flex-1">{{ $message }}</span>
-        <button @click="show = false" class="shrink-0 opacity-60 hover:opacity-100 transition-opacity">
+        class="flex items-center gap-3 p-4 border rounded-xl shadow-xs {{ $class }}">
+        <span class="material-symbols-outlined text-xl shrink-0">{{ $icon }}</span>
+        <span class="text-xs sm:text-sm font-medium flex-1">{{ $message }}</span>
+        <button @click="show = false" class="shrink-0 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
             <span class="material-symbols-outlined text-base">close</span>
         </button>
     </div>
     <script>
         document.addEventListener('alpine:init', () => {
             if (!Alpine.data('lmsFlashToast')) {
-                Alpine.data('lmsFlashToast', (duration = 4000) => ({
+                Alpine.data('lmsFlashToast', (duration = 5000) => ({
                     show: true,
                     init() {
                         setTimeout(() => {

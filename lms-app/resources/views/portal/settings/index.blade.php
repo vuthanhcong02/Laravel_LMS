@@ -25,15 +25,10 @@
 @section('content')
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[1400px] mx-auto space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 mt-5">
-                <div class="space-y-2">
-                    <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-4xl">settings</span>
-                        Cài đặt
-                    </h1>
-                    <p class="text-slate-500 dark:text-slate-400 font-bold">Quản lý tùy chọn ngôn ngữ, thông báo và hiển thị.</p>
-                </div>
-            </div>
+            <x-portal.page-header
+                :title="__('Cài đặt')"
+                :description="__('Quản lý tùy chọn ngôn ngữ, thông báo và hiển thị.')"
+            />
 
             <x-flash-message type="success" />
             <x-flash-message type="error" />
@@ -41,7 +36,6 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm"
                 x-data="{ activeTab: 'general', selectedTheme: '{{ $settings['theme'] ?? 'light' }}' }">
 
-                {{-- Horizontal Tabs --}}
                 <div class="flex items-center border-b border-slate-200 dark:border-slate-800 px-2 overflow-x-auto">
                     <button type="button" @click="activeTab = 'general'"
                         :class="activeTab === 'general' ? 'text-primary border-primary' :
@@ -63,12 +57,10 @@
                     </button>
                 </div>
 
-                {{-- Main Content --}}
                 <div class="p-6 md:p-8">
                     <form action="{{ route('settings.update') }}" method="POST">
                         @csrf
 
-                        {{-- Tab: General --}}
                         <div x-show="activeTab === 'general'" x-transition:enter="transition ease-out duration-300"
                             x-transition:enter-start="opacity-0 translate-y-2"
                             x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
@@ -102,7 +94,6 @@
                             </div>
                         </div>
 
-                        {{-- Tab: Notifications --}}
                         <div x-show="activeTab === 'notifications'" x-transition:enter="transition ease-out duration-300"
                             x-transition:enter-start="opacity-0 translate-y-2"
                             x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" x-cloak>
@@ -138,7 +129,6 @@
                             </div>
                         </div>
 
-                        {{-- Tab: Appearance --}}
                         <div x-show="activeTab === 'appearance'" x-transition:enter="transition ease-out duration-300"
                             x-transition:enter-start="opacity-0 translate-y-2"
                             x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" x-cloak>

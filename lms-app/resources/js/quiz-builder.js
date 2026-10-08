@@ -13,6 +13,9 @@ window.questionBuilder = function (data) {
                 type: 'multiple_choice',
                 question_text: '',
                 marks: 1,
+                essay_grading_type: 'auto',
+                correct_answer_text: '',
+                case_sensitive: false,
                 image_url: null,
                 audio_url: null,
                 options: [
@@ -35,7 +38,7 @@ window.questionBuilder = function (data) {
             if (!el) return;
 
             const stickyHeader = document.querySelector('main > div.sticky, [data-sticky-header]');
-            const headerHeight = stickyHeader ? stickyHeader.offsetHeight + 16 : 120;
+            const headerHeight = (stickyHeader ? stickyHeader.offsetHeight : 120) + 70;
 
             el.style.scrollMarginTop = headerHeight + 'px';
             el.scrollIntoView({ behavior: 'smooth', block: 'start' });

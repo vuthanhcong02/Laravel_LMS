@@ -46,6 +46,9 @@ class UpdateQuizQuestionsRequest extends FormRequest
             'questions.*.options.*.id' => 'nullable|integer|exists:options,id',
             'questions.*.options.*.option_text' => 'required_with:questions.*.options|string',
             'questions.*.options.*.is_correct' => 'nullable|boolean',
+            'questions.*.essay_grading_type' => 'nullable|in:auto,manual',
+            'questions.*.correct_answer_text' => 'nullable|string',
+            'questions.*.case_sensitive' => 'nullable|boolean',
         ];
     }
 

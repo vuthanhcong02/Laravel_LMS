@@ -23,12 +23,12 @@ class CourseUpdateRequest extends FormRequest
             'is_published' => 'required|boolean',
             'thumbnail'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
             
-            // Schedule validation
-            'start_date'   => 'nullable|required_with:start_time|date',
-            'end_date'     => 'nullable|required_with:start_time|date|after_or_equal:start_date',
-            'start_time'   => 'nullable|date_format:H:i',
-            'end_time'     => 'nullable|required_with:start_time|date_format:H:i|after:start_time',
-            'days_of_week' => 'nullable|required_with:start_time|array',
+            // Schedule validation (date range & weekly recurring time slots)
+            'start_date'   => 'nullable|date',
+            'end_date'     => 'nullable|date|after_or_equal:start_date',
+            'start_time'   => 'nullable|required_with:end_time,days_of_week|date_format:H:i',
+            'end_time'     => 'nullable|required_with:start_time,days_of_week|date_format:H:i|after:start_time',
+            'days_of_week' => 'nullable|required_with:start_time,end_time|array',
             'days_of_week.*' => 'integer|min:0|max:6',
         ];
     }
@@ -42,13 +42,15 @@ class CourseUpdateRequest extends FormRequest
 
             $data = $validator->validated();
 
-            if (empty($data['teacher_id']) || empty($data['start_date']) || empty($data['end_date']) || empty($data['start_time']) || empty($data['end_time']) || empty($data['days_of_week'])) {
+            // Skip schedule collision checks if required fields are missing
+            if (empty($data['teacher_id']) || empty($data['start_time']) || empty($data['end_time']) || empty($data['days_of_week'])) {
                 return;
             }
 
-            $currentCourseId = $this->route('course')->id;
+            $courseRoute = $this->route('course');
+            $currentCourseId = is_object($courseRoute) ? $courseRoute->id : $courseRoute;
 
-            $overlappingSchedule = CourseSchedule::with('course')
+            $overlappingSchedule = CourseSchedule::with('course.teacher')
                 ->where('course_id', '!=', $currentCourseId)
                 ->whereIn('day_of_week', $data['days_of_week'])
                 ->where(function ($q) use ($data) {
@@ -58,13 +60,26 @@ class CourseUpdateRequest extends FormRequest
                 ->whereHas('course', function ($q) use ($data, $currentCourseId) {
                     $q->where('id', '!=', $currentCourseId)
                       ->where('teacher_id', $data['teacher_id'])
-                      ->where('start_date', '<=', $data['end_date'])
-                      ->where('end_date', '>=', $data['start_date']);
+                      ->where(function ($dateQ) use ($data) {
+                          // Check date range overlap only if dates are defined
+                          if (!empty($data['start_date']) && !empty($data['end_date'])) {
+                              $dateQ->where(function ($sub) use ($data) {
+                                  $sub->whereNull('start_date')
+                                      ->orWhereNull('end_date')
+                                      ->orWhere(function ($overlap) use ($data) {
+                                          $overlap->where('start_date', '<=', $data['end_date'])
+                                                  ->where('end_date', '>=', $data['start_date']);
+                                      });
+                              });
+                          }
+                      });
                 })
                 ->first();
 
             if ($overlappingSchedule) {
-                $validator->errors()->add('start_time', __('Lịch học bị trùng với khóa: :course', ['course' => $overlappingSchedule->course->title]));
+                $validator->errors()->add('start_time', __('Lịch học bị trùng với khóa: :course (Giáo viên đã có lịch dạy vào khung giờ này)', [
+                    'course' => $overlappingSchedule->course->title ?? 'N/A'
+                ]));
             }
         });
     }

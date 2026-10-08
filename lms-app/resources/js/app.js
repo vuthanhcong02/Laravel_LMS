@@ -43,17 +43,22 @@ import examTimer from './hsk-take.js';
 import hskExamList from './alpine/components/hsk-exam-list.js';
 import customFlashcardApp from './alpine/components/custom-flashcard.js';
 import flashcardApp from './alpine/components/flashcard-app.js';
+import teacherClassDetail from './alpine/components/teacher-class-detail.js';
+import teacherQuizResults from './alpine/components/teacher-quiz-results.js';
 
 window.customFlashcardApp = customFlashcardApp;
 window.flashcardApp = flashcardApp;
+window.teacherClassDetail = teacherClassDetail;
+window.teacherQuizResults = teacherQuizResults;
+
 
 if (!window.Alpine) {
     window.Alpine = Alpine;
     
-    // Đăng ký Store tập trung
+    // Register centralized Store
     Alpine.store('lesson', lessonStore);
 
-    // Đăng ký các component Alpine trước khi start để tránh race condition
+    // Register Alpine components prior to starting Alpine to prevent race conditions
     Alpine.data('lmsToast', lmsToast);
     Alpine.data('lmsApp', lmsApp);
     Alpine.data('lessonStudyApp', lessonStudyApp);
@@ -90,8 +95,11 @@ if (!window.Alpine) {
     Alpine.data('hskExamList', hskExamList);
     Alpine.data('customFlashcardApp', customFlashcardApp);
     Alpine.data('flashcardApp', flashcardApp);
+    Alpine.data('teacherClassDetail', teacherClassDetail);
+    Alpine.data('teacherQuizResults', teacherQuizResults);
 
     Alpine.start();
+
 }
 
 import './lms.js';

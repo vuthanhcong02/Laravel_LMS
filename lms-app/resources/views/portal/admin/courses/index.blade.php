@@ -14,23 +14,20 @@
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[1200px] mx-auto space-y-6">
 
-            {{-- Page Header --}}
-            <div class="flex items-center justify-between mt-5">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Course Management</h1>
-                    <p class="text-sm text-slate-500">Create and manage courses for your platform.</p>
-                </div>
-                <a href="{{ route('admin.courses.create') }}"
-                    class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-sm">add</span> New Course
-                </a>
-            </div>
+            <x-portal.page-header
+                :title="__('Quản lý Khóa học')"
+                :description="__('Tạo và quản lý các khóa học trong hệ thống.')">
+                <x-slot:actions>
+                    <a href="{{ route('admin.courses.create') }}"
+                        class="px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-sm active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-sm">add</span> {{ __('Tạo khóa học mới') }}
+                    </a>
+                </x-slot:actions>
+            </x-portal.page-header>
 
-            {{-- Flash Messages --}}
             <x-flash-message type="success" />
             <x-flash-message type="error" />
 
-            {{-- Stats Cards --}}
             <div class="flex items-center gap-4">
                 <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-4 shadow-sm">
                     <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -61,11 +58,10 @@
                 </div>
             </div>
 
-            {{-- Filters --}}
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm p-4">
                 <form method="GET" action="{{ route('admin.courses.index') }}"
                     class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    {{-- Search --}}
+
                     <div class="flex flex-1 items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus-within:ring-2 focus-within:ring-primary/40 transition-all">
                         <span class="material-symbols-outlined text-slate-400 text-[20px] shrink-0">search</span>
                         <input type="text" name="search" value="{{ request('search') }}"
@@ -79,7 +75,6 @@
                         @endif
                     </div>
 
-                    {{-- Status Filter --}}
                     <div class="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg sm:w-44">
                         <span class="material-symbols-outlined text-slate-400 text-[20px] shrink-0">filter_list</span>
                         <select name="status" onchange="this.form.submit()"
@@ -90,7 +85,6 @@
                         </select>
                     </div>
 
-                    {{-- Category Filter --}}
                     @if ($categories->isNotEmpty())
                         <div class="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg sm:w-48">
                             <span class="material-symbols-outlined text-slate-400 text-[20px] shrink-0">category</span>
@@ -115,7 +109,6 @@
                 </form>
             </div>
 
-            {{-- Course Table --}}
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -133,7 +126,7 @@
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
                             @forelse($courses as $course)
                                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                    {{-- Thumbnail + Title --}}
+
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
                                             @if ($course->thumbnail)

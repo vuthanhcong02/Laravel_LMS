@@ -14,7 +14,6 @@
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[1200px] mx-auto space-y-6">
 
-            {{-- Page Header --}}
             <div class="flex items-center gap-4">
                 <a href="{{ route('admin.courses.index') }}"
                     class="flex items-center justify-center size-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
@@ -33,10 +32,8 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-                    {{-- Main Content: 2/3 --}}
                     <div class="lg:col-span-2 space-y-5">
 
-                        {{-- Title + Slug --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
                             <div class="space-y-2">
                                 <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Title <span class="text-red-500">*</span></label>
@@ -49,7 +46,6 @@
                                 @enderror
                             </div>
 
-                            {{-- Slug Preview --}}
                             <div class="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                                 <span class="material-symbols-outlined text-slate-400 text-base shrink-0">link</span>
                                 <span class="text-xs text-slate-400 shrink-0">/courses/</span>
@@ -57,10 +53,9 @@
                             </div>
                         </div>
 
-                        {{-- Schedule Settings --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
                             <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">{{ __('Thời khóa biểu') }}</h3>
-                            
+
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Ngày khai giảng') }}</label>
@@ -104,19 +99,19 @@
                                 <div class="flex flex-wrap gap-3">
                                     @php
                                         $days = [
-                                            1 => __('Thứ 2'), 
-                                            2 => __('Thứ 3'), 
-                                            3 => __('Thứ 4'), 
-                                            4 => __('Thứ 5'), 
-                                            5 => __('Thứ 6'), 
-                                            6 => __('Thứ 7'), 
+                                            1 => __('Thứ 2'),
+                                            2 => __('Thứ 3'),
+                                            3 => __('Thứ 4'),
+                                            4 => __('Thứ 5'),
+                                            5 => __('Thứ 6'),
+                                            6 => __('Thứ 7'),
                                             0 => __('Chủ nhật')
                                         ];
-                                        $oldDays = old('days_of_week', []);
+                                        $selectedDays = array_map('intval', (array) old('days_of_week', []));
                                     @endphp
                                     @foreach($days as $val => $label)
                                         <label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
-                                            <input type="checkbox" name="days_of_week[]" value="{{ $val }}" {{ in_array($val, $oldDays) ? 'checked' : '' }} class="rounded text-primary focus:ring-primary">
+                                            <input type="checkbox" name="days_of_week[]" value="{{ $val }}" {{ in_array($val, $selectedDays, true) ? 'checked' : '' }} class="rounded text-primary focus:ring-primary">
                                             <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $label }}</span>
                                         </label>
                                     @endforeach
@@ -127,7 +122,6 @@
                             </div>
                         </div>
 
-                        {{-- Description (Rich Text) --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-2">
                             <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Description</label>
                             @error('description')
@@ -140,10 +134,8 @@
 
                     </div>
 
-                    {{-- Sidebar Options: 1/3 --}}
                     <div class="space-y-5">
 
-                        {{-- Publish Settings --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Publish Settings</p>
 
@@ -181,7 +173,6 @@
                             </div>
                         </div>
 
-                        {{-- Category --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Category</p>
                             <select name="category_id"
@@ -195,7 +186,6 @@
                             </select>
                         </div>
 
-                        {{-- Teacher --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Teacher</p>
                             <select name="teacher_id"
@@ -209,7 +199,6 @@
                             </select>
                         </div>
 
-                        {{-- Price --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Price (VND)</p>
                             <div class="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
@@ -223,7 +212,6 @@
                             @enderror
                         </div>
 
-                        {{-- Thumbnail --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3"
                             x-data="{ preview: null }">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Thumbnail</p>
@@ -259,7 +247,6 @@
         'uploadUrl' => route('admin.blogs.upload', ['_token' => csrf_token()])
     ])
 
-    <!-- Thêm thư viện Flatpickr để ép định dạng giờ 24h -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
@@ -276,7 +263,7 @@
             background: #f8fafc;
         }
         .flatpickr-time input { font-weight: 700; color: #1e293b; }
-        
+
         /* Dark mode */
         .dark .flatpickr-calendar {
             background: #0f172a;

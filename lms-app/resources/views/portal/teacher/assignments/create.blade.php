@@ -19,8 +19,8 @@
                         <span class="material-symbols-outlined text-slate-600">arrow_back</span>
                     </a>
                     <div>
-                        <h1 class="text-2xl font-black text-slate-800 dark:text-white">Khởi tạo Bài tập</h1>
-                        <p class="text-slate-500 font-medium text-sm">Tạo bài tập mới cho học viên</p>
+                        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{{ __('Khởi tạo Bài tập') }}</h1>
+                        <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">{{ __('Tạo bài tập mới cho học viên') }}</p>
                     </div>
                 </div>
             </div>
@@ -35,14 +35,14 @@
                 </div>
             @endif
 
-            <form action="{{ route('teacher.assignments.store') }}" method="POST" enctype="multipart/form-data" 
+            <form action="{{ route('teacher.assignments.store') }}" method="POST" enctype="multipart/form-data"
                   x-data="{
                       course_id: '{{ old('course_id') }}',
                       courses: {{ \Illuminate\Support\Js::from($courses->map(fn($c) => ['id' => $c->id, 'title' => $c->title, 'lessons' => $c->lessons])) }}
                   }"
                   class="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm p-8 space-y-6">
                 @csrf
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Khóa học <span class="text-red-500">*</span></label>
@@ -83,7 +83,7 @@
                     <div class="space-y-2" x-data="{ files: [] }">
                         <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Tệp đính kèm (Tối đa 5 files, 10MB/file)</label>
                         <div class="relative flex items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
-                            <input type="file" name="attachments[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.zip" 
+                            <input type="file" name="attachments[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.zip"
                                    @change="files = Array.from($event.target.files)"
                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             <div class="text-center" x-show="files.length === 0">

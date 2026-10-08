@@ -36,10 +36,12 @@ class StoreQuizRequest extends FormRequest
         }
 
         return [
-            'course_id' => ['required', $courseRule],
-            'title' => 'required|string|max:255',
-            'type' => ['required', Rule::enum(QuizType::class)],
-            'time_limit' => 'required|integer|min:0|max:1440', // 0 = no time limit, max = 24h
+            'course_id'    => ['required', $courseRule],
+            'title'        => 'required|string|max:255',
+            'type'         => ['required', Rule::enum(QuizType::class)],
+            'time_limit'   => 'required|integer|min:0|max:1440', // 0 = no time limit, max = 24h
+            'audio_file'   => 'nullable|file|mimes:mp3,wav,ogg,m4a,aac,mp4|max:51200', // Tối đa 50MB
+            'remove_audio' => 'nullable|boolean',
         ];
     }
 
@@ -51,10 +53,12 @@ class StoreQuizRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'course_id' => __('khóa học'),
-            'title' => __('tiêu đề'),
-            'type' => __('loại bài thi'),
-            'time_limit' => __('thời gian làm bài'),
+            'course_id'    => __('khóa học'),
+            'title'        => __('tiêu đề'),
+            'type'         => __('loại bài thi'),
+            'time_limit'   => __('thời gian làm bài'),
+            'audio_file'   => __('file âm thanh toàn bài thi'),
+            'remove_audio' => __('xóa file âm thanh'),
         ];
     }
 }

@@ -1,12 +1,27 @@
-.fc .fc-toolbar-title { font-weight: 800; color: #334155; font-size: 1.5rem; text-transform: capitalize; }
+/* Compact font size and calendar layout */
+.fc {
+    font-size: 0.75rem; /* 12px */
+}
+
+.fc .fc-toolbar-title { 
+    font-weight: 700; 
+    color: #1e293b; 
+    font-size: 1.125rem !important; /* 18px */
+    text-transform: capitalize; 
+}
 .dark .fc .fc-toolbar-title { color: #f8fafc; }
+
+.fc .fc-toolbar {
+    margin-bottom: 1rem !important;
+    gap: 0.5rem;
+}
 
 .fc .fc-button {
     text-transform: capitalize;
-    font-size: 0.875rem !important;
+    font-size: 0.75rem !important; /* 12px */
     font-weight: 600 !important;
     border-radius: 0.5rem !important;
-    padding: 0.375rem 0.75rem !important;
+    padding: 0.3rem 0.65rem !important;
     box-shadow: none !important;
     transition: all 0.2s !important;
 }
@@ -24,7 +39,7 @@
 
 .dark .fc .fc-button-primary {
     background-color: #1e293b !important;
-    border-color: #1e293b !important;
+    border-color: #334155 !important;
     color: #94a3b8 !important;
 }
 .dark .fc .fc-button-primary:not(:disabled):hover {
@@ -44,8 +59,41 @@
 .fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
 .fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
 
-.fc .fc-col-header-cell { padding: 12px 0; background-color: #f8fafc; font-weight: 900; }
-.dark .fc .fc-col-header-cell { background-color: #0f172a; border-color: #1e293b !important; }
+/* Day of week column headers */
+.fc .fc-col-header-cell { 
+    padding: 6px 0 !important; 
+    background-color: #f8fafc; 
+    font-weight: 700 !important;
+    font-size: 0.75rem !important; /* 12px */
+}
+.dark .fc .fc-col-header-cell { 
+    background-color: #0f172a; 
+    border-color: #1e293b !important; 
+}
+
+.fc .fc-col-header-cell-cushion {
+    padding: 2px 4px !important;
+    color: #475569;
+}
+.dark .fc .fc-col-header-cell-cushion {
+    color: #cbd5e1;
+}
+
+/* Time slots label column on the left */
+.fc .fc-timegrid-slot-label-cushion {
+    font-size: 0.6875rem !important; /* 11px */
+    padding: 2px 6px !important;
+    font-weight: 600;
+    color: #64748b;
+}
+.dark .fc .fc-timegrid-slot-label-cushion {
+    color: #94a3b8;
+}
+
+/* Compact slot height (30px) to fit full day view */
+.fc .fc-timegrid-slot {
+    height: 30px !important;
+}
 
 .fc-theme-standard, .fc-theme-standard .fc-scrollgrid, .fc-theme-standard td, .fc-theme-standard th {
     border-color: #f1f5f9 !important;
@@ -68,5 +116,135 @@
     box-shadow: 0 0 0 1px #1e293b;
 }
 
-.fc-timegrid-event { border-radius: 8px; border: none; padding: 2px 4px; cursor: pointer; transition: transform 0.2s; }
-.fc-timegrid-event:hover { transform: scale(1.02); z-index: 10 !important; }
+/* Schedule event badge styling */
+.fc-timegrid-event { 
+    border-radius: 6px !important; 
+    border: none !important; 
+    padding: 2px 4px !important; 
+    cursor: pointer; 
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+.fc-timegrid-event:hover { 
+    transform: scale(1.02); 
+    z-index: 10 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+}
+
+.fc-timegrid-event .fc-event-main {
+    padding: 2px 3px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+}
+
+.fc-timegrid-event .fc-event-title {
+    font-weight: 700 !important;
+    font-size: 0.75rem !important; /* 12px */
+    line-height: 1.2 !important;
+}
+
+.fc-timegrid-event .fc-event-time {
+    font-size: 0.65rem !important; /* 10.5px */
+    font-weight: 600 !important;
+    opacity: 0.95;
+}
+
+/* ========================================================================= */
+/* FULLCALENDAR LIST VIEW - DARK & LIGHT MODE STYLES */
+/* ========================================================================= */
+.fc-list {
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.dark .fc-list {
+    border-color: #1e293b !important;
+    background-color: #0f172a !important;
+}
+
+/* List view day headers */
+.fc .fc-list-day-cushion {
+    background-color: #f8fafc !important;
+    padding: 8px 16px !important;
+}
+.dark .fc .fc-list-day-cushion {
+    background-color: #1e293b !important;
+}
+
+.fc .fc-list-day-text,
+.fc .fc-list-day-side-text {
+    font-size: 0.8125rem !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+    text-decoration: none !important;
+}
+.dark .fc .fc-list-day-text,
+.dark .fc .fc-list-day-side-text {
+    color: #f1f5f9 !important;
+}
+
+/* List view event rows */
+.fc .fc-list-event {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.fc .fc-list-event td {
+    padding: 10px 16px !important;
+    border-color: #f1f5f9 !important;
+    background-color: #ffffff;
+    color: #1e293b !important;
+}
+.dark .fc .fc-list-event td {
+    border-color: #1e293b !important;
+    background-color: #0b1120 !important;
+    color: #f8fafc !important;
+}
+
+/* Smooth hover state */
+.fc .fc-list-event:hover td {
+    background-color: #f0fdf4 !important;
+    color: #166534 !important;
+}
+.dark .fc .fc-list-event:hover td {
+    background-color: #1e293b !important;
+    color: #38bdf8 !important;
+}
+
+.fc .fc-list-event-time {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    color: inherit !important;
+    width: 140px !important;
+}
+
+.fc .fc-list-event-title {
+    font-size: 0.8125rem !important;
+    font-weight: 700 !important;
+    color: inherit !important;
+}
+.fc .fc-list-event-title a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.fc .fc-list-event-dot {
+    border-width: 5px !important;
+    margin-right: 8px !important;
+}
+
+/* Empty schedule notice */
+.fc .fc-list-empty {
+    padding: 3rem 1rem !important;
+    background-color: #ffffff !important;
+    color: #94a3b8 !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+}
+.dark .fc .fc-list-empty {
+    background-color: #0f172a !important;
+    color: #64748b !important;
+}
+

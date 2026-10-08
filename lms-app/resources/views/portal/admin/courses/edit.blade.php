@@ -14,7 +14,6 @@
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[1200px] mx-auto space-y-6">
 
-            {{-- Page Header --}}
             <div class="flex items-center gap-4">
                 <a href="{{ route('admin.courses.index') }}"
                     class="flex items-center justify-center size-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
@@ -26,11 +25,9 @@
                 </div>
             </div>
 
-            {{-- Flash Messages --}}
             <x-flash-message type="success" />
             <x-flash-message type="error" />
 
-            {{-- Edit Form --}}
             <form action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data"
                 class="space-y-5" x-data="courseForm('{{ $course->slug }}')">
 
@@ -39,10 +36,8 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-                    {{-- Main Content: 2/3 --}}
                     <div class="lg:col-span-2 space-y-5">
 
-                        {{-- Title + Slug --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
                             <div class="space-y-2">
                                 <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Title <span class="text-red-500">*</span></label>
@@ -62,10 +57,9 @@
                             </div>
                         </div>
 
-                        {{-- Schedule Settings --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
                             <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">{{ __('Thời khóa biểu') }}</h3>
-                            
+
                             @php
                                 $firstSchedule = $course->schedules->first();
                                 $defaultStartTime = $firstSchedule ? \Carbon\Carbon::parse($firstSchedule->start_time)->format('H:i') : '';
@@ -118,19 +112,19 @@
                                 <div class="flex flex-wrap gap-3">
                                     @php
                                         $days = [
-                                            1 => __('Thứ 2'), 
-                                            2 => __('Thứ 3'), 
-                                            3 => __('Thứ 4'), 
-                                            4 => __('Thứ 5'), 
-                                            5 => __('Thứ 6'), 
-                                            6 => __('Thứ 7'), 
+                                            1 => __('Thứ 2'),
+                                            2 => __('Thứ 3'),
+                                            3 => __('Thứ 4'),
+                                            4 => __('Thứ 5'),
+                                            5 => __('Thứ 6'),
+                                            6 => __('Thứ 7'),
                                             0 => __('Chủ nhật')
                                         ];
-                                        $oldDays = old('days_of_week', $dbDays);
+                                        $selectedDays = array_map('intval', (array) old('days_of_week', $dbDays));
                                     @endphp
                                     @foreach($days as $val => $label)
                                         <label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
-                                            <input type="checkbox" name="days_of_week[]" value="{{ $val }}" {{ in_array($val, $oldDays) ? 'checked' : '' }} class="rounded text-primary focus:ring-primary">
+                                            <input type="checkbox" name="days_of_week[]" value="{{ $val }}" {{ in_array($val, $selectedDays, true) ? 'checked' : '' }} class="rounded text-primary focus:ring-primary">
                                             <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $label }}</span>
                                         </label>
                                     @endforeach
@@ -141,7 +135,6 @@
                             </div>
                         </div>
 
-                        {{-- Description --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-2">
                             <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Description</label>
                             @error('description')
@@ -154,10 +147,8 @@
 
                     </div>
 
-                    {{-- Sidebar Options: 1/3 --}}
                     <div class="space-y-5">
 
-                        {{-- Publish Settings --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Publish Settings</p>
 
@@ -195,7 +186,6 @@
                             </div>
                         </div>
 
-                        {{-- Category --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Category</p>
                             <select name="category_id"
@@ -210,7 +200,6 @@
                             </select>
                         </div>
 
-                        {{-- Teacher --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Teacher</p>
                             <select name="teacher_id"
@@ -225,7 +214,6 @@
                             </select>
                         </div>
 
-                        {{-- Price --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Price (VND)</p>
                             <div class="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
@@ -236,7 +224,6 @@
                             <p class="text-xs text-slate-400">Set to 0 for a free course.</p>
                         </div>
 
-                        {{-- Thumbnail --}}
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3"
                             x-data="{ preview: null }">
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Thumbnail</p>
@@ -272,25 +259,20 @@
                 </div>
             </form>
 
-            {{-- ============================================================ --}}
-            {{-- Lessons Panel --}}
-            {{-- ============================================================ --}}
             <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
 
-                {{-- Panel Header --}}
                 <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
                     <div>
                         <h2 class="text-base font-bold text-slate-900 dark:text-white">Lessons</h2>
                         <p class="text-xs text-slate-500">{{ $course->lessons->count() }} lesson(s) in this course.</p>
                     </div>
-                    {{-- Toggle Add Lesson Form --}}
+
                     <button type="button" x-data x-on:click="$dispatch('toggle-add-lesson')"
                         class="px-3 py-1.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-sm">add</span> Add Lesson
                     </button>
                 </div>
 
-                {{-- Add Lesson Form (collapsible) --}}
                 <div x-data="{ open: false }" x-on:toggle-add-lesson.window="open = !open"
                     x-show="open" x-transition:enter="transition ease-out duration-150"
                     x-transition:enter-start="opacity-0 -translate-y-1"
@@ -330,18 +312,16 @@
                     </form>
                 </div>
 
-                {{-- Lessons List --}}
                 <div class="divide-y divide-slate-200 dark:divide-slate-800">
                     @forelse($course->lessons as $lesson)
                         <div x-data="{ editing: false }" class="group">
-                            {{-- Lesson Row (display mode) --}}
+
                             <div x-show="!editing" class="flex items-center gap-4 px-6 py-3">
-                                {{-- Order Number --}}
+
                                 <span class="flex-shrink-0 size-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500">
                                     {{ $lesson->order }}
                                 </span>
 
-                                {{-- Info --}}
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ $lesson->title }}</p>
                                     @if ($lesson->video_url)
@@ -351,28 +331,27 @@
                                     @endif
                                 </div>
 
-                                {{-- Actions --}}
                                 <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    {{-- Move Up --}}
+
                                     <form action="{{ route('admin.lessons.moveUp', $lesson) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" title="Move up">
                                             <span class="material-symbols-outlined text-base">keyboard_arrow_up</span>
                                         </button>
                                     </form>
-                                    {{-- Move Down --}}
+
                                     <form action="{{ route('admin.lessons.moveDown', $lesson) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" title="Move down">
                                             <span class="material-symbols-outlined text-base">keyboard_arrow_down</span>
                                         </button>
                                     </form>
-                                    {{-- Edit --}}
+
                                     <button type="button" @click="editing = true"
                                         class="p-1 text-blue-400 hover:text-blue-600 transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-base">edit</span>
                                     </button>
-                                    {{-- Delete --}}
+
                                     <button type="button"
                                         data-url="{{ route('admin.lessons.destroy', $lesson) }}"
                                         data-message="Are you sure you want to delete &quot;{{ $lesson->title }}&quot;?"
@@ -383,7 +362,6 @@
                                 </div>
                             </div>
 
-                            {{-- Lesson Edit (inline edit mode) --}}
                             <div x-show="editing" x-cloak
                                 class="p-4 bg-slate-50 dark:bg-slate-800/50">
                                 <form action="{{ route('admin.lessons.update', $lesson) }}" method="POST" class="space-y-3">
@@ -429,7 +407,6 @@
                 </div>
 
             </div>
-            {{-- End Lessons Panel --}}
 
         </div>
     </main>
@@ -439,7 +416,6 @@
         'uploadUrl' => route('admin.blogs.upload', ['_token' => csrf_token()])
     ])
 
-    <!-- Thêm thư viện Flatpickr để ép định dạng giờ 24h -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
@@ -456,7 +432,7 @@
             background: #f8fafc;
         }
         .flatpickr-time input { font-weight: 700; color: #1e293b; }
-        
+
         /* Dark mode */
         .dark .flatpickr-calendar {
             background: #0f172a;

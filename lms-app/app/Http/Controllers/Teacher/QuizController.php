@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreQuizRequest;
 use App\Http\Requests\UpdateQuizQuestionsRequest;
 use App\Models\Quiz;
+use App\Models\QuizAttempt;
 use App\Services\Teacher\QuizService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 /**
  * Controller to manage Quizzes for Teachers
@@ -47,7 +49,10 @@ class QuizController extends Controller
     public function store(StoreQuizRequest $request)
     {
         $this->authorize('create', Quiz::class);
-        $this->quizService->createQuiz($request->validated());
+        $this->quizService->createQuiz(
+            $request->validated(),
+            $request->file('audio_file')
+        );
 
         return redirect()
             ->route('teacher.quizzes.index')
@@ -71,7 +76,11 @@ class QuizController extends Controller
     public function update(StoreQuizRequest $request, Quiz $quiz)
     {
         $this->authorize('update', $quiz);
-        $this->quizService->updateQuiz($quiz, $request->validated());
+        $this->quizService->updateQuiz(
+            $quiz,
+            $request->validated(),
+            $request->file('audio_file')
+        );
 
         return redirect()
             ->route('teacher.quizzes.index')
@@ -149,10 +158,59 @@ class QuizController extends Controller
     }
 
     /**
-     * Show method placeholder to avoid undefined method errors.
+     * Display the quiz overview and submission results
      */
     public function show(Quiz $quiz)
     {
-        return redirect()->route('teacher.quizzes.edit', $quiz);
+        return $this->results($quiz);
+    }
+
+    /**
+     * Display submission results and statistics for the quiz
+     */
+    public function results(Quiz $quiz)
+    {
+        $this->authorize('view', $quiz);
+        $data = $this->quizService->getQuizResults($quiz);
+
+        return view('portal.teacher.quizzes.results', $data);
+    }
+
+    /**
+     * View detailed answers of a specific attempt
+     */
+    public function attemptDetail(QuizAttempt $attempt)
+    {
+        $this->authorize('view', $attempt->quiz);
+        $data = $this->quizService->getAttemptDetail($attempt->id, auth()->id());
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json($data);
+        }
+
+        return view('portal.teacher.quizzes.attempt-detail', $data);
+    }
+
+    /**
+     * Manually grade essay questions for a quiz attempt.
+     */
+    public function gradeAttempt(QuizAttempt $attempt)
+    {
+        $this->authorize('view', $attempt->quiz);
+
+        $validated = request()->validate([
+            'grades'                  => 'required|array',
+            'grades.*.question_id'    => 'required|integer',
+            'grades.*.marks_obtained' => 'required|numeric|min:0',
+            'grades.*.feedback'       => 'nullable|string|max:1000',
+        ]);
+
+        $data = $this->quizService->gradeAttempt($attempt->id, auth()->id(), $validated['grades']);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Đã chấm điểm và cập nhật kết quả thành công!'),
+            'data'    => $data,
+        ]);
     }
 }
