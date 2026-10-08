@@ -17,7 +17,7 @@ class Quiz extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'course_id', 'title', 'type', 'time_limit'
+        'course_id', 'title', 'type', 'time_limit', 'audio_path'
     ];
 
     /**
@@ -28,6 +28,14 @@ class Quiz extends Model
     protected $casts = [
         'type' => QuizType::class,
     ];
+
+    /**
+     * Accessor to get public URL of global audio file
+     */
+    public function getAudioUrlAttribute(): ?string
+    {
+        return $this->audio_path ? asset('storage/' . $this->audio_path) : null;
+    }
 
     /**
      * Get the course that owns the quiz.

@@ -10,7 +10,13 @@ class QuizAttemptAnswer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'attempt_id', 'question_id', 'option_id', 'text_answer'
+        'attempt_id', 'question_id', 'option_id', 'text_answer',
+        'marks_obtained', 'is_correct', 'teacher_feedback'
+    ];
+
+    protected $casts = [
+        'marks_obtained' => 'decimal:2',
+        'is_correct' => 'boolean',
     ];
 
     public function attempt()

@@ -18,48 +18,41 @@
     <link rel="shortcut icon" type="image/png" href="{{ asset('favicon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
     @stack('styles')
     @livewireStyles
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display"
     x-data="{ sidebarOpen: false }">
-    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
-        <!-- Top Header -->
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-clip">
+
         @yield('header')
 
         <div class="flex flex-1 relative">
-            <!-- Mobile Overlay -->
+
             <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity
                 class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden" style="display: none;"></div>
 
-            <!-- Sidebar -->
             @yield('sidebar')
 
             <div class="flex-1 flex flex-col">
-                <!-- Main Content -->
+
                 @yield('content')
 
-                <!-- Footer -->
                 @include('portal.layouts.footer')
             </div>
         </div>
 
-        <!-- Global Delete Modal -->
         @include('portal.layouts.components.delete-modal')
     </div>
 
-    <!-- Global Toast Notification -->
-    <div x-data="{ 
+    <div x-data="{
             messages: [],
             remove(mid) {
                 this.messages = this.messages.filter(m => m.id !== mid)
@@ -112,8 +105,6 @@
         };
     </script>
 
-    <!-- Scripts -->
-    <script src="{{ asset('assets/js/alpine.min.js') }}" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @livewireScripts
     @stack('scripts')

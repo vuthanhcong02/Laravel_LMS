@@ -13,15 +13,10 @@
 @section('content')
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto w-full" x-data="studentAssignments()">
         <div class="max-w-[1200px] mx-auto space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 mt-5">
-                <div class="space-y-2">
-                    <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-4xl">assignment</span>
-                        Bài tập của tôi
-                    </h1>
-                    <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Quản lý các bài thực hành và nhận xét từ giáo viên.</p>
-                </div>
-            </div>
+            <x-portal.page-header
+                :title="__('Bài tập của tôi')"
+                :description="__('Quản lý các bài thực hành và nhận xét từ giáo viên.')"
+            />
 
             @if(session('success'))
                 <div class="p-4 text-sm text-emerald-800 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-300 font-bold flex items-center gap-2" role="alert">
@@ -48,10 +43,9 @@
                     <div x-data="{ open: false }"
                          class="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
 
-                        {{-- Card Header --}}
                         <button @click="open = !open" class="w-full text-left p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                             <div class="flex items-start gap-5">
-                                {{-- Status icon --}}
+
                                 <div class="mt-1 size-14 rounded-2xl flex items-center justify-center shrink-0
                                     {{ $isGraded ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600' : ($isSubmitted ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-500' : 'bg-orange-50 dark:bg-orange-900/30 text-orange-500') }}">
                                     <span class="material-symbols-outlined text-3xl">
@@ -77,7 +71,7 @@
                                         {{ $assignment->due_date->format('d/m/Y H:i') }}
                                     </div>
                                 @endif
-                                
+
                                 <div class="flex flex-col items-end">
                                     @if($isGraded)
                                         <div class="text-right">
@@ -94,17 +88,15 @@
                             </div>
                         </button>
 
-                        {{-- Expanded details --}}
                         <div x-show="open" x-collapse class="border-t border-slate-50 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30">
                             <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-                                {{-- LEFT: Instruction & Materials --}}
                                 <div class="space-y-8">
                                     <div>
                                         <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 block">Hướng dẫn từ giáo viên</label>
                                         <div class="bg-white dark:bg-slate-800/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 leading-relaxed shadow-sm">
                                             {!! nl2br(e($assignment->description)) !!}
-                                            
+
                                             @if(!empty($assignment->attachments))
                                                 <div class="mt-6 pt-6 border-t border-slate-50 dark:border-slate-800">
                                                     <p class="text-xs font-black mb-3">Tài liệu tham khảo:</p>
@@ -141,7 +133,6 @@
                                     @endif
                                 </div>
 
-                                {{-- RIGHT: Submission Form --}}
                                 <div class="space-y-6">
                                     @if($isGraded)
                                         <div class="bg-white dark:bg-slate-800 p-8 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center">
@@ -165,14 +156,13 @@
                                                 <span class="material-symbols-outlined text-primary">cloud_upload</span>
                                                 {{ $isSubmitted ? 'Cập nhật bài làm' : 'Nộp bài ngay' }}
                                             </h4>
-                                            
+
                                             <form action="{{ route('student.assignments.submit', $assignment->id) }}"
                                                   method="POST"
                                                   enctype="multipart/form-data"
                                                   class="space-y-8">
                                                 @csrf
-                                                
-                                                <!-- Audio Recorder Option -->
+
                                                 <div>
                                                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Lựa chọn 1: Ghi âm giọng nói</p>
                                                     <x-audio-recorder name="attachments[]" />
@@ -184,7 +174,6 @@
                                                     <div class="flex-1 h-px bg-slate-100 dark:bg-slate-800"></div>
                                                 </div>
 
-                                                <!-- File Upload Option -->
                                                 <div>
                                                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Lựa chọn 2: Tải lên tệp tin</p>
                                                     <label class="group relative flex flex-col items-center justify-center w-full h-32 border-2 border-slate-100 dark:border-slate-700 border-dashed rounded-[2rem] cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-all active:scale-[0.98]">

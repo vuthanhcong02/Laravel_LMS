@@ -93,8 +93,6 @@ class AssignmentController extends Controller
     {
         $this->authorize('grade', $assignment);
 
-        abort_if(!$this->authorize('grade', $assignment), 403);
-
         abort_if($submission->assignment_id !== $assignment->id, 404);
 
         $this->assignmentService->grade(

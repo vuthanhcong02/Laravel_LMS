@@ -11,13 +11,14 @@ export default {
     theme: {
         extend: {
             colors: {
-                "primary": "#E8927A",
-                "background-light": "#f6f7f8",
-                "background-dark": "#131a1f",
+                "primary": "#2563eb",
+                "background-light": "#f8fafc",
+                "background-dark": "#0f172a",
             },
             fontFamily: {
-                "display": ["Inter", "sans-serif"],
-                "heading": ["Poppins", "sans-serif"]
+                "sans": ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                "display": ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                "heading": ["Inter", "system-ui", "-apple-system", "sans-serif"],
             },
             borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
         },

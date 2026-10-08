@@ -13,18 +13,24 @@ use Illuminate\Support\Facades\Storage;
 class AssignmentService
 {
     /**
-     * Lấy danh sách bài tập của giáo viên (paginated).
+     * Get paginated assignments list for a teacher.
      */
     public function listForTeacher(int $teacherId): LengthAwarePaginator
     {
         return Assignment::where('teacher_id', $teacherId)
-            ->with(['course', 'lesson', 'submissions'])
+            ->with([
+                'course' => function ($query) {
+                    $query->withCount('enrollments');
+                },
+                'lesson',
+                'submissions'
+            ])
             ->latest()
             ->paginate(15);
     }
 
     /**
-     * Lấy danh sách khoá học mà giáo viên phụ trách.
+     * Get courses assigned to teacher.
      */
     public function teacherCourses(int $teacherId): Collection
     {
@@ -34,7 +40,7 @@ class AssignmentService
     }
 
     /**
-     * Tạo bài tập mới.
+     * Create a new assignment.
      */
     public function create(array $validated, array $uploadedFiles, int $teacherId): Assignment
     {
@@ -45,24 +51,24 @@ class AssignmentService
     }
 
     /**
-     * Cập nhật bài tập, hợp nhất file cũ giữ lại + file mới.
+     * Update an assignment, merging kept old files + newly uploaded files.
      */
     public function update(Assignment $assignment, array $validated, array $keepPaths, array $uploadedFiles): Assignment
     {
-        // Lọc file cũ được giữ lại
+        // Filter kept old attachments
         $kept = array_filter(
             $assignment->attachments ?? [],
             fn($item) => in_array($item['path'], $keepPaths)
         );
 
-        // Xoá các file attachment không còn được giữ lại
+        // Delete discarded attachment files from disk
         $currentPaths = collect($assignment->attachments ?? [])->pluck('path')->all();
         $toDelete = array_diff($currentPaths, $keepPaths);
         foreach ($toDelete as $path) {
             Storage::disk('local')->delete($path);
         }
 
-        // Thêm file mới
+        // Add newly uploaded files
         $newFiles = $this->storeFiles($uploadedFiles, 'assignments');
 
         $validated['attachments'] = array_values(array_merge($kept, $newFiles));
@@ -72,7 +78,7 @@ class AssignmentService
     }
 
     /**
-     * Chấm điểm bài nộp.
+     * Grade a student assignment submission.
      */
     public function grade(AssignmentSubmission $submission, float $score, ?string $feedback, ?UploadedFile $audioFeedback = null, bool $deleteAudio = false): AssignmentSubmission
     {
@@ -83,7 +89,7 @@ class AssignmentService
         ];
 
         if ($audioFeedback) {
-            // Xoá file audio cũ trước khi lưu file mới
+            // Delete old audio file before storing new one
             if ($submission->teacher_audio_path) {
                 Storage::disk('local')->delete($submission->teacher_audio_path);
             }
@@ -102,7 +108,7 @@ class AssignmentService
     }
 
     /**
-     * Upload nhiều files, trả về mảng meta {name, path}.
+     * Store multiple files, returning metadata array {name, path}.
      *
      * @param  UploadedFile[]  $files
      */

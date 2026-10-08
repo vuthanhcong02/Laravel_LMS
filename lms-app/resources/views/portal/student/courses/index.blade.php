@@ -13,18 +13,12 @@
 @section('content')
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[1400px] mx-auto space-y-8">
-            {{-- Page Header --}}
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 mt-5">
-                <div class="space-y-2">
-                    <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-4xl">menu_book</span>
-                        Khóa học của tôi
-                    </h1>
-                    <p class="text-slate-500 dark:text-slate-400 font-bold">Danh sách tất cả các khóa học bạn đang tham gia.</p>
-                </div>
-            </div>
 
-            {{-- Course Grid --}}
+            <x-portal.page-header
+                :title="__('Khóa học của tôi')"
+                :description="__('Danh sách tất cả các khóa học bạn đang tham gia.')"
+            />
+
             @if($enrollments->isEmpty())
                 <div class="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 p-12 text-center">
                     <div class="size-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -41,7 +35,7 @@
                             $progressPercent = 0; // TODO: Calculate real progress
                         @endphp
                         <div class="group bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 overflow-hidden flex flex-col h-full border-b-4 border-b-transparent hover:border-b-primary relative">
-                            {{-- Thumbnail --}}
+
                             <div class="relative h-48 overflow-hidden rounded-t-[2rem]">
                                 <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=640' }}" alt="{{ $course->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 <div class="absolute top-4 left-4">
@@ -56,12 +50,11 @@
                                 </div>
                             </div>
 
-                            {{-- Content --}}
                             <div class="p-8 flex-1 flex flex-col">
                                 <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                                     {{ $course->title }}
                                 </h3>
-                                
+
                                 <div class="flex items-center gap-3 mb-6">
                                     @php
                                         $teacher = $course->teacher;
@@ -93,7 +86,6 @@
                     @endforeach
                 </div>
 
-                {{-- Pagination --}}
                 <div class="mt-12">
                     {{ $enrollments->links('components.pagination') }}
                 </div>

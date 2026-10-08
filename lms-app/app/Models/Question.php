@@ -16,7 +16,8 @@ class Question extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'quiz_id', 'type', 'question_text', 'marks', 'image_path', 'audio_path'
+        'quiz_id', 'type', 'question_text', 'marks', 'image_path', 'audio_path',
+        'essay_grading_type', 'correct_answer_text', 'case_sensitive'
     ];
 
     /**
@@ -26,6 +27,7 @@ class Question extends Model
      */
     protected $casts = [
         'type' => QuestionType::class,
+        'case_sensitive' => 'boolean',
     ];
 
     /**

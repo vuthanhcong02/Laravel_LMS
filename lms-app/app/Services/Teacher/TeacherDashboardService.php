@@ -56,7 +56,12 @@ class TeacherDashboardService
     {
         $todayDayOfWeek = Carbon::now()->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
 
-        return CourseSchedule::with(['course'])
+        return CourseSchedule::with([
+            'course' => function ($q) {
+                $q->withCount('enrollments')
+                  ->with(['lessons' => fn($lq) => $lq->orderBy('order', 'asc')]);
+            }
+        ])
             ->where('day_of_week', $todayDayOfWeek)
             ->whereHas('course', function ($q) use ($teacherId) {
                 $q->where('teacher_id', $teacherId);
@@ -64,11 +69,11 @@ class TeacherDashboardService
             ->orderBy('start_time', 'asc')
             ->get()
             ->map(function ($schedule) {
-                // Attach total students count
-                $schedule->students_count = $schedule->course->enrollments()->count();
+                // Attach total students count from eager-loaded count
+                $schedule->students_count = $schedule->course?->enrollments_count ?? 0;
 
-                // Attach current or first lesson title as placeholder/model info
-                $firstLesson = $schedule->course->lessons()->orderBy('order', 'asc')->first();
+                // Attach current or first lesson title from eager-loaded collection
+                $firstLesson = $schedule->course?->lessons?->first();
                 $schedule->current_lesson_title = $firstLesson 
                     ? $firstLesson->title 
                     : __('Chưa có bài học');

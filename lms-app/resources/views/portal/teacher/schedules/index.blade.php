@@ -22,19 +22,14 @@
 @section('content')
 <main class="flex-1 p-6 lg:p-8 overflow-y-auto w-full">
     <div class="max-w-[1400px] mx-auto space-y-6">
-        
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-                <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-xl">calendar_month</span>
-                    {{ __('Thời khóa biểu') }}
-                </h1>
-            </div>
-        </div>
 
-        <!-- Khung chứa FullCalendar -->
+        <x-portal.page-header
+            :title="__('Thời khóa biểu')"
+            :description="__('Xem và theo dõi lịch giảng dạy các lớp học của bạn.')"
+        />
+
         <div class="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 p-6 shadow-sm">
-            <div id="calendar" class="min-h-[600px]" data-events-url="{{ route('teacher.schedules.index') }}"></div>
+            <div id="calendar" data-events-url="{{ route('teacher.schedules.index') }}"></div>
         </div>
 
     </div>

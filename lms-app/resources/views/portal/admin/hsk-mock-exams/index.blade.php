@@ -21,43 +21,39 @@
 @section('content')
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
         <div class="max-w-[1200px] mx-auto space-y-6">
-            <!-- Header & Actions -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản lý Đề thi thử HSK</h1>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Danh sách các bộ đề thi thử HSK toàn hệ thống</p>
-                </div>
-                <div class="flex gap-3">
+
+            <x-portal.page-header
+                :title="__('Quản lý Đề thi thử HSK')"
+                :description="__('Danh sách các bộ đề thi thử HSK toàn hệ thống')">
+                <x-slot:actions>
                     <button x-data @click="$dispatch('open-create-empty-modal')"
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
                         <span class="material-symbols-outlined text-lg">add</span>
-                        Tạo đề trống
+                        {{ __('Tạo đề trống') }}
                     </button>
                     <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.create') }}"
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm shadow-md shadow-primary/20 hover:bg-primary/90 transition-all">
                         <span class="material-symbols-outlined text-lg">upload_file</span>
-                        Import dữ liệu
+                        {{ __('Import dữ liệu') }}
                     </a>
-                </div>
-            </div>
+                </x-slot:actions>
+            </x-portal.page-header>
 
-            <!-- Messages -->
             @if(session('success'))
-                <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)" 
+                <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)"
                     class="p-4 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium flex justify-between items-center">
                     {{ session('success') }}
                     <button @click="show = false" class="text-emerald-500 hover:text-emerald-700"><span class="material-symbols-outlined text-sm">close</span></button>
                 </div>
             @endif
             @if(session('error'))
-                <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 5000)" 
+                <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 5000)"
                     class="p-4 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-sm font-medium flex justify-between items-center">
                     {{ session('error') }}
                     <button @click="show = false" class="text-rose-500 hover:text-rose-700"><span class="material-symbols-outlined text-sm">close</span></button>
                 </div>
             @endif
 
-            <!-- Filters -->
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-wrap gap-4 items-center justify-between shadow-sm">
                 <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index') }}" method="GET" class="flex flex-wrap gap-3 items-center flex-1">
                     <div class="relative flex-1 min-w-[200px]">
@@ -77,7 +73,6 @@
                 </form>
             </div>
 
-            <!-- Table -->
             <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-600 dark:text-slate-400">
@@ -160,13 +155,12 @@
         </div>
     </main>
 
-    <!-- Create Empty Exam Modal (Alpine JS) -->
     <div x-data="{ open: false }"
          @open-create-empty-modal.window="open = true"
          x-show="open"
          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
          style="display: none;">
-         
+
         <div @click.away="open = false" x-show="open" x-transition.opacity.scale.95
              class="bg-white dark:bg-slate-900 rounded-[2rem] w-full max-w-lg overflow-hidden border border-slate-100 dark:border-slate-800 shadow-2xl">
             <div class="p-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
@@ -184,13 +178,13 @@
 
             <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.store-empty') }}" method="POST" class="p-8 space-y-5">
                 @csrf
-                
+
                 <div>
                     <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Tên Đề Thi <span class="text-rose-500">*</span></label>
                     <input type="text" name="title" required placeholder="VD: Đề thi HSK 3 - Bộ mới"
                         class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm font-semibold text-slate-800 dark:text-white">
                 </div>
-                
+
                 <div>
                     <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Cấp độ HSK <span class="text-rose-500">*</span></label>
                     <div class="relative">
@@ -203,7 +197,7 @@
                         <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
                     </div>
                 </div>
-                
+
                 <div>
                     <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Thời gian làm bài (Phút) <span class="text-rose-500">*</span></label>
                     <input type="number" name="duration" required value="40" min="1"

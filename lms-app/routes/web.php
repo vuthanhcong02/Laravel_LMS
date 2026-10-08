@@ -37,6 +37,7 @@ use App\Http\Controllers\Teacher\QuizController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\TeacherProfileController;
 use App\Http\Controllers\Teacher\TeacherReportController;
+use App\Http\Controllers\Teacher\LessonController as TeacherLessonController;
 use App\Http\Controllers\Teacher\HskMockExamController as TeacherHskMockExamController;
 use App\Http\Controllers\Api\TtsController;
 use App\Models\User;
@@ -244,10 +245,29 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware(['role:' . User::ROLE_TEACHER])->group(function () {
             Route::get('teacher/dashboard', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
 
+            Route::get('teacher/classes/{course}/available-students', [ClassController::class, 'availableStudents'])
+                ->name('teacher.classes.available-students');
+            Route::post('teacher/classes/{course}/enroll', [ClassController::class, 'enroll'])
+                ->name('teacher.classes.enroll');
+            Route::delete('teacher/classes/{course}/enrollments/{enrollment}', [ClassController::class, 'unenroll'])
+                ->name('teacher.classes.unenroll');
+
             Route::resource('teacher/classes', ClassController::class)
                 ->names('teacher.classes')
                 ->only(['index', 'show'])
                 ->parameters(['classes' => 'course']);
+
+            // Teacher Lesson Management
+            Route::post('teacher/classes/{course}/lessons', [TeacherLessonController::class, 'store'])
+                ->name('teacher.classes.lessons.store');
+            Route::put('teacher/classes/{course}/lessons/{lesson}', [TeacherLessonController::class, 'update'])
+                ->name('teacher.classes.lessons.update');
+            Route::delete('teacher/classes/{course}/lessons/{lesson}', [TeacherLessonController::class, 'destroy'])
+                ->name('teacher.classes.lessons.destroy');
+            Route::post('teacher/classes/{course}/lessons/{lesson}/move-up', [TeacherLessonController::class, 'moveUp'])
+                ->name('teacher.classes.lessons.move-up');
+            Route::post('teacher/classes/{course}/lessons/{lesson}/move-down', [TeacherLessonController::class, 'moveDown'])
+                ->name('teacher.classes.lessons.move-down');
 
             Route::resource('teacher/assignments', TeacherAssignmentController::class)
                 ->names('teacher.assignments');
@@ -262,8 +282,14 @@ Route::middleware(['auth'])->group(function () {
                 ->name('teacher.quizzes.export-template');
 
             Route::resource('teacher/quizzes', QuizController::class)
-                ->names('teacher.quizzes')
-                ->except(['show']);
+                ->names('teacher.quizzes');
+
+            Route::get('teacher/quizzes/{quiz}/results', [QuizController::class, 'results'])
+                ->name('teacher.quizzes.results');
+            Route::get('teacher/quizzes/attempts/{attempt}', [QuizController::class, 'attemptDetail'])
+                ->name('teacher.quizzes.attempt-detail');
+            Route::post('teacher/quizzes/attempts/{attempt}/grade', [QuizController::class, 'gradeAttempt'])
+                ->name('teacher.quizzes.grade-attempt');
 
             Route::get('teacher/quizzes/{quiz}/questions', [QuizController::class, 'questions'])
                 ->name('teacher.quizzes.questions');
@@ -303,6 +329,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('login', [AdminAuthController::class, 'login']);
         Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
+
+    // ─── Direct URL Redirects (teacher/..., admin/..., student/... -> portal/...) ───
+    Route::any('{role}/{path?}', function (string $role, ?string $path = null) {
+        $target = 'portal/' . $role . ($path ? '/' . $path : '');
+        $queryString = request()->getQueryString();
+        if ($queryString) {
+            $target .= '?' . $queryString;
+        }
+        return redirect($target, 307);
+    })->whereIn('role', ['teacher', 'admin', 'student'])->where('path', '.*');
 });
 
 require __DIR__ . '/auth.php';
+

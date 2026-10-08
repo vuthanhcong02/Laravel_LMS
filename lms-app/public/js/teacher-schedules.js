@@ -7,26 +7,39 @@ document.addEventListener('DOMContentLoaded', function() {
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'timeGridWeek,timeGridDay'
+            right: 'timeGridWeek,timeGridDay,dayGridMonth,listWeek'
         },
         buttonText: {
             today: 'Hôm nay',
             month: 'Tháng',
-            week: 'Tuần',
-            day: 'Ngày'
+            week: 'Tuần (Lưới)',
+            day: 'Ngày',
+            list: 'Danh sách'
         },
-        dayHeaderFormat: { weekday: 'long' }, 
+        dayHeaderFormat: { weekday: 'short', day: '2-digit', month: '2-digit' }, 
         slotMinTime: '07:00:00',
-        slotMaxTime: '24:00:00',
+        slotMaxTime: '22:00:00',
+        slotDuration: '01:00:00',
+        scrollTime: '17:00:00',
+        height: 'auto',
+        contentHeight: 'auto',
+        expandRows: false,
+        slotLabelFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        },
         allDaySlot: false,
         editable: false, // Readonly
         selectable: false, // Readonly
         locale: 'vi',
         events: eventsUrl,
+        nowIndicator: true,
         
         eventClick: function(info) {
-            // Optional: show info only
-            alert('Lớp: ' + info.event.title + '\nThời gian: ' + info.event.startStr.split('T')[1].substring(0,5) + ' - ' + info.event.endStr.split('T')[1].substring(0,5));
+            var startTime = info.event.startStr.includes('T') ? info.event.startStr.split('T')[1].substring(0, 5) : '';
+            var endTime = info.event.endStr.includes('T') ? info.event.endStr.split('T')[1].substring(0, 5) : '';
+            alert('Lớp: ' + info.event.title + '\nThời gian: ' + (startTime && endTime ? startTime + ' - ' + endTime : 'Cả ngày'));
         }
     });
 

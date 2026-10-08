@@ -34,7 +34,7 @@ class ScheduleController extends Controller
                     'id' => $schedule->id,
                     'title' => $schedule->course->title,
                     'course_id' => $schedule->course_id,
-                    'daysOfWeek' => [$schedule->day_of_week],
+                    'daysOfWeek' => [(int) $schedule->day_of_week],
                     'startTime' => $schedule->start_time,
                     'endTime' => $schedule->end_time,
                     'backgroundColor' => $colors[$colorIndex],
@@ -46,7 +46,7 @@ class ScheduleController extends Controller
                     $event['startRecur'] = $schedule->course->start_date->format('Y-m-d');
                 }
                 if ($schedule->course->end_date) {
-                    $event['endRecur'] = $schedule->course->end_date->addDay()->format('Y-m-d');
+                    $event['endRecur'] = $schedule->course->end_date->copy()->addDay()->format('Y-m-d');
                 }
 
                 return $event;

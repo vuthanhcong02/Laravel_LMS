@@ -32,10 +32,8 @@
 
     <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
 
-        {{-- Left Side: Questions Container --}}
         <div class="flex-1 space-y-6">
 
-            {{-- Quiz Header Info --}}
             <div style="height: 110px;" class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm flex flex-col justify-center">
                 <div>
                     <span class="text-xs font-bold text-primary uppercase tracking-wider">{{ $quiz->course->title }}</span>
@@ -43,7 +41,33 @@
                 </div>
             </div>
 
-            {{-- Questions Form --}}
+            @if($quiz->audio_url)
+            <div class="sticky top-4 z-20 bg-gradient-to-r from-amber-500/10 via-primary/10 to-orange-500/10 dark:from-amber-900/20 dark:via-primary/20 dark:to-orange-900/20 backdrop-blur-md rounded-3xl border-2 border-primary/30 p-5 shadow-lg space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="size-9 rounded-xl bg-primary text-white flex items-center justify-center shadow-md shadow-primary/20 animate-pulse">
+                            <span class="material-symbols-outlined text-lg">headphones</span>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                {{ __('File nghe toàn bài thi') }}
+                                <span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-extrabold uppercase tracking-wide">{{ __('Phần nghe') }}</span>
+                            </h2>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ __('Hãy bật file nghe trong suốt quá trình hoàn thành các câu hỏi bên dưới.') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 dark:bg-slate-900/80 rounded-2xl p-2 border border-primary/20 shadow-inner">
+                    <audio controls class="w-full h-10" preload="auto">
+                        <source src="{{ $quiz->audio_url }}" type="audio/mpeg">
+                        <source src="{{ $quiz->audio_url }}" type="audio/wav">
+                        <source src="{{ $quiz->audio_url }}" type="audio/mp4">
+                        {{ __('Trình duyệt không hỗ trợ phát âm thanh.') }}
+                    </audio>
+                </div>
+            </div>
+            @endif
+
             <form id="quiz-form" action="{{ route('student.quizzes.submit', $attempt->id) }}" method="POST" class="space-y-6">
                 @csrf
 
@@ -51,7 +75,6 @@
                 <div id="question-card-{{ $question->id }}"
                     class="question-card bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6 scroll-mt-24">
 
-                    {{-- Question Header --}}
                     <div class="flex items-start justify-between gap-4">
                         <div class="space-y-1">
                             <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-extrabold text-slate-600 dark:text-slate-400 uppercase">
@@ -64,20 +87,17 @@
                         </span>
                     </div>
 
-                    {{-- Question Content --}}
                     <div class="space-y-4">
                         <div class="text-base font-bold text-slate-950 dark:text-slate-50 leading-relaxed">
                             {!! nl2br(e($question->question_text)) !!}
                         </div>
 
-                        {{-- Image if exists --}}
                         @if($question->image_path)
                         <div class="max-w-lg overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm mt-3">
                             <img src="{{ asset('storage/' . $question->image_path) }}" alt="Question visual" class="max-h-80 w-auto object-contain mx-auto">
                         </div>
                         @endif
 
-                        {{-- Audio if exists --}}
                         @if($question->audio_path)
                         <div class="w-full max-w-md bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/30 mt-3">
                             <audio controls class="w-full">
@@ -88,10 +108,8 @@
                         @endif
                     </div>
 
-                    {{-- Answers Options --}}
                     <div class="border-t border-slate-100 dark:border-slate-800 pt-6">
 
-                        {{-- Multiple Choice or True/False --}}
                         @if($question->type === \App\Enums\QuestionType::MULTIPLE_CHOICE || $question->type === \App\Enums\QuestionType::TRUE_FALSE)
                         <div class="grid gap-3">
                             @foreach($question->options as $option)
@@ -104,7 +122,6 @@
                                     @change="answerSelected({{ $question->id }}, {{ $option->id }})"
                                     {{ $attempt->answers->firstWhere('question_id', $question->id)?->option_id == $option->id ? 'checked' : '' }}>
 
-                                {{-- Styled Custom Radio --}}
                                 <div class="size-5 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center shrink-0 peer-checked:border-primary transition-colors group-hover:border-primary/40"
                                     :class="{ 'border-primary': isSelected({{ $question->id }}, {{ $option->id }}) }">
                                     <div class="size-2.5 rounded-full bg-primary opacity-0 scale-50 transition-all duration-200"
@@ -118,7 +135,6 @@
                             @endforeach
                         </div>
 
-                        {{-- Essay --}}
                         @elseif($question->type === \App\Enums\QuestionType::ESSAY)
                         <div class="space-y-2">
                             <textarea name="answers[{{ $question->id }}][text_answer]"
@@ -133,7 +149,6 @@
                 </div>
                 @endforeach
 
-                {{-- Submit Button Area --}}
                 <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="text-xs text-slate-500">
                         {{ __('Hãy kiểm tra kỹ tất cả các câu trả lời của bạn trước khi bấm nộp bài.') }}
@@ -149,13 +164,10 @@
 
         </div>
 
-        {{-- Right Side: Countdown Timer & Navigation --}}
         <div class="w-full lg:w-80 shrink-0 space-y-6">
 
-            {{-- Sticky Container --}}
             <div class="lg:sticky space-y-6">
 
-                {{-- Timer Box --}}
                 <div style="height: 110px;" class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm flex flex-col justify-center text-center">
                     <div class="flex items-center justify-center gap-2 text-slate-400 mb-1.5">
                         <span class="material-symbols-outlined text-lg">alarm</span>
@@ -176,20 +188,18 @@
                     </template>
                 </div>
 
-                {{-- Question Navigation --}}
                 <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
                     <h3 class="text-sm font-bold text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
                         {{ __('Tiến trình làm bài') }}
                     </h3>
 
-                    {{-- Question Grid --}}
                     <div class="grid grid-cols-5 gap-2.5">
                         @foreach($quiz->questions as $index => $question)
                         <button type="button"
                             @click="scrollToQuestion({{ $question->id }})"
                             class="aspect-square flex items-center justify-center rounded-xl border-2 text-xs font-bold transition-all duration-200"
-                            :class="hasAnswer({{ $question->id }}) 
-                                            ? 'bg-primary border-primary text-white shadow-sm shadow-primary/20' 
+                            :class="hasAnswer({{ $question->id }})
+                                            ? 'bg-primary border-primary text-white shadow-sm shadow-primary/20'
                                             : 'border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/20'">
                             {{ $index + 1 }}
                         </button>
@@ -213,7 +223,6 @@
 
     </div>
 
-    {{-- Alpine-controlled Confirm Modal --}}
     <div x-show="showConfirmModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
         style="display: none;"

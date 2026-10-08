@@ -203,6 +203,8 @@ class StudentQuizService
             // Clear any temporary progress answers
             QuizAttemptAnswer::where('attempt_id', $attempt->id)->delete();
 
+            $hasManualEssay = false;
+
             foreach ($quiz->questions as $question) {
                 $questionId = $question->id;
                 $answerData = $submittedAnswers[$questionId] ?? null;
@@ -210,42 +212,113 @@ class StudentQuizService
                 if ($question->type === QuestionType::MULTIPLE_CHOICE || $question->type === QuestionType::TRUE_FALSE) {
                     $selectedOptionId = !empty($answerData['option_id']) ? (int)$answerData['option_id'] : null;
 
+                    $isCorrect = false;
+                    $marksObtained = 0;
+
                     if ($selectedOptionId) {
                         // Check if answer is correct
                         $correctOption = $question->options->first(fn($opt) => $opt->is_correct);
                         $isCorrect = $correctOption && $correctOption->id === $selectedOptionId;
 
                         if ($isCorrect) {
-                            $totalScore += $question->marks;
+                            $marksObtained = (float) $question->marks;
+                            $totalScore += $marksObtained;
+                        }
+                    }
+
+                    QuizAttemptAnswer::create([
+                        'attempt_id'     => $attempt->id,
+                        'question_id'    => $questionId,
+                        'option_id'      => $selectedOptionId,
+                        'text_answer'    => null,
+                        'marks_obtained' => $marksObtained,
+                        'is_correct'     => $isCorrect,
+                    ]);
+                } elseif ($question->type === QuestionType::ESSAY) {
+                    $textAnswer = isset($answerData['text_answer']) ? trim((string)$answerData['text_answer']) : null;
+                    $gradingType = $question->essay_grading_type ?? 'manual';
+
+                    if ($gradingType === 'auto' && !empty($question->correct_answer_text)) {
+                        // Auto-grade essay against sample answer(s)
+                        $isCorrect = $this->checkEssayAnswer(
+                            $textAnswer ?? '',
+                            $question->correct_answer_text,
+                            (bool)$question->case_sensitive
+                        );
+
+                        $marksObtained = $isCorrect ? (float) $question->marks : 0;
+                        if ($isCorrect) {
+                            $totalScore += $marksObtained;
                         }
 
                         QuizAttemptAnswer::create([
-                            'attempt_id' => $attempt->id,
-                            'question_id' => $questionId,
-                            'option_id' => $selectedOptionId,
-                            'text_answer' => null,
+                            'attempt_id'     => $attempt->id,
+                            'question_id'    => $questionId,
+                            'option_id'      => null,
+                            'text_answer'    => $textAnswer,
+                            'marks_obtained' => $marksObtained,
+                            'is_correct'     => $isCorrect,
+                        ]);
+                    } else {
+                        // Manual grading by teacher
+                        $hasManualEssay = true;
+
+                        QuizAttemptAnswer::create([
+                            'attempt_id'     => $attempt->id,
+                            'question_id'    => $questionId,
+                            'option_id'      => null,
+                            'text_answer'    => $textAnswer,
+                            'marks_obtained' => null,
+                            'is_correct'     => null,
                         ]);
                     }
-                } elseif ($question->type === QuestionType::ESSAY) {
-                    $textAnswer = $answerData['text_answer'] ?? null;
-
-                    QuizAttemptAnswer::create([
-                        'attempt_id' => $attempt->id,
-                        'question_id' => $questionId,
-                        'option_id' => null,
-                        'text_answer' => $textAnswer,
-                    ]);
-                    // Essay questions do not add to auto-score until teacher grades them
                 }
             }
 
             $attempt->update([
-                'score' => $totalScore,
-                'completed_at' => now(),
+                'score'          => $totalScore,
+                'grading_status' => $hasManualEssay ? 'needs_grading' : 'graded',
+                'completed_at'   => now(),
             ]);
         });
 
         return $attempt;
+    }
+
+    /**
+     * Match essay response against acceptable answer patterns
+     */
+    private function checkEssayAnswer(string $userAnswer, string $correctAnswersText, bool $caseSensitive): bool
+    {
+        if ($userAnswer === '') {
+            return false;
+        }
+
+        // Split answer patterns (supports separator by ;, |, or newline)
+        $acceptableAnswers = preg_split('/[;\n|]+/', $correctAnswersText);
+        $cleanUserAnswer = $this->normalizeString($userAnswer, $caseSensitive);
+
+        foreach ($acceptableAnswers as $pattern) {
+            $cleanPattern = $this->normalizeString($pattern, $caseSensitive);
+            if ($cleanPattern !== '' && $cleanUserAnswer === $cleanPattern) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Normalize string for text matching
+     */
+    private function normalizeString(string $text, bool $caseSensitive): string
+    {
+        $text = trim($text);
+        if (!$caseSensitive) {
+            $text = mb_strtolower($text, 'UTF-8');
+        }
+        // Remove redundant whitespace between words
+        return preg_replace('/\s+/u', ' ', $text);
     }
 
     /**

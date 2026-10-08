@@ -97,11 +97,14 @@ class CourseService
         $course->schedules()->delete();
 
         if (!empty($data['start_time']) && !empty($data['end_time']) && !empty($data['days_of_week'])) {
+            $startTime = \Carbon\Carbon::parse($data['start_time'])->format('H:i:s');
+            $endTime   = \Carbon\Carbon::parse($data['end_time'])->format('H:i:s');
+
             foreach ($data['days_of_week'] as $day) {
                 $course->schedules()->create([
-                    'day_of_week' => $day,
-                    'start_time' => $data['start_time'] . ':00',
-                    'end_time' => $data['end_time'] . ':00',
+                    'day_of_week' => (int) $day,
+                    'start_time'  => $startTime,
+                    'end_time'    => $endTime,
                 ]);
             }
         }
