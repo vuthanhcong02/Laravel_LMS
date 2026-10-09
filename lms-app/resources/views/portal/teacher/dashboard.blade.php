@@ -107,25 +107,18 @@
 
                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
                     @forelse ($schedules as $schedule)
-                        <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 mb-3 last:mb-0">
+                        <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 mb-3 last:mb-0">
 
-                            <div class="text-center shrink-0 w-16 sm:w-20 py-1 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <div class="text-center shrink-0 px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
                                 <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white block">
-                                    {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}
-                                </span>
-                                <span class="text-[10px] text-slate-400 font-medium block">
-                                    {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                    {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
                                 </span>
                             </div>
 
-                            <div class="flex-1 min-w-0 space-y-1">
+                            <div class="flex-1 min-w-0 flex items-center">
                                 <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">
-                                    {{ $schedule->course->title }}
+                                    {{ __('Lớp: ') }} {{ $schedule->course->title }}
                                 </h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 truncate">
-                                    <span class="material-symbols-outlined text-sm text-amber-500">menu_book</span>
-                                    <span>{{ $schedule->current_lesson_title }}</span>
-                                </p>
                             </div>
 
                             <div class="shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
