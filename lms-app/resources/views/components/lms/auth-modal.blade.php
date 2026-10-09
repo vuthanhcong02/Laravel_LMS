@@ -57,7 +57,7 @@
                     <div class="relative">
                         <i
                             class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="email" name="email" x-model="authEmail" value="{{ old('email') }}" required
+                        <input type="email" name="email" x-model="authEmail" value="{{ old('email') }}" required tabindex="1"
                             placeholder="name@example.com"
                             class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
@@ -65,7 +65,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Mật khẩu</label>
-                        <button type="button" @click="authModalTab = 'forgot'"
+                        <button type="button" @click="authModalTab = 'forgot'" tabindex="5"
                             class="text-[11px] font-semibold text-[#e07a5f] hover:underline cursor-pointer">
                             Quên mật khẩu?
                         </button>
@@ -74,9 +74,9 @@
                         <i
                             class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input :type="authShowPassword ? 'text' : 'password'" name="password" x-model="authPassword"
-                            required placeholder="Nhập mật khẩu..."
+                            required placeholder="Nhập mật khẩu..." tabindex="2"
                             class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-10 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
-                        <button type="button" @click="authShowPassword = !authShowPassword"
+                        <button type="button" @click="authShowPassword = !authShowPassword" tabindex="-1"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs">
                             <i class="fa-regular pointer-events-none"
                                 :class="authShowPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
@@ -86,12 +86,12 @@
                 <div class="flex items-center">
                     <label
                         class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer select-none">
-                        <input type="checkbox" name="remember" x-model="authRemember"
+                        <input type="checkbox" name="remember" x-model="authRemember" tabindex="3"
                             class="rounded text-[#e07a5f] focus:ring-[#e07a5f]/20 border-slate-300 dark:border-slate-700 dark:bg-slate-800">
                         <span>Ghi nhớ đăng nhập</span>
                     </label>
                 </div>
-                <button type="submit"
+                <button type="submit" tabindex="4"
                     class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center justify-center gap-2 cursor-pointer">
                     <span>Đăng nhập ngay</span>
                 </button>
@@ -101,7 +101,7 @@
                 <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500">hoặc</span>
                 <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
             </div>
-            <a :href="'{{ route('socialite.redirect', ['provider' => 'google'], false) }}' + (authRedirectUrl ? '?redirect_to=' + encodeURIComponent(authRedirectUrl) : '')"
+            <a :href="'{{ route('socialite.redirect', ['provider' => 'google'], false) }}' + (authRedirectUrl ? '?redirect_to=' + encodeURIComponent(authRedirectUrl) : '')" tabindex="6"
                 class="w-full py-2.5 px-4 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] bg-white dark:bg-[#201d1b] hover:bg-[#f8f6f3] dark:hover:bg-[#2a2624] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-3 transition-all btn-tactile shadow-xs cursor-pointer">
                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4"
@@ -118,7 +118,7 @@
             <div class="text-center pt-2">
                 <p class="text-xs text-slate-500 dark:text-slate-400">
                     {{ __('Chưa có tài khoản?') }}
-                    <button type="button" @click="authModalTab = 'register'"
+                    <button type="button" @click="authModalTab = 'register'" tabindex="7"
                         class="font-bold text-[#e07a5f] hover:underline cursor-pointer">
                         {{ __('Đăng ký tài khoản') }}
                     </button>
@@ -133,14 +133,14 @@
                     <div>
                         <label
                             class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Họ và tên đệm') }}</label>
-                        <input type="text" name="first_name" x-model="authFirstName"
+                        <input type="text" name="first_name" x-model="authFirstName" tabindex="1"
                             value="{{ old('first_name') }}" required placeholder="{{ __('Nhập họ và tên đệm') }}"
                             class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
                     <div>
                         <label
                             class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Tên') }}</label>
-                        <input type="text" name="last_name" x-model="authLastName"
+                        <input type="text" name="last_name" x-model="authLastName" tabindex="2"
                             value="{{ old('last_name') }}" required placeholder="{{ __('Nhập tên của bạn') }}"
                             class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
@@ -151,7 +151,7 @@
                     <div class="relative">
                         <i
                             class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="email" name="email" x-model="authEmail" value="{{ old('email') }}"
+                        <input type="email" name="email" x-model="authEmail" value="{{ old('email') }}" tabindex="3"
                             required placeholder="{{ __('Nhập địa chỉ email của bạn') }}"
                             class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
                     </div>
@@ -163,9 +163,9 @@
                         <i
                             class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input :type="authShowPassword ? 'text' : 'password'" name="password" x-model="authPassword"
-                            required placeholder="{{ __('Nhập mật khẩu của bạn') }}"
+                            required placeholder="{{ __('Nhập mật khẩu của bạn') }}" tabindex="4"
                             class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-10 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all">
-                        <button type="button" @click="authShowPassword = !authShowPassword"
+                        <button type="button" @click="authShowPassword = !authShowPassword" tabindex="-1"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs">
                             <i class="fa-regular pointer-events-none"
                                 :class="authShowPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
@@ -173,14 +173,14 @@
                     </div>
                 </div>
                 <div class="flex items-start gap-2 pt-1">
-                    <input type="checkbox" required
+                    <input type="checkbox" required tabindex="5"
                         class="mt-0.5 rounded text-[#e07a5f] focus:ring-[#e07a5f]/20 border-slate-300 dark:border-slate-700 dark:bg-slate-800">
                     <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight select-none">
                         {{ __('Tôi đồng ý với') }} <a href="#" class="text-[#e07a5f] underline">{{ __('Điều khoản dịch vụ') }}</a> {{ __('và') }} <a
                             href="#" class="text-[#e07a5f] underline">{{ __('Chính sách bảo mật') }}</a> {{ __('của XiaoMu.') }}
                     </span>
                 </div>
-                <button type="submit"
+                <button type="submit" tabindex="6"
                     class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center justify-center gap-2 cursor-pointer">
                     <span>{{ __('Tạo tài khoản miễn phí') }}</span>
                 </button>
@@ -190,7 +190,7 @@
                 <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500">{{ __('hoặc') }}</span>
                 <div class="h-px bg-[#e8e2d9] dark:bg-[#2d2926] flex-1"></div>
             </div>
-            <a :href="'{{ route('socialite.redirect', ['provider' => 'google'], false) }}' + (authRedirectUrl ? '?redirect_to=' + encodeURIComponent(authRedirectUrl) : '')"
+            <a :href="'{{ route('socialite.redirect', ['provider' => 'google'], false) }}' + (authRedirectUrl ? '?redirect_to=' + encodeURIComponent(authRedirectUrl) : '')" tabindex="7"
                 class="w-full py-2.5 px-4 rounded-xl border border-[#e8e2d9] dark:border-[#2d2926] bg-white dark:bg-[#201d1b] hover:bg-[#f8f6f3] dark:hover:bg-[#2a2624] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-3 transition-all btn-tactile shadow-xs cursor-pointer">
                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4"
@@ -207,7 +207,7 @@
             <div class="text-center pt-2">
                 <p class="text-xs text-slate-500 dark:text-slate-400">
                     Đã có tài khoản?
-                    <button type="button" @click="authModalTab = 'login'"
+                    <button type="button" @click="authModalTab = 'login'" tabindex="8"
                         class="font-bold text-[#e07a5f] hover:underline cursor-pointer">
                         Đăng nhập ngay
                     </button>
@@ -238,12 +238,12 @@
                     <div class="relative">
                         <i
                             class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="email" x-model="authEmail" required placeholder="name@example.com"
+                        <input type="email" x-model="authEmail" required placeholder="name@example.com" tabindex="1"
                             class="w-full bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#e07a5f] focus:ring-2 focus:ring-[#e07a5f]/20 transition-all"
                             :disabled="forgotLoading">
                     </div>
                 </div>
-                <button type="submit" :disabled="forgotLoading"
+                <button type="submit" :disabled="forgotLoading" tabindex="2"
                     class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e07a5f] to-[#c86349] hover:from-[#c86349] hover:to-[#b55238] disabled:from-slate-400 disabled:to-slate-500 text-white text-xs font-bold shadow-md shadow-[#e07a5f]/25 hover:shadow-lg transition-all btn-tactile flex items-center justify-center gap-2 cursor-pointer">
                     <i x-show="!forgotLoading" class="fa-regular fa-paper-plane text-xs"></i>
                     <i x-show="forgotLoading" class="fa-solid fa-spinner fa-spin text-xs" x-cloak></i>
@@ -251,7 +251,7 @@
                 </button>
             </form>
             <div class="text-center pt-2 border-t border-[#e8e2d9] dark:border-[#2d2926]">
-                <button type="button" @click="authModalTab = 'login'"
+                <button type="button" @click="authModalTab = 'login'" tabindex="3"
                     class="font-bold text-xs text-[#e07a5f] hover:underline cursor-pointer inline-flex items-center gap-2">
                     <i class="fa-solid fa-arrow-left text-xs"></i>
                     <span>Quay lại Đăng nhập</span>
