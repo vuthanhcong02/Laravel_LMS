@@ -1,5 +1,5 @@
 <header
-    class="sticky top-0 z-50 h-16 flex items-center justify-between whitespace-nowrap border-b border-primary/20 bg-white dark:bg-slate-900 px-6 py-3 lg:px-10">
+    class="sticky top-0 z-50 h-16 flex items-center justify-between whitespace-nowrap border-b border-primary/20 bg-white dark:bg-slate-900 px-6 py-3">
     <div class="flex items-center gap-8">
         <div class="flex items-center gap-3">
             <button @click="sidebarOpen = !sidebarOpen"
@@ -23,6 +23,32 @@
                 href="{{ route('support.create') }}">{{ __('Hỗ trợ') }}</a>
         </nav>
         <div class="flex gap-3 items-center">
+            
+            <div x-data="{
+                theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+                toggle() {
+                    this.theme = this.theme === 'dark' ? 'light' : 'dark';
+                    if (this.theme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    
+                    fetch('{{ route('settings.update') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ theme: this.theme })
+                    });
+                }
+            }">
+                <button @click="toggle()" class="size-9 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined text-[22px]" x-text="theme === 'dark' ? 'light_mode' : 'dark_mode'"></span>
+                </button>
+            </div>
 
             <div class="relative" x-data="{ userMenuOpen: false }">
                 <button @click="userMenuOpen = !userMenuOpen"

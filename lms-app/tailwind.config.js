@@ -11,8 +11,8 @@ export default {
     theme: {
         extend: {
             colors: {
-                "primary": "#2563eb",
-                "background-light": "#f8fafc",
+                "primary": "#699ff6ff",
+                "background-light": "#f8f8f8ff",
                 "background-dark": "#0f172a",
             },
             fontFamily: {
