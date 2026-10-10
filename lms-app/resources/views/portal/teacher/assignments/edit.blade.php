@@ -81,34 +81,56 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2" x-data="{ files: [] }">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Tệp đính kèm mới</label>
-                        <div class="relative flex items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
-                            <input type="file" name="attachments[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.zip"
-                                   @change="files = Array.from($event.target.files)"
-                                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                            <div class="text-center" x-show="files.length === 0">
-                                <span class="material-symbols-outlined text-4xl text-slate-400">upload_file</span>
-                                <p class="text-sm text-slate-500 font-bold mt-2">Kéo thả thêm tệp</p>
-                            </div>
-                            <div class="text-center px-4" x-show="files.length > 0" style="display: none;">
-                                <span class="material-symbols-outlined text-4xl text-emerald-500">task</span>
-                                <p class="text-sm text-emerald-600 font-bold mt-2" x-text="files.length + ' file(s) selected'"></p>
-                            </div>
-                        </div>
+                    <div class="space-y-4">
+                        <x-lms.file-uploader
+                            name="attachments[]"
+                            :maxFiles="5"
+                            :maxSizeMB="10"
+                            :label="__('Tải lên tệp đính kèm mới')"
+                            :helperText="__('Hỗ trợ: PDF, Word, Excel, Ảnh, Audio, Zip... (Tối đa 5 tệp, 10MB/tệp)')" />
 
-                        @if(!empty($assignment->attachments))
-                            <div class="mt-4">
-                                <label class="text-xs font-bold uppercase text-slate-500">File đính kèm cũ:</label>
-                                <div class="mt-2 space-y-2">
+                                                @if(!empty($assignment->attachments))
+                            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-2">{{ __('Tệp đã đính kèm hiện tại:') }}</label>
+                                <div class="space-y-2">
                                     @foreach($assignment->attachments as $i => $file)
-                                        <label class="flex items-center gap-3 p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
-                                            <input type="checkbox" name="keep_attachments[]" value="{{ $file['path'] }}" checked class="rounded text-primary focus:ring-primary size-4">
-                                            <span class="material-symbols-outlined text-slate-400">description</span>
-                                            <span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{{ $file['name'] }}</span>
-                                        </label>
+                                        @php
+                                            $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+                                            $isImg = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']);
+                                            $isAudio = in_array($ext, ['mp3', 'wav', 'ogg', 'webm', 'm4a']);
+                                            $isPdf = ($ext === 'pdf');
+                                            $fileViewerUrl = route('file.viewer', ['path' => $file['path']]);
+                                        @endphp
+                                        <div class="flex items-center justify-between gap-3 p-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-slate-300 transition-colors">
+                                            <label class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer">
+                                                <input type="checkbox" name="keep_attachments[]" value="{{ $file['path'] }}" checked class="rounded text-primary focus:ring-primary size-4 shrink-0">
+                                                <div class="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                                    <span class="material-symbols-outlined text-lg">
+                                                        @if($isImg) image @elseif($isAudio) audio_file @elseif($isPdf) picture_as_pdf @else description @endif
+                                                    </span>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ $file['name'] }}</p>
+                                                    <span class="text-[10px] text-slate-400">{{ __('Tích để giữ lại tệp này') }}</span>
+                                                </div>
+                                            </label>
+
+                                            <div class="flex items-center gap-1 shrink-0">
+                                                <button type="button"
+                                                        @click="$dispatch('open-file-preview', { url: '{{ $fileViewerUrl }}', name: '{{ addslashes($file['name']) }}' })"
+                                                        class="size-8 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 flex items-center justify-center transition-colors"
+                                                        title="{{ __('Xem trước') }}">
+                                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                                </button>
+                                                <a href="{{ $fileViewerUrl }}" target="_blank"
+                                                   class="size-8 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 flex items-center justify-center transition-colors"
+                                                   title="{{ __('Mở tệp') }}">
+                                                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                                                </a>
+                                            </div>
+                                        </div>
                                     @endforeach
-                                    <p class="text-[10px] text-slate-500 italic">Bỏ chọn để xóa tệp này.</p>
+                                    <p class="text-[11px] text-slate-400 italic mt-1">{{ __('Bỏ tích chọn nếu muốn xóa tệp khỏi bài tập.') }}</p>
                                 </div>
                             </div>
                         @endif

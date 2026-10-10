@@ -289,9 +289,9 @@
                                     class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-primary focus:border-primary">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500">Video URL</label>
-                                <input type="url" name="video_url" placeholder="https://youtube.com/..."
-                                    class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                                <label class="text-xs font-semibold text-slate-500">Video / Drive URLs</label>
+                                <textarea name="video_url" rows="2" placeholder="https://drive.google.com/file/d/1.../view&#10;https://drive.google.com/file/d/2.../view"
+                                    class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-primary focus:border-primary min-h-[75px] resize-y"></textarea>
                             </div>
                         </div>
                         <div class="space-y-1">

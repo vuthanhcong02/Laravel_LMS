@@ -80,21 +80,13 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2" x-data="{ files: [] }">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Tệp đính kèm (Tối đa 5 files, 10MB/file)</label>
-                        <div class="relative flex items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
-                            <input type="file" name="attachments[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.zip"
-                                   @change="files = Array.from($event.target.files)"
-                                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                            <div class="text-center" x-show="files.length === 0">
-                                <span class="material-symbols-outlined text-4xl text-slate-400">upload_file</span>
-                                <p class="text-sm text-slate-500 font-bold mt-2">Kéo thả hoặc Click để Upload</p>
-                            </div>
-                            <div class="text-center px-4" x-show="files.length > 0" style="display: none;">
-                                <span class="material-symbols-outlined text-4xl text-emerald-500">task</span>
-                                <p class="text-sm text-emerald-600 font-bold mt-2" x-text="files.length + ' file(s) selected'"></p>
-                            </div>
-                        </div>
+                    <div>
+                        <x-lms.file-uploader
+                            name="attachments[]"
+                            :maxFiles="5"
+                            :maxSizeMB="10"
+                            :label="__('Tệp đính kèm')"
+                            :helperText="__('Hỗ trợ: PDF, Word, Excel, Ảnh, Audio, Zip... (Tối đa 5 tệp, 10MB/tệp)')" />
                     </div>
 
                     <div class="space-y-6">
