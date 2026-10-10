@@ -21,7 +21,7 @@ class LessonFactory extends Factory
             'course_id' => Course::factory(),
             'title' => $this->faker->sentence(6),
             'description' => $this->faker->paragraph(),
-            'video_url' => 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            'video_url' => 'https://drive.google.com/file/d/1l2wkiMBq6v5hzm4bm_Ktazy23LJ204ru/view',
             'order' => 0,
         ];
     }

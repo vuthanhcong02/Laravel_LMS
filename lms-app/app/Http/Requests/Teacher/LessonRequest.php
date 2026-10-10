@@ -26,8 +26,8 @@ class LessonRequest extends FormRequest
         return [
             'title'            => ['required', 'string', 'max:255'],
             'description'      => ['nullable', 'string', 'max:2000'],
-            'record_url'       => ['nullable', 'url', 'max:500'],
-            'video_url'        => ['nullable', 'url', 'max:500'],
+            'record_url'       => ['nullable', 'string', 'max:2000'],
+            'video_url'        => ['nullable', 'string', 'max:2000'],
             'pdf_file'         => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
             'note_file'        => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,zip,rar,ppt,pptx,xlsx,xls', 'max:20480'],
             'note_content'     => ['nullable', 'string', 'max:50000'],

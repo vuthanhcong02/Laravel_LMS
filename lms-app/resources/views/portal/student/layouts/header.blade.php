@@ -1,5 +1,5 @@
 <header
-    class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-primary/20 bg-white dark:bg-slate-900 px-6 py-3 lg:px-10">
+    class="sticky top-0 z-50 h-16 flex items-center justify-between whitespace-nowrap border-b border-primary/20 bg-white dark:bg-slate-900 px-6 py-3">
     <div class="flex items-center gap-8">
         <div class="flex items-center gap-3">
             <button @click="sidebarOpen = !sidebarOpen"
@@ -18,21 +18,40 @@
     <div class="flex flex-1 justify-end gap-6 items-center">
         <nav class="hidden lg:flex items-center gap-8">
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="{{ route('home') }}">Home</a>
+                href="{{ route('home') }}">{{ __('Trang chủ') }}</a>
             <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                href="{{ route('support.index') }}">Support</a>
+                href="{{ route('support.index') }}">{{ __('Hỗ trợ') }}</a>
         </nav>
         <div class="flex items-center gap-3">
             @auth
-                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-600 dark:text-amber-400 text-xs font-bold shadow-xs" title="{{ __('Chuỗi ngày học liên tục & Cấp độ') }}">
-                    <div class="flex items-center gap-1">
-                        <span>🔥</span>
-                        <span>{{ auth()->user()->current_streak ?? 0 }} {{ __('ngày') }}</span>
-                    </div>
-                    <span class="text-slate-300 dark:text-slate-600 font-normal">•</span>
-                    <span class="px-1.5 py-0.5 rounded bg-amber-200/60 dark:bg-amber-900/60 text-[11px] font-bold text-amber-700 dark:text-amber-300">{{ auth()->user()->level_badge }}</span>
-                </div>
+                <x-lms.header-streak-widget />
             @endauth
+
+            <div x-data="{
+                theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+                toggle() {
+                    this.theme = this.theme === 'dark' ? 'light' : 'dark';
+                    if (this.theme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    
+                    fetch('{{ route('settings.update') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ theme: this.theme })
+                    });
+                }
+            }">
+                <button @click="toggle()" class="size-9 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors" title="{{ __('Chuyển đổi giao diện sáng/tối') }}">
+                    <span class="material-symbols-outlined text-[22px]" x-text="theme === 'dark' ? 'light_mode' : 'dark_mode'"></span>
+                </button>
+            </div>
 
             @if(Auth::check())
                 <div class="relative" x-data="{ userMenuOpen: false }">
@@ -40,12 +59,7 @@
                         class="flex items-center gap-3 rounded-xl px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
 
                         @php
-                            $avatar = Auth::user()->avatar;
-                            $avatarUrl = $avatar
-                                ? (str_starts_with($avatar, 'http')
-                                    ? $avatar
-                                    : asset('storage/' . $avatar))
-                                : null;
+                            $avatarUrl = Auth::user()->avatar_url;
                         @endphp
                         @if ($avatarUrl)
                             <img src="{{ $avatarUrl }}" class="size-9 rounded-full border-2 border-primary object-cover"
@@ -62,19 +76,14 @@
                                 {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
                             </span>
                             <span class="text-xs text-primary font-medium">
-                                @php
-                                    $roleLabels = \App\Models\User::getAllRole() + [
-                                        \App\Models\User::ROLE_ADMIN => 'Admin',
-                                    ];
-                                @endphp
-                                {{ $roleLabels[Auth::user()->role] ?? 'Học viên' }}
+                                {{ __('Học viên') }}
                             </span>
                         </div>
                         <span class="material-symbols-outlined text-slate-400 text-base hidden lg:block"
                             x-text="userMenuOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
 
-                    <div x-show="userMenuOpen" @click.outside="userMenuOpen = false"
+                    <div x-show="userMenuOpen" @click.outside="userMenuOpen = false" x-cloak
                         x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95"
                         x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
@@ -90,11 +99,11 @@
                         <div class="py-1">
                             <a href="{{ route('student.profile.edit') }}"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                                <span class="material-symbols-outlined text-base">manage_accounts</span> Profile
+                                <span class="material-symbols-outlined text-base">manage_accounts</span> {{ __('Hồ sơ cá nhân') }}
                             </a>
                             <a href="{{ route('settings.index') }}"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                                <span class="material-symbols-outlined text-base">settings</span> Settings
+                                <span class="material-symbols-outlined text-base">settings</span> {{ __('Cài đặt') }}
                             </a>
                         </div>
 
@@ -102,8 +111,8 @@
                             <form method="POST" action="{{ route('admin.logout') }}" @click.stop>
                                 @csrf
                                 <button type="submit"
-                                    class="w-full flex items-center gap-3 px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
-                                    <span class="material-symbols-outlined text-base">logout</span> Log Out
+                                    class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    <span class="material-symbols-outlined text-base">logout</span> {{ __('Đăng xuất') }}
                                 </button>
                             </form>
                         </div>

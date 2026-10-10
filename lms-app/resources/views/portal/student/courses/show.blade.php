@@ -12,154 +12,170 @@
 
 @section('content')
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
-        <div class="max-w-[1400px] mx-auto space-y-8" x-data="{ activeTab: 'curriculum' }">
+        <div class="max-w-[1400px] mx-auto space-y-6" x-data="{ activeTab: 'curriculum' }">
             
-            {{-- Breadcrumb --}}
-            <nav class="flex items-center text-sm text-slate-500 font-medium mb-4">
-                <a href="{{ route('student.courses.index') }}" class="hover:text-primary transition-colors">Khóa học của tôi</a>
-                <span class="material-symbols-outlined text-[18px] mx-1">chevron_right</span>
-                <span class="text-slate-800 dark:text-white truncate">{{ $course->title }}</span>
-            </nav>
+                        <div class="space-y-2">
+                <nav class="flex items-center text-xs text-slate-500 font-medium">
+                    <a href="{{ route('student.courses.index') }}" class="hover:text-primary transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        <span>{{ __('Khóa học của bạn') }}</span>
+                    </a>
+                    <span class="material-symbols-outlined text-sm mx-1.5 text-slate-400">chevron_right</span>
+                    <span class="text-slate-700 dark:text-slate-300 truncate font-semibold">{{ $course->title }}</span>
+                </nav>
 
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+                            {{ $course->title }}
+                        </h1>
+                        @if($course->teacher)
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-sm text-slate-400">person</span>
+                                <span>{{ __('Giảng viên:') }} {{ $course->teacher->first_name }} {{ $course->teacher->last_name }}</span>
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
-
-            {{-- Tabs Navigation --}}
-            <div class="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-px overflow-x-auto no-scrollbar">
+                        <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-px overflow-x-auto no-scrollbar">
                 <button @click="activeTab = 'curriculum'" 
                         :class="activeTab === 'curriculum' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
-                        class="px-6 py-4 font-bold border-b-4 transition-all flex items-center gap-2 whitespace-nowrap">
-                    <span class="material-symbols-outlined text-xl">menu_book</span>
-                    Lộ trình học
+                        class="px-4 py-2.5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                    <span class="material-symbols-outlined text-base">menu_book</span>
+                    <span>{{ __('Lộ trình học') }}</span>
                 </button>
                 <button @click="activeTab = 'assignments'" 
                         :class="activeTab === 'assignments' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
-                        class="px-6 py-4 font-bold border-b-4 transition-all flex items-center gap-2 whitespace-nowrap">
-                    <span class="material-symbols-outlined text-xl">task</span>
-                    Bài tập & Kiểm tra
-                    <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400">{{ $course->assignments->count() + $course->quizzes->count() }}</span>
+                        class="px-4 py-2.5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                    <span class="material-symbols-outlined text-base">task</span>
+                    <span>{{ __('Bài tập & Kiểm tra') }}</span>
+                    <span class="px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-600 dark:text-slate-400 font-bold">{{ $course->assignments->count() + $course->quizzes->count() }}</span>
                 </button>
             </div>
 
-            {{-- Tab Contents --}}
-            <div class="pt-6">
+                        <div>
                 
-                {{-- Curriculum Tab --}}
-                <div x-show="activeTab === 'curriculum'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
-                    <div class="space-y-4">
+                                <div x-show="activeTab === 'curriculum'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden">
                         @forelse($course->lessons->sortBy('order') as $index => $lesson)
-                            <a href="{{ route('student.courses.learn', ['course' => $course->id, 'lesson' => $lesson->id]) }}" class="group flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-800 cursor-pointer block">
-                                <div class="size-12 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                                    <span class="material-symbols-outlined">play_lesson</span>
+                            <a href="{{ route('student.courses.learn', ['course' => $course->id, 'lesson' => $lesson->id]) }}" class="group flex items-center gap-3 p-3 sm:p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer select-none">
+                                <div class="size-8 rounded-lg flex items-center justify-center shrink-0 bg-primary/10 text-primary border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors cursor-pointer">
+                                    <span class="material-symbols-outlined text-base cursor-pointer">play_lesson</span>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-bold text-slate-800 dark:text-white truncate group-hover:text-primary transition-colors">
-                                        Bài {{ $index + 1 }}: {{ $lesson->title }}
+                                <div class="flex-1 min-w-0 cursor-pointer">
+                                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors cursor-pointer">
+                                        {{ $lesson->title }}
                                     </h4>
-                                    <p class="text-xs text-slate-500 mt-1 truncate">{{ $lesson->description ?? 'Không có mô tả' }}</p>
+                                    @if($lesson->description)
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate cursor-pointer">{{ $lesson->description }}</p>
+                                    @endif
                                 </div>
-                                <div class="shrink-0 pl-4">
-                                    <span class="material-symbols-outlined text-slate-300 dark:text-slate-700">lock_open</span>
+                                <div class="shrink-0 pl-2 cursor-pointer flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:scale-115 transition-all text-xl cursor-pointer" title="{{ __('Học bài này') }}">play_circle</span>
                                 </div>
                             </a>
                         @empty
-                            <div class="text-center py-12">
-                                <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-700 mb-4">inventory_2</span>
-                                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Chưa có bài học nào</h3>
-                                <p class="text-slate-500 max-w-sm mx-auto">Giảng viên đang trong quá trình cập nhật nội dung cho khóa học này. Bạn quay lại sau nhé!</p>
+                            <div class="text-center py-12 p-6 space-y-2">
+                                <span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">inventory_2</span>
+                                <h3 class="text-sm font-bold text-slate-800 dark:text-white">{{ __('Chưa có bài học nào') }}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">{{ __('Giảng viên đang trong quá trình cập nhật nội dung cho khóa học này. Bạn quay lại sau nhé!') }}</p>
                             </div>
                         @endforelse
                     </div>
                 </div>
 
-                {{-- Assignments Tab --}}
-                <div x-show="activeTab === 'assignments'" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                                <div x-show="activeTab === 'assignments'" style="display: none;" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                     <div class="space-y-6">
                         @if($course->assignments->isEmpty() && $course->quizzes->isEmpty())
-                            <div class="text-center py-12">
-                                <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-700 mb-4">task</span>
-                                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Không có bài tập</h3>
-                                <p class="text-slate-500 max-w-sm mx-auto">Tuyệt vời! Khóa học này hiện chưa có bài tập hay bài kiểm tra nào bạn cần làm.</p>
+                            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center shadow-sm space-y-2">
+                                <span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">task</span>
+                                <h3 class="text-sm font-bold text-slate-800 dark:text-white">{{ __('Không có bài tập') }}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">{{ __('Tuyệt vời! Khóa học này hiện chưa có bài tập hay bài kiểm tra nào bạn cần làm.') }}</p>
                             </div>
                         @else
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {{-- Danh sách bài tập --}}
-                                @if($course->assignments->isNotEmpty())
-                                    <div class="space-y-4">
-                                        <h3 class="font-bold text-slate-800 dark:text-white text-lg flex items-center gap-2">
-                                            <span class="material-symbols-outlined text-primary">assignment</span> 
-                                            Bài tập tự luận ({{ $course->assignments->count() }})
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                                                @if($course->assignments->isNotEmpty())
+                                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+                                        <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+                                            <span class="material-symbols-outlined text-primary text-lg">assignment</span> 
+                                            <span>{{ __('Bài tập về nhà (:count)', ['count' => $course->assignments->count()]) }}</span>
                                         </h3>
-                                        @foreach($course->assignments as $assignment)
-                                            <a href="{{ route('student.assignments.show', $assignment->id) }}" class="block py-4 border-b border-slate-200 dark:border-slate-800 last:border-0 group">
-                                                <h4 class="font-bold text-slate-800 dark:text-white line-clamp-1 mb-2 group-hover:text-primary transition-colors">{{ $assignment->title }}</h4>
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-slate-500 flex items-center gap-1 font-medium">
-                                                        <span class="material-symbols-outlined text-[14px]">event</span> 
-                                                        Hạn nộp: {{ $assignment->due_date ? \Carbon\Carbon::parse($assignment->due_date)->format('d/m/Y H:i') : 'Không giới hạn' }}
-                                                    </span>
-                                                    @php
-                                                        $submission = $assignment->submissions->first();
-                                                    @endphp
-                                                    @if($submission)
-                                                        @if($submission->status === \App\Models\AssignmentSubmission::STATUS_GRADED)
-                                                            <span class="text-emerald-600 dark:text-emerald-500 font-bold">{{ $submission->score }} / 10</span>
+                                        <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                                            @foreach($course->assignments as $assignment)
+                                                <a href="{{ route('student.assignments.index', ['open' => $assignment->id, 'lesson_id' => $assignment->lesson_id]) }}" class="block py-3 group">
+                                                    <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-1 mb-1 group-hover:text-primary transition-colors">{{ $assignment->title }}</h4>
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">
+                                                            <span class="material-symbols-outlined text-sm text-slate-400">event</span> 
+                                                            {{ $assignment->due_date ? \Carbon\Carbon::parse($assignment->due_date)->format('d/m/Y H:i') : __('Không có hạn') }}
+                                                        </span>
+                                                        @php
+                                                            $submission = $assignment->submissions->first();
+                                                        @endphp
+                                                        @if($submission)
+                                                            @if($submission->status === \App\Models\AssignmentSubmission::STATUS_GRADED)
+                                                                <span class="text-emerald-600 dark:text-emerald-400 font-bold text-xs">{{ $submission->score }} / 10</span>
+                                                            @else
+                                                                <span class="text-primary font-bold text-xs">{{ __('Đã nộp') }}</span>
+                                                            @endif
                                                         @else
-                                                            <span class="text-blue-600 dark:text-blue-500 font-bold">Đã nộp</span>
+                                                            <span class="text-amber-600 dark:text-amber-400 font-bold text-xs">{{ __('Chưa nộp') }}</span>
                                                         @endif
-                                                    @else
-                                                        <span class="text-amber-600 dark:text-amber-500 font-bold">Chưa nộp</span>
-                                                    @endif
-                                                </div>
-                                            </a>
-                                        @endforeach
+                                                    </div>
+                                                </a>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 @endif
 
-                                {{-- Danh sách Quiz --}}
-                                @if($course->quizzes->isNotEmpty())
-                                    <div class="space-y-4">
-                                        <h3 class="font-bold text-slate-800 dark:text-white text-lg flex items-center gap-2">
-                                            <span class="material-symbols-outlined text-purple-500">quiz</span> 
-                                            Bài kiểm tra ({{ $course->quizzes->count() }})
+                                                                @if($course->quizzes->isNotEmpty())
+                                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+                                        <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+                                            <span class="material-symbols-outlined text-primary text-lg">quiz</span> 
+                                            <span>{{ __('Bài kiểm tra (:count)', ['count' => $course->quizzes->count()]) }}</span>
                                         </h3>
-                                        @foreach($course->quizzes as $quiz)
-                                            @php
-                                                $completedAttempts = $quiz->attempts->filter(fn($a) => !is_null($a->completed_at));
-                                                $activeAttempt = $quiz->attempts->first(fn($a) => is_null($a->completed_at));
-                                                $highestScore = $completedAttempts->max('score');
-                                                $totalMarks = $quiz->questions->sum('marks');
-                                            @endphp
-                                            <div class="py-4 border-b border-slate-200 dark:border-slate-800 last:border-0 group">
-                                                <h4 class="font-bold text-slate-800 dark:text-white line-clamp-1 mb-2 group-hover:text-purple-500 transition-colors">
-                                                    @if($activeAttempt)
-                                                        <a href="{{ route('student.quizzes.take', $activeAttempt->id) }}">{{ $quiz->title }}</a>
-                                                    @elseif($completedAttempts->isNotEmpty())
-                                                        <a href="{{ route('student.quizzes.result', $completedAttempts->first()->id) }}">{{ $quiz->title }}</a>
-                                                    @else
-                                                        <a href="{{ route('student.quizzes.show', $quiz->id) }}">{{ $quiz->title }}</a>
-                                                    @endif
-                                                </h4>
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-slate-500 flex items-center gap-1 font-medium">
-                                                        <span class="material-symbols-outlined text-[14px]">timer</span> 
-                                                        Thời gian: {{ $quiz->time_limit > 0 ? __(':time phút', ['time' => $quiz->time_limit]) : __('Không giới hạn') }}
-                                                    </span>
-                                                    
-                                                    @if($activeAttempt)
-                                                        <span class="text-amber-600 dark:text-amber-500 font-bold flex items-center gap-1">
-                                                            <span class="size-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                                                            {{ __('Đang làm') }}
+                                        <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                                            @foreach($course->quizzes as $quiz)
+                                                @php
+                                                    $completedAttempts = $quiz->attempts->filter(fn($a) => !is_null($a->completed_at));
+                                                    $activeAttempt = $quiz->attempts->first(fn($a) => is_null($a->completed_at));
+                                                    $highestScore = $completedAttempts->max('score');
+                                                    $totalMarks = $quiz->questions->sum('marks');
+                                                @endphp
+                                                <div class="py-3 group">
+                                                    <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-1 mb-1 group-hover:text-primary transition-colors">
+                                                        @if($activeAttempt)
+                                                            <a href="{{ route('student.quizzes.take', $activeAttempt->id) }}">{{ $quiz->title }}</a>
+                                                        @elseif($completedAttempts->isNotEmpty())
+                                                            <a href="{{ route('student.quizzes.result', $completedAttempts->first()->id) }}">{{ $quiz->title }}</a>
+                                                        @else
+                                                            <a href="{{ route('student.quizzes.show', $quiz->id) }}">{{ $quiz->title }}</a>
+                                                        @endif
+                                                    </h4>
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">
+                                                            <span class="material-symbols-outlined text-sm text-slate-400">timer</span> 
+                                                            {{ $quiz->time_limit > 0 ? __(':time phút', ['time' => $quiz->time_limit]) : __('Không giới hạn') }}
                                                         </span>
-                                                    @elseif($completedAttempts->isNotEmpty())
-                                                        <span class="text-emerald-600 dark:text-emerald-500 font-bold">
-                                                            {{ $highestScore }} / {{ $totalMarks }} {{ __('điểm') }}
-                                                        </span>
-                                                    @else
-                                                        <span class="text-slate-500 dark:text-slate-400 font-bold">{{ __('Chưa làm') }}</span>
-                                                    @endif
+                                                        
+                                                        @if($activeAttempt)
+                                                            <span class="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1 text-xs">
+                                                                <span class="size-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                                                {{ __('Đang làm') }}
+                                                            </span>
+                                                        @elseif($completedAttempts->isNotEmpty())
+                                                            <span class="text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                                                                {{ $highestScore }} / {{ $totalMarks }} {{ __('điểm') }}
+                                                            </span>
+                                                        @else
+                                                            <span class="text-slate-400 font-semibold text-xs">{{ __('Chưa làm') }}</span>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endforeach
+                                            @endforeach
+                                        </div>
                                     </div>
                                 @endif
                             </div>

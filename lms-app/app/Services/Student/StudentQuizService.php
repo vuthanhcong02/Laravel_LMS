@@ -8,11 +8,17 @@ use App\Models\QuizAttemptAnswer;
 use App\Models\Question;
 use App\Models\Option;
 use App\Models\Enrollment;
+use App\Models\User;
+use App\Services\GamificationService;
 use App\Enums\QuestionType;
 use Illuminate\Support\Facades\DB;
 
 class StudentQuizService
 {
+    public function __construct(private GamificationService $gamificationService)
+    {
+    }
+
     /**
      * List all quizzes from enrolled courses of the student
      *
@@ -173,9 +179,9 @@ class StudentQuizService
      * @param int $attemptId
      * @param int $userId
      * @param array $submittedAnswers
-     * @return QuizAttempt
+     * @return array{attempt: QuizAttempt, exp_result: array|null}
      */
-    public function submitAttempt(int $attemptId, int $userId, array $submittedAnswers): QuizAttempt
+    public function submitAttempt(int $attemptId, int $userId, array $submittedAnswers): array
     {
         $attempt = QuizAttempt::with('quiz')->findOrFail($attemptId);
 
@@ -193,8 +199,13 @@ class StudentQuizService
         }
 
         if ($attempt->completed_at) {
-            return $attempt;
+            return [
+                'attempt'    => $attempt,
+                'exp_result' => null,
+            ];
         }
+
+        $expResult = null;
 
         DB::transaction(function () use ($attempt, $submittedAnswers) {
             $quiz = Quiz::with('questions.options')->findOrFail($attempt->quiz_id);
@@ -282,7 +293,31 @@ class StudentQuizService
             ]);
         });
 
-        return $attempt;
+        // Award EXP to student if the quiz is automatically graded and meets minimum score threshold
+        $attempt->refresh();
+        if ($attempt->grading_status === 'graded') {
+            $quiz = $attempt->quiz()->with('questions')->first();
+            $totalMarks = (float) ($quiz?->questions->sum('marks') ?: 10);
+            $scorePercent = $totalMarks > 0 ? ($attempt->score / $totalMarks) * 100 : 0;
+            $minScorePercent = (float) config('gamification.actions.course_quiz.min_score_percent', 40);
+
+            if ($scorePercent >= $minScorePercent) {
+                $user = User::find($userId);
+                if ($user) {
+                    $expResult = $this->gamificationService->awardExp(
+                        $user,
+                        'course_quiz',
+                        $attempt->quiz_id,
+                        ['score' => $attempt->score, 'percent' => $scorePercent]
+                    );
+                }
+            }
+        }
+
+        return [
+            'attempt'    => $attempt,
+            'exp_result' => $expResult,
+        ];
     }
 
     /**

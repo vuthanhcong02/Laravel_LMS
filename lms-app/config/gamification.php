@@ -121,6 +121,19 @@ return [
             'one_time'  => true,
         ],
 
+        // --- 2.1 COURSE ASSIGNMENTS & QUIZZES ---
+        'course_assignment' => [
+            'exp'       => 25, // 25 EXP per completed assignment
+            'daily_cap' => null,
+            'one_time'  => true, // One-time EXP reward per assignment
+        ],
+        'course_quiz' => [
+            'exp'                 => 30, // 30 EXP per passed quiz
+            'min_score_percent'   => 40, // Minimum 40% score required to receive EXP
+            'daily_cap'           => null,
+            'one_time'            => true, // One-time EXP reward per quiz
+        ],
+
         // --- 3. THẺ GHI NHỚ TỰ DO (FLASHCARD) ---
         'flashcard_remember' => [
             'exp'       => 1,

@@ -66,10 +66,19 @@ class StudentQuizController extends Controller
         $answers = $request->input('answers', []);
         
         try {
-            $attempt = $this->studentQuizService->submitAttempt($attemptId, auth()->id(), $answers);
+            $result = $this->studentQuizService->submitAttempt($attemptId, auth()->id(), $answers);
+            $attempt = $result['attempt'];
+            $expGained = $result['exp_result']['exp_gained'] ?? null;
+
+            $message = __('Nộp bài thi thành công!');
+            if ($expGained) {
+                $message .= ' ' . __('(+ :exp EXP)', ['exp' => $expGained]);
+            }
+
             return redirect()
                 ->route('student.quizzes.result', $attempt->id)
-                ->with('success', __('Nộp bài thi thành công!'));
+                ->with('success', $message)
+                ->with('exp_gained', $expGained);
         } catch (\Exception $e) {
             return redirect()
                 ->route('student.quizzes.index')

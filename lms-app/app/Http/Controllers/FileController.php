@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class FileController extends Controller
 {
     /**
-     * Các thư mục được phép truy cập qua file viewer.
+     * Whitelist of allowed folder prefixes for file viewing.
      */
     private const ALLOWED_PREFIXES = [
         'assignments/',
@@ -24,12 +24,12 @@ class FileController extends Controller
     {
         $path = $request->query('path');
 
-        // Chặn path traversal (../, ..\, encoded variants)
+        // Prevent path traversal attacks (../, ..\, null bytes)
         if (!$path || str_contains($path, '..') || str_contains($path, "\0")) {
             abort(403);
         }
 
-        // Chỉ cho phép truy cập các thư mục được whitelist
+        // Only allow whitelisted storage directories
         $allowed = collect(self::ALLOWED_PREFIXES)
             ->contains(fn($prefix) => str_starts_with($path, $prefix));
 

@@ -10,9 +10,16 @@ class Course extends Model
     use HasFactory;
 
     protected $fillable = [
-        'teacher_id', 'category_id', 'title', 'slug', 
-        'description', 'thumbnail', 'price', 'is_published',
-        'start_date', 'end_date'
+        'teacher_id',
+        'category_id',
+        'title',
+        'slug',
+        'description',
+        'thumbnail',
+        'price',
+        'is_published',
+        'start_date',
+        'end_date'
     ];
 
     protected $casts = [
@@ -26,9 +33,18 @@ class Course extends Model
         return $query->where('is_published', true);
     }
 
-    public function getThumbnailUrlAttribute()
+    public function getThumbnailUrlAttribute(): string
     {
-        return $this->thumbnail ? asset('storage/' . $this->thumbnail) : null;
+        if (empty($this->thumbnail)) {
+            return asset('images/default-course.jpg');
+        }
+
+        if (str_starts_with($this->thumbnail, 'http://') || str_starts_with($this->thumbnail, 'https://')) {
+            return $this->thumbnail;
+        }
+
+        // Assume stored path is valid; browser will handle missing file gracefully
+        return asset('storage/' . $this->thumbnail);
     }
 
     public function teacher()

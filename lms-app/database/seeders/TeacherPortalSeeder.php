@@ -72,7 +72,7 @@ class TeacherPortalSeeder extends Seeder
                     'course_id' => $course->id,
                     'title' => "Bài $i: " . $this->getLessonTitle($i),
                     'description' => "Nội dung chi tiết bài học số $i của khóa $title.",
-                    'video_url' => 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                    'video_url' => 'https://drive.google.com/file/d/1l2wkiMBq6v5hzm4bm_Ktazy23LJ204ru/view',
                     'order' => $i,
                 ]);
             }

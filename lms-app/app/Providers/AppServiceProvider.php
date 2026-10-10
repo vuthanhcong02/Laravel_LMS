@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Http\ViewComposers\StudentSidebarComposer;
 use App\Models\User;
 use App\Repositories\User\IUserRepository;
 use App\Repositories\User\UserRepository;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pulse\Facades\Pulse;
 
@@ -29,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
             request()->server->set('HTTPS', 'on');
             request()->server->set('SERVER_PORT', 443);
         }
+
+        // Configure ViewComposer for Student Sidebar (pending assignment & quiz count badges)
+        View::composer(['portal.student.layouts.sidebar', 'portal.student.*', 'portal.settings.index', 'portal.support.*'], StudentSidebarComposer::class);
 
         // Configure custom user resolver for Laravel Pulse
         Pulse::users(function ($ids) {

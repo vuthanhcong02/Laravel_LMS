@@ -773,18 +773,21 @@
                             <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center justify-between">
                                 <span class="flex items-center gap-1.5">
                                     <span class="material-symbols-outlined text-sm text-rose-500">videocam</span>
-                                    <span>{{ __('Link Record buổi học (Video URL)') }}</span>
+                                    <span>{{ __('Link Record buổi học (Google Drive URL)') }}</span>
                                 </span>
-                                <span class="text-[11px] font-normal text-slate-400">{{ __('Zoom / Drive / Youtube') }}</span>
+                                <span class="text-[11px] font-normal text-slate-400">{{ __('Hỗ trợ nhiều link') }}</span>
                             </label>
                             <div class="relative">
-                                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">link</span>
-                                <input type="url"
-                                       name="record_url"
-                                       x-model="lessonForm.record_url"
-                                       placeholder="https://drive.google.com/... hoặc https://youtube.com/..."
-                                       class="w-full pl-10 pr-4 py-2.5 rounded-xl border {{ $errors->has('record_url') ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700' }} bg-slate-50 dark:bg-slate-800/80 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-xs sm:text-sm font-medium text-slate-900 dark:text-white transition-all">
+                                <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-400 text-lg">link</span>
+                                <textarea name="record_url"
+                                          x-model="lessonForm.record_url"
+                                          rows="3"
+                                          placeholder="https://drive.google.com/file/d/1.../view&#10;https://drive.google.com/file/d/2.../view"
+                                          class="w-full pl-10 pr-4 py-2.5 rounded-xl border {{ $errors->has('record_url') ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700' }} bg-slate-50 dark:bg-slate-800/80 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-xs sm:text-sm font-medium text-slate-900 dark:text-white transition-all resize-y min-h-[95px] leading-relaxed"></textarea>
                             </div>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+                                {{ __('Nhập 1 link hoặc nhiều link Google Drive (mỗi link 1 dòng) để hệ thống tự chia thành Part 1, Part 2, ...') }}
+                            </p>
                             @error('record_url')
                                 <p class="text-xs text-rose-500 font-medium flex items-center gap-1 mt-1">
                                     <span class="material-symbols-outlined text-sm">error</span>

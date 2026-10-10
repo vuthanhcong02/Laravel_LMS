@@ -33,8 +33,9 @@ class StudentDashboardService
 
         // 3. Number of completed quizzes
         $completedQuizzesCount = QuizAttempt::where('user_id', $userId)
+            ->whereNotNull('completed_at')
             ->distinct('quiz_id')
-            ->count();
+            ->count('quiz_id');
 
         return [
             'active_courses' => $activeCoursesCount,
@@ -88,7 +89,7 @@ class StudentDashboardService
             $continuingCourses[] = [
                 'id' => $course->id,
                 'title' => $course->title,
-                'thumbnail' => $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=640',
+                'thumbnail' => $course->thumbnail_url,
                 'category_name' => $course->category ? $course->category->name : __('Tổng hợp'),
                 'lessons_count' => $lessonsCount,
                 'completed_lessons' => $completedCount,
