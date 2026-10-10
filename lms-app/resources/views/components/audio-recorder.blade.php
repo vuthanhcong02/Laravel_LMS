@@ -1,26 +1,22 @@
 <div x-data="audioRecorder('{{ $name ?? 'audio_file' }}')" class="space-y-3">
-    <!-- Hidden input to store the audio file -->
-    <input type="file" :name="inputName" x-ref="audioInput" class="hidden" accept="audio/*">
+        <input type="file" :name="inputName" x-ref="audioInput" class="hidden" accept="audio/*">
 
     <div class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 transition-all">
-        <!-- Record Button -->
-        <button type="button" 
+                <button type="button" 
                 x-show="state === 'idle'" 
                 @click="startRecording"
                 class="size-12 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-200 dark:shadow-none transition-all pulse-animation">
             <span class="material-symbols-outlined text-2xl">mic</span>
         </button>
 
-        <!-- Stop Button -->
-        <button type="button" 
+                <button type="button" 
                 x-show="state === 'recording'" 
                 @click="stopRecording"
                 class="size-12 rounded-full bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 flex items-center justify-center shadow-lg transition-all animate-pulse">
             <span class="material-symbols-outlined text-2xl">stop</span>
         </button>
 
-        <!-- Recording Indicator -->
-        <div x-show="state === 'recording'" class="flex-1 flex items-center gap-3">
+                <div x-show="state === 'recording'" class="flex-1 flex items-center gap-3">
             <div class="flex gap-1 h-4 items-center">
                 <template x-for="i in 4">
                     <div class="w-1 bg-red-500 rounded-full animate-bounce" :style="`animation-delay: ${i * 0.1}s; height: ${Math.random() * 100 + 50}%` "></div>
@@ -30,8 +26,7 @@
             <span class="text-xs font-bold text-slate-400 animate-pulse">Đang ghi âm...</span>
         </div>
 
-        <!-- Preview State -->
-        <div x-show="state === 'preview'" class="flex-1 flex items-center gap-3">
+                <div x-show="state === 'preview'" class="flex-1 flex items-center gap-3">
             <div class="flex-1">
                 <audio x-ref="audioPreview" controls class="w-full h-8 custom-audio-player"></audio>
             </div>
@@ -43,8 +38,7 @@
             </button>
         </div>
 
-        <!-- Idle Text -->
-        <div x-show="state === 'idle'" class="flex-1">
+                <div x-show="state === 'idle'" class="flex-1">
             <p class="text-sm font-bold text-slate-600 dark:text-slate-400">Nhấn để bắt đầu ghi âm</p>
             <p class="text-[10px] text-slate-400 font-medium">Sử dụng micrô trên thiết bị của bạn</p>
         </div>
@@ -70,19 +64,37 @@ function audioRecorder(name) {
                     
                     this.mediaRecorder = new MediaRecorder(stream);
                     this.mediaRecorder.ondataavailable = (event) => {
-                        this.audioChunks.push(event.data);
+                        if (event.data && event.data.size > 0) {
+                            this.audioChunks.push(event.data);
+                        }
                     };
                     
                     this.mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                        const mimeType = (this.mediaRecorder.mimeType && this.mediaRecorder.mimeType.split(';')[0]) || 'audio/webm';
+                        let ext = 'webm';
+                        if (mimeType.includes('mp4') || mimeType.includes('aac')) {
+                            ext = 'm4a';
+                        } else if (mimeType.includes('ogg')) {
+                            ext = 'ogg';
+                        } else if (mimeType.includes('wav')) {
+                            ext = 'wav';
+                        }
+                        
+                        const audioBlob = new Blob(this.audioChunks, { type: mimeType });
                         const audioUrl = URL.createObjectURL(audioBlob);
-                        this.$refs.audioPreview.src = audioUrl;
+                        if (this.$refs.audioPreview) {
+                            this.$refs.audioPreview.src = audioUrl;
+                        }
                         
                         // Create a file object to put in the hidden input
-                        const file = new File([audioBlob], `recording_${Date.now()}.webm`, { type: 'audio/webm' });
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        this.$refs.audioInput.files = dataTransfer.files;
+                        const file = new File([audioBlob], `recording_${Date.now()}.${ext}`, { type: mimeType });
+                        try {
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            this.$refs.audioInput.files = dataTransfer.files;
+                        } catch (e) {
+                            console.error('DataTransfer assignment error:', e);
+                        }
                         
                         this.state = 'preview';
                         
@@ -90,7 +102,7 @@ function audioRecorder(name) {
                         stream.getTracks().forEach(track => track.stop());
                     };
                     
-                    this.mediaRecorder.start();
+                    this.mediaRecorder.start(250);
                     this.startTimer();
                 })
                 .catch(err => {

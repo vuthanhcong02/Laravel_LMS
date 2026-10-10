@@ -169,10 +169,55 @@ body.dark .pinyin-fs-overlay {
     }
 }
 
-.exam-card-highlight {
-    animation: examCardPulse 2.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    border-color: #e07a5f !important;
+/* Dashboard Smooth Entrance Animation */
+@keyframes dashboardFadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+
+@keyframes dashboardTopBar {
+    0% {
+        width: 0%;
+        opacity: 1;
+    }
+    70% {
+        width: 80%;
+        opacity: 1;
+    }
+    100% {
+        width: 100%;
+        opacity: 0;
+    }
+}
+
+.dashboard-loader-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #e07a5f, #f4a261, #e07a5f);
+    z-index: 9999;
+    animation: dashboardTopBar 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: none;
+}
+
+.animate-fade-in-up {
+    animation: dashboardFadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stagger-1 { animation-delay: 40ms; }
+.stagger-2 { animation-delay: 90ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 210ms; }
+.stagger-5 { animation-delay: 270ms; }
+.stagger-6 { animation-delay: 330ms; }
+.stagger-7 { animation-delay: 390ms; }
 
 .dark .exam-card-highlight {
     border-color: #e07a5f !important;

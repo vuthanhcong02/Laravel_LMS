@@ -30,18 +30,19 @@
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display"
     x-data="{ sidebarOpen: false }">
+    <x-lms.preloader />
     <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-clip">
 
         @yield('header')
 
-        <div class="flex flex-1 relative">
+        <div class="flex flex-1 relative min-w-0">
 
             <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity
                 class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden" style="display: none;"></div>
 
             @yield('sidebar')
 
-            <div class="flex-1 flex flex-col">
+            <div class="flex-1 flex flex-col min-w-0">
 
                 @yield('content')
 
@@ -50,6 +51,7 @@
         </div>
 
         @include('portal.layouts.components.delete-modal')
+        <x-lms.file-preview-modal />
     </div>
 
     <div x-data="{
