@@ -8,6 +8,8 @@ use App\Models\QuizAttemptAnswer;
 use App\Models\Question;
 use App\Models\Option;
 use App\Models\Course;
+use App\Models\User;
+use App\Services\GamificationService;
 use App\Enums\QuestionType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
@@ -20,6 +22,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
  */
 class QuizService
 {
+    public function __construct(private GamificationService $gamificationService)
+    {
+    }
+
     /**
      * List quizzes for a specific teacher with pagination
      * 
@@ -697,6 +703,25 @@ class QuizService
                 'grading_status' => 'graded',
             ]);
         });
+
+        // Award EXP to student if graded score meets the minimum threshold
+        $attempt->refresh();
+        $quiz = $attempt->quiz()->with('questions')->first();
+        $totalMarks = (float) ($quiz?->questions->sum('marks') ?: 10);
+        $scorePercent = $totalMarks > 0 ? ($attempt->score / $totalMarks) * 100 : 0;
+        $minScorePercent = (float) config('gamification.actions.course_quiz.min_score_percent', 40);
+
+        if ($scorePercent >= $minScorePercent) {
+            $student = User::find($attempt->user_id);
+            if ($student) {
+                $this->gamificationService->awardExp(
+                    $student,
+                    'course_quiz',
+                    $attempt->quiz_id,
+                    ['score' => $attempt->score, 'percent' => $scorePercent]
+                );
+            }
+        }
 
         return $this->getAttemptDetail($attemptId, $teacherId);
     }
