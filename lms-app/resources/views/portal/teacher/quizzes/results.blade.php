@@ -37,17 +37,17 @@
 
                 <div class="flex items-center gap-3">
                     <a href="{{ route('teacher.quizzes.index') }}"
-                       class="size-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary hover:border-primary/40 flex items-center justify-center transition-all shadow-xs shrink-0">
-                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                       class="size-8.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary hover:border-primary/40 flex items-center justify-center transition-all shadow-xs shrink-0">
+                        <span class="material-symbols-outlined text-base">arrow_back</span>
                     </a>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <span>{{ $quiz->title }}</span>
                         </h1>
-                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
-                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ $quiz->course->title ?? __('N/A') }}</span>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5 font-normal">
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $quiz->course->title ?? __('N/A') }}</span>
                             <span>•</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold {{ $quiz->type->value === 'mixed' ? 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300' : ($quiz->type->value === 'essay' ? 'bg-orange-100 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300' : 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300') }}">
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold {{ $quiz->type->value === 'mixed' ? 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300' : ($quiz->type->value === 'essay' ? 'bg-orange-100 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300' : 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300') }}">
                                 {{ $quiz->type->label() }}
                             </span>
                             <span>•</span>
@@ -59,14 +59,14 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2.5 self-end md:self-auto">
+            <div class="flex items-center gap-2 self-end md:self-auto">
                 <a href="{{ route('teacher.quizzes.questions', $quiz->id) }}"
-                   class="px-4 py-2.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs">
+                   class="px-3.5 py-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-xs">
                     <span class="material-symbols-outlined text-base">list_alt</span>
                     <span>{{ __('Quản lý câu hỏi') }}</span>
                 </a>
                 <a href="{{ route('teacher.quizzes.edit', $quiz->id) }}"
-                   class="px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]">
+                   class="px-3.5 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]">
                     <span class="material-symbols-outlined text-base">edit</span>
                     <span>{{ __('Sửa bài thi') }}</span>
                 </a>
@@ -98,40 +98,40 @@
 
             <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ __('Tiến độ nộp bài') }}</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{{ __('Tiến độ nộp bài') }}</span>
                     <span class="size-9 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-xl">fact_check</span>
+                        <span class="material-symbols-outlined text-lg">fact_check</span>
                     </span>
                 </div>
                 <div class="mt-4">
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['submitted_count'] }}</span>
-                        <span class="text-xs font-semibold text-slate-400">/ {{ $stats['total_students'] }} {{ __('học viên') }}</span>
+                        <span class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['submitted_count'] }}</span>
+                        <span class="text-xs font-medium text-slate-400">/ {{ $stats['total_students'] }} {{ __('học viên') }}</span>
                     </div>
-                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
                         <div class="h-full rounded-full transition-all duration-500 {{ $stats['submission_rate'] >= 80 ? 'bg-emerald-500' : ($stats['submission_rate'] >= 50 ? 'bg-blue-500' : 'bg-amber-500') }}"
                              style="width: {{ $stats['submission_rate'] }}%"></div>
                     </div>
-                    <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-2 flex items-center justify-between">
+                    <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-2 flex items-center justify-between">
                         <span>{{ __('Tỉ lệ nộp bài:') }}</span>
-                        <strong class="text-slate-900 dark:text-white">{{ $stats['submission_rate'] }}%</strong>
+                        <strong class="text-slate-900 dark:text-white font-semibold">{{ $stats['submission_rate'] }}%</strong>
                     </p>
                 </div>
             </div>
 
             <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ __('Điểm trung bình') }}</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{{ __('Điểm trung bình') }}</span>
                     <span class="size-9 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-xl">analytics</span>
+                        <span class="material-symbols-outlined text-lg">analytics</span>
                     </span>
                 </div>
                 <div class="mt-4">
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['average_score'] }}</span>
-                        <span class="text-xs font-semibold text-slate-400">/ {{ $total_marks }} {{ __('điểm') }}</span>
+                        <span class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['average_score'] }}</span>
+                        <span class="text-xs font-medium text-slate-400">/ {{ $total_marks }} {{ __('điểm') }}</span>
                     </div>
-                    <p class="text-xs font-semibold text-purple-600 dark:text-purple-400 mt-3 flex items-center gap-1">
+                    <p class="text-[11px] font-medium text-purple-600 dark:text-purple-400 mt-3 flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">equalizer</span>
                         <span>{{ __('Thang điểm bài thi:') }} {{ $total_marks }}</span>
                     </p>
@@ -140,21 +140,21 @@
 
             <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ __('Cao nhất / Thấp nhất') }}</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{{ __('Cao nhất / Thấp nhất') }}</span>
                     <span class="size-9 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-xl">emoji_events</span>
+                        <span class="material-symbols-outlined text-lg">emoji_events</span>
                     </span>
                 </div>
                 <div class="mt-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <span class="text-[11px] font-bold text-emerald-600 uppercase">{{ __('Cao nhất') }}</span>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['submitted_count'] > 0 ? $stats['highest_score'] : '-' }}</p>
+                            <span class="text-[10px] font-bold text-emerald-600 uppercase">{{ __('Cao nhất') }}</span>
+                            <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['submitted_count'] > 0 ? $stats['highest_score'] : '-' }}</p>
                         </div>
                         <div class="h-8 w-px bg-slate-200 dark:bg-slate-800"></div>
                         <div>
-                            <span class="text-[11px] font-bold text-rose-500 uppercase">{{ __('Thấp nhất') }}</span>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['submitted_count'] > 0 ? $stats['lowest_score'] : '-' }}</p>
+                            <span class="text-[10px] font-bold text-rose-500 uppercase">{{ __('Thấp nhất') }}</span>
+                            <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['submitted_count'] > 0 ? $stats['lowest_score'] : '-' }}</p>
                         </div>
                     </div>
                 </div>
@@ -162,19 +162,19 @@
 
             <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ __('Tỉ lệ đạt (≥ 50%)') }}</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{{ __('Tỉ lệ đạt (≥ 50%)') }}</span>
                     <span class="size-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-xl">verified</span>
+                        <span class="material-symbols-outlined text-lg">verified</span>
                     </span>
                 </div>
                 <div class="mt-4">
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ $stats['pass_rate'] }}%</span>
-                        <span class="text-xs font-semibold text-slate-400">({{ $stats['passed_count'] }}/{{ $stats['submitted_count'] }} {{ __('đạt') }})</span>
+                        <span class="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ $stats['pass_rate'] }}%</span>
+                        <span class="text-xs font-medium text-slate-400">({{ $stats['passed_count'] }}/{{ $stats['submitted_count'] }} {{ __('đạt') }})</span>
                     </div>
-                    <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-3 flex items-center justify-between">
+                    <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-3 flex items-center justify-between">
                         <span>{{ __('Chưa nộp bài:') }}</span>
-                        <strong class="text-amber-500">{{ $stats['not_started_count'] + $stats['in_progress_count'] }} {{ __('học viên') }}</strong>
+                        <strong class="text-amber-500 font-semibold">{{ $stats['not_started_count'] + $stats['in_progress_count'] }} {{ __('học viên') }}</strong>
                     </p>
                 </div>
             </div>

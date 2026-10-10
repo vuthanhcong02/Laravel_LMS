@@ -55,12 +55,12 @@
         <div class="sticky top-16 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-6 lg:px-8 space-y-3 pb-3 pt-4 shadow-sm">
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('teacher.quizzes.index') }}" class="size-10 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 flex items-center justify-center transition-colors shrink-0">
-                        <span class="material-symbols-outlined text-slate-600">arrow_back</span>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('teacher.quizzes.index') }}" class="size-8.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 flex items-center justify-center transition-colors shrink-0">
+                        <span class="material-symbols-outlined text-base text-slate-600">arrow_back</span>
                     </a>
                     <div>
-                        <h1 class="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-tight">
+                        <h1 class="text-base sm:text-lg font-bold text-slate-800 dark:text-white tracking-tight">
                             {{ __('Câu hỏi bài thi') }}: <span class="text-primary">{{ $quiz->title }}</span>
                         </h1>
                     </div>
@@ -70,16 +70,16 @@
                     <button type="button"
                             x-show="questions.length > 0"
                             @click="clearAllQuestions()"
-                            class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-500 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm border border-red-100 hover:border-red-500">
-                        <span class="material-symbols-outlined text-lg">delete_sweep</span>
+                            class="px-3.5 py-1.5 bg-red-50 hover:bg-red-500 hover:text-white text-red-500 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-xs border border-red-100 hover:border-red-500">
+                        <span class="material-symbols-outlined text-base">delete_sweep</span>
                         {{ __('Xóa tất cả') }}
                     </button>
-                    <button type="button" @click="addQuestion()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm">
-                        <span class="material-symbols-outlined text-lg">add_circle</span>
+                    <button type="button" @click="addQuestion()" class="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-xs shadow-xs">
+                        <span class="material-symbols-outlined text-base">add_circle</span>
                         {{ __('Thêm câu hỏi') }}
                     </button>
-                    <button type="button" @click="submitForm()" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm shadow-sm">
-                        <span class="material-symbols-outlined text-lg">save</span>
+                    <button type="button" @click="submitForm()" class="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all text-xs shadow-sm">
+                        <span class="material-symbols-outlined text-base">save</span>
                         {{ __('Lưu tất cả') }}
                     </button>
                 </div>

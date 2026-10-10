@@ -23,89 +23,89 @@
             <span class="text-slate-800 dark:text-white">{{ $student->first_name }} {{ $student->last_name }}</span>
         </div>
 
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
-            <div class="flex items-center gap-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
+            <div class="flex items-center gap-4">
                 @if($student->avatar)
                     @php
                         $avatarUrl = str_starts_with($student->avatar, 'http') ? $student->avatar : asset('storage/' . $student->avatar);
                     @endphp
-                    <img src="{{ $avatarUrl }}" alt="{{ $student->first_name }}" class="size-20 rounded-3xl object-cover ring-4 ring-primary/10 shadow-lg shadow-primary/10">
+                    <img src="{{ $avatarUrl }}" alt="{{ $student->first_name }}" class="size-14 rounded-2xl object-cover ring-2 ring-primary/10 shadow-xs">
                 @else
-                    <div class="size-20 rounded-2xl bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center font-bold text-3xl shadow-sm">
+                    <div class="size-14 rounded-2xl bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-xs">
                         {{ substr($student->first_name, 0, 1) }}
                     </div>
                 @endif
-                <div class="space-y-1">
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+                <div class="space-y-0.5">
+                    <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                         {{ $student->first_name }} {{ $student->last_name }}
                     </h1>
-                    <div class="flex items-center gap-4 text-xs font-semibold text-slate-500">
-                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">mail</span> {{ $student->email }}</span>
-                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> {{ __('Tham gia:') }} {{ $student->created_at->format('d/m/Y') }}</span>
+                    <div class="flex items-center gap-3 text-xs font-normal text-slate-500">
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">mail</span> {{ $student->email }}</span>
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">calendar_today</span> {{ __('Tham gia:') }} {{ $student->created_at->format('d/m/Y') }}</span>
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
                 @if(!empty($histories))
-                    <a href="{{ route('teacher.reports.export-pdf', $student->id) }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm">
-                        <span class="material-symbols-outlined text-[20px]">download</span>
+                    <a href="{{ route('teacher.reports.export-pdf', $student->id) }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold flex items-center gap-1.5 transition-all text-xs shadow-xs">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
                         {{ __('Xuất báo cáo PDF') }}
                     </a>
                 @else
-                    <button disabled class="px-5 py-2.5 bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 rounded-xl font-bold flex items-center gap-2 shadow-sm cursor-not-allowed" title="{{ __('Chưa có dữ liệu để xuất') }}">
-                        <span class="material-symbols-outlined text-[20px]">download</span>
+                    <button disabled class="px-4 py-2 bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 rounded-xl font-semibold flex items-center gap-1.5 shadow-xs cursor-not-allowed text-xs" title="{{ __('Chưa có dữ liệu để xuất') }}">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
                         {{ __('Xuất báo cáo PDF') }}
                     </button>
                 @endif
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-                <div class="size-14 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 rounded-2xl flex items-center justify-center mb-3 relative z-10">
-                    <span class="material-symbols-outlined text-3xl">class</span>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col items-center justify-center text-center shadow-xs relative overflow-hidden group">
+                <div class="size-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 rounded-xl flex items-center justify-center mb-2.5 relative z-10">
+                    <span class="material-symbols-outlined text-xl">class</span>
                 </div>
-                <h3 class="text-3xl font-bold text-slate-900 dark:text-white relative z-10">{{ $stats['total_courses'] }}</h3>
-                <p class="text-xs font-semibold text-slate-500 mt-1.5 relative z-10">{{ __('Khóa học đang học') }}</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white relative z-10">{{ $stats['total_courses'] }}</h3>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1 relative z-10">{{ __('Khóa học đang học') }}</p>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-                <div class="size-14 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-2xl flex items-center justify-center mb-3 relative z-10">
-                    <span class="material-symbols-outlined text-3xl">assignment_turned_in</span>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col items-center justify-center text-center shadow-xs relative overflow-hidden group">
+                <div class="size-10 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-xl flex items-center justify-center mb-2.5 relative z-10">
+                    <span class="material-symbols-outlined text-xl">assignment_turned_in</span>
                 </div>
-                <h3 class="text-3xl font-bold text-slate-900 dark:text-white relative z-10">{{ $stats['avg_assignments'] }}</h3>
-                <p class="text-xs font-semibold text-slate-500 mt-1.5 relative z-10">{{ __('Điểm trung bình bài tập') }}</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white relative z-10">{{ $stats['avg_assignments'] }}</h3>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1 relative z-10">{{ __('Điểm trung bình bài tập') }}</p>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-                <div class="size-14 bg-orange-50 dark:bg-orange-900/30 text-orange-500 rounded-2xl flex items-center justify-center mb-3 relative z-10">
-                    <span class="material-symbols-outlined text-3xl">quiz</span>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col items-center justify-center text-center shadow-xs relative overflow-hidden group">
+                <div class="size-10 bg-orange-50 dark:bg-orange-900/30 text-orange-500 rounded-xl flex items-center justify-center mb-2.5 relative z-10">
+                    <span class="material-symbols-outlined text-xl">quiz</span>
                 </div>
-                <h3 class="text-3xl font-bold text-slate-900 dark:text-white relative z-10">{{ $stats['avg_quizzes'] }}</h3>
-                <p class="text-xs font-semibold text-slate-500 mt-1.5 relative z-10">{{ __('Điểm trung bình bài thi') }}</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white relative z-10">{{ $stats['avg_quizzes'] }}</h3>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1 relative z-10">{{ __('Điểm trung bình bài thi') }}</p>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm lg:col-span-3">
-                <div class="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                    <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">history</span>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs lg:col-span-3">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-lg">history</span>
                         {{ __('Lịch sử đánh giá') }}
                     </h2>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50/75 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
-                                <th class="p-4 border-b border-slate-100 dark:border-slate-800">{{ __('Loại') }}</th>
-                                <th class="p-4 border-b border-slate-100 dark:border-slate-800">{{ __('Bài đánh giá') }}</th>
-                                <th class="p-4 border-b border-slate-100 dark:border-slate-800">{{ __('Ngày nộp') }}</th>
-                                <th class="p-4 border-b border-slate-100 dark:border-slate-800 text-center">{{ __('Trạng thái') }}</th>
-                                <th class="p-4 border-b border-slate-100 dark:border-slate-800 text-right">{{ __('Điểm') }}</th>
+                            <tr class="bg-slate-50/75 dark:bg-slate-800/50 text-slate-400 text-[11px] uppercase tracking-wider font-semibold">
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Loại') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Bài đánh giá') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Ngày nộp') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-center">{{ __('Trạng thái') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-right">{{ __('Điểm') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="text-slate-700 dark:text-slate-300 antialiased font-medium text-sm">
+                        <tbody class="text-slate-700 dark:text-slate-300 antialiased font-medium text-xs sm:text-sm">
                             @foreach($histories as $history)
                             <tr class="hover:bg-slate-50/75 dark:hover:bg-slate-800/40 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0 group">
                                 <td class="p-4">
