@@ -61,6 +61,15 @@ export default function teacherClassDetail(config = {}) {
             }
         },
 
+        switchTab(tab) {
+            this.activeTab = tab;
+            if (window.history && window.history.replaceState) {
+                const url = new URL(window.location);
+                url.searchParams.set('tab', tab);
+                window.history.replaceState({}, '', url);
+            }
+        },
+
         // Client-side File Validation
         handlePdfChange(event) {
             const file = event.target.files?.[0];

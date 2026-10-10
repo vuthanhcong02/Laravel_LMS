@@ -19,13 +19,23 @@ class ScheduleController extends Controller
 
         // If AJAX request or FullCalendar request (has 'start' param), return JSON
         if ($request->wantsJson() || $request->ajax() || $request->has('start')) {
-            $schedules = CourseSchedule::with('course')
+            $schedules = CourseSchedule::with(['course.category', 'course' => fn($q) => $q->withCount('enrollments')])
                 ->whereHas('course', function($q) use ($teacherId) {
                     $q->where('teacher_id', $teacherId);
                 })->get();
 
+            $dayNames = [
+                0 => __('Chủ nhật'),
+                1 => __('Thứ hai'),
+                2 => __('Thứ ba'),
+                3 => __('Thứ tư'),
+                4 => __('Thứ năm'),
+                5 => __('Thứ sáu'),
+                6 => __('Thứ bảy'),
+            ];
+
             // Transform for FullCalendar recurring events
-            $events = $schedules->map(function($schedule) {
+            $events = $schedules->map(function($schedule) use ($dayNames) {
                 // Generate a consistent color based on course ID
                 $colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
                 $colorIndex = $schedule->course_id % count($colors);
@@ -40,6 +50,15 @@ class ScheduleController extends Controller
                     'backgroundColor' => $colors[$colorIndex],
                     'borderColor' => $colors[$colorIndex],
                     'textColor' => '#ffffff',
+                    'extendedProps' => [
+                        'category_name' => $schedule->course->category?->name ?? __('Khóa học'),
+                        'students_count' => $schedule->course->enrollments_count ?? 0,
+                        'day_name' => $dayNames[(int) $schedule->day_of_week] ?? '',
+                        'time_range' => substr($schedule->start_time, 0, 5) . ' - ' . substr($schedule->end_time, 0, 5),
+                        'start_date' => $schedule->course->start_date ? $schedule->course->start_date->format('d/m/Y') : null,
+                        'end_date' => $schedule->course->end_date ? $schedule->course->end_date->format('d/m/Y') : null,
+                        'course_url' => route('teacher.classes.show', $schedule->course_id),
+                    ],
                 ];
                 
                 if ($schedule->course->start_date) {

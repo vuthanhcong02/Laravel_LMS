@@ -10,13 +10,13 @@
 
 <div x-data="fileUploadPreview({ maxFiles: {{ $maxFiles }}, maxSizeMB: {{ $maxSizeMB }} })" class="space-y-2.5">
     @if($label)
-        <label class="{{ $compact ? 'text-[10px]' : 'text-xs sm:text-sm' }} font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between uppercase tracking-wider">
+        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
             <span>{{ $label }}</span>
-            <span class="text-xs font-bold text-primary normal-case" x-show="files.length > 0" x-text="files.length + '/{{ $maxFiles }} tệp'"></span>
+            <span class="text-[11px] font-semibold text-primary" x-show="files.length > 0" x-text="files.length + '/{{ $maxFiles }} tệp'"></span>
         </label>
     @endif
 
-    <div class="relative flex flex-col items-center justify-center {{ $compact ? 'min-h-[88px] p-3.5' : 'p-6' }} border-2 border-dashed rounded-2xl cursor-pointer transition-all text-center group"
+    <div class="relative flex flex-col items-center justify-center {{ $compact ? 'min-h-[80px] p-3' : 'p-4 sm:p-5' }} border-2 border-dashed rounded-xl cursor-pointer transition-all text-center group"
          :class="isDragging ? 'border-primary bg-primary/5' : 'border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800 hover:border-slate-400'"
          @click="$refs.fileInput.click()"
          @dragover.prevent="isDragging = true"
@@ -27,15 +27,15 @@
                @click.stop
                @change="handleFiles($event.target.files)">
 
-        <div class="{{ $compact ? 'size-9 mb-1.5' : 'size-12 mb-3' }} rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined {{ $compact ? 'text-xl' : 'text-2xl' }}">cloud_upload</span>
+        <div class="{{ $compact ? 'size-8 mb-1' : 'size-10 mb-2' }} rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined {{ $compact ? 'text-lg' : 'text-xl' }}">cloud_upload</span>
         </div>
         
-        <p class="{{ $compact ? 'text-xs' : 'text-xs sm:text-sm' }} font-bold text-slate-700 dark:text-slate-200">
+        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
             {{ __('Kéo thả tệp vào đây hoặc') }} <span class="text-primary underline">{{ __('Chọn từ máy') }}</span>
         </p>
         
-        <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">
+        <p class="text-[10px] text-slate-400 mt-0.5">
             {{ $helperText ?? __('Hỗ trợ: PDF, Word, Excel, Ảnh, Audio, Zip... (Tối đa :max tệp, :sizeMB MB/tệp)', ['max' => $maxFiles, 'sizeMB' => $maxSizeMB]) }}
         </p>
     </div>

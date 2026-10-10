@@ -98,15 +98,17 @@ class ClassController extends Controller
             ? __('Đã thêm :count học viên vào lớp học thành công!', ['count' => $count])
             : __('Đã thêm học viên vào lớp học thành công!');
 
+        $tab = $request->input('tab', 'students');
+
         return redirect()
-            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => 'students'])
+            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => $tab])
             ->with('success', $message);
     }
 
     /**
      * Unenroll/remove a student from the class.
      */
-    public function unenroll(Course $course, Enrollment $enrollment): RedirectResponse
+    public function unenroll(Request $request, Course $course, Enrollment $enrollment): RedirectResponse
     {
         $this->authorize('view', $course);
 
@@ -116,8 +118,10 @@ class ClassController extends Controller
 
         $this->teacherClassService->removeStudent($course, $enrollment->id);
 
+        $tab = $request->input('tab', 'students');
+
         return redirect()
-            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => 'students'])
+            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => $tab])
             ->with('success', __('Đã xóa học viên khỏi lớp học thành công!'));
     }
 }

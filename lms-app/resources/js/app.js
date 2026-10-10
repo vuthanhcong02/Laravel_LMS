@@ -45,12 +45,14 @@ import customFlashcardApp from './alpine/components/custom-flashcard.js';
 import flashcardApp from './alpine/components/flashcard-app.js';
 import teacherClassDetail from './alpine/components/teacher-class-detail.js';
 import teacherQuizResults from './alpine/components/teacher-quiz-results.js';
+import teacherScheduleModal from './alpine/components/teacher-schedule-modal.js';
 import { filePreviewModal, fileUploadPreview } from './alpine/components/file-preview.js';
 
 window.customFlashcardApp = customFlashcardApp;
 window.flashcardApp = flashcardApp;
 window.teacherClassDetail = teacherClassDetail;
 window.teacherQuizResults = teacherQuizResults;
+window.teacherScheduleModal = teacherScheduleModal;
 window.headerStreakWidget = headerStreakWidget;
 window.streakHeatmapWidget = streakHeatmapWidget;
 window.gamificationLeaderboard = gamificationLeaderboard;
@@ -103,6 +105,7 @@ if (!window.Alpine) {
     Alpine.data('flashcardApp', flashcardApp);
     Alpine.data('teacherClassDetail', teacherClassDetail);
     Alpine.data('teacherQuizResults', teacherQuizResults);
+    Alpine.data('teacherScheduleModal', teacherScheduleModal);
     Alpine.data('filePreviewModal', filePreviewModal);
     Alpine.data('fileUploadPreview', fileUploadPreview);
 

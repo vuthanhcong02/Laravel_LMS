@@ -38,25 +38,25 @@
                         <a href="{{ route('teacher.classes.show', $class->id) }}"
                            class="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-300 overflow-hidden flex flex-col h-full cursor-pointer">
 
-                            <div class="relative h-44 overflow-hidden bg-slate-100 dark:bg-slate-800">
+                            <div class="relative h-40 overflow-hidden bg-slate-100 dark:bg-slate-800">
                                 @if($class->thumbnail)
                                     <img src="{{ asset('storage/' . $class->thumbnail) }}" alt="{{ $class->title }}"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center text-primary/30">
-                                        <span class="material-symbols-outlined text-6xl">school</span>
+                                        <span class="material-symbols-outlined text-5xl">school</span>
                                     </div>
                                 @endif
 
-                                <div class="absolute top-3.5 left-3.5">
-                                    <span class="px-3 py-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xs rounded-lg text-[11px] font-bold text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-xs">
+                                <div class="absolute top-3 left-3">
+                                    <span class="px-2.5 py-0.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xs rounded-lg text-[10px] font-bold text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-xs">
                                         {{ $class->category?->name ?? __('Khóa học') }}
                                     </span>
                                 </div>
 
                                 @if($class->is_published)
-                                    <div class="absolute top-3.5 right-3.5">
-                                        <span class="px-2.5 py-1 bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-xs">
+                                    <div class="absolute top-3 right-3">
+                                        <span class="px-2 py-0.5 bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-xs">
                                             <span class="size-1.5 bg-white rounded-full animate-pulse"></span>
                                             {{ __('Đang mở') }}
                                         </span>
@@ -64,9 +64,9 @@
                                 @endif
                             </div>
 
-                            <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="p-5 flex-1 flex flex-col justify-between space-y-3.5">
                                 <div>
-                                    <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                                    <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                                         {{ $class->title }}
                                     </h3>
                                 </div>

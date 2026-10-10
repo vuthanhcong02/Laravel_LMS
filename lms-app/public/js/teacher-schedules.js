@@ -37,9 +37,29 @@ document.addEventListener('DOMContentLoaded', function() {
         nowIndicator: true,
         
         eventClick: function(info) {
-            var startTime = info.event.startStr.includes('T') ? info.event.startStr.split('T')[1].substring(0, 5) : '';
-            var endTime = info.event.endStr.includes('T') ? info.event.endStr.split('T')[1].substring(0, 5) : '';
-            alert('Lớp: ' + info.event.title + '\nThời gian: ' + (startTime && endTime ? startTime + ' - ' + endTime : 'Cả ngày'));
+            var startTime = info.event.startStr && info.event.startStr.includes('T')
+                ? info.event.startStr.split('T')[1].substring(0, 5)
+                : (info.event.extendedProps && info.event.extendedProps.time_range ? info.event.extendedProps.time_range.split(' - ')[0] : '');
+            var endTime = info.event.endStr && info.event.endStr.includes('T')
+                ? info.event.endStr.split('T')[1].substring(0, 5)
+                : (info.event.extendedProps && info.event.extendedProps.time_range ? info.event.extendedProps.time_range.split(' - ')[1] : '');
+            var timeRange = (startTime && endTime)
+                ? (startTime + ' - ' + endTime)
+                : (info.event.extendedProps && info.event.extendedProps.time_range ? info.event.extendedProps.time_range : 'Cả ngày');
+
+            var detail = {
+                title: info.event.title,
+                color: info.event.backgroundColor,
+                category: (info.event.extendedProps && info.event.extendedProps.category_name) || '',
+                studentsCount: (info.event.extendedProps && info.event.extendedProps.students_count) || 0,
+                dayName: (info.event.extendedProps && info.event.extendedProps.day_name) || '',
+                timeRange: timeRange,
+                startDate: (info.event.extendedProps && info.event.extendedProps.start_date) || '',
+                endDate: (info.event.extendedProps && info.event.extendedProps.end_date) || '',
+                courseUrl: (info.event.extendedProps && info.event.extendedProps.course_url) || ''
+            };
+
+            window.dispatchEvent(new CustomEvent('open-schedule-modal', { detail: detail }));
         }
     });
 

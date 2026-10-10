@@ -17,21 +17,21 @@
         <x-flash-message type="success" />
         <x-flash-message type="error" />
 
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="space-y-1">
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
                     {{ __('Chào mừng quay trở lại, ') }} {{ auth()->user()->first_name ?? __('Giảng viên') }}!
                 </h1>
-                <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium">
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-normal">
                     {{ __('Chúc bạn một ngày giảng dạy tràn đầy năng lượng và hiệu quả cùng học viên.') }}
                 </p>
             </div>
 
-            <div class="self-start sm:self-auto flex items-center gap-3 bg-slate-50 dark:bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700">
-                <span class="material-symbols-outlined text-xl text-primary">calendar_month</span>
+            <div class="self-start sm:self-auto flex items-center gap-2.5 bg-slate-50 dark:bg-slate-800/80 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                <span class="material-symbols-outlined text-lg text-primary">calendar_month</span>
                 <div class="text-right">
                     <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Hôm nay') }}</p>
-                    <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">{{ \Carbon\Carbon::now()->translatedFormat('d/m/Y') }}</p>
+                    <p class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ \Carbon\Carbon::now()->translatedFormat('d/m/Y') }}</p>
                 </div>
             </div>
         </div>
@@ -39,53 +39,53 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
             <a href="{{ route('teacher.reports.index') }}"
-               class="group bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-200 flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="size-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined text-2xl">group</span>
+               class="group bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-200 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-xl">group</span>
                     </div>
-                    <span class="text-slate-400 group-hover:text-primary transition-colors material-symbols-outlined text-lg">arrow_forward</span>
+                    <span class="text-slate-400 group-hover:text-primary transition-colors material-symbols-outlined text-base">arrow_forward</span>
                 </div>
                 <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">{{ __('Tổng học viên') }}</h3>
-                    <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_students'] ?? 0) }}</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ __('Học viên đã tham gia lớp học') }}</p>
+                    <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">{{ __('Tổng học viên') }}</h3>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_students'] ?? 0) }}</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ __('Học viên đã tham gia lớp học') }}</p>
                 </div>
             </a>
 
             <a href="{{ route('teacher.classes.index') }}"
-               class="group bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-200 flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="size-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined text-2xl">school</span>
+               class="group bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-200 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-xl">school</span>
                     </div>
-                    <span class="text-slate-400 group-hover:text-primary transition-colors material-symbols-outlined text-lg">arrow_forward</span>
+                    <span class="text-slate-400 group-hover:text-primary transition-colors material-symbols-outlined text-base">arrow_forward</span>
                 </div>
                 <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">{{ __('Lớp đang phụ trách') }}</h3>
-                    <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_courses'] ?? 0) }}</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ __('Khóa học tiếng Trung của bạn') }}</p>
+                    <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">{{ __('Lớp đang phụ trách') }}</h3>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_courses'] ?? 0) }}</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ __('Khóa học tiếng Trung của bạn') }}</p>
                 </div>
             </a>
 
             <a href="{{ route('teacher.assignments.index') }}"
-               class="group bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-200 flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="size-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined text-2xl">assignment</span>
+               class="group bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-200 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-xl">assignment</span>
                     </div>
                     @if (($stats['pending_assignments_count'] ?? 0) > 0)
                         <span class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold animate-pulse">
                             {{ $stats['pending_assignments_count'] }} {{ __('chờ chấm') }}
                         </span>
                     @else
-                        <span class="text-slate-400 group-hover:text-primary transition-colors material-symbols-outlined text-lg">arrow_forward</span>
+                        <span class="text-slate-400 group-hover:text-primary transition-colors material-symbols-outlined text-base">arrow_forward</span>
                     @endif
                 </div>
                 <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">{{ __('Bài tập chờ chấm') }}</h3>
-                    <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['pending_assignments_count'] ?? 0) }}</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ __('Bài nộp của học viên cần nhận xét') }}</p>
+                    <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">{{ __('Bài tập chờ chấm') }}</h3>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['pending_assignments_count'] ?? 0) }}</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ __('Bài nộp của học viên cần nhận xét') }}</p>
                 </div>
             </a>
         </div>
@@ -94,8 +94,8 @@
 
             <div class="lg:col-span-2 space-y-4">
                 <div class="flex items-center justify-between px-1">
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-xl">event_upcoming</span>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-lg">event_upcoming</span>
                         <span>{{ __('Lịch dạy hôm nay') }}</span>
                     </h2>
                     <a href="{{ route('teacher.schedules.index') }}"
@@ -140,8 +140,8 @@
 
             <div class="space-y-4">
                 <div class="flex items-center justify-between px-1">
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-xl">notifications_active</span>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-lg">notifications_active</span>
                         <span>{{ __('Thông báo mới') }}</span>
                     </h2>
                 </div>

@@ -17,8 +17,8 @@
                 :title="__('Quản lý Bài thi')"
                 :description="__('Tạo và quản lý các bài trắc nghiệm, tự luận cho học viên.')">
                 <x-slot:actions>
-                    <a href="{{ route('teacher.quizzes.create') }}" class="px-5 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-xl font-bold flex items-center gap-2 transition-all text-sm shadow-sm active:scale-[0.98]">
-                        <span class="material-symbols-outlined text-lg">add</span>
+                    <a href="{{ route('teacher.quizzes.create') }}" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold flex items-center gap-1.5 transition-all text-xs sm:text-sm shadow-sm active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-base">add</span>
                         {{ __('Thêm bài thi mới') }}
                     </a>
                 </x-slot:actions>
@@ -30,61 +30,61 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50/75 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
-                                <th class="p-5 border-b border-slate-100 dark:border-slate-800">{{ __('Tiêu đề') }}</th>
-                                <th class="p-5 border-b border-slate-100 dark:border-slate-800">{{ __('Khóa học') }}</th>
-                                <th class="p-5 border-b border-slate-100 dark:border-slate-800">{{ __('Loại / Thời gian') }}</th>
-                                <th class="p-5 border-b border-slate-100 dark:border-slate-800">{{ __('Số câu hỏi') }}</th>
-                                <th class="p-5 border-b border-slate-100 dark:border-slate-800 text-right">{{ __('Thao tác') }}</th>
+                            <tr class="bg-slate-50/75 dark:bg-slate-800/50 text-slate-400 text-[11px] uppercase tracking-wider font-semibold">
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Tiêu đề') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Khóa học') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Loại / Thời gian') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-center">{{ __('Số câu hỏi') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-right">{{ __('Thao tác') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="text-slate-700 dark:text-slate-300 antialiased font-medium text-sm">
+                        <tbody class="text-slate-700 dark:text-slate-300 antialiased font-medium text-xs sm:text-sm">
                             @forelse($quizzes as $quiz)
                                 <tr class="hover:bg-slate-50/75 dark:hover:bg-slate-800/40 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0">
-                                    <td class="p-5">
-                                        <p class="font-bold text-slate-900 dark:text-white text-base truncate max-w-[200px]" title="{{ $quiz->title }}">
+                                    <td class="px-4 py-3.5">
+                                        <p class="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm truncate max-w-[200px]" title="{{ $quiz->title }}">
                                             {{ $quiz->title }}
                                         </p>
                                     </td>
-                                    <td class="p-6">
-                                        <p class="font-bold truncate max-w-[250px]">{{ $quiz->course->title ?? __('N/A') }}</p>
+                                    <td class="px-4 py-3.5">
+                                        <p class="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white truncate max-w-[250px]">{{ $quiz->course->title ?? __('N/A') }}</p>
                                     </td>
-                                    <td class="p-6">
+                                    <td class="px-4 py-3.5">
                                         <div class="flex flex-col gap-1">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold w-fit {{ $quiz->type->value === 'mixed' ? 'bg-purple-100 text-purple-700' : ($quiz->type->value === 'essay' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700') }}">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold w-fit {{ $quiz->type->value === 'mixed' ? 'bg-purple-100 text-purple-700' : ($quiz->type->value === 'essay' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700') }}">
                                                 {{ $quiz->type->label() }}
                                             </span>
-                                            <span class="text-xs text-slate-500 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[14px]">timer</span>
+                                            <span class="text-[11px] text-slate-500 flex items-center gap-1 font-normal">
+                                                <span class="material-symbols-outlined text-[13px]">timer</span>
                                                 {{ $quiz->time_limit > 0 ? $quiz->time_limit . ' ' . __('phút') : __('Không giới hạn') }}
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="p-6 text-center">
-                                        <span class="font-bold text-slate-900 dark:text-white">{{ $quiz->questions_count ?? $quiz->questions->count() }}</span>
+                                    <td class="px-4 py-3.5 text-center">
+                                        <span class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{{ $quiz->questions_count ?? $quiz->questions->count() }}</span>
                                     </td>
-                                    <td class="p-6 text-right space-x-1 max-w-[200px]">
+                                    <td class="px-4 py-3.5 text-right space-x-1 max-w-[180px]">
 
-                                        <button @click="$dispatch('open-import-modal', { quiz_id: {{ $quiz->id }}, quiz_title: '{{ $quiz->title }}' })" class="inline-flex items-center justify-center size-8 bg-emerald-50 hover:bg-emerald-600 hover:text-white dark:bg-emerald-900/30 text-emerald-600 transition-colors rounded-lg" title="{{ __('Nhập câu hỏi từ CSV') }}">
+                                        <button @click="$dispatch('open-import-modal', { quiz_id: {{ $quiz->id }}, quiz_title: '{{ $quiz->title }}' })" class="inline-flex items-center justify-center size-7.5 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors rounded-lg" title="{{ __('Nhập câu hỏi từ CSV') }}">
                                             <span class="material-symbols-outlined text-[18px]">upload_file</span>
                                         </button>
 
-                                        <a href="{{ route('teacher.quizzes.edit', $quiz->id) }}" class="inline-flex items-center justify-center size-8 bg-slate-100 hover:bg-primary hover:text-white dark:bg-slate-800 text-slate-600 transition-colors rounded-lg" title="{{ __('Sửa thông tin') }}">
+                                        <a href="{{ route('teacher.quizzes.edit', $quiz->id) }}" class="inline-flex items-center justify-center size-7.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg" title="{{ __('Sửa thông tin') }}">
                                             <span class="material-symbols-outlined text-[18px]">edit</span>
                                         </a>
 
-                                        <a href="{{ route('teacher.quizzes.questions', $quiz->id) }}" class="inline-flex items-center justify-center size-8 bg-blue-50 hover:bg-blue-600 hover:text-white dark:bg-blue-900/30 text-blue-600 transition-colors rounded-lg" title="{{ __('Quản lý câu hỏi') }}">
+                                        <a href="{{ route('teacher.quizzes.questions', $quiz->id) }}" class="inline-flex items-center justify-center size-7.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg" title="{{ __('Quản lý câu hỏi') }}">
                                             <span class="material-symbols-outlined text-[18px]">list_alt</span>
                                         </a>
 
-                                        <a href="{{ route('teacher.quizzes.results', $quiz->id) }}" class="inline-flex items-center justify-center size-8 bg-orange-50 hover:bg-orange-500 hover:text-white dark:bg-orange-900/30 text-orange-600 transition-colors rounded-lg" title="{{ __('Xem kết quả & Thống kê nộp bài') }}">
+                                        <a href="{{ route('teacher.quizzes.results', $quiz->id) }}" class="inline-flex items-center justify-center size-7.5 text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/40 transition-colors rounded-lg" title="{{ __('Xem kết quả & Thống kê nộp bài') }}">
                                             <span class="material-symbols-outlined text-[18px]">analytics</span>
                                         </a>
 
                                         <form action="{{ route('teacher.quizzes.destroy', $quiz->id) }}" method="POST" class="inline" onsubmit="return confirm('{{ __('Bạn có chắc chắn muốn xóa bài thi này?') }}')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center justify-center size-8 bg-red-50 hover:bg-red-600 hover:text-white dark:bg-red-900/30 text-red-600 transition-colors rounded-lg">
+                                            <button type="submit" class="inline-flex items-center justify-center size-7.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors rounded-lg" title="{{ __('Xóa bài thi') }}">
                                                 <span class="material-symbols-outlined text-[18px]">delete</span>
                                             </button>
                                         </form>
