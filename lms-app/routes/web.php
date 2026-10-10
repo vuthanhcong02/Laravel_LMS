@@ -323,11 +323,6 @@ Route::middleware(['auth'])->group(function () {
             Route::put('teacher/hsk-mock-exams/{hsk_mock_exam}/editor-data', [TeacherHskMockExamController::class, 'saveEditorData'])->name('teacher.hsk-mock-exams.save-editor-data');
             Route::post('teacher/hsk-mock-exams/upload-image', [TeacherHskMockExamController::class, 'uploadImage'])->name('teacher.hsk-mock-exams.upload-image');
         });
-
-        // Login / Logout (no auth needed)
-        Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login')->middleware('guest');
-        Route::post('login', [AdminAuthController::class, 'login']);
-        Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
 
     // ─── Direct URL Redirects (teacher/..., admin/..., student/... -> portal/...) ───
@@ -339,6 +334,13 @@ Route::middleware(['auth'])->group(function () {
         }
         return redirect($target, 307);
     })->whereIn('role', ['teacher', 'admin', 'student'])->where('path', '.*');
+});
+
+// ─── Portal Guest / Auth Routes (No auth required) ───────────────────
+Route::prefix('portal')->group(function () {
+    Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login')->middleware('guest');
+    Route::post('login', [AdminAuthController::class, 'login']);
+    Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 });
 
 require __DIR__ . '/auth.php';
