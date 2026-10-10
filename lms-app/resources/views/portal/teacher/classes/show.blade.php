@@ -57,68 +57,68 @@
                     <span class="text-slate-900 dark:text-white font-bold truncate max-w-[280px]">{{ $class->title }}</span>
                 </nav>
 
-                <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
                     <button type="button" @click="openCreateLessonModal()"
-                            class="px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shadow-sm cursor-pointer active:scale-[0.98]">
-                        <span class="material-symbols-outlined text-lg">add_circle</span>
+                            class="px-3.5 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-base">add_circle</span>
                         <span>{{ __('Thêm bài học') }}</span>
                     </button>
 
                     <button type="button" @click="openAddStudentModal()"
-                            class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shadow-sm cursor-pointer active:scale-[0.98]">
-                        <span class="material-symbols-outlined text-lg">person_add</span>
+                            class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-base">person_add</span>
                         <span>{{ __('Thêm học viên') }}</span>
                     </button>
 
                     <button type="button" @click="showAnnouncementModal = true"
-                            class="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-primary hover:border-primary/40 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer active:scale-[0.98]">
-                        <span class="material-symbols-outlined text-lg text-primary">mail</span>
+                            class="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-primary hover:border-primary/40 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-base text-primary">mail</span>
                         <span>{{ __('Gửi thông báo') }}</span>
                     </button>
                 </div>
             </div>
 
-            <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-sm">
-                <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+            <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+                <div class="flex flex-col md:flex-row gap-5 items-start md:items-center">
 
-                    <div class="size-28 sm:size-36 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 shrink-0 bg-slate-100 dark:bg-slate-800">
+                    <div class="size-24 sm:size-28 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 shrink-0 bg-slate-100 dark:bg-slate-800">
                         @if($class->thumbnail)
                             <img src="{{ asset('storage/' . $class->thumbnail) }}" alt="{{ $class->title }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-primary bg-primary/10">
-                                <span class="material-symbols-outlined text-5xl">school</span>
+                                <span class="material-symbols-outlined text-4xl">school</span>
                             </div>
                         @endif
                     </div>
 
-                    <div class="flex-1 space-y-3">
+                    <div class="flex-1 space-y-2">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-lg shadow-xs">
+                            <span class="px-2.5 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold rounded-lg shadow-xs">
                                 {{ $class->category?->name ?? __('Khóa học') }}
                             </span>
                             @if($class->is_published)
-                                <span class="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-xs">
+                                <span class="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-[11px] font-semibold rounded-lg flex items-center gap-1.5 shadow-xs">
                                     <span class="size-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                                     {{ __('Đang hoạt động') }}
                                 </span>
                             @endif
                         </div>
 
-                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
                             {{ $class->title }}
                         </h1>
 
-                        <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-slate-600 dark:text-slate-300 font-medium text-xs sm:text-sm">
-                            <span class="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-slate-100">
-                                <span class="material-symbols-outlined text-primary text-lg">group</span>
+                        <div class="flex flex-wrap items-center gap-4 sm:gap-5 text-slate-600 dark:text-slate-300 font-medium text-xs">
+                            <span class="flex items-center gap-1 font-semibold text-slate-900 dark:text-slate-100">
+                                <span class="material-symbols-outlined text-primary text-base">group</span>
                                 <span>{{ $class->enrollments_count }} {{ __('Học viên') }}</span>
                             </span>
-                            <span class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-amber-500 text-lg">menu_book</span>
+                            <span class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-amber-500 text-base">menu_book</span>
                                 <span>{{ $class->lessons->count() }} {{ __('Bài học') }}</span>
                             </span>
-                            <span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                                <span class="material-symbols-outlined text-slate-400 text-lg">calendar_today</span>
+                            <span class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-slate-400 text-base">calendar_today</span>
                                 <span>{{ __('Tạo ngày') }} {{ $class->created_at->format('d/m/Y') }}</span>
                             </span>
                         </div>
@@ -127,85 +127,85 @@
             </div>
 
             <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 px-2 overflow-x-auto">
-                <button type="button" @click="activeTab = 'overview'"
+                <button type="button" @click="switchTab('overview')"
                         :class="activeTab === 'overview' ? 'text-primary border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-semibold'"
-                        class="pb-3 text-sm transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                    <span class="material-symbols-outlined text-lg">dashboard</span>
+                        class="pb-2.5 text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                    <span class="material-symbols-outlined text-base">dashboard</span>
                     <span>{{ __('Tổng quan') }}</span>
                 </button>
 
-                <button type="button" @click="activeTab = 'lessons'"
+                <button type="button" @click="switchTab('lessons')"
                         :class="activeTab === 'lessons' ? 'text-primary border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-semibold'"
-                        class="pb-3 text-sm transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                    <span class="material-symbols-outlined text-lg">menu_book</span>
+                        class="pb-2.5 text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                    <span class="material-symbols-outlined text-base">menu_book</span>
                     <span>{{ __('Bài học & Tài nguyên') }}</span>
-                    <span class="px-2 py-0.5 rounded-md text-xs font-bold"
+                    <span class="px-1.5 py-0.5 rounded text-[11px] font-bold"
                           :class="activeTab === 'lessons' ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
                         {{ $class->lessons->count() }}
                     </span>
                 </button>
 
-                <button type="button" @click="activeTab = 'students'"
+                <button type="button" @click="switchTab('students')"
                         :class="activeTab === 'students' ? 'text-primary border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-semibold'"
-                        class="pb-3 text-sm transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                    <span class="material-symbols-outlined text-lg">groups</span>
+                        class="pb-2.5 text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                    <span class="material-symbols-outlined text-base">groups</span>
                     <span>{{ __('Danh sách học viên') }}</span>
-                    <span class="px-2 py-0.5 rounded-md text-xs font-bold"
+                    <span class="px-1.5 py-0.5 rounded text-[11px] font-bold"
                           :class="activeTab === 'students' ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
                         {{ $class->enrollments_count }}
                     </span>
                 </button>
             </div>
 
-            <div class="space-y-6">
+            <div class="space-y-5">
 
-                <div x-show="activeTab === 'overview'" x-transition class="space-y-6">
+                <div x-show="activeTab === 'overview'" x-transition class="space-y-5">
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">{{ __('Tỉ lệ hoàn thành trung bình') }}</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-1.5">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Tỉ lệ hoàn thành trung bình') }}</span>
                             <div class="flex items-baseline gap-2">
-                                <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $stats['completion_rate'] ?? 0 }}%</p>
+                                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['completion_rate'] ?? 0 }}%</p>
                                 @if(($stats['completed_students'] ?? 0) > 0)
-                                    <span class="text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-0.5">
-                                        <span class="material-symbols-outlined text-sm">check_circle</span> {{ $stats['completed_students'] }}/{{ $stats['total_students'] }} {{ __('hoàn thành') }}
+                                    <span class="text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span> {{ $stats['completed_students'] }}/{{ $stats['total_students'] }} {{ __('hoàn thành') }}
                                     </span>
                                 @elseif(($stats['total_students'] ?? 0) > 0)
-                                    <span class="text-slate-400 text-xs font-medium">
+                                    <span class="text-slate-400 text-[11px] font-medium">
                                         0/{{ $stats['total_students'] }} {{ __('học viên hoàn thành') }}
                                     </span>
                                 @else
-                                    <span class="text-slate-400 text-xs font-medium">
+                                    <span class="text-slate-400 text-[11px] font-medium">
                                         {{ __('Chưa có học viên') }}
                                     </span>
                                 @endif
                             </div>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mt-3">
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mt-2">
                                 <div class="bg-primary h-full rounded-full transition-all duration-500" style="width: {{ $stats['completion_rate'] ?? 0 }}%"></div>
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">{{ __('Tổng số bài học') }}</span>
-                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $class->lessons->count() }} <span class="text-sm font-medium text-slate-400">{{ __('bài giảng') }}</span></p>
-                            <button type="button" @click="activeTab = 'lessons'" class="text-xs text-primary hover:underline font-semibold cursor-pointer">
+                        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-1.5">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Tổng số bài học') }}</span>
+                            <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $class->lessons->count() }} <span class="text-xs font-medium text-slate-400">{{ __('bài giảng') }}</span></p>
+                            <button type="button" @click="switchTab('lessons')" class="text-[11px] text-primary hover:underline font-semibold cursor-pointer">
                                 {{ __('+ Quản lý bài học & tài nguyên') }}
                             </button>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">{{ __('Sĩ số lớp học') }}</span>
-                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $class->enrollments_count }} <span class="text-sm font-medium text-slate-400">{{ __('học viên') }}</span></p>
-                            <button type="button" @click="openAddStudentModal()" class="text-xs text-primary hover:underline font-semibold cursor-pointer">
+                        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-1.5">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Sĩ số lớp học') }}</span>
+                            <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $class->enrollments_count }} <span class="text-xs font-medium text-slate-400">{{ __('học viên') }}</span></p>
+                            <button type="button" @click="openAddStudentModal()" class="text-[11px] text-primary hover:underline font-semibold cursor-pointer">
                                 {{ __('+ Thêm học viên mới') }}
                             </button>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                        <div class="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
-                            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary">format_list_bulleted</span>
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-lg">format_list_bulleted</span>
                                 <span>{{ __('Lộ trình bài học') }}</span>
                             </h2>
                             <button type="button" @click="openCreateLessonModal()"
@@ -335,6 +335,7 @@
                                                         @if(!$loop->first)
                                                             <form action="{{ route('teacher.classes.lessons.move-up', ['course' => $class->id, 'lesson' => $lesson->id]) }}" method="POST">
                                                                 @csrf
+                                                                <input type="hidden" name="tab" :value="activeTab">
                                                                 <button type="submit" class="p-0.5 text-slate-400 hover:text-primary transition-colors cursor-pointer" title="{{ __('Di chuyển lên') }}">
                                                                     <span class="material-symbols-outlined text-sm">arrow_upward</span>
                                                                 </button>
@@ -343,6 +344,7 @@
                                                         @if(!$loop->last)
                                                             <form action="{{ route('teacher.classes.lessons.move-down', ['course' => $class->id, 'lesson' => $lesson->id]) }}" method="POST">
                                                                 @csrf
+                                                                <input type="hidden" name="tab" :value="activeTab">
                                                                 <button type="submit" class="p-0.5 text-slate-400 hover:text-primary transition-colors cursor-pointer" title="{{ __('Di chuyển xuống') }}">
                                                                     <span class="material-symbols-outlined text-sm">arrow_downward</span>
                                                                 </button>
@@ -460,7 +462,12 @@
                                 <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                                 <input type="text" name="search" value="{{ $search }}"
                                        placeholder="{{ __('Tìm kiếm tên, email học viên...') }}"
-                                       class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-xs text-slate-900 dark:text-white">
+                                       class="w-full pl-10 pr-9 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-xs text-slate-900 dark:text-white">
+                                @if($search)
+                                    <a href="{{ url()->current() }}?tab=students" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                        <span class="material-symbols-outlined text-sm">close</span>
+                                    </a>
+                                @endif
                             </form>
                         </div>
 
@@ -588,6 +595,7 @@
 
                 <form action="{{ route('teacher.classes.enroll', $class->id) }}" method="POST" class="p-6 space-y-5">
                     @csrf
+                    <input type="hidden" name="tab" :value="activeTab">
 
                     <template x-for="id in selectedStudentIds" :key="id">
                         <input type="hidden" name="user_ids[]" :value="id">
@@ -745,6 +753,7 @@
                     <input type="hidden" name="_method" :value="lessonModalMode === 'edit' ? 'PUT' : 'POST'">
                     <input type="hidden" name="action_url" :value="lessonForm.action_url">
                     <input type="hidden" name="id" :value="lessonForm.id">
+                    <input type="hidden" name="tab" :value="activeTab">
 
                     <div class="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
 
@@ -999,6 +1008,7 @@
                 <form :action="lessonToDelete.action_url" method="POST" class="pt-2 flex items-center gap-3">
                     @csrf
                     @method('DELETE')
+                    <input type="hidden" name="tab" :value="activeTab">
                     <button type="button" @click="showDeleteLessonModal = false"
                             class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                         {{ __('Hủy bỏ') }}
@@ -1041,6 +1051,7 @@
                 <form :action="deleteActionUrl" method="POST" class="pt-2 flex items-center gap-3">
                     @csrf
                     @method('DELETE')
+                    <input type="hidden" name="tab" :value="activeTab">
                     <button type="button" @click="showDeleteConfirmModal = false"
                             class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                         {{ __('Hủy bỏ') }}

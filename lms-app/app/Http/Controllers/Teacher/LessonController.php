@@ -7,6 +7,7 @@ use App\Http\Requests\Teacher\LessonRequest;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Services\Teacher\TeacherLessonService;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
 class LessonController extends Controller
@@ -27,8 +28,10 @@ class LessonController extends Controller
 
         $this->lessonService->storeLesson($course, $request->validated());
 
+        $tab = $request->input('tab', 'lessons');
+
         return redirect()
-            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => 'lessons'])
+            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => $tab])
             ->with('success', __('Đã thêm bài học mới vào lớp thành công!'));
     }
 
@@ -41,50 +44,58 @@ class LessonController extends Controller
 
         $this->lessonService->updateLesson($course, $lesson, $request->validated());
 
+        $tab = $request->input('tab', 'lessons');
+
         return redirect()
-            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => 'lessons'])
+            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => $tab])
             ->with('success', __('Đã cập nhật bài học thành công!'));
     }
 
     /**
      * Delete a lesson from the class.
      */
-    public function destroy(Course $course, Lesson $lesson): RedirectResponse
+    public function destroy(Request $request, Course $course, Lesson $lesson): RedirectResponse
     {
         $this->authorize('view', $course);
 
         $this->lessonService->deleteLesson($course, $lesson);
 
+        $tab = $request->input('tab', 'lessons');
+
         return redirect()
-            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => 'lessons'])
+            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => $tab])
             ->with('success', __('Đã xóa bài học thành công!'));
     }
 
     /**
      * Move lesson order up (decrease order number).
      */
-    public function moveUp(Course $course, Lesson $lesson): RedirectResponse
+    public function moveUp(Request $request, Course $course, Lesson $lesson): RedirectResponse
     {
         $this->authorize('view', $course);
 
         $this->lessonService->moveUp($course, $lesson);
 
+        $tab = $request->input('tab', 'lessons');
+
         return redirect()
-            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => 'lessons'])
+            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => $tab])
             ->with('success', __('Đã thay đổi thứ tự bài học.'));
     }
 
     /**
      * Move lesson order down (increase order number).
      */
-    public function moveDown(Course $course, Lesson $lesson): RedirectResponse
+    public function moveDown(Request $request, Course $course, Lesson $lesson): RedirectResponse
     {
         $this->authorize('view', $course);
 
         $this->lessonService->moveDown($course, $lesson);
 
+        $tab = $request->input('tab', 'lessons');
+
         return redirect()
-            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => 'lessons'])
+            ->route('teacher.classes.show', ['course' => $course->id, 'tab' => $tab])
             ->with('success', __('Đã thay đổi thứ tự bài học.'));
     }
 }
