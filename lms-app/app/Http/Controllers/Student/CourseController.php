@@ -70,13 +70,17 @@ class CourseController extends Controller
             ->where('course_id', $course->id)
             ->firstOrFail();
 
-        $course->load(['lessons' => function ($q) {
-            $q->orderBy('order');
-        }]);
+        $course->load([
+            'teacher',
+            'lessons' => function ($q) {
+                $q->orderBy('order');
+            },
+            'lessons.assignments',
+        ]);
 
         // Mock a current lesson for demo
         $currentLesson = $lessonId ? $course->lessons->where('id', $lessonId)->first() : $course->lessons->first();
 
-        return view('portal.student.courses.learn', compact('course', 'currentLesson'));
+        return view('portal.student.courses.learn', compact('course', 'currentLesson', 'enrollment'));
     }
 }

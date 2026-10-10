@@ -86,7 +86,7 @@ class TeacherLessonManagementTest extends TestCase
         $lesson = Lesson::create([
             'course_id'   => $this->course->id,
             'title'       => 'Bài học cũ',
-            'record_url'  => 'https://youtube.com/old',
+            'record_url'  => 'https://drive.google.com/file/d/1l2wkiMBq6v5hzm4bm_Ktazy23LJ204ru/view',
             'pdf_path'    => $storedOldPath,
             'order'       => 1,
         ]);
