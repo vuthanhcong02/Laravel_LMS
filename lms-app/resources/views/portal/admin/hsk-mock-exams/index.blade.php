@@ -58,18 +58,21 @@
                 <form action="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index') }}" method="GET" class="flex flex-wrap gap-3 items-center flex-1">
                     <div class="relative flex-1 min-w-[200px]">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm tên đề thi..."
-                            class="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-primary">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Tìm kiếm tên đề thi...') }}"
+                            class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-primary">
                     </div>
-                    <select name="level" class="py-2 px-3 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-primary">
-                        <option value="">Tất cả Cấp độ HSK</option>
+                    <select name="level" class="py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-primary cursor-pointer">
+                        <option value="">{{ __('Tất cả Cấp độ HSK') }}</option>
                         @foreach($levels as $level)
                             <option value="{{ $level->level_code }}" {{ request('level') == $level->level_code ? 'selected' : '' }}>
                                 {{ $level->title }}
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg text-sm font-semibold hover:bg-slate-700">Lọc</button>
+                    @if(request()->anyFilled(['search', 'level']))
+                        <x-portal.filter-reset :url="route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index')" />
+                    @endif
+                    <x-portal.filter-button />
                 </form>
             </div>
 

@@ -27,41 +27,28 @@
             </div>
 
             <!-- Filter Bar -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-sm">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm">
                 <form action="{{ route('admin.revenue.transactions') }}" method="GET"
-                    class="flex flex-col md:flex-row gap-4 items-end">
-                    <div class="flex-1 w-full space-y-1.5">
-                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Tìm kiếm</label>
-                        <div class="relative">
-                            <span
-                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                            <input type="text" name="search" value="{{ request('search') }}"
-                                placeholder="Tìm theo người dùng, khóa học hoặc mã GD..."
-                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-                        </div>
+                    class="flex flex-wrap gap-3 items-center">
+                    <div class="relative flex-1 min-w-[200px]">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="{{ __('Tìm theo người dùng, khóa học hoặc mã GD...') }}"
+                            class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
                     </div>
-                    <div class="w-full md:w-48 space-y-1.5">
-                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Trạng thái</label>
+                    <div class="relative sm:w-48">
                         <select name="status"
-                            class="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-                            <option value="">Tất cả</option>
-                            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Thành công
-                            </option>
-                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Chờ xử lý
-                            </option>
-                            <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Thất bại</option>
+                            class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+                            <option value="">{{ __('Tất cả trạng thái') }}</option>
+                            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>{{ __('Thành công') }}</option>
+                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('Chờ xử lý') }}</option>
+                            <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>{{ __('Thất bại') }}</option>
                         </select>
                     </div>
-                    <button type="submit"
-                        class="w-full md:w-auto px-6 py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all shadow-sm shadow-primary/20">
-                        Lọc dữ liệu
-                    </button>
                     @if (request()->anyFilled(['search', 'status']))
-                        <a href="{{ route('admin.revenue.transactions') }}"
-                            class="w-full md:w-auto px-6 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-center">
-                            Xóa lọc
-                        </a>
+                        <x-portal.filter-reset :url="route('admin.revenue.transactions')" />
                     @endif
+                    <x-portal.filter-button />
                 </form>
             </div>
 

@@ -113,10 +113,7 @@
                     @endif
 
                     @if (request('search') || request('status') !== null || request('category_id'))
-                        <a href="{{ route('admin.blogs.index') }}"
-                            class="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap">
-                            <span class="material-symbols-outlined text-[16px]">filter_alt_off</span> Clear
-                        </a>
+                        <x-portal.filter-reset :url="route('admin.blogs.index')" />
                     @endif
                 </form>
             </div>
