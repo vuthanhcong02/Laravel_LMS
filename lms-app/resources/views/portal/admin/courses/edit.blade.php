@@ -233,7 +233,7 @@
                             </template>
                             <template x-if="!preview">
                                 @if ($course->thumbnail)
-                                    <img src="{{ asset('storage/' . $course->thumbnail) }}"
+                                    <img src="{{ $course->thumbnail_url }}"
                                         class="w-full h-36 object-cover rounded-lg border border-slate-200 dark:border-slate-700">
                                 @else
                                     <div class="w-full h-36 bg-slate-50 dark:bg-slate-800 rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-2 text-slate-400">

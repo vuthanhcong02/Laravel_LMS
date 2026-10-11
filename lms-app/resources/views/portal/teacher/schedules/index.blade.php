@@ -34,7 +34,6 @@
 
     </div>
 
-    {{-- Modal Chi tiết Lịch giảng dạy --}}
     <div x-show="isOpen"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0"
@@ -66,7 +65,6 @@
             {{-- Modal Body --}}
             <div class="p-6 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                    {{-- Thời gian --}}
                     <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 space-y-1">
                         <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
                             <span class="material-symbols-outlined text-base text-primary">schedule</span>
@@ -75,7 +73,6 @@
                         <p class="text-sm font-bold text-slate-900 dark:text-white" x-text="event.timeRange || '{{ __('Cả ngày') }}'"></p>
                     </div>
 
-                    {{-- Thứ trong tuần --}}
                     <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 space-y-1">
                         <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
                             <span class="material-symbols-outlined text-base text-sky-500">calendar_today</span>
@@ -84,7 +81,6 @@
                         <p class="text-sm font-bold text-slate-900 dark:text-white" x-text="event.dayName || '{{ __('Hàng tuần') }}'"></p>
                     </div>
 
-                    {{-- Sĩ số lớp --}}
                     <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 space-y-1">
                         <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
                             <span class="material-symbols-outlined text-base text-emerald-500">groups</span>

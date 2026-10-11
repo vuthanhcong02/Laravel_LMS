@@ -28,7 +28,6 @@
             <x-flash-message type="success" />
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Nội dung liên hệ -->
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm p-6">
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">Nội dung tin nhắn</h2>
@@ -59,7 +58,6 @@
                     </div>
                 </div>
 
-                <!-- Thông tin & Trạng thái -->
                 <div class="space-y-6">
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm p-6">
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">Thông tin người gửi</h2>

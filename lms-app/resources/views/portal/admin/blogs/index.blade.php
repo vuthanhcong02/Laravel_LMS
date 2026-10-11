@@ -140,7 +140,7 @@
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
                                             @if ($blog->thumbnail)
-                                                <img src="{{ asset('storage/' . $blog->thumbnail) }}"
+                                                <img src="{{ $blog->thumbnail_url }}"
                                                     class="size-10 rounded-lg object-cover shrink-0 border border-slate-200 dark:border-slate-700">
                                             @else
                                                 <div

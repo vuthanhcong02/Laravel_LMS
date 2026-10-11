@@ -155,7 +155,7 @@
                             </template>
                             <template x-if="!preview">
                                 @if ($blog->thumbnail)
-                                    <img src="{{ asset('storage/' . $blog->thumbnail) }}"
+                                    <img src="{{ $blog->thumbnail_url }}"
                                         class="w-full h-36 object-cover rounded-lg border border-slate-200 dark:border-slate-700">
                                 @else
                                     <div

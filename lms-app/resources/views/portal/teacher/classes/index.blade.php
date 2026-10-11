@@ -40,7 +40,7 @@
 
                             <div class="relative h-40 overflow-hidden bg-slate-100 dark:bg-slate-800">
                                 @if($class->thumbnail)
-                                    <img src="{{ asset('storage/' . $class->thumbnail) }}" alt="{{ $class->title }}"
+                                    <img src="{{ $class->thumbnail_url }}" alt="{{ $class->title }}"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center text-primary/30">
