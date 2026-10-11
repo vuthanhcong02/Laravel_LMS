@@ -68,7 +68,9 @@
             </div>
             @endif
 
-            <form id="quiz-form" action="{{ route('student.quizzes.submit', $attempt->id) }}" method="POST" class="space-y-6">
+            <form id="quiz-form" action="{{ route('student.quizzes.submit', $attempt->id) }}" method="POST"
+                  @submit="if (submitted) { $event.preventDefault(); return false; } submitted = true"
+                  class="space-y-6">
                 @csrf
 
                 @foreach($quiz->questions as $index => $question)
@@ -94,14 +96,14 @@
 
                         @if($question->image_path)
                         <div class="max-w-lg overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm mt-3">
-                            <img src="{{ asset('storage/' . $question->image_path) }}" alt="Question visual" class="max-h-80 w-auto object-contain mx-auto">
+                            <img src="{{ $question->image_url }}" alt="Question visual" class="max-h-80 w-auto object-contain mx-auto">
                         </div>
                         @endif
 
                         @if($question->audio_path)
                         <div class="w-full max-w-md bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/30 mt-3">
                             <audio controls class="w-full">
-                                <source src="{{ asset('storage/' . $question->audio_path) }}" type="audio/mpeg">
+                                <source src="{{ $question->audio_url }}" type="audio/mpeg">
                                 {{ __('Trình duyệt không hỗ trợ phát âm thanh.') }}
                             </audio>
                         </div>
@@ -252,8 +254,13 @@
                 </button>
                 <button type="button"
                     @click="forceSubmit()"
-                    class="px-6 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold rounded-xl text-sm shadow-md shadow-primary/20 transition-colors">
-                    {{ __('Xác nhận nộp') }}
+                    :disabled="submitted"
+                    class="px-6 py-2.5 bg-primary hover:bg-primary/95 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm shadow-md shadow-primary/20 transition-colors flex items-center justify-center gap-1.5">
+                    <svg x-show="submitted" class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span x-text="submitted ? '{{ __('Đang nộp bài...') }}' : '{{ __('Xác nhận nộp') }}'"></span>
                 </button>
             </div>
         </div>
@@ -348,6 +355,9 @@
             },
 
             forceSubmit() {
+                if (this.submitted) {
+                    return;
+                }
                 this.submitted = true;
                 document.getElementById('quiz-form').submit();
             }

@@ -195,14 +195,14 @@
 
                             @if($question->image_path)
                                 <div class="max-w-md overflow-hidden rounded-xl border border-slate-100 dark:border-slate-800 mt-2">
-                                    <img src="{{ asset('storage/' . $question->image_path) }}" alt="Question visual" class="max-h-56 w-auto object-contain">
+                                    <img src="{{ $question->image_url }}" alt="Question visual" class="max-h-56 w-auto object-contain">
                                 </div>
                             @endif
 
                             @if($question->audio_path)
                                 <div class="w-full max-w-sm bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/30 mt-2">
                                     <audio controls class="w-full">
-                                        <source src="{{ asset('storage/' . $question->audio_path) }}" type="audio/mpeg">
+                                        <source src="{{ $question->audio_url }}" type="audio/mpeg">
                                     </audio>
                                 </div>
                             @endif

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,6 +38,15 @@ class Blog extends Model
     public function getStatusLabelAttribute(): string
     {
         return $this->is_published ? 'Published' : 'Draft';
+    }
+
+    /**
+     * Get blog thumbnail URL from B2 or fallback to default image.
+     */
+    public function getThumbnailUrlAttribute(): string
+    {
+        $defaultThumbnail = 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=800&q=80';
+        return app(MediaStorageService::class)->url($this->thumbnail, 1440, $defaultThumbnail);
     }
 
 

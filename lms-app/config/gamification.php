@@ -90,16 +90,16 @@ return [
     */
     'actions' => [
 
-        // --- 1. THI THỬ HSK ---
+        // --- 1. HSK MOCK EXAM ---
         'hsk_mock_exam' => [
             'exp'                 => 50,
-            'min_score_percent'   => 30, // Điểm tối thiểu 30% mới được cộng EXP
-            'daily_one_time_exam' => true, // Mỗi đề thi cụ thể chỉ nhận EXP 1 lần trong 1 ngày
+            'min_score_percent'   => 30, // Minimum 30% score required to receive EXP
+            'daily_one_time_exam' => true, // Each specific exam grants EXP only once per day
             'daily_cap'           => null,
             'one_time'            => false,
         ],
 
-        // --- 2. CÁC PHẦN TRONG BÀI HỌC KHÓA HỌC (COURSE V2) ---
+        // --- 2. LESSON SECTIONS (COURSE V2) ---
         'course_vocab' => [
             'exp'       => 10,
             'daily_cap' => null,
@@ -134,14 +134,14 @@ return [
             'one_time'            => true, // One-time EXP reward per quiz
         ],
 
-        // --- 3. THẺ GHI NHỚ TỰ DO (FLASHCARD) ---
+        // --- 3. FLASHCARDS ---
         'flashcard_remember' => [
             'exp'       => 1,
-            'daily_cap' => 20, // Tối đa 20 EXP/ngày tránh spam click
+            'daily_cap' => 20, // Max 20 EXP/day to prevent spam clicks
             'one_time'  => false,
         ],
 
-        // --- 4. LUYỆN TẬP PHẢN XẠ PINYIN ---
+        // --- 4. PINYIN PRACTICE ---
         'pinyin_practice' => [
             'exp'                 => 10,
             'exp_rates'           => [
@@ -149,11 +149,11 @@ return [
                 20 => 20,
                 50 => 50,
             ],
-            'min_correct_percent' => 40, // Làm đúng tối thiểu 40% số câu
+            'min_correct_percent' => 40, // Minimum 40% correct answers required
             'diminishing_returns' => [
-                ['max_sessions' => 2, 'rate' => 1.0],   // Ván 1 & 2 trong ngày: 100% EXP
-                ['max_sessions' => 4, 'rate' => 0.5],   // Ván 3 & 4 trong ngày: 50% EXP
-                ['max_sessions' => null, 'rate' => 0.25], // Ván 5 trở đi trong ngày: 25% EXP (tối thiểu 1 EXP)
+                ['max_sessions' => 2, 'rate' => 1.0],   // Sessions 1 & 2 per day: 100% EXP
+                ['max_sessions' => 4, 'rate' => 0.5],   // Sessions 3 & 4 per day: 50% EXP
+                ['max_sessions' => null, 'rate' => 0.25], // Session 5 onwards per day: 25% EXP (minimum 1 EXP)
             ],
             'daily_cap'           => null,
             'one_time'            => false,

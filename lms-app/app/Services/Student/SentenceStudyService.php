@@ -224,7 +224,7 @@ class SentenceStudyService
                 'pinyin' => $sentence->pinyin,
                 'meaning' => $sentence->meaning,
                 'meaningVi' => $sentence->meaning_vi ?: $sentence->meaning,
-                'audioUrl' => $sentence->audio_path,
+                'audioUrl' => $sentence->audio_url,
                 'duration' => $sentence->duration,
                 'words' => $sentence->words ?: [],
                 'tokens' => $sentence->tokens ?: [],

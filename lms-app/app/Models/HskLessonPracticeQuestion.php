@@ -29,6 +29,22 @@ class HskLessonPracticeQuestion extends Model
         'question_segments' => 'array'
     ];
 
+    protected $appends = [
+        'image_url',
+    ];
+
+    /**
+     * Get question image URL from B2 Storage.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (empty($this->image_path)) {
+            return null;
+        }
+
+        return hskMediaUrl($this->image_path);
+    }
+
     public function section()
     {
         return $this->belongsTo(HskLessonPracticeSection::class, 'section_id');

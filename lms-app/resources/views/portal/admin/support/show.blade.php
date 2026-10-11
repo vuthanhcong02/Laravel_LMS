@@ -100,7 +100,7 @@
                                         <p class="text-sm whitespace-pre-wrap leading-relaxed">{{ $msg->message }}</p>
                                         @if ($msg->attachment_path)
                                             <div class="mt-3">
-                                                <a href="{{ asset('storage/' . $msg->attachment_path) }}" target="_blank"
+                                                <a href="{{ $msg->attachment_url }}" target="_blank"
                                                     class="inline-flex items-center gap-2 px-3 py-2 rounded bg-black/10 hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20 transition-colors text-sm font-medium">
                                                     <span class="material-symbols-outlined text-[18px]">attachment</span>
                                                     Xem tệp đính kèm

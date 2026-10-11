@@ -85,12 +85,19 @@
                     </div>
 
                                         <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-                        <form action="{{ route('student.quizzes.attempt', $quiz->id) }}" method="POST">
+                        <form action="{{ route('student.quizzes.attempt', $quiz->id) }}" method="POST"
+                              x-data="{ isSubmitting: false }"
+                              @submit="if (isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true">
                             @csrf
                             <button type="submit" 
-                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
-                                <span class="material-symbols-outlined text-base">play_arrow</span>
-                                {{ __('Bắt đầu làm bài thi') }}
+                                    :disabled="isSubmitting"
+                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-primary hover:bg-primary/95 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+                                <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span x-show="!isSubmitting" class="material-symbols-outlined text-base">play_arrow</span>
+                                <span x-text="isSubmitting ? '{{ __('Đang chuyển hướng...') }}' : '{{ __('Bắt đầu làm bài thi') }}'"></span>
                             </button>
                         </form>
                     </div>

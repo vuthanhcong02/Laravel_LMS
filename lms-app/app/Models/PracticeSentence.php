@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -59,6 +60,6 @@ class PracticeSentence extends Model
             return null;
         }
 
-        return asset('storage/' . ltrim($this->audio_path, '/'));
+        return app(MediaStorageService::class)->url($this->audio_path);
     }
 }

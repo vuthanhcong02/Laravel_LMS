@@ -85,7 +85,7 @@ return [
         ]
     ],
 
-    // Cấu trúc mặc định nếu chưa khai báo chi tiết cho HSK 4, 5, 6
+    // Default structure if not specified in detail for HSK 4, 5, 6
     'default' => [
         'listening' => [
             'name' => 'Nghe hiểu',

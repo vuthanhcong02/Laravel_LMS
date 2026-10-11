@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -33,18 +34,16 @@ class Course extends Model
         return $query->where('is_published', true);
     }
 
+    /**
+     * Get course thumbnail URL from B2 or fallback to default image.
+     */
     public function getThumbnailUrlAttribute(): string
     {
-        if (empty($this->thumbnail)) {
-            return asset('images/default-course.jpg');
-        }
-
-        if (str_starts_with($this->thumbnail, 'http://') || str_starts_with($this->thumbnail, 'https://')) {
-            return $this->thumbnail;
-        }
-
-        // Assume stored path is valid; browser will handle missing file gracefully
-        return asset('storage/' . $this->thumbnail);
+        return app(MediaStorageService::class)->url(
+            $this->thumbnail,
+            1440,
+            asset('images/default-course.jpg')
+        );
     }
 
     public function teacher()

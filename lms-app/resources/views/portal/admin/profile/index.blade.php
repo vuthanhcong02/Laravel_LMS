@@ -56,21 +56,13 @@
                         x-data="avatarPreview()">
                         {{-- Avatar Display --}}
                         <div class="relative shrink-0">
-                            @php
-                                $avatar = Auth::user()->avatar;
-                                $avatarUrl = $avatar
-                                    ? (str_starts_with($avatar, 'http')
-                                        ? $avatar
-                                        : asset('storage/' . $avatar))
-                                    : null;
-                            @endphp
                             <template x-if="preview">
                                 <img :src="preview"
                                     class="size-24 rounded-full object-cover border-4 border-primary/30 shadow-md">
                             </template>
                             <template x-if="!preview">
-                                @if ($avatarUrl)
-                                    <img src="{{ $avatarUrl }}"
+                                @if (Auth::user()->avatar)
+                                    <img src="{{ Auth::user()->avatar_url }}"
                                         class="size-24 rounded-full object-cover border-4 border-primary/30 shadow-md">
                                 @else
                                     <div

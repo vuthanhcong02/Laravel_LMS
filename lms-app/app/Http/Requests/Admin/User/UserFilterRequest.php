@@ -16,6 +16,16 @@ class UserFilterRequest extends FormRequest
     }
 
     /**
+     * Prepare data before validation to prevent redirect loops.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('role') && ! in_array((int) $this->role, [User::ROLE_TEACHER, User::ROLE_STUDENT, User::ROLE_GUEST], true)) {
+            $this->merge(['role' => null]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -24,7 +34,7 @@ class UserFilterRequest extends FormRequest
     {
         return [
             'search' => 'nullable|string|max:255',
-            'role' => 'nullable|integer|in:' . User::ROLE_TEACHER . ',' . User::ROLE_STUDENT . ',' . User::ROLE_GUEST,
+            'role'   => 'nullable|integer|in:' . User::ROLE_TEACHER . ',' . User::ROLE_STUDENT . ',' . User::ROLE_GUEST,
         ];
     }
 }

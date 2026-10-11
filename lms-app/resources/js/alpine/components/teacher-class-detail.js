@@ -23,6 +23,9 @@ export default function teacherClassDetail(config = {}) {
         selectedStudentIds: [],
         isLoadingStudents: false,
         searchTimeout: null,
+        isSubmittingEnroll: false,
+        isSubmittingLesson: false,
+        isSubmittingDeleteLesson: false,
 
         // Client-side File Validation Errors
         clientErrors: {
@@ -119,6 +122,7 @@ export default function teacherClassDetail(config = {}) {
 
         openAddStudentModal() {
             this.showAddStudentModal = true;
+            this.isSubmittingEnroll = false;
             this.studentSearch = '';
             this.selectedStudentIds = [];
             this.fetchAvailableStudents('');
@@ -183,6 +187,7 @@ export default function teacherClassDetail(config = {}) {
 
         openCreateLessonModal() {
             this.lessonModalMode = 'create';
+            this.isSubmittingLesson = false;
             this.clientErrors.pdf_file = null;
             this.clientErrors.note_file = null;
             this.lessonForm = {
@@ -202,6 +207,7 @@ export default function teacherClassDetail(config = {}) {
 
         openEditLessonModal(lesson) {
             this.lessonModalMode = 'edit';
+            this.isSubmittingLesson = false;
             this.clientErrors.pdf_file = null;
             this.clientErrors.note_file = null;
             const storageBase = config.routes?.storageAssetBase || '';
@@ -231,6 +237,7 @@ export default function teacherClassDetail(config = {}) {
         },
 
         confirmDeleteLesson(id, title) {
+            this.isSubmittingDeleteLesson = false;
             const destroyRouteTemplate = config.routes?.destroyLesson || '';
             this.lessonToDelete = {
                 id: id,

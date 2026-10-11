@@ -69,7 +69,7 @@
                                             <div
                                                 class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden shrink-0">
                                                 @if ($ticket->user->avatar)
-                                                    <img src="{{ asset('storage/' . $ticket->user->avatar) }}"
+                                                    <img src="{{ $ticket->user->avatar_url }}"
                                                         class="w-full h-full object-cover">
                                                 @else
                                                     <span

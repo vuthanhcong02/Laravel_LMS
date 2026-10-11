@@ -26,10 +26,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
             <div class="flex items-center gap-4">
                 @if($student->avatar)
-                    @php
-                        $avatarUrl = str_starts_with($student->avatar, 'http') ? $student->avatar : asset('storage/' . $student->avatar);
-                    @endphp
-                    <img src="{{ $avatarUrl }}" alt="{{ $student->first_name }}" class="size-14 rounded-2xl object-cover ring-2 ring-primary/10 shadow-xs">
+                    <img src="{{ $student->avatar_url }}" alt="{{ $student->first_name }}" class="size-14 rounded-2xl object-cover ring-2 ring-primary/10 shadow-xs">
                 @else
                     <div class="size-14 rounded-2xl bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-xs">
                         {{ substr($student->first_name, 0, 1) }}

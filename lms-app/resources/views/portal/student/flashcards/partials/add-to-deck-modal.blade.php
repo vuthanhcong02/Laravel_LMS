@@ -1,4 +1,3 @@
-{{-- Modal Thêm từ vựng HSK vào Bộ thẻ cá nhân --}}
 <div x-show="showAddToDeckModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
     {{-- Backdrop --}}
     <div x-show="showAddToDeckModal"
@@ -194,9 +193,6 @@
                             class="w-6 h-6 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
                         <i class="fa-solid fa-xmark text-xs"></i>
                     </button>
-                </div>
-
-                {{-- Tên bộ thẻ --}}
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                         {{ __('Tên bộ thẻ') }} <span class="text-rose-500">*</span>
@@ -209,7 +205,6 @@
                            class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] text-xs font-medium text-slate-900 dark:text-white focus:outline-hidden focus:border-[#e07a5f] transition-all">
                 </div>
 
-                {{-- Màu sắc đại diện --}}
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                         {{ __('Màu sắc đại diện') }}
@@ -228,7 +223,6 @@
                     </div>
                 </div>
 
-                {{-- Biểu tượng icon --}}
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                         {{ __('Biểu tượng icon') }}

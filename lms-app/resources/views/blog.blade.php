@@ -56,7 +56,7 @@
                         <div
                             class="lg:w-1/2 relative min-h-[260px] lg:min-h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
                             @if ($featuredBlog->thumbnail)
-                                <img src="{{ asset('storage/' . $featuredBlog->thumbnail) }}"
+                                <img src="{{ $featuredBlog->thumbnail_url }}"
                                     alt="{{ $featuredBlog->title }}" class="w-full h-full object-cover">
                             @else
                                 <span
@@ -112,7 +112,7 @@
                                 <div
                                     class="aspect-video bg-slate-100 dark:bg-slate-800 relative overflow-hidden flex items-center justify-center">
                                     @if ($blog->thumbnail)
-                                        <img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="{{ $blog->title }}"
+                                        <img src="{{ $blog->thumbnail_url }}" alt="{{ $blog->title }}"
                                             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                                     @else
                                         <span

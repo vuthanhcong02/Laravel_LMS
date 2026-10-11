@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Overtrue\Pinyin\Pinyin;
@@ -19,16 +20,16 @@ if (! function_exists('splitName')) {
 }
 if (! function_exists('_hsk_cache_remember_forever')) {
     /**
-     * Wrapper an toàn cho cache()->rememberForever().
-     * Fallback về tính toán trực tiếp nếu cache directory bị xóa hoặc không có quyền ghi.
+     * Safe wrapper for cache()->rememberForever().
+     * Falls back to direct computation if the cache directory is missing or not writable.
      */
     function _hsk_cache_remember_forever(string $key, callable $callback): string
     {
         try {
             return cache()->rememberForever($key, $callback);
-        } catch (\Throwable $e) {
-            // Cache directory không tồn tại hoặc không có quyền ghi (thường sau khi clear cache trên production)
-            // Fallback về tính toán trực tiếp thay vì crash toàn trang
+        } catch (Throwable $e) {
+            // Cache directory does not exist or lacks write permissions (often after clearing cache on production).
+            // Fall back to direct execution instead of crashing the entire page.
             Log::warning('[Helper] Cache write failed, computing directly. Key: ' . $key . ' Error: ' . $e->getMessage());
             return call_user_func($callback);
         }
@@ -344,6 +345,16 @@ if (! function_exists('pinyin_tone_to_unicode')) {
         }
 
         return $base;
+    }
+}
+
+if (! function_exists('hskMediaUrl')) {
+    /**
+     * Helper to generate HSK Media URL from Backblaze B2 (or fallback to local).
+     */
+    function hskMediaUrl(?string $path): string
+    {
+        return app(MediaStorageService::class)->hskMediaUrl($path);
     }
 }
 

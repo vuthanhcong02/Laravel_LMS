@@ -62,10 +62,7 @@
                                 <td class="px-4 py-3.5">
                                     <div class="flex items-center gap-3">
                                         @if($student->avatar)
-                                            @php
-                                                $avatarUrl = str_starts_with($student->avatar, 'http') ? $student->avatar : asset('storage/' . $student->avatar);
-                                            @endphp
-                                            <img src="{{ $avatarUrl }}" alt="{{ $student->first_name }}" class="size-9 rounded-xl object-cover ring-2 ring-transparent group-hover:ring-primary/20 transition-all shadow-xs">
+                                            <img src="{{ $student->avatar_url }}" alt="{{ $student->first_name }}" class="size-9 rounded-xl object-cover ring-2 ring-transparent group-hover:ring-primary/20 transition-all shadow-xs">
                                         @else
                                             <div class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs ring-2 ring-transparent group-hover:ring-primary/20 transition-all shadow-xs">
                                                 {{ substr($student->first_name, 0, 1) }}

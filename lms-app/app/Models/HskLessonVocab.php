@@ -29,14 +29,18 @@ class HskLessonVocab extends Model
     }
 
     /**
-     * Automatically generate full URL for vocabulary audio from .env configured subdomain
+     * Automatically generate full URL for vocabulary audio from B2
      */
-    public function getAudioUrlAttribute()
+    public function getAudioUrlAttribute(): ?string
     {
         if (empty($this->audio_path)) {
             return null;
         }
+
+        $path = str_starts_with($this->audio_path, 'audio/') 
+            ? $this->audio_path 
+            : 'audio/' . ltrim($this->audio_path, '/');
         
-        return asset('storage/hsk_media/audio/' . ltrim($this->audio_path, '/'));
+        return hskMediaUrl($path);
     }
 }

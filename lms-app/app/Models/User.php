@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Services\Media\MediaStorageService;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -114,19 +115,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $name ?: __('Học viên');
     }
 
-    public function getAvatarUrlAttribute()
+    public function getAvatarUrlAttribute(): string
     {
-        $defaultAvatar = 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name) . '&color=FFFFFF&background=8fc0e0';
-
-        if (!$this->avatar) {
-            return $defaultAvatar;
-        }
-
-        if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
-            return $this->avatar;
-        }
-
-        return '/storage/' . ltrim($this->avatar, '/');
+        // Retrieve avatar URL via MediaStorageService (Presigned URL from B2 or fallback to UI Avatar).
+        return app(MediaStorageService::class)->avatarUrl($this->avatar, $this->full_name);
     }
 
     public function enrollments()

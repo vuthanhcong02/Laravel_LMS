@@ -95,7 +95,6 @@
             </div>
         </div>
 
-        <!-- Right: 4 Subtabs (Luyện tập 3D, Trắc nghiệm, Nối từ, Danh sách từ) -->
         <div class="inline-flex items-center p-1 bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl text-xs font-bold shadow-2xs shrink-0 flex-wrap sm:flex-nowrap">
             <button @click="switchDeckSubTab('study')"
                     class="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 btn-tactile cursor-pointer"
@@ -386,7 +385,6 @@
 
                 <template x-if="studyCards().length === 0">
                     <div class="lms-card p-10 bg-white dark:bg-[#181615] border border-[#e8e2d9] dark:border-[#2d2926] rounded-3xl text-center flex flex-col items-center justify-center gap-4">
-                        <!-- Icon theo từng bộ lọc -->
                         <template x-if="studyFilter === 'learned'">
                             <div class="w-16 h-16 rounded-2xl bg-[#fff2ee] dark:bg-[#2a221f] text-[#e07a5f] flex items-center justify-center text-2xl shadow-xs">
                                 <i class="fa-solid fa-book-bookmark"></i>
@@ -403,7 +401,6 @@
                             </div>
                         </template>
 
-                        <!-- Tiêu đề & mô tả theo từng bộ lọc -->
                         <div class="space-y-1.5 max-w-md">
                             <template x-if="studyFilter === 'learned'">
                                 <div>
@@ -437,9 +434,7 @@
                             </template>
                         </div>
 
-                        <!-- Các nút hành động tương ứng -->
                         <div class="flex items-center gap-2.5">
-                            {{-- Khi ở tab "Đã thuộc" nhưng chưa có từ nào --}}
                             <template x-if="studyFilter === 'learned'">
                                 <div class="flex items-center gap-2.5">
                                     <button @click="studyFilter = 'unlearned'; currentIndex = 0"
@@ -454,7 +449,6 @@
                                 </div>
                             </template>
 
-                            {{-- Khi ở tab "Chưa thuộc" nhưng hết từ (100% đã thuộc) --}}
                             <template x-if="studyFilter === 'unlearned'">
                                 <div class="flex items-center gap-2.5">
                                     <button @click="studyFilter = 'all'; currentIndex = 0"
@@ -470,7 +464,6 @@
                                 </div>
                             </template>
 
-                            {{-- Khi ở tab "Tất cả" nhưng không có thẻ nào --}}
                             <template x-if="studyFilter === 'all'">
                                 <div class="flex items-center gap-2.5">
                                     <button @click="openImportModal()"
@@ -487,12 +480,12 @@
         </template>
     </div>
 
-    <!-- TAB 2: QUIZ MODE (TRẮC NGHIỆM) -->
+    <!-- TAB 2: QUIZ MODE -->
     <div x-show="deckSubTab === 'quiz'" class="space-y-4" x-cloak>
         @include('portal.student.flashcards.partials.game-quiz')
     </div>
 
-    <!-- TAB 3: MATCH MODE (NỐI TỪ) -->
+    <!-- TAB 3: MATCH MODE -->
     <div x-show="deckSubTab === 'match'" class="space-y-4" x-cloak>
         @include('portal.student.flashcards.partials.game-match')
     </div>

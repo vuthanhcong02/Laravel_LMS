@@ -83,7 +83,7 @@
 
                     <div class="size-24 sm:size-28 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 shrink-0 bg-slate-100 dark:bg-slate-800">
                         @if($class->thumbnail)
-                            <img src="{{ asset('storage/' . $class->thumbnail) }}" alt="{{ $class->title }}" class="w-full h-full object-cover">
+                            <img src="{{ $class->thumbnail_url }}" alt="{{ $class->title }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-primary bg-primary/10">
                                 <span class="material-symbols-outlined text-4xl">school</span>
@@ -244,7 +244,7 @@
                                         @endif
 
                                         @if($lesson->pdf_path)
-                                            <a href="{{ asset('storage/' . $lesson->pdf_path) }}" target="_blank" rel="noopener noreferrer"
+                                            <a href="{{ $lesson->pdf_url }}" target="_blank" rel="noopener noreferrer"
                                                class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center gap-1 hover:underline"
                                                title="{{ __('Tài liệu PDF bài học') }}">
                                                 <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
@@ -253,7 +253,7 @@
                                         @endif
 
                                         @if($lesson->note_file_path)
-                                            <a href="{{ asset('storage/' . $lesson->note_file_path) }}" target="_blank" rel="noopener noreferrer"
+                                            <a href="{{ $lesson->note_file_url }}" target="_blank" rel="noopener noreferrer"
                                                class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-amber-600 dark:text-amber-400 text-xs font-semibold flex items-center gap-1 hover:underline"
                                                title="{{ __('File ghi chú đính kèm') }}">
                                                 <span class="material-symbols-outlined text-sm">attach_file</span>
@@ -275,6 +275,12 @@
                                                 class="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                                                 title="{{ __('Sửa bài học') }}">
                                             <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+
+                                        <button type="button" @click="confirmDeleteLesson({{ $lesson->id }}, '{{ addslashes($lesson->title) }}')"
+                                                class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
+                                                title="{{ __('Xóa bài học') }}">
+                                            <span class="material-symbols-outlined text-base">delete</span>
                                         </button>
                                     </div>
                                 </div>
@@ -381,7 +387,7 @@
                                                     @endif
 
                                                     @if($lesson->pdf_path)
-                                                        <a href="{{ asset('storage/' . $lesson->pdf_path) }}" target="_blank" rel="noopener noreferrer"
+                                                        <a href="{{ $lesson->pdf_url }}" target="_blank" rel="noopener noreferrer"
                                                            class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 px-2.5 py-1 rounded-lg hover:underline"
                                                            title="{{ __('Xem file PDF bài học') }}">
                                                             <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
@@ -391,7 +397,7 @@
                                                     @endif
 
                                                     @if($lesson->note_file_path)
-                                                        <a href="{{ asset('storage/' . $lesson->note_file_path) }}" target="_blank" rel="noopener noreferrer"
+                                                        <a href="{{ $lesson->note_file_url }}" target="_blank" rel="noopener noreferrer"
                                                            class="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 px-2.5 py-1 rounded-lg hover:underline"
                                                            title="{{ __('Tải file ghi chú đính kèm') }}">
                                                             <span class="material-symbols-outlined text-sm">attach_file</span>
@@ -593,7 +599,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('teacher.classes.enroll', $class->id) }}" method="POST" class="p-6 space-y-5">
+                <form action="{{ route('teacher.classes.enroll', $class->id) }}" method="POST" @submit="if (isSubmittingEnroll) { $event.preventDefault(); return false; } isSubmittingEnroll = true" class="p-6 space-y-5">
                     @csrf
                     <input type="hidden" name="tab" :value="activeTab">
 
@@ -704,10 +710,14 @@
                             {{ __('Hủy') }}
                         </button>
                         <button type="submit"
-                                :disabled="selectedStudentIds.length === 0"
+                                :disabled="selectedStudentIds.length === 0 || isSubmittingEnroll"
                                 class="px-5 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5 active:scale-[0.98]">
-                            <span class="material-symbols-outlined text-base">person_add</span>
-                            <span x-text="selectedStudentIds.length > 1 ? `{{ __('Xác nhận thêm') }} (${selectedStudentIds.length}) {{ __('học viên') }}` : `{{ __('Xác nhận thêm vào lớp') }}`"></span>
+                            <svg x-show="isSubmittingEnroll" class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span x-show="!isSubmittingEnroll" class="material-symbols-outlined text-base">person_add</span>
+                            <span x-text="isSubmittingEnroll ? '{{ __('Đang xử lý...') }}' : (selectedStudentIds.length > 1 ? `{{ __('Xác nhận thêm') }} (${selectedStudentIds.length}) {{ __('học viên') }}` : `{{ __('Xác nhận thêm vào lớp') }}`)"></span>
                         </button>
                     </div>
                 </form>
@@ -748,7 +758,7 @@
                     </button>
                 </div>
 
-                <form :action="lessonForm.action_url" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
+                <form :action="lessonForm.action_url" method="POST" enctype="multipart/form-data" @submit="if (isSubmittingLesson) { $event.preventDefault(); return false; } isSubmittingLesson = true" class="flex flex-col flex-1 overflow-hidden">
                     @csrf
                     <input type="hidden" name="_method" :value="lessonModalMode === 'edit' ? 'PUT' : 'POST'">
                     <input type="hidden" name="action_url" :value="lessonForm.action_url">
@@ -927,10 +937,14 @@
                             {{ __('Hủy') }}
                         </button>
                         <button type="submit"
-                                :disabled="hasFileErrors()"
+                                :disabled="hasFileErrors() || isSubmittingLesson"
                                 class="px-5 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5 active:scale-[0.98]">
-                            <span class="material-symbols-outlined text-base">check_circle</span>
-                            <span x-text="lessonModalMode === 'create' ? '{{ __('Lưu bài học') }}' : '{{ __('Cập nhật') }}'"></span>
+                            <svg x-show="isSubmittingLesson" class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span x-show="!isSubmittingLesson" class="material-symbols-outlined text-base">check_circle</span>
+                            <span x-text="isSubmittingLesson ? '{{ __('Đang lưu...') }}' : (lessonModalMode === 'create' ? '{{ __('Lưu bài học') }}' : '{{ __('Cập nhật') }}')"></span>
                         </button>
                     </div>
                 </form>
@@ -1005,7 +1019,9 @@
                     </p>
                 </div>
 
-                <form :action="lessonToDelete.action_url" method="POST" class="pt-2 flex items-center gap-3">
+                <form :action="lessonToDelete.action_url" method="POST"
+                      @submit="if (isSubmittingDeleteLesson) { $event.preventDefault(); return false; } isSubmittingDeleteLesson = true"
+                      class="pt-2 flex items-center gap-3">
                     @csrf
                     @method('DELETE')
                     <input type="hidden" name="tab" :value="activeTab">
@@ -1014,8 +1030,13 @@
                         {{ __('Hủy bỏ') }}
                     </button>
                     <button type="submit"
-                            class="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-[0.98]">
-                        {{ __('Xác nhận xóa') }}
+                            :disabled="isSubmittingDeleteLesson"
+                            class="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-[0.98] flex items-center justify-center gap-1.5">
+                        <svg x-show="isSubmittingDeleteLesson" class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="isSubmittingDeleteLesson ? '{{ __('Đang xóa...') }}' : '{{ __('Xác nhận xóa') }}'"></span>
                     </button>
                 </form>
 
