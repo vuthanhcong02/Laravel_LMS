@@ -36,6 +36,8 @@
             @endif
 
             <form action="{{ route('teacher.quizzes.update', $quiz->id) }}" method="POST" enctype="multipart/form-data"
+                  x-data="{ isSubmitting: false }"
+                  @submit="if (isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true"
                   class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-7 space-y-5 shadow-sm">
                 @csrf
                 @method('PUT')
@@ -116,9 +118,15 @@
 
                 <div class="pt-5 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
                     <a href="{{ route('teacher.quizzes.index') }}" class="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-xs sm:text-sm">{{ __('Hủy') }}</a>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98] text-xs sm:text-sm">
-                        <span class="material-symbols-outlined text-base">save</span>
-                        {{ __('Cập nhật') }}
+                    <button type="submit"
+                            :disabled="isSubmitting"
+                            class="px-5 py-2.5 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98] text-xs sm:text-sm">
+                        <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-show="!isSubmitting" class="material-symbols-outlined text-base">save</span>
+                        <span x-text="isSubmitting ? '{{ __('Đang cập nhật...') }}' : '{{ __('Cập nhật') }}'"></span>
                     </button>
                 </div>
             </form>
