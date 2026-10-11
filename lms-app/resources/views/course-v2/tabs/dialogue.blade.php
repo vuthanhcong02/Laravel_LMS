@@ -67,18 +67,9 @@
                                 <h3 class="text-base font-bold text-slate-900 dark:text-white">{{ $section->title }}</h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 font-normal">{{ __('Nghe và luyện tập hội thoại') }}</p>
                             </div>
-                            @if($section->audio_path)
-                                @php
-                                    $audioSrc = str_starts_with($section->audio_path, 'http') 
-                                        ? $section->audio_path 
-                                        : (str_starts_with($section->audio_path, 'audio/') 
-                                            ? '/storage/hsk_media/' . $section->audio_path 
-                                            : (str_starts_with($section->audio_path, '/storage/') 
-                                                ? $section->audio_path 
-                                                : '/storage/hsk_media/audio/' . $section->audio_path));
-                                @endphp
+                            @if($section->audio_url)
                                 <div class="w-full sm:w-72 md:w-80 shrink-0">
-                                    <audio controls class="w-full h-9 rounded-xl focus:outline-none" src="{{ $audioSrc }}"></audio>
+                                    <audio controls class="w-full h-9 rounded-xl focus:outline-none" src="{{ $section->audio_url }}"></audio>
                                 </div>
                             @endif
                         </div>
@@ -88,9 +79,7 @@
                                     $roleColors = ['text-[#e07a5f]', 'text-emerald-600 dark:text-emerald-400', 'text-blue-600 dark:text-blue-400', 'text-purple-600 dark:text-purple-400'];
                                     $colorIndex = crc32($dialogue->role) % count($roleColors);
                                     $roleColor = $roleColors[$colorIndex];
-                                    $lineAudio = $dialogue->audio_path 
-                                        ? (str_starts_with($dialogue->audio_path, 'http') ? $dialogue->audio_path : (str_starts_with($dialogue->audio_path, 'audio/') ? '/storage/hsk_media/' . $dialogue->audio_path : '/storage/hsk_media/audio/' . $dialogue->audio_path))
-                                        : null;
+                                    $lineAudio = $dialogue->audio_url;
                                     $playParam = $lineAudio ? $lineAudio : addslashes($dialogue->character);
                                 @endphp
                                 <div class="p-4 rounded-xl bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] space-y-1 relative group">

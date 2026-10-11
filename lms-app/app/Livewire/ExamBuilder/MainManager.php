@@ -95,7 +95,7 @@ class MainManager extends Component
             // Reset variable after upload
             unset($this->sectionAudios[$sectionId]);
             
-            // Thông báo
+            // Notification
             $this->dispatch('notify', msg: 'Đã tải lên audio phần thi thành công!', type: 'success');
         }
     }
@@ -107,16 +107,16 @@ class MainManager extends Component
         
         if (!$qType) return;
 
-        // Lấy hoặc tạo Section cho đề thi (Nghe/Đọc/Viết)
+        // Retrieve or create section for mock exam (Listening/Reading/Writing)
         $section = $this->exam->sections()->firstOrCreate(
             ['skill_type' => $sectionId],
             ['order_index' => $this->exam->sections()->count() + 1, 'name' => config('hsk_builder.sections')[$sectionId]['name'] ?? 'Section']
         );
 
-        // Lấy thứ tự lớn nhất hiện tại
+        // Retrieve the highest current order index
         $maxOrder = $section->questionGroups()->max('order_index') ?? 0;
 
-        // Tạo Question Group mới
+        // Create new Question Group
         $section->questionGroups()->create([
             'group_type' => $questionTypeId, 
             'title' => 'Part ' . ($maxOrder + 1),
@@ -126,12 +126,12 @@ class MainManager extends Component
             'passage_image' => null,
         ]);
 
-        $this->addingPartToSection = null; // Đóng dropdown
+        $this->addingPartToSection = null; // Close dropdown
     }
 
     public function deletePart($groupId)
     {
-        $group = \App\Models\HskMockExamQuestionGroup::find($groupId);
+        $group = HskMockExamQuestionGroup::find($groupId);
         if ($group) {
             $group->delete();
         }
@@ -145,7 +145,7 @@ class MainManager extends Component
 
     public function render()
     {
-        // Load lại dữ liệu mỗi lần render
+        // Reload data on every render cycle
         $this->exam->load(['sections' => function($q) {
             $q->orderBy('order_index');
         }, 'sections.questionGroups' => function($q) {

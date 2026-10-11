@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\Blog;
 use App\Models\Category;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -152,14 +153,14 @@ class BlogService
         }
 
         if ($request->input('old_thumbnail')) {
-            return asset('storage/' . $request->input('old_thumbnail'));
+            return app(MediaStorageService::class)->url($request->input('old_thumbnail'));
         }
 
         return null;
     }
 
     /**
-     * Handle CKEditor image upload.
+     * Handle CKEditor image upload to Backblaze B2.
      *
      * @param \Illuminate\Http\Request $request
      * @return array
@@ -169,10 +170,10 @@ class BlogService
         if ($request->hasFile('upload')) {
             $file = $request->file('upload');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('blogs/content', $fileName, 'public');
+            $path = $file->storeAs('blogs/content', $fileName, 'b2');
             
             return [
-                'url' => asset('storage/' . $path)
+                'url' => app(MediaStorageService::class)->url($path)
             ];
         }
 

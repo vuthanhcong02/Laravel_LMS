@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,11 +50,7 @@ class Lesson extends Model
             return null;
         }
 
-        if (str_starts_with($this->pdf_path, 'http://') || str_starts_with($this->pdf_path, 'https://')) {
-            return $this->pdf_path;
-        }
-
-        return '/storage/' . ltrim($this->pdf_path, '/');
+        return app(MediaStorageService::class)->url($this->pdf_path);
     }
 
     /**
@@ -65,11 +62,7 @@ class Lesson extends Model
             return null;
         }
 
-        if (str_starts_with($this->note_file_path, 'http://') || str_starts_with($this->note_file_path, 'https://')) {
-            return $this->note_file_path;
-        }
-
-        return '/storage/' . ltrim($this->note_file_path, '/');
+        return app(MediaStorageService::class)->url($this->note_file_path);
     }
 
     /**
@@ -160,7 +153,7 @@ class Lesson extends Model
                 $line = trim($line);
                 if (empty($line)) continue;
 
-                // Support "Title: https://..." or "Phần 1 - https://..."
+                // Support "Title: https://..." or "Part 1 - https://..."
                 if (preg_match('/^(.*?)(?:[:\-]\s*)(https?:\/\/[^\s]+)$/i', $line, $matches)) {
                     $title = trim($matches[1]);
                     $url = trim($matches[2]);

@@ -24,8 +24,8 @@
                           'essay_grading_type' => $q->essay_grading_type ?? 'auto',
                           'correct_answer_text' => $q->correct_answer_text ?? '',
                           'case_sensitive' => (bool) $q->case_sensitive,
-                          'image_url' => $q->image_path ? asset('storage/' . $q->image_path) : null,
-                          'audio_url' => $q->audio_path ? asset('storage/' . $q->audio_path) : null,
+                          'image_url' => $q->image_url,
+                          'audio_url' => $q->audio_url,
                           'options' => $q->options->map(fn($o) => [
                               'id' => $o->id,
                               'option_text' => $o->option_text,
@@ -44,8 +44,8 @@
                       'essay_grading_type' => $q['essay_grading_type'] ?? ($dbQuestion ? $dbQuestion->essay_grading_type : 'auto'),
                       'correct_answer_text' => $q['correct_answer_text'] ?? ($dbQuestion ? $dbQuestion->correct_answer_text : ''),
                       'case_sensitive' => isset($q['case_sensitive']) ? (bool)$q['case_sensitive'] : ($dbQuestion ? (bool)$dbQuestion->case_sensitive : false),
-                      'image_url' => $dbQuestion && $dbQuestion->image_path ? asset('storage/' . $dbQuestion->image_path) : null,
-                      'audio_url' => $dbQuestion && $dbQuestion->audio_path ? asset('storage/' . $dbQuestion->audio_path) : null,
+                      'image_url' => $dbQuestion?->image_url,
+                      'audio_url' => $dbQuestion?->audio_url,
                       'options' => $q['options'] ?? []
                   ];
               })) }},

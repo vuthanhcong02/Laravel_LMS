@@ -81,7 +81,7 @@
                 <div class="grid grid-cols-2 gap-2.5">
                     <template x-for="tone in (currentPinyin ? currentPinyin.tones : [])" :key="tone.id">
                         <button type="button"
-                            @click="selectedTone = tone; let u = tone.audio ? ('/storage/audio/pinyin/' + tone.audio) : null; if(u){window.playAudio(u);}else{window.playWordAudio(tone.display);}"
+                            @click="selectedTone = tone; if(tone.audio_url){window.playAudio(tone.audio_url);}else{window.playWordAudio(tone.display);}"
                             :class="selectedTone && selectedTone.id === tone.id
                                 ? 'border-[#e07a5f] bg-[#fff2ee] dark:bg-[#2c221e] text-[#e07a5f] ring-2 ring-[#e07a5f]/20 font-bold'
                                 : 'border-[#e8e2d9] dark:border-[#2d2926] bg-[#f8f6f3]/60 dark:bg-[#201d1b]/60 hover:bg-[#fff2ee] dark:hover:bg-[#2c221e] hover:border-[#e07a5f]/50 text-slate-700 dark:text-slate-300'"

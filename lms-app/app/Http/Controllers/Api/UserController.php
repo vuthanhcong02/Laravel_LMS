@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\User\UserRepository;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class UserController extends Controller
 {
@@ -33,15 +36,15 @@ class UserController extends Controller
                 'data' => $this->userRepository->create($data),
                 'message' => 'user created successfully',
             ], 200);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Xử lý lỗi validation
+        } catch (ValidationException $e) {
+            // Handle validation error
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
                 'errors' => $e->errors(),
             ], 422);
-        } catch (\Throwable $e) {
-            // Xử lý các ngoại lệ khác
+        } catch (Throwable $e) {
+            // Handle other exceptions
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -61,10 +64,10 @@ class UserController extends Controller
     public function getAll()
     {
         try {
-            // Thực hiện validation đối với các tham số nếu cần
-            // Ví dụ: kiểm tra nếu có một tham số không mong muốn thì trả về lỗi 422
+            // Validate query parameters if needed
+            // Example: check for unexpected parameters and return 422 if invalid
             $validator = Validator::make(request()->all(), [
-                // Định nghĩa các quy tắc kiểm tra nếu cần
+                // Define validation rules if needed
             ]);
 
             if ($validator->fails()) {
@@ -74,7 +77,7 @@ class UserController extends Controller
                 ], 422);
             }
 
-            // Gọi phương thức trong repository để lấy danh sách người dùng
+            // Call repository method to retrieve user list
             $users = $this->userRepository->getAll();
 
             return response()->json([
@@ -82,8 +85,8 @@ class UserController extends Controller
                 'data' => $users,
                 'message' => 'Users found',
             ], 200);
-        } catch (\Exception $e) {
-            // Xử lý ngoại lệ trong trường hợp có lỗi xảy ra
+        } catch (Exception $e) {
+            // Handle unexpected exception
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),

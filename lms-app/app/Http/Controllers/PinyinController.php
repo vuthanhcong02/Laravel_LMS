@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Models\Pinyin;
-use App\Models\PinyinFinal;
-use App\Models\PinyinInitial;
-use Illuminate\Support\Facades\Cache;
+use App\Services\Media\MediaStorageService;
 use App\Services\PinyinService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PinyinController extends Controller
 {
@@ -39,11 +38,12 @@ class PinyinController extends Controller
                 'full' => $pinyin->full,
                 'tones' => $pinyin->tones->map(function ($tone) {
                     return [
-                        'id'      => $tone->id,
-                        'tone'    => $tone->tone,
-                        'display' => $tone->display,
-                        'audio'   => $tone->audio,
-                        'examples' => $tone->examples->map(function ($ex) {
+                        'id'        => $tone->id,
+                        'tone'      => $tone->tone,
+                        'display'   => $tone->display,
+                        'audio'     => $tone->audio,
+                        'audio_url' => $tone->audio ? app(MediaStorageService::class)->pinyinAudioUrl($tone->audio) : null,
+                        'examples'  => $tone->examples->map(function ($ex) {
                             return [
                                 'id'     => $ex->id,
                                 'hanzi'  => $ex->hanzi,

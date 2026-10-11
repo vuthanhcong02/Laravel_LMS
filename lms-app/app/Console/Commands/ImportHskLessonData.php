@@ -324,7 +324,7 @@ class ImportHskLessonData extends Command
                                         'section_han' => $secData['section_han'] ?? null,
                                         'section_vi' => $secData['section_vi'] ?? null,
                                         'audio_path' => $sectionAudioPath,
-                                        'image_path' => !empty($secData['imageFileName']) ? "images/" . $secData['imageFileName'] : null
+                                        'image_path' => !empty($secData['imageFileName']) ? "images/{$levelId}/bt/" . $secData['imageFileName'] : null
                                     ]);
 
                                     $questions = $secData['questions'] ?? [];
@@ -340,7 +340,7 @@ class ImportHskLessonData extends Command
                                             'sub_questions' => $q['sub_questions'] ?? null,
                                             'correct_answer' => isset($q['correct']) ? (is_array($q['correct']) ? json_encode($q['correct']) : $q['correct']) : null,
                                             'question_segments' => $q['question_segments'] ?? null,
-                                            'image_path' => !empty($q['imageFileName']) ? "images/" . $q['imageFileName'] : null
+                                            'image_path' => !empty($q['imageFileName']) ? "images/{$levelId}/bt/" . $q['imageFileName'] : null
                                         ]);
                                     }
                                 }

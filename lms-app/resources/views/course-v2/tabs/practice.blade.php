@@ -108,12 +108,12 @@
                                             </template>
                                         </div>
                                         <!-- Right: Sticky Audio Player (when on listening tab) -->
-                                        <template x-if="practiceTab === 'listening' && currentLesson?.practices?.find(p => p.type === 'listening')?.audio_path">
+                                        <template x-if="practiceTab === 'listening' && currentLesson?.practices?.find(p => p.type === 'listening')?.audio_url">
                                             <div class="flex items-center gap-2 flex-1 max-w-md bg-slate-50 dark:bg-[#23201e] border border-slate-200/80 dark:border-[#2d2926] rounded-xl px-3 py-1.5 shadow-2xs">
                                                 <div class="w-6 h-6 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
                                                     <span class="material-symbols-outlined text-[16px]">headphones</span>
                                                 </div>
-                                                <audio controls class="w-full h-8 rounded-lg" :src="'/storage/hsk_media/' + currentLesson?.practices?.find(p => p.type === 'listening')?.audio_path"></audio>
+                                                <audio controls class="w-full h-8 rounded-lg" :src="currentLesson?.practices?.find(p => p.type === 'listening')?.audio_url"></audio>
                                             </div>
                                         </template>
                                     </div>
@@ -149,28 +149,28 @@
                                                                     </div>
                                                                 </template>
                                                             </div>
-                                                            <template x-if="sect.audio_path">
+                                                            <template x-if="sect.audio_url">
                                                                <div class="sticky top-0 z-20 my-3 py-1 bg-[#f8f6f3]/95 dark:bg-[#0e0c0b]/95 backdrop-blur-md">
                                                                    <div class="bg-white dark:bg-[#181615] border border-slate-200/80 dark:border-[#2d2926] rounded-2xl p-3 sm:p-3.5 flex flex-col gap-2 shadow-sm">
                                                                         <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-primary dark:text-primary-light">
                                                                             <span class="material-symbols-outlined text-[20px]">volume_up</span>
                                                                             <span x-text="'Nghe đoạn hội thoại phần ' + (sIdx + 1) + ':'"></span>
                                                                         </div>
-                                                                       <audio controls class="w-full h-10 rounded-xl" :src="'/storage/hsk_media/' + sect.audio_path"></audio>
+                                                                       <audio controls class="w-full h-10 rounded-xl" :src="sect.audio_url"></audio>
                                                                    </div>
                                                                </div>
                                                             </template>
-                                                            <template x-if="sect.image_path">
+                                                            <template x-if="sect.image_url">
                                                                 <div class="my-4 text-center border border-slate-200/80 dark:border-[#2d2926] rounded-2xl overflow-hidden bg-white dark:bg-[#181615] p-3 flex justify-center shadow-2xs">
-                                                                    <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
+                                                                    <img :src="sect.image_url" class="max-h-96 object-contain rounded-xl">
                                                                 </div>
                                                             </template>
                                                     <div class="flex flex-col gap-4">
                                                         <template x-for="(quiz, qIdx) in sect.questions" :key="qIdx">
                                                             <div class="bg-white dark:bg-[#181615] border border-slate-200/80 dark:border-[#2d2926] p-5 rounded-2xl space-y-4 text-left shadow-2xs">
-                                                                      <template x-if="quiz.image_path">
+                                                                      <template x-if="quiz.image_url">
                                                                           <div class="mb-4 text-center border border-slate-200/80 dark:border-[#2d2926] rounded-xl overflow-hidden bg-slate-50 dark:bg-[#23201e] p-2 flex justify-center">
-                                                                              <img :src="'/storage/hsk_media/' + quiz.image_path" class="max-h-64 object-contain rounded-lg">
+                                                                              <img :src="quiz.image_url" class="max-h-64 object-contain rounded-lg">
                                                                           </div>
                                                                       </template>
                                                                       <template x-if="quiz.ques_type === 'fill_blank_dropdrag'">
@@ -487,17 +487,17 @@
                                               </div>
                                           </template>
                                                             </div>
-                                                            <template x-if="sect.image_path">
+                                                            <template x-if="sect.image_url">
                                                                 <div class="my-4 text-center border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 flex justify-center shadow-sm">
-                                                                    <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
+                                                                    <img :src="sect.image_url" class="max-h-96 object-contain rounded-xl">
                                                                 </div>
                                                             </template>
                                                             <div class="flex flex-col gap-4">
                                                                 <template x-for="(quiz, qIdx) in sect.questions" :key="qIdx">
                                                                                                                                                                                                                                                                                                                                             <div class="bg-white dark:bg-[#181615] border border-slate-200/80 dark:border-[#2d2926] p-5 rounded-2xl shadow-2xs space-y-4 text-left">
-                                                                      <template x-if="quiz.image_path">
+                                                                      <template x-if="quiz.image_url">
                                                                           <div class="mb-4 text-center border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-800/50 p-2 flex justify-center">
-                                                                              <img :src="'/storage/hsk_media/' + quiz.image_path" class="max-h-64 object-contain rounded-lg">
+                                                                              <img :src="quiz.image_url" class="max-h-64 object-contain rounded-lg">
                                                                           </div>
                                                                       </template>
                                                                       <template x-if="quiz.ques_type === 'fill_blank_dropdrag'">
@@ -813,9 +813,9 @@
                                                                     </div>
                                                                 </template>
                                                             </div>
-                                                            <template x-if="sect.image_path">
+                                                            <template x-if="sect.image_url">
                                                                 <div class="my-4 text-center border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 flex justify-center shadow-sm">
-                                                                    <img :src="'/storage/hsk_media/' + sect.image_path" class="max-h-96 object-contain rounded-xl">
+                                                                    <img :src="sect.image_url" class="max-h-96 object-contain rounded-xl">
                                                                 </div>
                                                             </template>
                                                             <div class="flex flex-col gap-4">
@@ -1026,6 +1026,11 @@
                                                                                         </template>
                                                                                     </div>
                                                                                 </div>
+                                                                                <template x-if="quiz.image_url">
+                                                                                    <div class="my-3.5 text-center border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl overflow-hidden bg-[#fcfaf7] dark:bg-[#23201e] p-2 flex justify-center shadow-2xs">
+                                                                                        <img :src="quiz.image_url" class="max-h-64 object-contain rounded-lg" alt="Hình ảnh câu hỏi">
+                                                                                    </div>
+                                                                                </template>
                                                                                 <div class="mt-3.5">
                                                                                     <textarea 
                                                                                         class="w-full bg-[#fcfaf7] dark:bg-[#23201e] border border-[#e8e2d9] dark:border-[#2d2926] rounded-xl p-3.5 text-sm zh-text text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#e07a5f] outline-none transition-all resize-none min-h-[100px]"

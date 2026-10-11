@@ -31,13 +31,18 @@ class HskLessonDialogueSection extends Model
     }
 
     /**
-     * Automatically generate full URL for dialogue audio from .env configured subdomain
+     * Get dialogue section audio URL from B2 Storage.
      */
-    public function getAudioUrlAttribute()
+    public function getAudioUrlAttribute(): ?string
     {
         if (empty($this->audio_path)) {
             return null;
         }
-        return asset('storage/hsk_media/audio/' . ltrim($this->audio_path, '/'));
+
+        $path = str_starts_with($this->audio_path, 'audio/')
+            ? $this->audio_path
+            : 'audio/' . ltrim($this->audio_path, '/');
+
+        return hskMediaUrl($path);
     }
 }

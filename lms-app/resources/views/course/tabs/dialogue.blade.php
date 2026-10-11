@@ -26,7 +26,7 @@
                                 <!-- Dynamic Audio Player -->
                                 <div class="w-full md:w-1/2 lg:w-[350px]">
                                     <audio
-                                        src="{{ $section->audio_path ? (str_starts_with($section->audio_path, 'http') ? $section->audio_path : (str_starts_with($section->audio_path, 'audio/') ? '/storage/hsk_media/' . $section->audio_path : '/storage/hsk_media/audio/' . $section->audio_path)) : '' }}"
+                                        src="{{ $section->audio_url ?? '' }}"
                                         controls class="w-full h-10 outline-none"></audio>
                                 </div>
                             </div>

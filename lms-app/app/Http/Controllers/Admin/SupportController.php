@@ -45,7 +45,7 @@ class SupportController extends Controller
                 'message' => 'Đã gửi phản hồi cho người dùng.',
                 'data' => [
                     'message' => $message->message,
-                    'attachment_path' => $message->attachment_path ? asset('storage/' . $message->attachment_path) : null,
+                    'attachment_path' => $message->attachment_url,
                     'created_at' => $message->created_at->format('H:i d/m/Y'),
                     'user' => [
                         'first_name' => $message->user->first_name,
