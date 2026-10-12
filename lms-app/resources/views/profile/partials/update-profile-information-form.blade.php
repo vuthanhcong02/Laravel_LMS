@@ -17,6 +17,7 @@
         <div class="p-4 rounded-2xl bg-[#f8f6f3] dark:bg-[#201d1b] border border-[#e8e2d9] dark:border-[#2d2926] flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <div class="relative group shrink-0">
                 <img :src="imageUrl" 
+                     referrerpolicy="no-referrer"
                      class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-white dark:border-[#2d2926] shadow-md transition-transform group-hover:scale-105"
                      alt="{{ $user->first_name }} {{ $user->last_name }}">
                 <label for="avatar_input" class="absolute inset-0 bg-black/50 text-white rounded-2xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity backdrop-blur-xs">

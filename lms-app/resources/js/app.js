@@ -47,6 +47,7 @@ import teacherClassDetail from './alpine/components/teacher-class-detail.js';
 import teacherQuizResults from './alpine/components/teacher-quiz-results.js';
 import teacherScheduleModal from './alpine/components/teacher-schedule-modal.js';
 import { filePreviewModal, fileUploadPreview } from './alpine/components/file-preview.js';
+import copyLinkButton from './alpine/components/copy-link-button.js';
 
 window.customFlashcardApp = customFlashcardApp;
 window.flashcardApp = flashcardApp;
@@ -58,6 +59,7 @@ window.streakHeatmapWidget = streakHeatmapWidget;
 window.gamificationLeaderboard = gamificationLeaderboard;
 window.filePreviewModal = filePreviewModal;
 window.fileUploadPreview = fileUploadPreview;
+window.copyLinkButton = copyLinkButton;
 
 
 if (!window.Alpine) {
@@ -108,6 +110,7 @@ if (!window.Alpine) {
     Alpine.data('teacherScheduleModal', teacherScheduleModal);
     Alpine.data('filePreviewModal', filePreviewModal);
     Alpine.data('fileUploadPreview', fileUploadPreview);
+    Alpine.data('copyLinkButton', copyLinkButton);
 
     Alpine.start();
 

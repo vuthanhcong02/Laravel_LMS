@@ -66,6 +66,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
+                    <x-portal.copy-link-button :url="route('student.quizzes.show', $quiz->id)" variant="button" :buttonText="__('Sao chép link bài thi')" />
 
                     <button type="button"
                             x-show="questions.length > 0"

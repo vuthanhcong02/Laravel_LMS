@@ -244,11 +244,14 @@
                                         @endif
 
                                         @if($lesson->pdf_path)
+                                            @php
+                                                $isPpt = str_ends_with(strtolower($lesson->pdf_path), '.ppt') || str_ends_with(strtolower($lesson->pdf_path), '.pptx');
+                                            @endphp
                                             <a href="{{ $lesson->pdf_url }}" target="_blank" rel="noopener noreferrer"
                                                class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center gap-1 hover:underline"
-                                               title="{{ __('Tài liệu PDF bài học') }}">
-                                                <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
-                                                <span class="hidden sm:inline">{{ __('PDF') }}</span>
+                                               title="{{ $isPpt ? __('Slide bài giảng (PowerPoint)') : __('Tài liệu PDF bài học') }}">
+                                                <span class="material-symbols-outlined text-sm">{{ $isPpt ? 'slideshow' : 'picture_as_pdf' }}</span>
+                                                <span class="hidden sm:inline">{{ $isPpt ? __('Slide') : __('PDF') }}</span>
                                             </a>
                                         @endif
 
@@ -387,11 +390,14 @@
                                                     @endif
 
                                                     @if($lesson->pdf_path)
+                                                        @php
+                                                            $isPpt = str_ends_with(strtolower($lesson->pdf_path), '.ppt') || str_ends_with(strtolower($lesson->pdf_path), '.pptx');
+                                                        @endphp
                                                         <a href="{{ $lesson->pdf_url }}" target="_blank" rel="noopener noreferrer"
                                                            class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 px-2.5 py-1 rounded-lg hover:underline"
-                                                           title="{{ __('Xem file PDF bài học') }}">
-                                                            <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
-                                                            <span>{{ __('PDF') }}</span>
+                                                           title="{{ $isPpt ? __('Xem / Tải file Slide PowerPoint') : __('Xem file PDF bài học') }}">
+                                                            <span class="material-symbols-outlined text-sm">{{ $isPpt ? 'slideshow' : 'picture_as_pdf' }}</span>
+                                                            <span>{{ $isPpt ? __('Slide') : __('PDF') }}</span>
                                                             <span class="material-symbols-outlined text-[10px]">download</span>
                                                         </a>
                                                     @endif
@@ -818,17 +824,17 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center justify-between">
                                 <span class="flex items-center gap-1.5">
-                                    <span class="material-symbols-outlined text-sm text-blue-500">picture_as_pdf</span>
-                                    <span>{{ __('Tài liệu PDF bài giảng (Slide / Giáo trình)') }}</span>
+                                    <span class="material-symbols-outlined text-sm text-blue-500">slideshow</span>
+                                    <span>{{ __('Tài liệu Slide / Giáo trình bài giảng') }}</span>
                                 </span>
-                                <span class="text-[11px] font-normal text-slate-400">PDF (tối đa 20MB)</span>
+                                <span class="text-[11px] font-normal text-slate-400">PDF, PPTX, PPT (tối đa 100MB)</span>
                             </label>
 
                             <template x-if="lessonForm.pdf_path">
                                 <div class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 flex items-center justify-between text-xs text-blue-600 dark:text-blue-400 font-medium">
                                     <a :href="lessonForm.pdf_url" target="_blank" class="flex items-center gap-1.5 hover:underline truncate max-w-[280px]">
-                                        <span class="material-symbols-outlined text-base">picture_as_pdf</span>
-                                        <span>{{ __('Xem file PDF hiện tại') }}</span>
+                                        <span class="material-symbols-outlined text-base">description</span>
+                                        <span>{{ __('Xem file Slide / Giáo trình hiện tại') }}</span>
                                     </a>
                                     <label class="flex items-center gap-1 text-[11px] text-rose-500 font-semibold cursor-pointer">
                                         <input type="checkbox" name="remove_pdf" value="1" class="rounded text-rose-500 focus:ring-rose-400 size-3.5">
@@ -839,7 +845,7 @@
 
                             <input type="file"
                                    name="pdf_file"
-                                   accept=".pdf"
+                                   accept=".pdf,.pptx,.ppt"
                                    @change="handlePdfChange($event)"
                                    class="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer border {{ $errors->has('pdf_file') ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700' }} rounded-xl p-1 bg-slate-50 dark:bg-slate-800/80">
 
@@ -859,7 +865,7 @@
                                     <span class="material-symbols-outlined text-sm text-amber-500">attach_file</span>
                                     <span>{{ __('File Note / Tài liệu bổ trợ đính kèm') }}</span>
                                 </span>
-                                <span class="text-[11px] font-normal text-slate-400">Doc / Txt / Zip (tối đa 20MB)</span>
+                                <span class="text-[11px] font-normal text-slate-400">Doc / Txt / Zip / PPT (tối đa 100MB)</span>
                             </label>
 
                             <template x-if="lessonForm.note_file_path">

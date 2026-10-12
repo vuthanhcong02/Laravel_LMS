@@ -223,18 +223,21 @@
                             @endphp
 
                                                         @if($currentLesson->pdf_path)
-                                @php $hasMaterials = true; @endphp
+                                @php 
+                                    $hasMaterials = true; 
+                                    $isPpt = str_ends_with(strtolower($currentLesson->pdf_path), '.ppt') || str_ends_with(strtolower($currentLesson->pdf_path), '.pptx');
+                                @endphp
                                 <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700/60 group">
                                     <div class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
-                                         @click="openPreview('{{ $currentLesson->pdf_url }}', '{{ __('Tài liệu bài giảng (PDF)') }}')">
-                                        <div class="size-8 rounded-lg bg-rose-50 dark:bg-rose-950/30 text-rose-500 border border-rose-200 dark:border-rose-900/50 flex items-center justify-center shrink-0">
-                                            <span class="material-symbols-outlined text-base">picture_as_pdf</span>
+                                         @click="openPreview('{{ $currentLesson->pdf_url }}', '{{ $isPpt ? __('Slide bài giảng (PowerPoint)') : __('Tài liệu bài giảng (PDF)') }}')">
+                                        <div class="size-8 rounded-lg {{ $isPpt ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-500 border border-amber-200 dark:border-amber-900/50' : 'bg-rose-50 dark:bg-rose-950/30 text-rose-500 border border-rose-200 dark:border-rose-900/50' }} flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-base">{{ $isPpt ? 'slideshow' : 'picture_as_pdf' }}</span>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors">
-                                                {{ __('Tài liệu bài giảng (PDF)') }}
+                                                {{ $isPpt ? __('Slide bài giảng (PowerPoint)') : __('Tài liệu bài giảng (PDF)') }}
                                             </p>
-                                            <span class="text-[11px] text-slate-400 font-medium">{{ __('Tài liệu PDF') }}</span>
+                                            <span class="text-[11px] text-slate-400 font-medium">{{ $isPpt ? __('Slide PPTX / PPT') : __('Tài liệu PDF') }}</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-1.5 shrink-0">

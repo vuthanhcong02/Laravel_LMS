@@ -697,9 +697,14 @@ class QuizService
 
             // Recalculate total score from all answers
             $totalScore = (float) QuizAttemptAnswer::where('attempt_id', $attempt->id)->sum('marks_obtained');
+            $quiz = $attempt->quiz()->with('questions')->first();
+            $totalMarks = (float) ($quiz?->questions->sum('marks') ?: 10);
+            $scoreOnScale10 = $totalMarks > 0 ? round(($totalScore / $totalMarks) * 10, 2) : 0;
 
             $attempt->update([
-                'score'          => $totalScore,
+                'raw_score'      => $totalScore,
+                'total_marks'    => $totalMarks,
+                'score'          => $scoreOnScale10,
                 'grading_status' => 'graded',
             ]);
         });

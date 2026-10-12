@@ -24,7 +24,10 @@ class AssignmentController extends Controller
 
     public function show(Assignment $assignment)
     {
-        abort_unless($this->service->isEnrolled(auth()->id(), $assignment), 403, __('Bạn chưa đăng ký khoá học này.'));
+        // Abort 404 if assignment is unpublished or student is not enrolled
+        abort_if($assignment->status !== Assignment::STATUS_PUBLISHED, 404);
+        abort_unless($this->service->isEnrolled(auth()->id(), $assignment), 404);
+
         return redirect()->route('student.assignments.index', [
             'open'      => $assignment->id,
             'lesson_id' => $assignment->lesson_id,

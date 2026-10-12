@@ -82,8 +82,7 @@
                     class="flex items-center gap-2 p-1 pl-2.5 rounded-xl border border-[#e8e2d9] dark:border-slate-700 hover:border-[#e07a5f] bg-white dark:bg-slate-800 transition-all btn-tactile">
                     <span
                         class="text-xs font-bold text-slate-800 dark:text-white hidden sm:inline">{{ auth()->user()->first_name }}</span>
-                    <img src="{{ auth()->user()->avatar_url ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80' }}"
-                        alt="Avatar" class="w-7 h-7 rounded-full object-cover">
+                    <x-portal.user-avatar :user="auth()->user()" size="size-7" border="border border-[#e8e2d9] dark:border-slate-700" />
                 </a>
             @else
                 <button @click="authModalOpen = true; authModalTab = 'login'"

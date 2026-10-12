@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -131,32 +132,42 @@ class AuthService
             $user = User::where('email', $email)->first();
 
             if ($user) {
-                // ACCOUNT AUTO-LINKING (Best Practice):
-                // Google has verified this email. We trust it and allow login.
-                // If they registered via password (provider is null), we link this social account.
+                // ACCOUNT AUTO-LINKING:
+                // Google has verified this email. Link account if provider is empty.
                 if (empty($user->provider)) {
                     $user->provider = $provider;
                     $user->provider_id = $socialUser->getId();
-                    // Optional: update avatar if they didn't have one
-                    if (empty($user->avatar)) {
-                        $user->avatar = $socialUser->getAvatar();
-                    }
-                    $user->save();
                 }
-            } else {
-                $avatar = $socialUser->getAvatar();
 
+                // If user has no avatar or still uses external HTTP avatar, sync to B2.
+                $rawAvatar = $socialUser->getAvatar();
+                if ($rawAvatar && (empty($user->avatar) || str_starts_with($user->avatar, 'http'))) {
+                    $storageService = app(MediaStorageService::class);
+                    $storedAvatar = $storageService->uploadAvatarFromUrl($user, $rawAvatar);
+                    $user->avatar = $storedAvatar ?: $rawAvatar;
+                }
+
+                $user->save();
+            } else {
                 $user = User::create([
                     'first_name' => splitName($socialUser->getName())['first_name'],
                     'last_name' => splitName($socialUser->getName())['last_name'],
                     'email' => $email,
                     'password' => bcrypt(str()->random(16)),
-                    'avatar' => $avatar,
+                    'avatar' => null,
                     'provider' => $provider,
                     'provider_id' => $socialUser->getId(),
                 ]);
                 $user->email_verified_at = now();
                 $user->role = User::ROLE_GUEST;
+
+                $rawAvatar = $socialUser->getAvatar();
+                if ($rawAvatar) {
+                    $storageService = app(MediaStorageService::class);
+                    $storedAvatar = $storageService->uploadAvatarFromUrl($user, $rawAvatar);
+                    $user->avatar = $storedAvatar ?: $rawAvatar;
+                }
+
                 $user->save();
             }
 

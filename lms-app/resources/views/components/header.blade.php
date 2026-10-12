@@ -147,6 +147,7 @@
                     <button @click="open = !open" @click.away="open = false"
                         class="flex items-center gap-2 focus:outline-none">
                         <img src="{{ auth()->user()->avatar_url }}"
+                            referrerpolicy="no-referrer"
                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->first_name . ' ' . auth()->user()->last_name) }}&color=FFFFFF&background=8fc0e0';"
                             alt="Avatar" class="h-10 w-10 rounded-full object-cover border-2 border-primary/20">
                         <span

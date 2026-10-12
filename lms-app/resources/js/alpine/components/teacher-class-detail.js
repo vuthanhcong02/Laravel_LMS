@@ -80,17 +80,19 @@ export default function teacherClassDetail(config = {}) {
 
             if (!file) return;
 
-            const maxSize = 20 * 1024 * 1024; // 20MB
-            const isPdf = file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+            const maxSize = 100 * 1024 * 1024; // 100MB
+            const allowedExtensions = ['.pdf', '.pptx', '.ppt'];
+            const fileName = file.name.toLowerCase();
+            const isAllowed = allowedExtensions.some(ext => fileName.endsWith(ext)) || file.type === 'application/pdf';
 
-            if (!isPdf) {
-                this.clientErrors.pdf_file = 'Tệp đã chọn không đúng định dạng PDF (.pdf).';
+            if (!isAllowed) {
+                this.clientErrors.pdf_file = 'Tệp đã chọn không đúng định dạng tài liệu / slide (.pdf, .pptx, .ppt).';
                 return;
             }
 
             if (file.size > maxSize) {
                 const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-                this.clientErrors.pdf_file = `Dung lượng file PDF vượt quá 20MB (File hiện tại: ${sizeMb}MB). Vui lòng nén hoặc chọn file nhỏ hơn.`;
+                this.clientErrors.pdf_file = `Dung lượng file vượt quá 100MB (File hiện tại: ${sizeMb}MB). Vui lòng chọn file nhỏ hơn.`;
             }
         },
 
@@ -100,7 +102,7 @@ export default function teacherClassDetail(config = {}) {
 
             if (!file) return;
 
-            const maxSize = 20 * 1024 * 1024; // 20MB
+            const maxSize = 100 * 1024 * 1024; // 100MB
             const allowedExtensions = ['.pdf', '.doc', '.docx', '.txt', '.zip', '.rar', '.ppt', '.pptx', '.xlsx', '.xls'];
             const fileName = file.name.toLowerCase();
             const isAllowed = allowedExtensions.some(ext => fileName.endsWith(ext));
@@ -112,7 +114,7 @@ export default function teacherClassDetail(config = {}) {
 
             if (file.size > maxSize) {
                 const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-                this.clientErrors.note_file = `Dung lượng file ghi chú vượt quá 20MB (File hiện tại: ${sizeMb}MB). Vui lòng chọn file nhỏ hơn.`;
+                this.clientErrors.note_file = `Dung lượng file ghi chú vượt quá 100MB (File hiện tại: ${sizeMb}MB). Vui lòng chọn file nhỏ hơn.`;
             }
         },
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Services\Student\StudentQuizService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class StudentQuizController extends Controller
 {
@@ -38,9 +39,21 @@ class StudentQuizController extends Controller
      */
     public function attempt($quizId)
     {
-        $attempt = $this->studentQuizService->startAttempt($quizId, auth()->id());
+        try {
+            $attempt = $this->studentQuizService->startAttempt($quizId, auth()->id());
 
-        return redirect()->route('student.quizzes.take', $attempt->id);
+            if ($attempt->completed_at) {
+                return redirect()->route('student.quizzes.result', $attempt->id);
+            }
+
+            return redirect()->route('student.quizzes.take', $attempt->id);
+        } catch (HttpException $e) {
+            if ($e->getStatusCode() === 403) {
+                return redirect()->route('student.quizzes.index')->with('error', $e->getMessage() ?: __('Bài kiểm tra này đã quá hạn nộp.'));
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -50,7 +63,24 @@ class StudentQuizController extends Controller
     {
         try {
             $attempt = $this->studentQuizService->getAttemptForTaking($attemptId, auth()->id());
+
+            // If attempt is completed or auto-submitted upon expiration, redirect cleanly to result view
+            if ($attempt->completed_at) {
+                return redirect()
+                    ->route('student.quizzes.result', $attempt->id)
+                    ->with('info', __('Thời gian làm bài đã kết thúc. Hệ thống đã tự động ghi nhận kết quả bài thi của bạn.'));
+            }
+
             return view('portal.student.quizzes.take', compact('attempt'));
+        } catch (HttpException $e) {
+            if ($e->getStatusCode() === 303) {
+                return redirect($e->getMessage())
+                    ->with('info', __('Lần làm bài trước đó đã hết thời gian nhưng bạn chưa trả lời câu nào. Bạn có thể bắt đầu lại bài thi.'));
+            }
+
+            return redirect()
+                ->route('student.quizzes.index')
+                ->with('error', $e->getMessage());
         } catch (\Exception $e) {
             return redirect()
                 ->route('student.quizzes.index')
