@@ -7,6 +7,8 @@ use App\Models\Course;
 use App\Models\User;
 use Aws\S3\S3Client;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -241,6 +243,48 @@ class MediaStorageService
         Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
 
         return $fullPath;
+    }
+
+    /**
+     * Download avatar from external URL (e.g., Google OAuth) and upload to B2.
+     *
+     * @param User $user
+     * @param string $url
+     * @return string|null Relative stored path or null on failure
+     */
+    public function uploadAvatarFromUrl(User $user, string $url): ?string
+    {
+        if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+
+        try {
+            $response = Http::timeout(10)->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            ])->get($url);
+
+            if (!$response->successful()) {
+                Log::warning("Failed to download avatar from URL: {$url}, HTTP status: " . $response->status());
+                return null;
+            }
+
+            $content = $response->body();
+            if (empty($content)) {
+                return null;
+            }
+
+            $directory = "avatars/user_{$user->id}";
+            $filename = "avatar_" . time() . "_{$user->id}.jpg";
+            $fullPath = "{$directory}/{$filename}";
+
+            $this->deleteDirectory($directory);
+            Storage::disk($this->disk)->put($fullPath, $content);
+
+            return $fullPath;
+        } catch (Throwable $e) {
+            Log::error("Error saving avatar from URL for user {$user->id}: " . $e->getMessage());
+            return null;
+        }
     }
 
     /**

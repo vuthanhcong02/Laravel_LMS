@@ -63,7 +63,8 @@
                                     <td class="px-4 py-3.5 text-center">
                                         <span class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{{ $quiz->questions_count ?? $quiz->questions->count() }}</span>
                                     </td>
-                                    <td class="px-4 py-3.5 text-right space-x-1 max-w-[180px]">
+                                    <td class="px-4 py-3.5 text-right space-x-1 max-w-[210px]">
+                                        <x-portal.copy-link-button :url="route('student.quizzes.show', $quiz->id)" :title="__('Sao chép link gửi học viên')" />
 
                                         <button @click="$dispatch('open-import-modal', { quiz_id: {{ $quiz->id }}, quiz_title: '{{ $quiz->title }}' })" class="inline-flex items-center justify-center size-7.5 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors rounded-lg" title="{{ __('Nhập câu hỏi từ CSV') }}">
                                             <span class="material-symbols-outlined text-[18px]">upload_file</span>

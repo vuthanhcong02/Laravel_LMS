@@ -68,13 +68,13 @@ class StudentQuizService
     {
         $quiz = Quiz::with('course')->findOrFail($quizId);
 
-        // Check enrollment
+        // Check if student is enrolled in the course
         $isEnrolled = Enrollment::where('user_id', $userId)
             ->where('course_id', $quiz->course_id)
             ->exists();
 
         if (!$isEnrolled) {
-            abort(403, __('Bạn chưa đăng ký khóa học này.'));
+            abort(404);
         }
 
         return $quiz;
@@ -134,7 +134,7 @@ class StudentQuizService
         $attempt = QuizAttempt::with(['quiz.course'])->findOrFail($attemptId);
 
         if ($attempt->user_id !== $userId) {
-            abort(403);
+            abort(404);
         }
 
         // Check if student is enrolled in the course
@@ -143,7 +143,7 @@ class StudentQuizService
             ->exists();
 
         if (!$isEnrolled) {
-            abort(403, __('Bạn không còn quyền truy cập khóa học này.'));
+            abort(404);
         }
 
         if ($attempt->completed_at) {

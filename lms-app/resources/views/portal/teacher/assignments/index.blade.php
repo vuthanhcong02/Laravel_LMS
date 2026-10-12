@@ -119,7 +119,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3.5 text-right space-x-1 max-w-[130px]">
+                                    <td class="px-4 py-3.5 text-right space-x-1 max-w-[160px]">
+                                        <x-portal.copy-link-button :url="route('student.assignments.show', $assignment->id)" :title="__('Sao chép link gửi học viên')" />
                                         <a href="{{ route('teacher.assignments.edit', $assignment->id) }}" class="inline-flex items-center justify-center size-7.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg" title="{{ __('Chỉnh sửa') }}">
                                             <span class="material-symbols-outlined text-[18px]">edit</span>
                                         </a>

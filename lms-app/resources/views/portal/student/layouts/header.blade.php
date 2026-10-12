@@ -58,18 +58,7 @@
                     <button @click="userMenuOpen = !userMenuOpen"
                         class="flex items-center gap-3 rounded-xl px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
 
-                        @php
-                            $avatarUrl = Auth::user()->avatar_url;
-                        @endphp
-                        @if ($avatarUrl)
-                            <img src="{{ $avatarUrl }}" class="size-9 rounded-full border-2 border-primary object-cover"
-                                alt="{{ Auth::user()->first_name }}">
-                        @else
-                            <div
-                                class="size-9 rounded-full border-2 border-primary bg-primary flex items-center justify-center text-white text-sm font-bold">
-                                {{ strtoupper(substr(Auth::user()->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name ?? 'S', 0, 1)) }}
-                            </div>
-                        @endif
+                        <x-portal.user-avatar :user="Auth::user()" size="size-9" />
 
                         <div class="hidden lg:flex flex-col items-start leading-tight">
                             <span class="text-sm font-semibold text-slate-800 dark:text-white">

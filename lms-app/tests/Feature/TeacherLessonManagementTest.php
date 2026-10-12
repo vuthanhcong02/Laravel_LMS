@@ -195,4 +195,24 @@ class TeacherLessonManagementTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    /**
+     * Test teacher can upload PPTX slide file up to 100MB.
+     */
+    public function test_teacher_can_upload_pptx_slide_file(): void
+    {
+        $pptxFile = UploadedFile::fake()->create('lecture_slides.pptx', 45000, 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+
+        $response = $this->actingAs($this->teacher)->post(route('teacher.classes.lessons.store', $this->course->id), [
+            'title'    => 'Bài 3: Slide bài giảng PPTX',
+            'pdf_file' => $pptxFile,
+        ]);
+
+        $response->assertRedirect(route('teacher.classes.show', ['course' => $this->course->id, 'tab' => 'lessons']));
+
+        $lesson = Lesson::where('course_id', $this->course->id)->where('title', 'Bài 3: Slide bài giảng PPTX')->first();
+        $this->assertNotNull($lesson);
+        $this->assertNotNull($lesson->pdf_path);
+        Storage::disk('public')->assertExists($lesson->pdf_path);
+    }
 }

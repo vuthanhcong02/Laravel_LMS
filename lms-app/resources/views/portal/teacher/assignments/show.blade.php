@@ -27,6 +27,9 @@
                         </p>
                     </div>
                 </div>
+                <div class="flex items-center gap-2">
+                    <x-portal.copy-link-button :url="route('student.assignments.show', $assignment->id)" variant="button" :buttonText="__('Sao chép link gửi học viên')" />
+                </div>
             </div>
 
             <x-flash-message />
