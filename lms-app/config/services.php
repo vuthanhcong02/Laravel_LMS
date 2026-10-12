@@ -42,4 +42,8 @@ return [
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
+
+    'tts' => [
+        'edge_binary' => env('EDGE_TTS_BIN'),
+    ],
 ];

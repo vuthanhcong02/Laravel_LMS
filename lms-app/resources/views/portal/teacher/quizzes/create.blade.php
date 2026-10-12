@@ -75,6 +75,11 @@
                             <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-slate-400">{{ __('0 = Không giới hạn') }}</span>
                         </div>
                     </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">{{ __('Hạn chót nộp bài (Tùy chọn)') }}</label>
+                        <input type="datetime-local" name="due_date" value="{{ old('due_date') }}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-medium text-slate-900 dark:text-white shadow-xs focus:border-primary focus:ring-primary">
+                    </div>
                 </div>
 
                 <div class="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-2">

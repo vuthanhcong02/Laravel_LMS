@@ -35,6 +35,7 @@
                                 <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Khóa học') }}</th>
                                 <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Loại / Thời gian') }}</th>
                                 <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-center">{{ __('Số câu hỏi') }}</th>
+                                <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Hạn làm bài') }}</th>
                                 <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-right">{{ __('Thao tác') }}</th>
                             </tr>
                         </thead>
@@ -62,6 +63,23 @@
                                     </td>
                                     <td class="px-4 py-3.5 text-center">
                                         <span class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{{ $quiz->questions_count ?? $quiz->questions->count() }}</span>
+                                    </td>
+                                    <td class="px-4 py-3.5">
+                                        @if($quiz->due_date)
+                                            <div class="flex flex-col gap-0.5">
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold {{ $quiz->due_date->isPast() ? 'text-rose-500' : 'text-slate-700 dark:text-slate-300' }}">
+                                                    <span class="material-symbols-outlined text-[14px] {{ $quiz->due_date->isPast() ? 'text-rose-500' : 'text-slate-400' }}">event</span>
+                                                    {{ $quiz->due_date->format('d/m/Y H:i') }}
+                                                </span>
+                                                @if($quiz->due_date->isPast())
+                                                    <span class="text-[10px] text-rose-500 font-bold uppercase tracking-wider">{{ __('Đã quá hạn') }}</span>
+                                                @else
+                                                    <span class="text-[10px] text-slate-400 font-medium">{{ $quiz->due_date->diffForHumans() }}</span>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-xs text-slate-400 font-normal">{{ __('Không giới hạn') }}</span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3.5 text-right space-x-1 max-w-[210px]">
                                         <x-portal.copy-link-button :url="route('student.quizzes.show', $quiz->id)" :title="__('Sao chép link gửi học viên')" />
@@ -93,7 +111,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-12 text-center text-slate-500">
+                                    <td colspan="6" class="p-12 text-center text-slate-500">
                                         <div class="size-16 bg-slate-50 dark:bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-3">
                                             <span class="material-symbols-outlined text-3xl">inbox</span>
                                         </div>

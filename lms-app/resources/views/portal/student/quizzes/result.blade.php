@@ -35,7 +35,9 @@
             }
         }
 
-        $percentage = $totalMarks > 0 ? round(($attempt->score / $totalMarks) * 100) : 0;
+        $rawTotal = $attempt->total_marks ?? $totalMarks;
+        $rawScore = $attempt->raw_score ?? null;
+        $percentage = $attempt->score !== null ? round(min(100, max(0, ($attempt->score / 10) * 100))) : 0;
     @endphp
 
     <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
@@ -64,6 +66,18 @@
                 </div>
             @endif
 
+            @if($attempt->grading_status === 'needs_grading')
+                <div class="flex items-center gap-2.5 p-3.5 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900/50 rounded-2xl text-sky-800 dark:text-sky-300 text-xs font-medium shadow-xs">
+                    <span class="material-symbols-outlined text-sky-500 text-lg shrink-0">pending_actions</span>
+                    <span>{{ __('Bài thi có câu hỏi tự luận đang chờ giáo viên chấm điểm. Điểm số hiển thị hiện tại là điểm tạm thời của các câu trắc nghiệm.') }}</span>
+                </div>
+            @elseif($attempt->status === 'abandoned')
+                <div class="flex items-center gap-2.5 p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl text-amber-800 dark:text-amber-300 text-xs font-medium shadow-xs">
+                    <span class="material-symbols-outlined text-amber-500 text-lg shrink-0">timer_off</span>
+                    <span>{{ __('Bài thi đã tự động kết thúc do hết thời gian làm bài.') }}</span>
+                </div>
+            @endif
+
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-sm text-center relative overflow-hidden space-y-5">
                 <div class="absolute -right-20 -top-20 size-56 rounded-full bg-emerald-500/5 blur-3xl"></div>
                 <div class="absolute -left-20 -bottom-20 size-56 rounded-full bg-primary/5 blur-3xl"></div>
@@ -85,13 +99,18 @@
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-slate-50/80 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/50 relative z-10">
                     <div class="text-center space-y-0.5">
-                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Điểm số') }}</p>
-                        <p class="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                            {{ $attempt->score }}<span class="text-xs font-semibold text-slate-400"> / {{ $totalMarks }}</span>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Điểm số (Thang 10)') }}</p>
+                        <p class="text-base sm:text-lg font-bold {{ $attempt->score >= 5 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
+                            {{ number_format($attempt->score, 1) }}<span class="text-xs font-semibold text-slate-400"> / 10</span>
                         </p>
+                        @if($rawTotal > 0 && $rawScore !== null)
+                            <p class="text-[10px] text-slate-400 font-medium">
+                                {{ __('Điểm gốc: :raw / :total', ['raw' => number_format($rawScore, 1), 'total' => number_format($rawTotal, 1)]) }}
+                            </p>
+                        @endif
                     </div>
                     <div class="text-center space-y-0.5 border-l border-slate-200 dark:border-slate-800/50">
-                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Tỉ lệ đúng') }}</p>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Tỉ lệ đạt') }}</p>
                         <p class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200">
                             {{ $percentage }}%
                         </p>
@@ -155,7 +174,7 @@
                         <div class="flex justify-between items-start gap-4 border-b border-slate-100 dark:border-slate-800/80 pb-3">
                             <div class="space-y-0.5">
                                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{{ __('Câu hỏi :num', ['num' => $index + 1]) }}</span>
-                                <span class="text-[11px] text-slate-400 font-medium ml-1.5">({{ __(':marks điểm', ['marks' => $question->marks]) }})</span>
+                                <span class="text-[11px] text-slate-400 font-medium ml-1.5">({{ __(':marks điểm', ['marks' => (float) $question->marks]) }})</span>
                             </div>
 
                             @if($question->type === \App\Enums\QuestionType::ESSAY)
@@ -249,31 +268,41 @@
                                 </div>
 
                             @elseif($question->type === \App\Enums\QuestionType::ESSAY)
-                                <div class="space-y-2.5">
-                                    <div class="bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/30">
-                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{{ __('Bài làm của bạn:') }}</p>
-                                        <div class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
-                                            {{ $studentAns->text_answer ?? __('(Không có câu trả lời)') }}
+                                <div class="space-y-3 pt-1">
+                                    <div class="bg-slate-50/70 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-2 text-left">
+                                        <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                                            <span class="material-symbols-outlined text-[15px] text-primary">edit_note</span>
+                                            <span>{{ __('Bài làm của bạn:') }}</span>
+                                        </div>
+                                        <div class="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed break-words text-left">
+                                            @if(!empty(trim($studentAns?->text_answer ?? '')))
+                                                {!! nl2br(e(trim($studentAns->text_answer))) !!}
+                                            @else
+                                                <span class="text-slate-400 italic">{{ __('(Không có câu trả lời)') }}</span>
+                                            @endif
                                         </div>
                                     </div>
 
                                     @if($question->correct_answer_text)
-                                        <div class="bg-emerald-500/5 dark:bg-emerald-500/10 p-3.5 rounded-xl border border-emerald-500/20">
-                                            <p class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">{{ __('Đáp án mẫu / Gợi ý:') }}</p>
-                                            <div class="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300 whitespace-pre-wrap">
-                                                {{ $question->correct_answer_text }}
+                                        <div class="bg-emerald-500/5 dark:bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20 space-y-1.5 text-left">
+                                            <div class="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                                                <span class="material-symbols-outlined text-[15px]">lightbulb</span>
+                                                <span>{{ __('Đáp án mẫu / Gợi ý:') }}</span>
+                                            </div>
+                                            <div class="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300 leading-relaxed break-words text-left">
+                                                {!! nl2br(e(trim($question->correct_answer_text))) !!}
                                             </div>
                                         </div>
                                     @endif
 
                                     @if($studentAns && $studentAns->teacher_feedback)
-                                        <div class="bg-amber-500/5 dark:bg-amber-500/10 p-3.5 rounded-xl border border-amber-500/20">
-                                            <p class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[13px]">rate_review</span>
-                                                {{ __('Nhận xét của giáo viên:') }}
-                                            </p>
-                                            <div class="text-xs sm:text-sm font-medium text-amber-800 dark:text-amber-200 whitespace-pre-wrap">
-                                                {{ $studentAns->teacher_feedback }}
+                                        <div class="bg-amber-500/5 dark:bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 space-y-1.5 text-left">
+                                            <div class="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                                                <span class="material-symbols-outlined text-[15px]">rate_review</span>
+                                                <span>{{ __('Nhận xét của giáo viên:') }}</span>
+                                            </div>
+                                            <div class="text-xs sm:text-sm font-medium text-amber-800 dark:text-amber-200 leading-relaxed break-words text-left">
+                                                {!! nl2br(e(trim($studentAns->teacher_feedback))) !!}
                                             </div>
                                         </div>
                                     @endif

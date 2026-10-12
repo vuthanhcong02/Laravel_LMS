@@ -40,6 +40,7 @@ class StoreQuizRequest extends FormRequest
             'title'        => 'required|string|max:255',
             'type'         => ['required', Rule::enum(QuizType::class)],
             'time_limit'   => 'required|integer|min:0|max:1440', // 0 = no time limit, max = 24h
+            'due_date'     => 'nullable|date',
             'audio_file'   => 'nullable|file|mimes:mp3,wav,ogg,m4a,aac,mp4|max:51200', // Tối đa 50MB
             'remove_audio' => 'nullable|boolean',
         ];
@@ -57,6 +58,7 @@ class StoreQuizRequest extends FormRequest
             'title'        => __('tiêu đề'),
             'type'         => __('loại bài thi'),
             'time_limit'   => __('thời gian làm bài'),
+            'due_date'     => __('hạn nộp bài thi'),
             'audio_file'   => __('file âm thanh toàn bài thi'),
             'remove_audio' => __('xóa file âm thanh'),
         ];

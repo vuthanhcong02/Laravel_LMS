@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\QuizType;
+use App\Models\Question;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Question;
-use App\Enums\QuizType;
 
 class Quiz extends Model
 {
@@ -17,7 +18,7 @@ class Quiz extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'course_id', 'title', 'type', 'time_limit', 'audio_path'
+        'course_id', 'title', 'type', 'time_limit', 'due_date', 'audio_path'
     ];
 
     /**
@@ -27,6 +28,7 @@ class Quiz extends Model
      */
     protected $casts = [
         'type' => QuizType::class,
+        'due_date' => 'datetime',
     ];
 
     /**
@@ -34,7 +36,7 @@ class Quiz extends Model
      */
     public function getAudioUrlAttribute(): ?string
     {
-        return $this->audio_path ? app(\App\Services\Media\MediaStorageService::class)->url($this->audio_path) : null;
+        return $this->audio_path ? app(MediaStorageService::class)->url($this->audio_path) : null;
     }
 
     /**

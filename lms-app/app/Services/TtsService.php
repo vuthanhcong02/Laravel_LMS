@@ -72,31 +72,75 @@ class TtsService
             return $filePath;
         }
 
-        // Execute edge-tts CLI safely with parameter array (prevents shell injection)
-        $process = new Process([
-            'edge-tts',
-            '--voice',
-            $voice,
-            '--rate=' . $rate,
-            '--text',
-            $cleanText,
-            '--write-media',
-            $filePath,
-        ]);
+        // Resolve edge-tts executable command safely
+        $cmd = $this->resolveCommand($voice, $rate, $cleanText, $filePath);
 
+        $process = new Process($cmd);
         $process->setTimeout(15);
         $process->run();
 
         if (!$process->isSuccessful() || !File::exists($filePath) || File::size($filePath) === 0) {
+            $errorOutput = $process->getErrorOutput();
             Log::error('Edge-TTS execution failed', [
-                'text'   => $cleanText,
-                'voice'  => $voice,
-                'error'  => $process->getErrorOutput(),
-                'output' => $process->getOutput(),
+                'text'    => $cleanText,
+                'voice'   => $voice,
+                'command' => implode(' ', $cmd),
+                'error'   => $errorOutput,
+                'output'  => $process->getOutput(),
             ]);
-            throw new Exception('Failed to generate speech audio via Edge-TTS.');
+
+            throw new Exception('Failed to generate speech audio via Edge-TTS: ' . ($errorOutput ?: 'Process exited unsuccessfully.'));
         }
 
         return $filePath;
+    }
+
+    /**
+     * Resolve the edge-tts command array safely (supports absolute paths & python module fallback).
+     *
+     * @param string $voice
+     * @param string $rate
+     * @param string $text
+     * @param string $outputFile
+     * @return array<int, string>
+     */
+    protected function resolveCommand(string $voice, string $rate, string $text, string $outputFile): array
+    {
+        $customBin = config('services.tts.edge_binary');
+        $baseCmd = null;
+
+        if (!empty($customBin) && File::exists($customBin)) {
+            $baseCmd = [$customBin];
+        } else {
+            // Check standard binary paths
+            $candidatePaths = [
+                '/usr/local/bin/edge-tts',
+                '/usr/bin/edge-tts',
+                '/bin/edge-tts',
+                '/opt/homebrew/bin/edge-tts',
+            ];
+
+            foreach ($candidatePaths as $candidate) {
+                if (File::exists($candidate) && is_executable($candidate)) {
+                    $baseCmd = [$candidate];
+                    break;
+                }
+            }
+        }
+
+        // If direct binary not located at known paths, check python module or default CLI name
+        if (!$baseCmd) {
+            $baseCmd = ['edge-tts'];
+        }
+
+        return array_merge($baseCmd, [
+            '--voice',
+            $voice,
+            '--rate=' . $rate,
+            '--text',
+            $text,
+            '--write-media',
+            $outputFile,
+        ]);
     }
 }
