@@ -166,7 +166,17 @@ class TeacherClassService
             ->latest('created_at')
             ->get();
 
-        // 2. Danh sách bài kiểm tra của lớp kèm lượt làm bài
+        // 3. Danh sách học sinh đã ghi danh vào lớp
+        $enrolledStudents = $course->enrollments()
+            ->with('user')
+            ->get()
+            ->map(fn($enrollment) => $enrollment->user)
+            ->filter()
+            ->values();
+
+        $studentUserIds = $enrolledStudents->pluck('id')->toArray();
+
+        // 2. Danh sách bài kiểm tra của lớp kèm lượt làm bài và danh sách học viên
         $quizzes = $course->quizzes()
             ->withCount('attempts')
             ->with([
@@ -175,10 +185,25 @@ class TeacherClassService
                 }
             ])
             ->latest('created_at')
-            ->get();
+            ->get()
+            ->map(function ($quiz) use ($enrolledStudents) {
+                $attemptsByUserId = $quiz->attempts->keyBy('user_id');
+                $quiz->students_attempts_list = $enrolledStudents->map(function ($student) use ($attemptsByUserId) {
+                    $attempt = $attemptsByUserId->get($student->id);
+                    return [
+                        'id'            => $student->id,
+                        'name'          => $student->full_name,
+                        'email'         => $student->email,
+                        'avatar_url'    => $student->avatar_url,
+                        'first_char'    => mb_substr($student->first_name, 0, 1),
+                        'has_attempted' => $attempt !== null,
+                        'score'         => $attempt?->score,
+                        'completed_at'  => $attempt?->completed_at ? $attempt->completed_at->format('d/m/Y H:i') : null,
+                    ];
+                })->values();
 
-        // 3. Danh sách ID học sinh đã ghi danh vào lớp
-        $studentUserIds = $course->enrollments()->pluck('user_id')->toArray();
+                return $quiz;
+            });
 
         // 4. Kết quả thi thử HSK của các học sinh thuộc lớp này
         $hskResults = !empty($studentUserIds)

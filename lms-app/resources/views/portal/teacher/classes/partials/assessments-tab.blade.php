@@ -1,5 +1,32 @@
-{{-- resources/views/portal/teacher/classes/partials/assessments-tab.blade.php --}}
-<div x-data="{ subTab: 'assignments' }" class="space-y-6">
+<div x-data="{
+    subTab: 'assignments',
+    showQuizModal: false,
+    selectedQuiz: null,
+    quizFilter: 'all',
+    openQuizModal(quiz) {
+        this.selectedQuiz = quiz;
+        this.quizFilter = 'all';
+        this.showQuizModal = true;
+    },
+    get filteredQuizStudents() {
+        if (!this.selectedQuiz || !this.selectedQuiz.students) return [];
+        if (this.quizFilter === 'completed') {
+            return this.selectedQuiz.students.filter(s => s.has_attempted);
+        }
+        if (this.quizFilter === 'uncompleted') {
+            return this.selectedQuiz.students.filter(s => !s.has_attempted);
+        }
+        return this.selectedQuiz.students;
+    },
+    get completedCount() {
+        if (!this.selectedQuiz || !this.selectedQuiz.students) return 0;
+        return this.selectedQuiz.students.filter(s => s.has_attempted).length;
+    },
+    get uncompletedCount() {
+        if (!this.selectedQuiz || !this.selectedQuiz.students) return 0;
+        return this.selectedQuiz.students.filter(s => !s.has_attempted).length;
+    }
+}" class="space-y-6">
 
 
     {{-- Header điều hướng Sub-tab và Action Buttons --}}
@@ -209,10 +236,18 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold">
-                                        <span class="material-symbols-outlined text-[14px] text-primary">groups</span>
-                                        {{ $quiz->attempts_count }} {{ __('lượt') }}
-                                    </span>
+                                    <button type="button"
+                                            @click="openQuizModal({
+                                                id: {{ $quiz->id }},
+                                                title: '{{ addslashes($quiz->title) }}',
+                                                results_url: '{{ route('teacher.quizzes.results', $quiz->id) }}',
+                                                students: {{ json_encode($quiz->students_attempts_list ?? []) }}
+                                            })"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-primary/10 hover:text-primary dark:bg-slate-800 dark:hover:bg-primary/20 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer shadow-2xs group"
+                                            title="{{ __('Bấm để xem danh sách học viên đã làm và chưa làm') }}">
+                                        <span class="material-symbols-outlined text-[15px] text-primary group-hover:scale-110 transition-transform">groups</span>
+                                        <span>{{ $quiz->attempts_count }} {{ __('lượt') }}</span>
+                                    </button>
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
                                     @if($avgScore !== null)
@@ -384,6 +419,130 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    {{-- MODAL: Danh sách học viên đã làm và chưa làm bài kiểm tra --}}
+    <div x-show="showQuizModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+         x-cloak>
+
+        <div @click.away="showQuizModal = false"
+             x-show="showQuizModal"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[85vh]">
+
+            {{-- Modal Header --}}
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+                <div class="space-y-0.5">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white" x-text="selectedQuiz?.title"></h3>
+                    <p class="text-xs text-slate-500 font-medium">
+                        {{ __('Tiến độ làm bài:') }}
+                        <span class="font-bold text-primary" x-text="completedCount"></span>/<span x-text="selectedQuiz?.students?.length || 0"></span> {{ __('học viên') }}
+                    </p>
+                </div>
+                <button type="button" @click="showQuizModal = false"
+                        class="size-8 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+
+            {{-- Modal Filter Tabs --}}
+            <div class="px-5 pt-3 pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5 bg-slate-50/20 dark:bg-slate-800/20">
+                <button type="button" @click="quizFilter = 'all'"
+                        :class="quizFilter === 'all' ? 'bg-primary text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium'"
+                        class="px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1">
+                    <span>{{ __('Tất cả') }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px]"
+                          :class="quizFilter === 'all' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'"
+                          x-text="selectedQuiz?.students?.length || 0"></span>
+                </button>
+
+                <button type="button" @click="quizFilter = 'completed'"
+                        :class="quizFilter === 'completed' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium'"
+                        class="px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1">
+                    <span>{{ __('Đã làm') }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px]"
+                          :class="quizFilter === 'completed' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'"
+                          x-text="completedCount"></span>
+                </button>
+
+                <button type="button" @click="quizFilter = 'uncompleted'"
+                        :class="quizFilter === 'uncompleted' ? 'bg-rose-600 text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium'"
+                        class="px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1">
+                    <span>{{ __('Chưa làm') }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px]"
+                          :class="quizFilter === 'uncompleted' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'"
+                          x-text="uncompletedCount"></span>
+                </button>
+            </div>
+
+            {{-- Modal Body: Danh sách học viên --}}
+            <div class="p-5 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 flex-1">
+                <template x-for="student in filteredQuizStudents" :key="student.id">
+                    <div class="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <template x-if="student.avatar_url">
+                                <img :src="student.avatar_url" :alt="student.name" class="size-9 rounded-xl object-cover shadow-2xs shrink-0">
+                            </template>
+                            <template x-if="!student.avatar_url">
+                                <div class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0" x-text="student.first_char"></div>
+                            </template>
+                            <div class="min-w-0">
+                                <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate" x-text="student.name"></p>
+                                <p class="text-[11px] text-slate-400 truncate mt-0.5" x-text="student.email"></p>
+                            </div>
+                        </div>
+
+                        <div class="shrink-0 text-right">
+                            <template x-if="student.has_attempted">
+                                <div class="flex flex-col items-end gap-0.5">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                                        <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                                        <span x-text="student.score !== null ? student.score + '/10' : '{{ __('Đã nộp') }}'"></span>
+                                    </span>
+                                    <span x-show="student.completed_at" class="text-[10px] text-slate-400" x-text="student.completed_at"></span>
+                                </div>
+                            </template>
+                            <template x-if="!student.has_attempted">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs font-semibold">
+                                    <span class="material-symbols-outlined text-[13px]">schedule</span>
+                                    {{ __('Chưa làm') }}
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <div x-show="filteredQuizStudents.length === 0" class="py-8 text-center text-slate-400 text-xs">
+                    {{ __('Không có học viên nào trong mục này.') }}
+                </div>
+            </div>
+
+            {{-- Modal Footer --}}
+            <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+                <a :href="selectedQuiz?.results_url"
+                   class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    <span>{{ __('Xem trang thống kê bài thi') }}</span>
+                </a>
+                <button type="button" @click="showQuizModal = false"
+                        class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                    {{ __('Đóng') }}
+                </button>
+            </div>
+
         </div>
     </div>
 
