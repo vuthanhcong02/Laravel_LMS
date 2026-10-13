@@ -1,88 +1,52 @@
 {{-- resources/views/portal/teacher/classes/partials/assessments-tab.blade.php --}}
 <div x-data="{ subTab: 'assignments' }" class="space-y-6">
 
-    {{-- Thống kê tổng quan đánh giá của lớp --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {{-- Thống kê nhanh --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {{-- Card 1: Bài tập --}}
-        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {{ __('Bài tập đã giao') }}
-                </span>
-                <div class="size-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-lg">assignment</span>
-                </div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Bài tập đã giao') }}</span>
+                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assessmentStats['total_assignments'] ?? 0 }}</p>
             </div>
-            <div class="flex items-baseline gap-2">
-                <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $assessmentStats['total_assignments'] ?? 0 }}</span>
-                <span class="text-xs text-slate-500 font-medium">{{ __('bài tập') }}</span>
+            <div class="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-xl">assignment</span>
             </div>
-            @if(($assessmentStats['pending_submissions_count'] ?? 0) > 0)
-                <p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[13px]">pending</span>
-                    <span>{{ __(':count bài chờ chấm điểm', ['count' => $assessmentStats['pending_submissions_count']]) }}</span>
-                </p>
-            @else
-                <p class="text-[11px] text-slate-400 font-medium">{{ __('Đã chấm toàn bộ bài nộp') }}</p>
-            @endif
         </div>
 
         {{-- Card 2: Bài kiểm tra --}}
-        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {{ __('Bài kiểm tra') }}
-                </span>
-                <div class="size-8 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-lg">quiz</span>
-                </div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Bài kiểm tra') }}</span>
+                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assessmentStats['total_quizzes'] ?? 0 }}</p>
             </div>
-            <div class="flex items-baseline gap-2">
-                <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $assessmentStats['total_quizzes'] ?? 0 }}</span>
-                <span class="text-xs text-slate-500 font-medium">{{ __('bài thi') }}</span>
+            <div class="size-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-xl">quiz</span>
             </div>
-            <p class="text-[11px] text-slate-400 font-medium">
-                {{ __('Gắn liền theo chương trình học') }}
-            </p>
         </div>
 
         {{-- Card 3: Điểm TB Quiz --}}
-        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {{ __('Điểm TB Kiểm tra') }}
-                </span>
-                <div class="size-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-lg">trending_up</span>
-                </div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Điểm TB Kiểm tra') }}</span>
+                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+                    {{ $assessmentStats['avg_quiz_score'] !== null ? $assessmentStats['avg_quiz_score'] : '--' }}
+                </p>
             </div>
-            <div class="flex items-baseline gap-2">
-                <span class="text-2xl font-bold text-slate-900 dark:text-white">
-                    {{ $assessmentStats['avg_quiz_score'] !== null ? $assessmentStats['avg_quiz_score'] . '/10' : __('Chưa có') }}
-                </span>
+            <div class="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-xl">trending_up</span>
             </div>
-            <p class="text-[11px] text-slate-400 font-medium">
-                {{ __('Điểm trung bình các lượt thi') }}
-            </p>
         </div>
 
         {{-- Card 4: Đề thi HSK --}}
-        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {{ __('Lượt thi thử HSK') }}
-                </span>
-                <div class="size-8 rounded-lg bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-lg">workspace_premium</span>
-                </div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Lượt thi thử HSK') }}</span>
+                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assessmentStats['total_hsk_attempts'] ?? 0 }}</p>
             </div>
-            <div class="flex items-baseline gap-2">
-                <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $assessmentStats['total_hsk_attempts'] ?? 0 }}</span>
-                <span class="text-xs text-slate-500 font-medium">{{ __('lượt hoàn thành') }}</span>
+            <div class="size-10 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-xl">workspace_premium</span>
             </div>
-            <p class="text-[11px] text-slate-400 font-medium">
-                {{ __('Học viên lớp thi thử HSK') }}
-            </p>
         </div>
     </div>
 
