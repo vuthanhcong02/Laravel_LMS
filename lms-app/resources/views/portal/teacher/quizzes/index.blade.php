@@ -66,16 +66,9 @@
                                     </td>
                                     <td class="px-4 py-3.5">
                                         @if($quiz->due_date)
-                                            <div class="flex flex-col gap-0.5">
-                                                <span class="inline-flex items-center gap-1 text-xs font-semibold {{ $quiz->due_date->isPast() ? 'text-rose-500' : 'text-slate-700 dark:text-slate-300' }}">
-                                                    <span class="material-symbols-outlined text-[14px] {{ $quiz->due_date->isPast() ? 'text-rose-500' : 'text-slate-400' }}">event</span>
-                                                    {{ $quiz->due_date->format('d/m/Y H:i') }}
-                                                </span>
-                                                @if($quiz->due_date->isPast())
-                                                    <span class="text-[10px] text-rose-500 font-bold uppercase tracking-wider">{{ __('Đã quá hạn') }}</span>
-                                                @else
-                                                    <span class="text-[10px] text-slate-400 font-medium">{{ $quiz->due_date->diffForHumans() }}</span>
-                                                @endif
+                                            <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                                                <span class="material-symbols-outlined text-[15px] text-slate-400">event</span>
+                                                <span class="text-xs font-medium">{{ $quiz->due_date->format('d/m/Y H:i') }}</span>
                                             </div>
                                         @else
                                             <span class="text-xs text-slate-400 font-normal">{{ __('Không giới hạn') }}</span>

@@ -79,6 +79,25 @@ class TeacherClassEnrollmentTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Lớp HSK 1 Cơ Bản');
+        $response->assertSee(__('Bài tập & Đánh giá'));
+    }
+
+    /**
+     * Test teacher can view class assessments tab data.
+     */
+    public function test_teacher_can_view_class_assessments_tab(): void
+    {
+        $response = $this->actingAs($this->teacher)->get(route('teacher.classes.show', [
+            'course' => $this->course->id,
+            'tab'    => 'assessments',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee(__('Bài tập & Đánh giá'));
+        $response->assertViewHas('assignments');
+        $response->assertViewHas('quizzes');
+        $response->assertViewHas('hskResults');
+        $response->assertViewHas('assessmentStats');
     }
 
 

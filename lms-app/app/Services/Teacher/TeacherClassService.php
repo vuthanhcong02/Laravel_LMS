@@ -3,8 +3,12 @@
 namespace App\Services\Teacher;
 
 use App\Enums\EnrollmentStatus;
+use App\Models\Assignment;
+use App\Models\AssignmentSubmission;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\HskMockExamResult;
+use App\Models\Quiz;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -136,4 +140,137 @@ class TeacherClassService
 
         return false;
     }
+
+    /**
+     * Lấy dữ liệu bài tập, bài kiểm tra và kết quả thi HSK của học sinh trong lớp.
+     *
+     * @param Course $course
+     * @return array{
+     *     assignments: \Illuminate\Database\Eloquent\Collection,
+     *     quizzes: \Illuminate\Database\Eloquent\Collection,
+     *     hsk_results: \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection,
+     *     summary: array<string, mixed>
+     * }
+     */
+    public function getClassAssessmentsData(Course $course): array
+    {
+        // 1. Danh sách học sinh đã ghi danh vào lớp
+        $enrolledStudents = $course->enrollments()
+            ->with('user')
+            ->get()
+            ->map(fn($enrollment) => $enrollment->user)
+            ->filter()
+            ->values();
+
+        $studentUserIds = $enrolledStudents->pluck('id')->toArray();
+
+        // 2. Danh sách bài tập của lớp kèm số lượt nộp và danh sách học viên
+        $assignments = $course->assignments()
+            ->withCount('submissions')
+            ->with([
+                'lesson',
+                'submissions' => function ($q) {
+                    $q->with('user');
+                }
+            ])
+            ->latest('created_at')
+            ->get()
+            ->map(function ($assignment) use ($enrolledStudents) {
+                $submissionsByUserId = $assignment->submissions->keyBy('user_id');
+                $assignment->students_submissions_list = $enrolledStudents->map(function ($student) use ($submissionsByUserId) {
+                    $submission = $submissionsByUserId->get($student->id);
+                    $hasSubmitted = $submission !== null;
+                    return [
+                        'id'            => $student->id,
+                        'name'          => $student->full_name,
+                        'email'         => $student->email,
+                        'avatar_url'    => $student->avatar_url,
+                        'first_char'    => mb_substr($student->first_name, 0, 1),
+                        'has_submitted' => $hasSubmitted,
+                        'score'         => $submission?->score,
+                        'status'        => $submission?->status,
+                        'is_graded'     => $submission?->status === AssignmentSubmission::STATUS_GRADED,
+                        'is_pending'    => $submission?->status === AssignmentSubmission::STATUS_SUBMITTED,
+                        'submitted_at'  => $submission?->created_at ? $submission->created_at->format('d/m/Y H:i') : null,
+                    ];
+                })->values();
+
+                return $assignment;
+            });
+
+        // 3. Danh sách bài kiểm tra của lớp kèm lượt làm bài và danh sách học viên
+        $quizzes = $course->quizzes()
+            ->withCount(['attempts', 'questions'])
+            ->with([
+                'attempts' => function ($q) {
+                    $q->with('user');
+                }
+            ])
+            ->latest('created_at')
+            ->get()
+            ->map(function ($quiz) use ($enrolledStudents) {
+                $attemptsByUserId = $quiz->attempts->keyBy('user_id');
+                $quiz->students_attempts_list = $enrolledStudents->map(function ($student) use ($attemptsByUserId) {
+                    $attempt = $attemptsByUserId->get($student->id);
+                    return [
+                        'id'            => $student->id,
+                        'name'          => $student->full_name,
+                        'email'         => $student->email,
+                        'avatar_url'    => $student->avatar_url,
+                        'first_char'    => mb_substr($student->first_name, 0, 1),
+                        'has_attempted' => $attempt !== null,
+                        'score'         => $attempt?->score,
+                        'completed_at'  => $attempt?->completed_at ? $attempt->completed_at->format('d/m/Y H:i') : null,
+                    ];
+                })->values();
+
+                return $quiz;
+            });
+
+        // 4. Kết quả thi thử HSK của các học sinh thuộc lớp này
+        $hskResults = !empty($studentUserIds)
+            ? HskMockExamResult::whereIn('user_id', $studentUserIds)
+                ->with(['user', 'mockExam.hskLevel'])
+                ->where('status', 'completed')
+                ->latest('completed_at')
+                ->get()
+            : collect();
+
+        // 5. Thống kê tổng quan
+        $totalAssignments = $assignments->count();
+        $totalQuizzes = $quizzes->count();
+
+        // Đếm bài tập nộp đang chờ chấm điểm
+        $pendingSubmissionsCount = 0;
+        foreach ($assignments as $assignment) {
+            $pendingSubmissionsCount += $assignment->submissions
+                ->where('status', AssignmentSubmission::STATUS_SUBMITTED)
+                ->count();
+        }
+
+        // Tính điểm trung bình Quiz của lớp
+        $allQuizScores = [];
+        foreach ($quizzes as $quiz) {
+            foreach ($quiz->attempts as $attempt) {
+                if ($attempt->score !== null && $attempt->status === 'completed') {
+                    $allQuizScores[] = $attempt->score;
+                }
+            }
+        }
+        $avgQuizScore = count($allQuizScores) > 0 ? round(array_sum($allQuizScores) / count($allQuizScores), 1) : null;
+
+        return [
+            'assignments' => $assignments,
+            'quizzes'     => $quizzes,
+            'hsk_results' => $hskResults,
+            'summary'     => [
+                'total_assignments'         => $totalAssignments,
+                'total_quizzes'             => $totalQuizzes,
+                'pending_submissions_count' => $pendingSubmissionsCount,
+                'avg_quiz_score'            => $avgQuizScore,
+                'total_hsk_attempts'        => $hskResults->count(),
+            ],
+        ];
+    }
 }
+

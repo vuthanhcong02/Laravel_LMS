@@ -155,6 +155,17 @@
                         {{ $class->enrollments_count }}
                     </span>
                 </button>
+
+                <button type="button" @click="switchTab('assessments')"
+                        :class="activeTab === 'assessments' ? 'text-primary border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-semibold'"
+                        class="pb-2.5 text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                    <span class="material-symbols-outlined text-base">assignment_turned_in</span>
+                    <span>{{ __('Bài tập & Đánh giá') }}</span>
+                    <span class="px-1.5 py-0.5 rounded text-[11px] font-bold"
+                          :class="activeTab === 'assessments' ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+                        {{ ($class->assignments_count ?? 0) + ($class->quizzes_count ?? 0) }}
+                    </span>
+                </button>
             </div>
 
             <div class="space-y-5">
@@ -566,6 +577,11 @@
                             </div>
                         @endif
                     </div>
+                </div>
+
+                {{-- Tab 4: Bài tập & Đánh giá --}}
+                <div x-show="activeTab === 'assessments'" x-transition class="space-y-5" x-cloak>
+                    @include('portal.teacher.classes.partials.assessments-tab')
                 </div>
 
             </div>

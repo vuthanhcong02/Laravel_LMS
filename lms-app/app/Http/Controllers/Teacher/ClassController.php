@@ -41,21 +41,25 @@ class ClassController extends Controller
     {
         $this->authorize('view', $course);
 
-        $course->loadCount('enrollments');
+        $course->loadCount(['enrollments', 'assignments', 'quizzes']);
         $course->load([
             'lessons' => fn($q) => $q->orderBy('order', 'asc'),
-            'quizzes',
         ]);
 
         $search = $request->query('search');
         $enrollments = $this->teacherClassService->getPaginatedStudents($course, $search);
         $stats = $this->teacherClassService->getClassStats($course);
+        $assessmentsData = $this->teacherClassService->getClassAssessmentsData($course);
 
         return view('portal.teacher.classes.show', [
-            'class'       => $course,
-            'enrollments' => $enrollments,
-            'search'      => $search,
-            'stats'       => $stats,
+            'class'           => $course,
+            'enrollments'     => $enrollments,
+            'search'          => $search,
+            'stats'           => $stats,
+            'assignments'     => $assessmentsData['assignments'],
+            'quizzes'         => $assessmentsData['quizzes'],
+            'hskResults'      => $assessmentsData['hsk_results'],
+            'assessmentStats' => $assessmentsData['summary'],
         ]);
     }
 

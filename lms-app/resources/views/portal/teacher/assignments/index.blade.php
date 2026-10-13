@@ -59,12 +59,12 @@
                                     </td>
                                     <td class="px-4 py-3.5">
                                         @if($assignment->due_date)
-                                            <div class="flex items-center gap-1.5 {{ $assignment->due_date < now() ? 'text-red-500' : 'text-slate-600 dark:text-slate-400' }}">
-                                                <span class="material-symbols-outlined text-[15px]">calendar_clock</span>
+                                            <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                                                <span class="material-symbols-outlined text-[15px] text-slate-400">event</span>
                                                 <span class="text-xs font-medium">{{ $assignment->due_date->format('d/m/Y H:i') }}</span>
                                             </div>
                                         @else
-                                            <span class="text-slate-400 text-xs font-normal">{{ __('Không có hạn') }}</span>
+                                            <span class="text-slate-400 text-xs font-normal">{{ __('Không giới hạn') }}</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3.5">

@@ -1,4 +1,4 @@
-@extends('layouts.lms')
+@extends(request()->has('embed') ? 'layouts.embed' : 'layouts.lms')
 
 @section('title', __('Kết quả thi thử') . ' ' . ($result->mockExam->hskLevel->title ?? 'HSK ' . $level) . ' - ' .
     ($result->mockExam->title ?? '') . ' - XiaoMu LMS')
@@ -132,17 +132,21 @@
                 }
             }
 
-            if (empty($content) || strtoupper($content) === $letter) {
+            // Bỏ tiền tố chữ cái lặp lại nếu có ở đầu content (ví dụ "B " hoặc "B. " hoặc "B、")
+            $cleanContent = preg_replace('/^' . preg_quote($letter, '/') . '[\.\s、]+/ui', '', $content);
+
+            if (empty($cleanContent) || strtoupper($cleanContent) === $letter) {
                 return $letter;
             }
 
-            $formattedContent = function_exists('renderHskRubyText') ? renderHskRubyText($content) : e($content);
+            $formattedContent = function_exists('renderHskRubyText') ? renderHskRubyText($cleanContent) : e($cleanContent);
             return $letter . '. ' . $formattedContent;
         };
     @endphp
 
     <div x-data="hskResultViewer" class="space-y-6 pb-12 relative">
 
+        @if (!request()->has('embed'))
         <!-- Top Action Navigation Bar -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <a href="{{ route('student.hsk-mock-exams.show', ['level' => $level]) }}"
@@ -165,6 +169,7 @@
                 </a>
             </div>
         </div>
+        @endif
 
         @php
             $scorePercent = $maxScore > 0 ? min(100, max(0, round(($result->total_score / $maxScore) * 100))) : 0;
@@ -861,6 +866,7 @@
             </div>
         </div>
 
+        @if (!request()->has('embed'))
         <!-- Bottom Actions Card -->
         <div
             class="lms-card p-6 sm:p-8 bg-gradient-to-r from-[#fff7f4] via-white to-[#fff2ee] dark:from-[#1e1a18] dark:via-[#1c1917] dark:to-[#221c19] border border-[#e8e2d9] dark:border-[#2d2926] text-center space-y-4">
@@ -887,6 +893,7 @@
                 </a>
             </div>
         </div>
+        @endif
 
     </div>
 @endsection
