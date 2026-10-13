@@ -270,7 +270,7 @@
                                 </td>
                                 <td class="px-4 py-3.5 text-right space-x-1 whitespace-nowrap">
                                     <a href="{{ route('teacher.quizzes.results', $quiz->id) }}"
-                                       class="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 hover:bg-orange-500 text-orange-600 hover:text-white dark:bg-orange-950/40 dark:hover:bg-orange-600 transition-colors rounded-lg font-bold text-xs"
+                                       class="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 hover:bg-primary text-primary hover:text-white transition-colors rounded-lg font-bold text-xs"
                                        title="{{ __('Xem kết quả làm bài của học sinh') }}">
                                         <span class="material-symbols-outlined text-sm">analytics</span>
                                         <span>{{ __('Xem kết quả') }}</span>
