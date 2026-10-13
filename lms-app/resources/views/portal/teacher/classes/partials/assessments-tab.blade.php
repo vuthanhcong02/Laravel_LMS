@@ -1,54 +1,6 @@
 {{-- resources/views/portal/teacher/classes/partials/assessments-tab.blade.php --}}
 <div x-data="{ subTab: 'assignments' }" class="space-y-6">
 
-    {{-- Thống kê nhanh --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {{-- Card 1: Bài tập --}}
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-            <div>
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Bài tập đã giao') }}</span>
-                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assessmentStats['total_assignments'] ?? 0 }}</p>
-            </div>
-            <div class="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-xl">assignment</span>
-            </div>
-        </div>
-
-        {{-- Card 2: Bài kiểm tra --}}
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-            <div>
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Bài kiểm tra') }}</span>
-                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assessmentStats['total_quizzes'] ?? 0 }}</p>
-            </div>
-            <div class="size-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-xl">quiz</span>
-            </div>
-        </div>
-
-        {{-- Card 3: Điểm TB Quiz --}}
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-            <div>
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Điểm TB Kiểm tra') }}</span>
-                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
-                    {{ $assessmentStats['avg_quiz_score'] !== null ? $assessmentStats['avg_quiz_score'] : '--' }}
-                </p>
-            </div>
-            <div class="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-xl">trending_up</span>
-            </div>
-        </div>
-
-        {{-- Card 4: Đề thi HSK --}}
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-            <div>
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">{{ __('Lượt thi thử HSK') }}</span>
-                <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assessmentStats['total_hsk_attempts'] ?? 0 }}</p>
-            </div>
-            <div class="size-10 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-xl">workspace_premium</span>
-            </div>
-        </div>
-    </div>
 
     {{-- Header điều hướng Sub-tab và Action Buttons --}}
     <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
