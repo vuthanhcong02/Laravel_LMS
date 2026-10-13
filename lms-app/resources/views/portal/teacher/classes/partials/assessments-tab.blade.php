@@ -25,6 +25,42 @@
     get uncompletedCount() {
         if (!this.selectedQuiz || !this.selectedQuiz.students) return 0;
         return this.selectedQuiz.students.filter(s => !s.has_attempted).length;
+    },
+
+    // Modal cho bài tập (Assignments)
+    showAssignmentModal: false,
+    selectedAssignment: null,
+    assignmentFilter: 'all',
+    openAssignmentModal(assignment) {
+        this.selectedAssignment = assignment;
+        this.assignmentFilter = 'all';
+        this.showAssignmentModal = true;
+    },
+    get filteredAssignmentStudents() {
+        if (!this.selectedAssignment || !this.selectedAssignment.students) return [];
+        if (this.assignmentFilter === 'submitted') {
+            return this.selectedAssignment.students.filter(s => s.has_submitted);
+        }
+        if (this.assignmentFilter === 'unsubmitted') {
+            return this.selectedAssignment.students.filter(s => !s.has_submitted);
+        }
+        return this.selectedAssignment.students;
+    },
+    get assignmentSubmittedCount() {
+        if (!this.selectedAssignment || !this.selectedAssignment.students) return 0;
+        return this.selectedAssignment.students.filter(s => s.has_submitted).length;
+    },
+    get assignmentUnsubmittedCount() {
+        if (!this.selectedAssignment || !this.selectedAssignment.students) return 0;
+        return this.selectedAssignment.students.filter(s => !s.has_submitted).length;
+    },
+
+    // Modal cho kết quả thi thử HSK
+    showHskModal: false,
+    selectedHskResult: null,
+    openHskModal(result) {
+        this.selectedHskResult = result;
+        this.showHskModal = true;
     }
 }" class="space-y-6">
 
@@ -133,14 +169,18 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
-                                    <div class="inline-flex flex-col items-center gap-1 min-w-[90px]">
-                                        <span class="text-xs font-bold text-slate-900 dark:text-white">
-                                            {{ $submittedCount }}/{{ $class->enrollments_count }}
-                                        </span>
-                                        <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-primary h-full rounded-full transition-all duration-300" style="width: {{ $percent }}%"></div>
-                                        </div>
-                                    </div>
+                                    <button type="button"
+                                            @click="openAssignmentModal({
+                                                id: {{ $assignment->id }},
+                                                title: '{{ addslashes($assignment->title) }}',
+                                                url: '{{ route('teacher.assignments.show', $assignment->id) }}',
+                                                students: {{ json_encode($assignment->students_submissions_list ?? []) }}
+                                            })"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-primary/10 hover:text-primary dark:bg-slate-800 dark:hover:bg-primary/20 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer shadow-2xs group"
+                                            title="{{ __('Bấm để xem danh sách học viên đã nộp và chưa nộp') }}">
+                                        <span class="material-symbols-outlined text-[15px] text-primary group-hover:scale-110 transition-transform">groups</span>
+                                        <span>{{ $submittedCount }}/{{ $class->enrollments_count }}</span>
+                                    </button>
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
                                     @if($pendingCount > 0)
@@ -201,7 +241,7 @@
                         <tr class="bg-slate-50/75 dark:bg-slate-800/50 text-slate-400 text-[11px] uppercase tracking-wider font-semibold">
                             <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Tên bài kiểm tra') }}</th>
                             <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Phân loại / Thời lượng') }}</th>
-                            <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-center">{{ __('Lượt làm bài') }}</th>
+                            <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-center">{{ __('Tiến độ làm bài') }}</th>
                             <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-center">{{ __('Điểm TB') }}</th>
                             <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">{{ __('Hạn làm bài') }}</th>
                             <th class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 text-right">{{ __('Thao tác') }}</th>
@@ -212,6 +252,7 @@
                             @php
                                 $validAttempts = $quiz->attempts->whereNotNull('score')->where('status', 'completed');
                                 $avgScore = $validAttempts->count() > 0 ? round($validAttempts->avg('score'), 1) : null;
+                                $quizCompletedCount = $quiz->students_attempts_list ? $quiz->students_attempts_list->where('has_attempted', true)->count() : 0;
                             @endphp
                             <tr class="hover:bg-slate-50/75 dark:hover:bg-slate-800/40 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0">
                                 <td class="px-4 py-3.5">
@@ -246,7 +287,7 @@
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-primary/10 hover:text-primary dark:bg-slate-800 dark:hover:bg-primary/20 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer shadow-2xs group"
                                             title="{{ __('Bấm để xem danh sách học viên đã làm và chưa làm') }}">
                                         <span class="material-symbols-outlined text-[15px] text-primary group-hover:scale-110 transition-transform">groups</span>
-                                        <span>{{ $quiz->attempts_count }} {{ __('lượt') }}</span>
+                                        <span>{{ $quizCompletedCount }}/{{ $class->enrollments_count }}</span>
                                     </button>
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
@@ -330,22 +371,24 @@
                         @forelse($hskResults as $result)
                             @php
                                 $exam = $result->mockExam;
-                                $passScore = $exam->pass_score ?? 180;
+                                $levelCode = strtolower($exam->hskLevel->level_code ?? 'hsk1');
+                                $maxScore = in_array($levelCode, ['hsk1', 'hsk2']) ? 200 : 300;
+                                $passScore = in_array($levelCode, ['hsk1', 'hsk2']) ? 120 : 180;
                                 $isPassed = ($result->total_score ?? 0) >= $passScore;
                             @endphp
                             <tr class="hover:bg-slate-50/75 dark:hover:bg-slate-800/40 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0">
                                 <td class="px-4 py-3.5">
                                     <div class="flex items-center gap-3">
-                                        @if($result->user->avatar)
-                                            <img src="{{ $result->user->avatar_url }}" alt="{{ $result->user->first_name }}" class="size-8 rounded-lg object-cover shadow-xs">
+                                        @if($result->user->avatar_url)
+                                            <img src="{{ $result->user->avatar_url }}" alt="{{ $result->user->full_name }}" class="size-8 rounded-lg object-cover shadow-xs">
                                         @else
                                             <div class="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                                                {{ substr($result->user->first_name, 0, 1) }}
+                                                {{ mb_substr($result->user->first_name ?: $result->user->full_name, 0, 1) }}
                                             </div>
                                         @endif
                                         <div>
                                             <p class="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm">
-                                                {{ $result->user->first_name }} {{ $result->user->last_name }}
+                                                {{ $result->user->full_name }}
                                             </p>
                                             <p class="text-[11px] text-slate-400 font-normal">{{ $result->user->email }}</p>
                                         </div>
@@ -358,7 +401,7 @@
                                         </p>
                                         @if($exam && $exam->hskLevel)
                                             <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 w-fit">
-                                                {{ $exam->hskLevel->name }}
+                                                {{ $exam->hskLevel->title }}
                                             </span>
                                         @endif
                                     </div>
@@ -374,19 +417,19 @@
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
                                     <span class="font-bold text-xs sm:text-sm {{ $isPassed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500' }}">
-                                        {{ $result->total_score ?? 0 }}/{{ $exam->total_score ?? 300 }}
+                                        {{ $result->total_score ?? 0 }}/{{ $maxScore }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3.5 text-center">
                                     @if($isPassed)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
                                             <span class="material-symbols-outlined text-[13px]">check_circle</span>
-                                            {{ __('Đạt chuẩn') }}
+                                            {{ __('Đạt') }}
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-[11px] font-bold">
                                             <span class="material-symbols-outlined text-[13px]">cancel</span>
-                                            {{ __('Chưa đạt') }}
+                                            {{ __('Không đạt') }}
                                         </span>
                                     @endif
                                 </td>
@@ -395,13 +438,32 @@
                                 </td>
                                 <td class="px-4 py-3.5 text-right whitespace-nowrap">
                                     @if($result->uuid)
-                                        <a href="{{ route('student.hsk-mock-exams.result', $result->uuid) }}"
-                                           target="_blank"
-                                           class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-primary text-slate-700 hover:text-white dark:bg-slate-800 dark:hover:bg-primary dark:text-slate-300 transition-colors rounded-lg font-bold text-xs"
-                                           title="{{ __('Xem chi tiết bài làm') }}">
+                                        <button type="button"
+                                                @click="openHskModal({
+                                                    id: {{ $result->id }},
+                                                    uuid: '{{ $result->uuid }}',
+                                                    student_name: '{{ addslashes($result->user->full_name) }}',
+                                                    student_email: '{{ addslashes($result->user->email) }}',
+                                                    student_avatar: '{{ $result->user->avatar_url }}',
+                                                    student_first_char: '{{ mb_substr($result->user->first_name ?: $result->user->full_name, 0, 1) }}',
+                                                    exam_title: '{{ addslashes($exam->title ?? __('Đề thi HSK')) }}',
+                                                    exam_level: '{{ $exam && $exam->hskLevel ? addslashes($exam->hskLevel->title) : '' }}',
+                                                    listening_score: {{ $result->listening_score ?? 0 }},
+                                                    reading_score: {{ $result->reading_score ?? 0 }},
+                                                    writing_score: {{ $result->writing_score !== null ? $result->writing_score : 'null' }},
+                                                    total_score: {{ $result->total_score ?? 0 }},
+                                                    pass_score: {{ $passScore }},
+                                                    max_score: {{ $exam->total_score ?? 300 }},
+                                                    is_passed: {{ $isPassed ? 'true' : 'false' }},
+                                                    completed_at: '{{ $result->completed_at ? $result->completed_at->format('d/m/Y H:i') : '--' }}',
+                                                    started_at: '{{ $result->started_at ? $result->started_at->format('d/m/Y H:i') : '--' }}',
+                                                    full_result_url: '{{ route('student.hsk-mock-exams.result', $result->uuid) }}'
+                                                })"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-primary text-slate-700 hover:text-white dark:bg-slate-800 dark:hover:bg-primary dark:text-slate-300 transition-colors rounded-lg font-bold text-xs cursor-pointer"
+                                                title="{{ __('Xem chi tiết bài làm') }}">
+                                            <span class="material-symbols-outlined text-[13px]">visibility</span>
                                             <span>{{ __('Chi tiết') }}</span>
-                                            <span class="material-symbols-outlined text-[13px]">open_in_new</span>
-                                        </a>
+                                        </button>
                                     @endif
                                 </td>
                             </tr>
@@ -541,6 +603,210 @@
                         class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
                     {{ __('Đóng') }}
                 </button>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- MODAL: Danh sách học viên đã nộp và chưa nộp bài tập --}}
+    <div x-show="showAssignmentModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+         x-cloak>
+
+        <div @click.away="showAssignmentModal = false"
+             x-show="showAssignmentModal"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[85vh]">
+
+            {{-- Modal Header --}}
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+                <div class="space-y-0.5 min-w-0 pr-4">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white truncate" x-text="selectedAssignment?.title"></h3>
+                    <p class="text-xs text-slate-500 font-medium">
+                        {{ __('Tiến độ nộp bài:') }}
+                        <span class="font-bold text-primary" x-text="assignmentSubmittedCount"></span>/<span x-text="selectedAssignment?.students?.length || 0"></span> {{ __('học viên') }}
+                    </p>
+                </div>
+                <button type="button" @click="showAssignmentModal = false"
+                        class="size-8 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer shrink-0">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+
+            {{-- Modal Filter Tabs --}}
+            <div class="px-5 pt-3 pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5 bg-slate-50/20 dark:bg-slate-800/20">
+                <button type="button" @click="assignmentFilter = 'all'"
+                        :class="assignmentFilter === 'all' ? 'bg-primary text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium'"
+                        class="px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1">
+                    <span>{{ __('Tất cả') }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px]"
+                          :class="assignmentFilter === 'all' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'"
+                          x-text="selectedAssignment?.students?.length || 0"></span>
+                </button>
+
+                <button type="button" @click="assignmentFilter = 'submitted'"
+                        :class="assignmentFilter === 'submitted' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium'"
+                        class="px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1">
+                    <span>{{ __('Đã nộp') }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px]"
+                          :class="assignmentFilter === 'submitted' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'"
+                          x-text="assignmentSubmittedCount"></span>
+                </button>
+
+                <button type="button" @click="assignmentFilter = 'unsubmitted'"
+                        :class="assignmentFilter === 'unsubmitted' ? 'bg-rose-600 text-white font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium'"
+                        class="px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1">
+                    <span>{{ __('Chưa nộp') }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px]"
+                          :class="assignmentFilter === 'unsubmitted' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'"
+                          x-text="assignmentUnsubmittedCount"></span>
+                </button>
+            </div>
+
+            {{-- Modal Body: Danh sách học viên --}}
+            <div class="p-5 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 flex-1">
+                <template x-for="student in filteredAssignmentStudents" :key="student.id">
+                    <div class="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <template x-if="student.avatar_url">
+                                <img :src="student.avatar_url" :alt="student.name" class="size-9 rounded-xl object-cover shadow-2xs shrink-0">
+                            </template>
+                            <template x-if="!student.avatar_url">
+                                <div class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0" x-text="student.first_char"></div>
+                            </template>
+                            <div class="min-w-0">
+                                <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate" x-text="student.name"></p>
+                                <p class="text-[11px] text-slate-400 truncate mt-0.5" x-text="student.email"></p>
+                            </div>
+                        </div>
+
+                        <div class="shrink-0 text-right">
+                            <template x-if="student.has_submitted">
+                                <div class="flex flex-col items-end gap-0.5">
+                                    <template x-if="student.is_graded">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                                            <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                                            <span x-text="student.score !== null ? student.score + '/10' : '{{ __('Đã chấm') }}'"></span>
+                                        </span>
+                                    </template>
+                                    <template x-if="student.is_pending">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-xs font-bold">
+                                            <span class="size-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                            <span>{{ __('Chờ chấm') }}</span>
+                                        </span>
+                                    </template>
+                                    <template x-if="!student.is_graded && !student.is_pending">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                                            <span class="material-symbols-outlined text-[13px]">done</span>
+                                            <span>{{ __('Đã nộp') }}</span>
+                                        </span>
+                                    </template>
+                                    <span x-show="student.submitted_at" class="text-[10px] text-slate-400" x-text="student.submitted_at"></span>
+                                </div>
+                            </template>
+                            <template x-if="!student.has_submitted">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs font-semibold">
+                                    <span class="material-symbols-outlined text-[13px]">schedule</span>
+                                    {{ __('Chưa nộp') }}
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <div x-show="filteredAssignmentStudents.length === 0" class="py-8 text-center text-slate-400 text-xs">
+                    {{ __('Không có học viên nào trong mục này.') }}
+                </div>
+            </div>
+
+            {{-- Modal Footer --}}
+            <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+                <a :href="selectedAssignment?.url"
+                   class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    <span>{{ __('Xem chi tiết bài tập & chấm điểm') }}</span>
+                </a>
+                <button type="button" @click="showAssignmentModal = false"
+                        class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                    {{ __('Đóng') }}
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- MODAL: Chi tiết kết quả bài thi HSK --}}
+    <div x-show="showHskModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+         x-cloak>
+
+        <div @click.away="showHskModal = false"
+             x-show="showHskModal"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-6xl w-full overflow-hidden flex flex-col h-[90vh]">
+
+            {{-- Modal Header --}}
+            <div class="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <template x-if="selectedHskResult?.student_avatar">
+                        <img :src="selectedHskResult.student_avatar" :alt="selectedHskResult.student_name" class="size-9 rounded-xl object-cover shadow-2xs shrink-0">
+                    </template>
+                    <template x-if="!selectedHskResult?.student_avatar">
+                        <div class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0" x-text="selectedHskResult?.student_first_char"></div>
+                    </template>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate" x-text="selectedHskResult?.student_name"></h3>
+                            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 shrink-0" x-text="selectedHskResult?.exam_level"></span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 truncate mt-0.5" x-text="selectedHskResult?.exam_title"></p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                    <a :href="selectedHskResult?.full_result_url"
+                       target="_blank"
+                       class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+                       title="{{ __('Mở trong tab mới') }}">
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                        <span class="hidden sm:inline">{{ __('Mở tab mới') }}</span>
+                    </a>
+                    <button type="button" @click="showHskModal = false"
+                            class="size-8 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Modal Body: Nhúng trực tiếp toàn bộ trang chi tiết câu hỏi & câu trả lời --}}
+            <div class="flex-1 w-full h-full overflow-hidden relative bg-[#f8f6f3] dark:bg-[#0e0c0b]">
+                <template x-if="showHskModal && selectedHskResult?.full_result_url">
+                    <iframe :src="selectedHskResult.full_result_url + (selectedHskResult.full_result_url.includes('?') ? '&' : '?') + 'embed=1'"
+                            class="w-full h-full border-0"
+                            loading="lazy"></iframe>
+                </template>
             </div>
 
         </div>

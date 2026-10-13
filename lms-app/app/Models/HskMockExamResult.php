@@ -22,6 +22,11 @@ class HskMockExamResult extends Model
         'total_score',
     ];
 
+    protected $casts = [
+        'started_at'   => 'datetime',
+        'completed_at' => 'datetime',
+    ];
+
     protected static function booted()
     {
         static::creating(function ($result) {

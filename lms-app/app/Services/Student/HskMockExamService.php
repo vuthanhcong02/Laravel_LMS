@@ -286,17 +286,23 @@ class HskMockExamService
      */
     public function getResultDetail($uuid, $userId)
     {
-        return HskMockExamResult::where('uuid', $uuid)
-            ->where('user_id', $userId)
+        $query = HskMockExamResult::where('uuid', $uuid)
             ->where('status', 'completed')
             ->with([
+                'user',
                 'mockExam.hskLevel',
                 'userAnswers.option',
                 'userAnswers.question.options',
                 'userAnswers.question.group',
                 'userAnswers.question.hskMockExamSection'
-            ])
-            ->firstOrFail();
+            ]);
+
+        $user = User::find($userId);
+        if ($user && !in_array($user->role, [User::ROLE_ADMIN, User::ROLE_TEACHER])) {
+            $query->where('user_id', $userId);
+        }
+
+        return $query->firstOrFail();
     }
 
     /**

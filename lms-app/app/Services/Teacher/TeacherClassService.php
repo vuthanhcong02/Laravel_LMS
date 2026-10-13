@@ -154,19 +154,7 @@ class TeacherClassService
      */
     public function getClassAssessmentsData(Course $course): array
     {
-        // 1. Danh sách bài tập của lớp kèm số lượt nộp và bài nộp
-        $assignments = $course->assignments()
-            ->withCount('submissions')
-            ->with([
-                'lesson',
-                'submissions' => function ($q) {
-                    $q->with('user');
-                }
-            ])
-            ->latest('created_at')
-            ->get();
-
-        // 3. Danh sách học sinh đã ghi danh vào lớp
+        // 1. Danh sách học sinh đã ghi danh vào lớp
         $enrolledStudents = $course->enrollments()
             ->with('user')
             ->get()
@@ -176,9 +164,43 @@ class TeacherClassService
 
         $studentUserIds = $enrolledStudents->pluck('id')->toArray();
 
-        // 2. Danh sách bài kiểm tra của lớp kèm lượt làm bài và danh sách học viên
+        // 2. Danh sách bài tập của lớp kèm số lượt nộp và danh sách học viên
+        $assignments = $course->assignments()
+            ->withCount('submissions')
+            ->with([
+                'lesson',
+                'submissions' => function ($q) {
+                    $q->with('user');
+                }
+            ])
+            ->latest('created_at')
+            ->get()
+            ->map(function ($assignment) use ($enrolledStudents) {
+                $submissionsByUserId = $assignment->submissions->keyBy('user_id');
+                $assignment->students_submissions_list = $enrolledStudents->map(function ($student) use ($submissionsByUserId) {
+                    $submission = $submissionsByUserId->get($student->id);
+                    $hasSubmitted = $submission !== null;
+                    return [
+                        'id'            => $student->id,
+                        'name'          => $student->full_name,
+                        'email'         => $student->email,
+                        'avatar_url'    => $student->avatar_url,
+                        'first_char'    => mb_substr($student->first_name, 0, 1),
+                        'has_submitted' => $hasSubmitted,
+                        'score'         => $submission?->score,
+                        'status'        => $submission?->status,
+                        'is_graded'     => $submission?->status === AssignmentSubmission::STATUS_GRADED,
+                        'is_pending'    => $submission?->status === AssignmentSubmission::STATUS_SUBMITTED,
+                        'submitted_at'  => $submission?->created_at ? $submission->created_at->format('d/m/Y H:i') : null,
+                    ];
+                })->values();
+
+                return $assignment;
+            });
+
+        // 3. Danh sách bài kiểm tra của lớp kèm lượt làm bài và danh sách học viên
         $quizzes = $course->quizzes()
-            ->withCount('attempts')
+            ->withCount(['attempts', 'questions'])
             ->with([
                 'attempts' => function ($q) {
                     $q->with('user');
