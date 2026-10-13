@@ -3,8 +3,12 @@
 namespace App\Services\Teacher;
 
 use App\Enums\EnrollmentStatus;
+use App\Models\Assignment;
+use App\Models\AssignmentSubmission;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\HskMockExamResult;
+use App\Models\Quiz;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -136,4 +140,90 @@ class TeacherClassService
 
         return false;
     }
+
+    /**
+     * Lấy dữ liệu bài tập, bài kiểm tra và kết quả thi HSK của học sinh trong lớp.
+     *
+     * @param Course $course
+     * @return array{
+     *     assignments: \Illuminate\Database\Eloquent\Collection,
+     *     quizzes: \Illuminate\Database\Eloquent\Collection,
+     *     hsk_results: \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection,
+     *     summary: array<string, mixed>
+     * }
+     */
+    public function getClassAssessmentsData(Course $course): array
+    {
+        // 1. Danh sách bài tập của lớp kèm số lượt nộp và bài nộp
+        $assignments = $course->assignments()
+            ->withCount('submissions')
+            ->with([
+                'lesson',
+                'submissions' => function ($q) {
+                    $q->with('user');
+                }
+            ])
+            ->latest('created_at')
+            ->get();
+
+        // 2. Danh sách bài kiểm tra của lớp kèm lượt làm bài
+        $quizzes = $course->quizzes()
+            ->withCount('attempts')
+            ->with([
+                'attempts' => function ($q) {
+                    $q->with('user');
+                }
+            ])
+            ->latest('created_at')
+            ->get();
+
+        // 3. Danh sách ID học sinh đã ghi danh vào lớp
+        $studentUserIds = $course->enrollments()->pluck('user_id')->toArray();
+
+        // 4. Kết quả thi thử HSK của các học sinh thuộc lớp này
+        $hskResults = !empty($studentUserIds)
+            ? HskMockExamResult::whereIn('user_id', $studentUserIds)
+                ->with(['user', 'mockExam.hskLevel'])
+                ->where('status', 'completed')
+                ->latest('completed_at')
+                ->get()
+            : collect();
+
+        // 5. Thống kê tổng quan
+        $totalAssignments = $assignments->count();
+        $totalQuizzes = $quizzes->count();
+
+        // Đếm bài tập nộp đang chờ chấm điểm
+        $pendingSubmissionsCount = 0;
+        foreach ($assignments as $assignment) {
+            $pendingSubmissionsCount += $assignment->submissions
+                ->where('status', AssignmentSubmission::STATUS_SUBMITTED)
+                ->count();
+        }
+
+        // Tính điểm trung bình Quiz của lớp
+        $allQuizScores = [];
+        foreach ($quizzes as $quiz) {
+            foreach ($quiz->attempts as $attempt) {
+                if ($attempt->score !== null && $attempt->status === 'completed') {
+                    $allQuizScores[] = $attempt->score;
+                }
+            }
+        }
+        $avgQuizScore = count($allQuizScores) > 0 ? round(array_sum($allQuizScores) / count($allQuizScores), 1) : null;
+
+        return [
+            'assignments' => $assignments,
+            'quizzes'     => $quizzes,
+            'hsk_results' => $hskResults,
+            'summary'     => [
+                'total_assignments'         => $totalAssignments,
+                'total_quizzes'             => $totalQuizzes,
+                'pending_submissions_count' => $pendingSubmissionsCount,
+                'avg_quiz_score'            => $avgQuizScore,
+                'total_hsk_attempts'        => $hskResults->count(),
+            ],
+        ];
+    }
 }
+
