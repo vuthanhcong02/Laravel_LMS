@@ -9,6 +9,8 @@ use App\Models\Course;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class TeacherAssignmentManagementTest extends TestCase
@@ -170,5 +172,72 @@ class TeacherAssignmentManagementTest extends TestCase
 
         $responseDelete = $this->actingAs($this->otherTeacher)->delete(route('teacher.assignments.destroy', $assignment));
         $responseDelete->assertForbidden();
+    }
+
+    /**
+     * Test that teacher can grade with audio and attachments, then update them.
+     */
+    public function test_teacher_can_grade_with_audio_and_attachments_and_manage_them(): void
+    {
+        Storage::fake('local');
+
+        $assignment = Assignment::create([
+            'teacher_id' => $this->teacher->id,
+            'course_id' => $this->course->id,
+            'title' => 'Oral Test',
+            'due_date' => Carbon::now()->addDays(3),
+            'status' => Assignment::STATUS_PUBLISHED,
+        ]);
+
+        $submission = AssignmentSubmission::create([
+            'assignment_id' => $assignment->id,
+            'user_id' => $this->student->id,
+            'status' => AssignmentSubmission::STATUS_SUBMITTED,
+        ]);
+
+        $audioFile = UploadedFile::fake()->create('teacher_feedback.mp3', 200, 'audio/mpeg');
+        $docFile = UploadedFile::fake()->create('feedback_note.pdf', 300, 'application/pdf');
+
+        // 1. Grade with audio and attachment
+        $response = $this->actingAs($this->teacher)->post(route('teacher.assignments.grade', [$assignment, $submission]), [
+            'score' => 8.5,
+            'teacher_feedback' => 'Good pronunciation, check attached corrections.',
+            'audio_feedback' => $audioFile,
+            'teacher_attachments' => [$docFile],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $submission->refresh();
+
+        $this->assertEquals(8.5, $submission->score);
+        $this->assertEquals(AssignmentSubmission::STATUS_GRADED, $submission->status);
+        $this->assertNotNull($submission->teacher_audio_path);
+        $this->assertCount(1, $submission->teacher_attachments);
+        $this->assertEquals('feedback_note.pdf', $submission->teacher_attachments[0]['name']);
+
+        $savedAudio = $submission->teacher_audio_path;
+        $savedDocPath = $submission->teacher_attachments[0]['path'];
+
+        // 2. Re-grade: delete audio, keep existing attachment, add another attachment
+        $imgFile = UploadedFile::fake()->image('annotated_sheet.png');
+
+        $responseUpdate = $this->actingAs($this->teacher)->post(route('teacher.assignments.grade', [$assignment, $submission]), [
+            'score' => 9.0,
+            'teacher_feedback' => 'Revised score with further notes.',
+            'delete_audio' => '1',
+            'existing_teacher_attachments' => [$savedDocPath],
+            'teacher_attachments' => [$imgFile],
+        ]);
+
+        $responseUpdate->assertSessionHasNoErrors();
+        $submission->refresh();
+
+        $this->assertEquals(9.0, $submission->score);
+        $this->assertNull($submission->teacher_audio_path);
+        $this->assertCount(2, $submission->teacher_attachments);
+
+        $attachmentNames = collect($submission->teacher_attachments)->pluck('name')->all();
+        $this->assertContains('feedback_note.pdf', $attachmentNames);
+        $this->assertContains('annotated_sheet.png', $attachmentNames);
     }
 }

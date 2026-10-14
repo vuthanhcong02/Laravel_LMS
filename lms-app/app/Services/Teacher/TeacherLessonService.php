@@ -4,8 +4,10 @@ namespace App\Services\Teacher;
 
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class TeacherLessonService
 {
@@ -17,17 +19,9 @@ class TeacherLessonService
         $maxOrder = $course->lessons()->max('order') ?? 0;
         $data['order'] = $maxOrder + 1;
 
-        // Process PDF file upload
-        if (isset($data['pdf_file']) && $data['pdf_file'] instanceof UploadedFile) {
-            $data['pdf_path'] = $data['pdf_file']->store('lessons/pdfs', 'public');
-            unset($data['pdf_file']);
-        }
-
-        // Process note/attachment file upload
-        if (isset($data['note_file']) && $data['note_file'] instanceof UploadedFile) {
-            $data['note_file_path'] = $data['note_file']->store('lessons/notes', 'public');
-            unset($data['note_file']);
-        }
+        $pdfFile = $data['pdf_file'] ?? null;
+        $noteFile = $data['note_file'] ?? null;
+        unset($data['pdf_file'], $data['note_file']);
 
         // Synchronize video_url and record_url if only one is provided
         if (empty($data['video_url']) && !empty($data['record_url'])) {
@@ -36,7 +30,23 @@ class TeacherLessonService
             $data['record_url'] = $data['video_url'];
         }
 
-        return $course->lessons()->create($data);
+        $lesson = $course->lessons()->create($data);
+
+        // Process PDF file upload to B2
+        if ($pdfFile instanceof UploadedFile) {
+            $lesson->pdf_path = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $pdfFile, 'pdfs');
+        }
+
+        // Process note/attachment file upload to B2
+        if ($noteFile instanceof UploadedFile) {
+            $lesson->note_file_path = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $noteFile, 'notes');
+        }
+
+        if ($pdfFile instanceof UploadedFile || $noteFile instanceof UploadedFile) {
+            $lesson->save();
+        }
+
+        return $lesson;
     }
 
     /**
@@ -50,35 +60,35 @@ class TeacherLessonService
 
         // Handle PDF file removal request
         if (!empty($data['remove_pdf'])) {
-            if ($lesson->pdf_path && Storage::disk('public')->exists($lesson->pdf_path)) {
-                Storage::disk('public')->delete($lesson->pdf_path);
+            if ($lesson->pdf_path) {
+                $this->deleteResourceFile($lesson->pdf_path);
             }
             $data['pdf_path'] = null;
         }
 
         // Handle new PDF file upload
         if (isset($data['pdf_file']) && $data['pdf_file'] instanceof UploadedFile) {
-            if ($lesson->pdf_path && Storage::disk('public')->exists($lesson->pdf_path)) {
-                Storage::disk('public')->delete($lesson->pdf_path);
+            if ($lesson->pdf_path) {
+                $this->deleteResourceFile($lesson->pdf_path);
             }
-            $data['pdf_path'] = $data['pdf_file']->store('lessons/pdfs', 'public');
+            $data['pdf_path'] = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $data['pdf_file'], 'pdfs');
             unset($data['pdf_file']);
         }
 
         // Handle note file removal request
         if (!empty($data['remove_note_file'])) {
-            if ($lesson->note_file_path && Storage::disk('public')->exists($lesson->note_file_path)) {
-                Storage::disk('public')->delete($lesson->note_file_path);
+            if ($lesson->note_file_path) {
+                $this->deleteResourceFile($lesson->note_file_path);
             }
             $data['note_file_path'] = null;
         }
 
         // Handle new note file upload
         if (isset($data['note_file']) && $data['note_file'] instanceof UploadedFile) {
-            if ($lesson->note_file_path && Storage::disk('public')->exists($lesson->note_file_path)) {
-                Storage::disk('public')->delete($lesson->note_file_path);
+            if ($lesson->note_file_path) {
+                $this->deleteResourceFile($lesson->note_file_path);
             }
-            $data['note_file_path'] = $data['note_file']->store('lessons/notes', 'public');
+            $data['note_file_path'] = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $data['note_file'], 'notes');
             unset($data['note_file']);
         }
 
@@ -103,16 +113,39 @@ class TeacherLessonService
             abort(403, __('Bài học không thuộc về lớp học này.'));
         }
 
-        // Delete attachment files from disk
-        if ($lesson->pdf_path && Storage::disk('public')->exists($lesson->pdf_path)) {
-            Storage::disk('public')->delete($lesson->pdf_path);
+        // Delete attachment files from both B2 and local storage
+        if ($lesson->pdf_path) {
+            $this->deleteResourceFile($lesson->pdf_path);
         }
 
-        if ($lesson->note_file_path && Storage::disk('public')->exists($lesson->note_file_path)) {
-            Storage::disk('public')->delete($lesson->note_file_path);
+        if ($lesson->note_file_path) {
+            $this->deleteResourceFile($lesson->note_file_path);
+        }
+
+        // Cleanup lesson directory on B2
+        try {
+            app(MediaStorageService::class)->deleteDirectory("courses/course_{$course->id}/lessons/lesson_{$lesson->id}");
+        } catch (Throwable $e) {
+            // Ignore directory cleanup error
         }
 
         return (bool) $lesson->delete();
+    }
+
+    /**
+     * Delete a single resource file from B2 and local disk.
+     */
+    protected function deleteResourceFile(string $path): void
+    {
+        try {
+            Storage::disk('b2')->delete($path);
+        } catch (Throwable $e) {
+            // Ignore B2 delete error
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 
     /**

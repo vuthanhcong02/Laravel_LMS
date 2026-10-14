@@ -3,9 +3,10 @@
 namespace App\Livewire\ExamBuilder\Types;
 
 use App\Models\HskMockExamQuestionGroup;
-use Illuminate\Support\Str;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ListeningMatchingImages extends BaseQuestionEditor
 {
@@ -39,12 +40,12 @@ class ListeningMatchingImages extends BaseQuestionEditor
             'newPassageImages.*' => 'image|max:2048',
         ]);
 
-        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
-        $folderPath = "hsk_mock_exams/{$safeExamName}/images";
+        $examId = $this->group->section->hsk_mock_exam_id ?? 0;
+        $mediaStorage = app(MediaStorageService::class);
         $currentImages = $this->group->passage_image ? explode(',', $this->group->passage_image) : [];
         
         foreach ($this->newPassageImages as $file) {
-            $path = $file->store($folderPath, 'public');
+            $path = $mediaStorage->uploadHskExamMedia($examId, $file, 'images');
             $currentImages[] = $path;
         }
 

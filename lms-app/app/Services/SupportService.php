@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\SupportTicket;
+use App\Services\Media\MediaStorageService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -44,6 +46,13 @@ class SupportService
         try {
             DB::beginTransaction();
 
+            $attachmentPath = null;
+            if (isset($data['attachment']) && $data['attachment'] instanceof UploadedFile) {
+                $attachmentPath = app(MediaStorageService::class)->uploadSupportAttachment($data['attachment']);
+            } elseif (!empty($data['attachment_path'])) {
+                $attachmentPath = $data['attachment_path'];
+            }
+
             $ticket = SupportTicket::create([
                 'user_id' => Auth::id(),
                 'subject' => $data['subject'],
@@ -54,7 +63,7 @@ class SupportService
             $ticket->messages()->create([
                 'user_id' => Auth::id(),
                 'message' => $data['message'],
-                'attachment_path' => $data['attachment_path'] ?? null,
+                'attachment_path' => $attachmentPath,
             ]);
 
             DB::commit();
@@ -78,8 +87,8 @@ class SupportService
             $attachmentPath = $data['attachment_path'] ?? null;
             
             // Handle file upload if present and is an actual file object
-            if (isset($data['attachment']) && $data['attachment'] instanceof \Illuminate\Http\UploadedFile) {
-                $attachmentPath = $data['attachment']->store('support_attachments', 'public');
+            if (isset($data['attachment']) && $data['attachment'] instanceof UploadedFile) {
+                $attachmentPath = app(MediaStorageService::class)->uploadSupportAttachment($data['attachment']);
             }
 
             $message = $ticket->messages()->create([

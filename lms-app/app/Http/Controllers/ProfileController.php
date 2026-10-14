@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,12 +33,7 @@ class ProfileController extends Controller
         $user->fill($request->validated());
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if it's stored locally
-            if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = app(MediaStorageService::class)->uploadUserAvatar($user, $request->file('avatar'));
         }
 
         if ($user->isDirty('email')) {

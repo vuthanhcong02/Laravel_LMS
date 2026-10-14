@@ -18,6 +18,9 @@ window.questionBuilder = function (data) {
                 case_sensitive: false,
                 image_url: null,
                 audio_url: null,
+                audio_name: null,
+                delete_image: false,
+                delete_audio: false,
                 options: [
                     { id: null, option_text: '', is_correct: false },
                     { id: null, option_text: '', is_correct: false },
@@ -77,11 +80,36 @@ window.questionBuilder = function (data) {
             const file = event.target.files[0];
             if (!file) return;
 
+            this.questions[index].delete_image = false;
             const reader = new FileReader();
             reader.onload = (e) => {
                 this.questions[index].image_url = e.target.result;
             };
             reader.readAsDataURL(file);
+        },
+
+        previewAudio(event, index) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            this.questions[index].audio_name = file.name;
+            this.questions[index].audio_url = URL.createObjectURL(file);
+            this.questions[index].delete_audio = false;
+        },
+
+        removeImage(index) {
+            this.questions[index].image_url = null;
+            this.questions[index].delete_image = true;
+            const fileInput = document.querySelector(`input[name="questions[${index}][image]"]`);
+            if (fileInput) fileInput.value = '';
+        },
+
+        removeAudio(index) {
+            this.questions[index].audio_url = null;
+            this.questions[index].audio_name = null;
+            this.questions[index].delete_audio = true;
+            const fileInput = document.querySelector(`input[name="questions[${index}][audio]"]`);
+            if (fileInput) fileInput.value = '';
         },
 
         toggleCorrect(qIndex, oIndex) {

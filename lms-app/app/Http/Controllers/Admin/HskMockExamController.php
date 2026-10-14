@@ -266,7 +266,7 @@ class HskMockExamController extends Controller
             return response()->json([
                 'status' => 'success',
                 'path' => $path,
-                'url' => Storage::url($path),
+                'url' => hsk_storage_url($path),
                 'message' => 'Image uploaded successfully!'
             ]);
         }

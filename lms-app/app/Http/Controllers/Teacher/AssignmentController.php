@@ -82,7 +82,7 @@ class AssignmentController extends Controller
     {
         $this->authorize('delete', $assignment);
 
-        $assignment->delete();
+        $this->assignmentService->delete($assignment);
 
         return redirect()
             ->route('teacher.assignments.index')
@@ -91,16 +91,17 @@ class AssignmentController extends Controller
 
     public function grade(GradeSubmissionRequest $request, Assignment $assignment, AssignmentSubmission $submission)
     {
-        $this->authorize('grade', $assignment);
-
-        abort_if($submission->assignment_id !== $assignment->id, 404);
+        // Policy kiểm tra giáo viên sở hữu assignment và submission thuộc đúng assignment
+        $this->authorize('grade', [$assignment, $submission]);
 
         $this->assignmentService->grade(
             $submission,
             $request->score,
             $request->teacher_feedback,
             $request->file('audio_feedback'),
-            $request->boolean('delete_audio')
+            $request->boolean('delete_audio'),
+            $request->getValidTeacherAttachments(),
+            $request->getRetainedTeacherAttachmentPaths()
         );
 
         return back()->with('success', 'Chấm điểm thành công.');

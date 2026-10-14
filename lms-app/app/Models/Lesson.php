@@ -26,6 +26,16 @@ class Lesson extends Model
     ];
 
     /**
+     * The accessors to append to the model's array and JSON representation.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'pdf_url',
+        'note_file_url',
+    ];
+
+    /**
      * Course that owns this lesson.
      */
     public function course(): BelongsTo
@@ -42,7 +52,7 @@ class Lesson extends Model
     }
 
     /**
-     * Public URL for lesson PDF slide/document.
+     * Presigned secure URL for lesson PDF slide/document (60 minutes TTL).
      */
     public function getPdfUrlAttribute(): ?string
     {
@@ -50,11 +60,11 @@ class Lesson extends Model
             return null;
         }
 
-        return app(MediaStorageService::class)->url($this->pdf_path);
+        return app(MediaStorageService::class)->url($this->pdf_path, 60);
     }
 
     /**
-     * Public URL for attached lesson notes/materials.
+     * Presigned secure URL for attached lesson notes/materials (60 minutes TTL).
      */
     public function getNoteFileUrlAttribute(): ?string
     {
@@ -62,7 +72,7 @@ class Lesson extends Model
             return null;
         }
 
-        return app(MediaStorageService::class)->url($this->note_file_path);
+        return app(MediaStorageService::class)->url($this->note_file_path, 60);
     }
 
     /**

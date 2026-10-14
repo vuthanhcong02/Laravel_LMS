@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Exception;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 
@@ -72,27 +73,77 @@ class TtsService
             return $filePath;
         }
 
-        // Resolve edge-tts executable command safely
-        $cmd = $this->resolveCommand($voice, $rate, $cleanText, $filePath);
+        // Attempt neural speech synthesis with Edge-TTS (high-quality natural voice)
+        try {
+            $this->synthesizeWithEdgeTts($voice, $rate, $cleanText, $filePath);
+            return $filePath;
+        } catch (Exception $e) {
+            // When Edge-TTS fails (403 Handshake Error, timeout, or blocked IP), gracefully fallback to Google TTS
+            Log::warning('Edge-TTS synthesis unavailable, falling back to Google TTS: ' . $e->getMessage(), [
+                'text'  => $cleanText,
+                'voice' => $voice,
+            ]);
+
+            $this->synthesizeWithGoogleTts($cleanText, $filePath);
+            return $filePath;
+        }
+    }
+
+    /**
+     * Execute Edge-TTS CLI command to generate audio media.
+     *
+     * @param string $voice
+     * @param string $rate
+     * @param string $text
+     * @param string $filePath
+     * @return void
+     * @throws Exception
+     */
+    protected function synthesizeWithEdgeTts(string $voice, string $rate, string $text, string $filePath): void
+    {
+        $cmd = $this->resolveCommand($voice, $rate, $text, $filePath);
 
         $process = new Process($cmd);
-        $process->setTimeout(15);
+        $process->setTimeout(10);
         $process->run();
 
         if (!$process->isSuccessful() || !File::exists($filePath) || File::size($filePath) === 0) {
-            $errorOutput = $process->getErrorOutput();
-            Log::error('Edge-TTS execution failed', [
-                'text'    => $cleanText,
-                'voice'   => $voice,
-                'command' => implode(' ', $cmd),
-                'error'   => $errorOutput,
-                'output'  => $process->getOutput(),
-            ]);
+            $errorOutput = trim($process->getErrorOutput());
+            if (File::exists($filePath) && File::size($filePath) === 0) {
+                File::delete($filePath);
+            }
+            throw new Exception($errorOutput ?: 'Edge-TTS process exited unsuccessfully.');
+        }
+    }
 
-            throw new Exception('Failed to generate speech audio via Edge-TTS: ' . ($errorOutput ?: 'Process exited unsuccessfully.'));
+    /**
+     * Fallback speech synthesis using Google Translate TTS endpoint.
+     * Guarantees high availability against Microsoft WebSocket 403 errors and network restrictions.
+     *
+     * @param string $text
+     * @param string $filePath
+     * @return void
+     * @throws Exception
+     */
+    protected function synthesizeWithGoogleTts(string $text, string $filePath): void
+    {
+        $url = 'https://translate.google.com/translate_tts';
+        $response = Http::withHeaders([
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer'    => 'https://translate.google.com/',
+        ])->timeout(8)->get($url, [
+            'ie'     => 'UTF-8',
+            'tl'     => 'zh-CN',
+            'client' => 'tw-ob',
+            'q'      => $text,
+        ]);
+
+        if ($response->successful() && strlen($response->body()) > 0) {
+            File::put($filePath, $response->body());
+            return;
         }
 
-        return $filePath;
+        throw new Exception('Google TTS fallback request failed with HTTP status ' . $response->status());
     }
 
     /**

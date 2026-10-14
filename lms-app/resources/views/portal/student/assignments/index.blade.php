@@ -191,25 +191,37 @@
                                                                 @if($isGraded)
                                                                     <div class="space-y-2">
                                                                         <label class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1 block">{{ __('Nhận xét & Góp ý của giáo viên') }}</label>
-                                                                        <div class="bg-emerald-50/70 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                                                                        <div class="bg-emerald-50/70 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 space-y-3">
                                                                             @if($submission->teacher_audio_path)
-                                                                                <div class="mb-3 bg-white dark:bg-slate-900 p-3 rounded-lg flex items-center gap-3 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                                                                                <div class="bg-white dark:bg-slate-900 p-3 rounded-lg flex items-center gap-3 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
                                                                                     <div class="size-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white shrink-0">
                                                                                         <span class="material-symbols-outlined text-base">graphic_eq</span>
                                                                                     </div>
-                                                                                    <audio src="{{ route('file.viewer', ['path' => $submission->teacher_audio_path]) }}" controls class="h-7 flex-1"></audio>
+                                                                                    <audio src="{{ assignmentFileUrl($submission->teacher_audio_path) }}" controls class="h-7 flex-1"></audio>
                                                                                 </div>
                                                                             @endif
-                                                                            <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                                                                                {{ $submission->teacher_feedback ?? __('Giáo viên không để lại nhận xét văn bản.') }}
-                                                                            </p>
+                                                                            @if(!empty($submission->teacher_attachments))
+                                                                                <div class="bg-white dark:bg-slate-900 p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                                                                                    <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-2">{{ __('Tệp đính kèm từ giáo viên:') }}</p>
+                                                                                    <x-lms.attachment-list :attachments="$submission->teacher_attachments" variant="badges" />
+                                                                                </div>
+                                                                            @endif
+                                                                            @if(!empty($submission->teacher_feedback))
+                                                                                <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                                                    {{ $submission->teacher_feedback }}
+                                                                                </p>
+                                                                            @elseif(!$submission->teacher_audio_path && empty($submission->teacher_attachments))
+                                                                                <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                                                    {{ __('Giáo viên không để lại nhận xét văn bản.') }}
+                                                                                </p>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 @endif
                                                              </div>
 
                                                              <div class="space-y-4">
-                                                                @if($isGraded)
+                                                                 @if($isGraded)
                                                                     <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center justify-center text-center">
                                                                         <div class="size-14 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl flex items-center justify-center text-emerald-500 mb-3 border border-emerald-200 dark:border-emerald-800">
                                                                             <span class="material-symbols-outlined text-3xl">verified</span>
@@ -217,6 +229,51 @@
                                                                         <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ (float) $submission->score }}<span class="text-xs text-slate-400">/10</span></h3>
                                                                         <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">{{ __('Bài làm đã hoàn thành tuyệt vời!') }}</p>
                                                                     </div>
+
+                                                                    @if(!empty($submission->attachments))
+                                                                        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                                                                            <h4 class="text-xs font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-1.5">
+                                                                                <span class="material-symbols-outlined text-primary text-base">task_alt</span>
+                                                                                <span>{{ __('Bài làm bạn đã nộp') }}</span>
+                                                                                <span class="text-slate-400 text-[11px] font-normal">({{ count($submission->attachments) }})</span>
+                                                                            </h4>
+
+                                                                            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/60 space-y-2">
+                                                                                <div class="flex flex-wrap gap-2">
+                                                                                    @foreach($submission->attachments as $att)
+                                                                                        @php
+                                                                                            $isAudio = preg_match('/\.(webm|mp3|wav|ogg|m4a|weba|aac)$/i', $att['name'] ?? '') || preg_match('/\.(webm|mp3|wav|ogg|m4a|weba|aac)$/i', $att['path'] ?? '');
+                                                                                            $attViewerUrl = assignmentFileUrl($att['path']);
+                                                                                        @endphp
+                                                                                        @if($isAudio)
+                                                                                            <div class="w-full flex items-center gap-2.5 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                                                                                <span class="material-symbols-outlined text-primary text-base">mic</span>
+                                                                                                <audio src="{{ $attViewerUrl }}" controls class="h-7 flex-1"></audio>
+                                                                                            </div>
+                                                                                        @else
+                                                                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white dark:bg-slate-900 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition-colors">
+                                                                                                <button type="button"
+                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
+                                                                                                        class="flex items-center gap-1 text-slate-800 dark:text-white hover:text-primary text-left cursor-pointer font-bold">
+                                                                                                    <span class="material-symbols-outlined text-sm text-primary">description</span>
+                                                                                                    <span class="truncate max-w-[130px] sm:max-w-[180px]">{{ $att['name'] }}</span>
+                                                                                                </button>
+                                                                                                <button type="button"
+                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
+                                                                                                        class="size-6 rounded hover:bg-primary/10 text-slate-400 hover:text-primary flex items-center justify-center cursor-pointer transition-colors"
+                                                                                                        title="{{ __('Xem trước') }}">
+                                                                                                    <span class="material-symbols-outlined text-[13px]">visibility</span>
+                                                                                                </button>
+                                                                                                <a href="{{ $attViewerUrl }}" target="_blank" download class="size-6 rounded hover:bg-primary/10 text-slate-400 hover:text-primary flex items-center justify-center transition-colors" title="{{ __('Tải về') }}">
+                                                                                                    <span class="material-symbols-outlined text-[13px]">download</span>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        @endif
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
                                                                 @elseif($isPastDue && !$isSubmitted)
                                                                     <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center justify-center text-center">
                                                                         <div class="size-14 bg-rose-50 dark:bg-rose-950/40 rounded-xl flex items-center justify-center text-rose-500 mb-3 border border-rose-200 dark:border-rose-800">
@@ -239,7 +296,7 @@
                                                                                     @foreach($submission->attachments as $att)
                                                                                         @php
                                                                                             $isAudio = preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['name'] ?? '') || preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['path'] ?? '');
-                                                                                            $attViewerUrl = route('file.viewer', ['path' => $att['path']]);
+                                                                                            $attViewerUrl = assignmentFileUrl($att['path']);
                                                                                         @endphp
                                                                                         @if($isAudio)
                                                                                             <div class="w-full flex items-center gap-2 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -278,67 +335,70 @@
                                                                             <span>{{ $isSubmitted ? __('Cập nhật bài làm') : __('Nộp bài ngay') }}</span>
                                                                         </h4>
 
-                                                                        @if($isSubmitted && !empty($submission->attachments))
-                                                                            <div class="p-3 bg-blue-50/70 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-900/50 mb-4 space-y-2">
-                                                                                <p class="text-[10px] font-bold text-primary uppercase tracking-wider">{{ __('Tệp/Ghi âm đã nộp:') }}</p>
-                                                                                <div class="flex flex-wrap gap-2">
-                                                                                    @foreach($submission->attachments as $att)
-                                                                                        @php
-                                                                                            $isAudio = preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['name'] ?? '') || preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['path'] ?? '');
-                                                                                            $attViewerUrl = route('file.viewer', ['path' => $att['path']]);
-                                                                                        @endphp
-                                                                                        @if($isAudio)
-                                                                                            <div class="w-full flex items-center gap-2 p-2 bg-white dark:bg-slate-900 rounded-lg border border-blue-200 dark:border-blue-800">
-                                                                                                <span class="material-symbols-outlined text-primary text-base">mic</span>
-                                                                                                <audio src="{{ $attViewerUrl }}" controls class="h-7 flex-1"></audio>
-                                                                                            </div>
-                                                                                        @else
-                                                                                            <div class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-slate-900 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-primary">
-                                                                                                <button type="button"
-                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
-                                                                                                        class="flex items-center gap-1 text-slate-800 dark:text-white hover:text-primary text-left">
-                                                                                                    <span class="material-symbols-outlined text-sm text-primary">description</span>
-                                                                                                    <span class="truncate max-w-[140px]">{{ $att['name'] }}</span>
-                                                                                                </button>
-                                                                                                <button type="button"
-                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
-                                                                                                        class="size-5 rounded hover:bg-primary/10 text-slate-400 hover:text-primary flex items-center justify-center ml-1"
-                                                                                                        title="{{ __('Xem trước') }}">
-                                                                                                    <span class="material-symbols-outlined text-[13px]">visibility</span>
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        @endif
-                                                                                    @endforeach
-                                                                                </div>
-                                                                            </div>
-                                                                        @endif
-
                                                                         <form action="{{ route('student.assignments.submit', $assignment->id) }}"
                                                                               method="POST"
                                                                               enctype="multipart/form-data"
-                                                                              x-data="{ isSubmitting: false }"
+                                                                              x-data="{ 
+                                                                                  isSubmitting: false,
+                                                                                  existingFiles: {{ json_encode(array_values($submission->attachments ?? [])) }}
+                                                                              }"
                                                                               @submit="if (isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true"
                                                                               class="space-y-4">
                                                                             @csrf
 
-                                                                            <div>
-                                                                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ __('Lựa chọn 1: Ghi âm giọng nói') }}</p>
-                                                                                <x-audio-recorder name="audio_file" />
-                                                                            </div>
+                                                                            @if($isSubmitted && !empty($submission->attachments))
+                                                                                <div class="p-3 bg-blue-50/70 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-900/50 mb-3 space-y-2">
+                                                                                    <div class="flex items-center justify-between">
+                                                                                        <p class="text-[10px] font-bold text-primary uppercase tracking-wider">{{ __('Tệp / Ghi âm đã nộp:') }}</p>
+                                                                                        <span class="text-[10px] text-slate-400 font-medium">{{ __('(Bấm X đỏ để gỡ file)') }}</span>
+                                                                                    </div>
+                                                                                    <div class="flex flex-wrap gap-2">
+                                                                                        <template x-for="(att, aIdx) in existingFiles" :key="att.path">
+                                                                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-slate-900 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                                                                                                <input type="hidden" name="existing_attachments[]" :value="att.path">
+                                                                                                <template x-if="att.name && att.name.match(/\.(webm|mp3|wav|ogg|m4a|weba)$/i)">
+                                                                                                    <span class="material-symbols-outlined text-primary text-sm">mic</span>
+                                                                                                </template>
+                                                                                                <template x-if="!att.name || !att.name.match(/\.(webm|mp3|wav|ogg|m4a|weba)$/i)">
+                                                                                                    <span class="material-symbols-outlined text-primary text-sm">description</span>
+                                                                                                </template>
+                                                                                                <span class="truncate max-w-[130px]" x-text="att.name"></span>
+                                                                                                <button type="button" @click="existingFiles.splice(aIdx, 1)"
+                                                                                                        class="size-4.5 rounded-full bg-red-50 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors ml-1 cursor-pointer"
+                                                                                                        title="{{ __('Gỡ bỏ tệp này') }}">
+                                                                                                    <span class="material-symbols-outlined text-[12px]">close</span>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </template>
+                                                                                    </div>
+                                                                                    <p x-show="existingFiles.length === 0" class="text-[11px] text-amber-600 dark:text-amber-400 italic">
+                                                                                        {{ __('Bạn đã gỡ hết các file cũ. Vui lòng ghi âm hoặc đính kèm tệp mới bên dưới.') }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
 
-                                                                            <div class="relative flex items-center gap-3 py-1">
-                                                                                <div class="flex-1 h-px bg-slate-100 dark:bg-slate-800"></div>
-                                                                                <span class="text-[10px] font-bold text-slate-400 uppercase">{{ __('Hoặc') }}</span>
-                                                                                <div class="flex-1 h-px bg-slate-100 dark:bg-slate-800"></div>
-                                                                            </div>
+                                                                            <div class="space-y-3">
+                                                                                <div>
+                                                                                    <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 mb-1.5">
+                                                                                        <span class="material-symbols-outlined text-primary text-base">mic</span>
+                                                                                        <span>{{ __('1. Ghi âm giọng nói (nếu có)') }}</span>
+                                                                                    </label>
+                                                                                    <x-audio-recorder name="audio_file" />
+                                                                                </div>
 
-                                                                            <div>
-                                                                                <x-lms.file-uploader
-                                                                                    name="attachments[]"
-                                                                                    :compact="true"
-                                                                                    :maxFiles="5"
-                                                                                    :maxSizeMB="20"
-                                                                                    :label="__('Lựa chọn 2: Tải lên tệp tin')" />
+                                                                                <div class="pt-1">
+                                                                                    <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 mb-1.5">
+                                                                                        <span class="material-symbols-outlined text-primary text-base">attach_file</span>
+                                                                                        <span>{{ __('2. Đính kèm tệp tin / hình ảnh bài làm (nếu có)') }}</span>
+                                                                                    </label>
+                                                                                    <x-lms.file-uploader
+                                                                                        name="attachments[]"
+                                                                                        :compact="true"
+                                                                                        :maxFiles="5"
+                                                                                        :maxSizeMB="20"
+                                                                                        :label="null"
+                                                                                        :helperText="__('Hỗ trợ: PDF, Word, Excel, Ảnh, Audio, Zip... (Có thể gửi kèm cả ghi âm và tệp tin cùng lúc)')" />
+                                                                                </div>
                                                                             </div>
 
                                                                             <button type="submit"
@@ -492,18 +552,30 @@
                                                                 @if($isGraded)
                                                                     <div class="space-y-2">
                                                                         <label class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1 block">{{ __('Nhận xét & Góp ý của giáo viên') }}</label>
-                                                                        <div class="bg-emerald-50/70 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                                                                        <div class="bg-emerald-50/70 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 space-y-3">
                                                                             @if($submission->teacher_audio_path)
-                                                                                <div class="mb-3 bg-white dark:bg-slate-900 p-3 rounded-lg flex items-center gap-3 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                                                                                <div class="bg-white dark:bg-slate-900 p-3 rounded-lg flex items-center gap-3 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
                                                                                     <div class="size-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white shrink-0">
                                                                                         <span class="material-symbols-outlined text-base">graphic_eq</span>
                                                                                     </div>
-                                                                                    <audio src="{{ route('file.viewer', ['path' => $submission->teacher_audio_path]) }}" controls class="h-7 flex-1"></audio>
+                                                                                    <audio src="{{ assignmentFileUrl($submission->teacher_audio_path) }}" controls class="h-7 flex-1"></audio>
                                                                                 </div>
                                                                             @endif
-                                                                            <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                                                                                {{ $submission->teacher_feedback ?? __('Giáo viên không để lại nhận xét văn bản.') }}
-                                                                            </p>
+                                                                            @if(!empty($submission->teacher_attachments))
+                                                                                <div class="bg-white dark:bg-slate-900 p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                                                                                    <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-2">{{ __('Tệp đính kèm từ giáo viên:') }}</p>
+                                                                                    <x-lms.attachment-list :attachments="$submission->teacher_attachments" variant="badges" />
+                                                                                </div>
+                                                                            @endif
+                                                                            @if(!empty($submission->teacher_feedback))
+                                                                                <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                                                    {{ $submission->teacher_feedback }}
+                                                                                </p>
+                                                                            @elseif(!$submission->teacher_audio_path && empty($submission->teacher_attachments))
+                                                                                <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                                                    {{ __('Giáo viên không để lại nhận xét văn bản.') }}
+                                                                                </p>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 @endif
@@ -518,6 +590,51 @@
                                                                         <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ (float) $submission->score }}<span class="text-xs text-slate-400">/10</span></h3>
                                                                         <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">{{ __('Bài làm đã hoàn thành tuyệt vời!') }}</p>
                                                                     </div>
+
+                                                                    @if(!empty($submission->attachments))
+                                                                        <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                                                                            <h4 class="text-xs font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-1.5">
+                                                                                <span class="material-symbols-outlined text-primary text-base">task_alt</span>
+                                                                                <span>{{ __('Bài làm bạn đã nộp') }}</span>
+                                                                                <span class="text-slate-400 text-[11px] font-normal">({{ count($submission->attachments) }})</span>
+                                                                            </h4>
+
+                                                                            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/60 space-y-2">
+                                                                                <div class="flex flex-wrap gap-2">
+                                                                                    @foreach($submission->attachments as $att)
+                                                                                        @php
+                                                                                            $isAudio = preg_match('/\.(webm|mp3|wav|ogg|m4a|weba|aac)$/i', $att['name'] ?? '') || preg_match('/\.(webm|mp3|wav|ogg|m4a|weba|aac)$/i', $att['path'] ?? '');
+                                                                                            $attViewerUrl = assignmentFileUrl($att['path']);
+                                                                                        @endphp
+                                                                                        @if($isAudio)
+                                                                                            <div class="w-full flex items-center gap-2.5 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                                                                                <span class="material-symbols-outlined text-primary text-base">mic</span>
+                                                                                                <audio src="{{ $attViewerUrl }}" controls class="h-7 flex-1"></audio>
+                                                                                            </div>
+                                                                                        @else
+                                                                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white dark:bg-slate-900 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition-colors">
+                                                                                                <button type="button"
+                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
+                                                                                                        class="flex items-center gap-1 text-slate-800 dark:text-white hover:text-primary text-left cursor-pointer font-bold">
+                                                                                                    <span class="material-symbols-outlined text-sm text-primary">description</span>
+                                                                                                    <span class="truncate max-w-[130px] sm:max-w-[180px]">{{ $att['name'] }}</span>
+                                                                                                </button>
+                                                                                                <button type="button"
+                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
+                                                                                                        class="size-6 rounded hover:bg-primary/10 text-slate-400 hover:text-primary flex items-center justify-center cursor-pointer transition-colors"
+                                                                                                        title="{{ __('Xem trước') }}">
+                                                                                                    <span class="material-symbols-outlined text-[13px]">visibility</span>
+                                                                                                </button>
+                                                                                                <a href="{{ $attViewerUrl }}" target="_blank" download class="size-6 rounded hover:bg-primary/10 text-slate-400 hover:text-primary flex items-center justify-center transition-colors" title="{{ __('Tải về') }}">
+                                                                                                    <span class="material-symbols-outlined text-[13px]">download</span>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        @endif
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
                                                                 @elseif($isPastDue && !$isSubmitted)
                                                                     <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center justify-center text-center">
                                                                         <div class="size-14 bg-rose-50 dark:bg-rose-950/40 rounded-xl flex items-center justify-center text-rose-500 mb-3 border border-rose-200 dark:border-rose-800">
@@ -540,7 +657,7 @@
                                                                                     @foreach($submission->attachments as $att)
                                                                                         @php
                                                                                             $isAudio = preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['name'] ?? '') || preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['path'] ?? '');
-                                                                                            $attViewerUrl = route('file.viewer', ['path' => $att['path']]);
+                                                                                            $attViewerUrl = assignmentFileUrl($att['path']);
                                                                                         @endphp
                                                                                         @if($isAudio)
                                                                                             <div class="w-full flex items-center gap-2 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -579,67 +696,70 @@
                                                                             <span>{{ $isSubmitted ? __('Cập nhật bài làm') : __('Nộp bài ngay') }}</span>
                                                                         </h4>
 
-                                                                        @if($isSubmitted && !empty($submission->attachments))
-                                                                            <div class="p-3 bg-blue-50/70 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-900/50 mb-4 space-y-2">
-                                                                                <p class="text-[10px] font-bold text-primary uppercase tracking-wider">{{ __('Tệp/Ghi âm đã nộp:') }}</p>
-                                                                                <div class="flex flex-wrap gap-2">
-                                                                                    @foreach($submission->attachments as $att)
-                                                                                        @php
-                                                                                            $isAudio = preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['name'] ?? '') || preg_match('/\.(webm|mp3|wav|ogg|m4a|weba)$/i', $att['path'] ?? '');
-                                                                                            $attViewerUrl = route('file.viewer', ['path' => $att['path']]);
-                                                                                        @endphp
-                                                                                        @if($isAudio)
-                                                                                            <div class="w-full flex items-center gap-2 p-2 bg-white dark:bg-slate-900 rounded-lg border border-blue-200 dark:border-blue-800">
-                                                                                                <span class="material-symbols-outlined text-primary text-base">mic</span>
-                                                                                                <audio src="{{ $attViewerUrl }}" controls class="h-7 flex-1"></audio>
-                                                                                            </div>
-                                                                                        @else
-                                                                                            <div class="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-slate-900 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-primary">
-                                                                                                <button type="button"
-                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
-                                                                                                        class="flex items-center gap-1 text-slate-800 dark:text-white hover:text-primary text-left">
-                                                                                                    <span class="material-symbols-outlined text-sm text-primary">description</span>
-                                                                                                    <span class="truncate max-w-[140px]">{{ $att['name'] }}</span>
-                                                                                                </button>
-                                                                                                <button type="button"
-                                                                                                        @click="$dispatch('open-file-preview', { url: '{{ $attViewerUrl }}', name: '{{ addslashes($att['name']) }}' })"
-                                                                                                        class="size-5 rounded hover:bg-primary/10 text-slate-400 hover:text-primary flex items-center justify-center ml-1"
-                                                                                                        title="{{ __('Xem trước') }}">
-                                                                                                    <span class="material-symbols-outlined text-[13px]">visibility</span>
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        @endif
-                                                                                    @endforeach
-                                                                                </div>
-                                                                            </div>
-                                                                        @endif
-
                                                                         <form action="{{ route('student.assignments.submit', $assignment->id) }}"
                                                                               method="POST"
                                                                               enctype="multipart/form-data"
-                                                                              x-data="{ isSubmitting: false }"
+                                                                              x-data="{ 
+                                                                                  isSubmitting: false,
+                                                                                  existingFiles: {{ json_encode(array_values($submission->attachments ?? [])) }}
+                                                                              }"
                                                                               @submit="if (isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true"
                                                                               class="space-y-4">
                                                                             @csrf
 
-                                                                            <div>
-                                                                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ __('Lựa chọn 1: Ghi âm giọng nói') }}</p>
-                                                                                <x-audio-recorder name="audio_file" />
-                                                                            </div>
+                                                                            @if($isSubmitted && !empty($submission->attachments))
+                                                                                <div class="p-3 bg-blue-50/70 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-900/50 mb-3 space-y-2">
+                                                                                    <div class="flex items-center justify-between">
+                                                                                        <p class="text-[10px] font-bold text-primary uppercase tracking-wider">{{ __('Tệp / Ghi âm đã nộp:') }}</p>
+                                                                                        <span class="text-[10px] text-slate-400 font-medium">{{ __('(Bấm X đỏ để gỡ file)') }}</span>
+                                                                                    </div>
+                                                                                    <div class="flex flex-wrap gap-2">
+                                                                                        <template x-for="(att, aIdx) in existingFiles" :key="att.path">
+                                                                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-slate-900 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                                                                                                <input type="hidden" name="existing_attachments[]" :value="att.path">
+                                                                                                <template x-if="att.name && att.name.match(/\.(webm|mp3|wav|ogg|m4a|weba)$/i)">
+                                                                                                    <span class="material-symbols-outlined text-primary text-sm">mic</span>
+                                                                                                </template>
+                                                                                                <template x-if="!att.name || !att.name.match(/\.(webm|mp3|wav|ogg|m4a|weba)$/i)">
+                                                                                                    <span class="material-symbols-outlined text-primary text-sm">description</span>
+                                                                                                </template>
+                                                                                                <span class="truncate max-w-[130px]" x-text="att.name"></span>
+                                                                                                <button type="button" @click="existingFiles.splice(aIdx, 1)"
+                                                                                                        class="size-4.5 rounded-full bg-red-50 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors ml-1 cursor-pointer"
+                                                                                                        title="{{ __('Gỡ bỏ tệp này') }}">
+                                                                                                    <span class="material-symbols-outlined text-[12px]">close</span>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </template>
+                                                                                    </div>
+                                                                                    <p x-show="existingFiles.length === 0" class="text-[11px] text-amber-600 dark:text-amber-400 italic">
+                                                                                        {{ __('Bạn đã gỡ hết các file cũ. Vui lòng ghi âm hoặc đính kèm tệp mới bên dưới.') }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
 
-                                                                            <div class="relative flex items-center gap-3 py-1">
-                                                                                <div class="flex-1 h-px bg-slate-100 dark:bg-slate-800"></div>
-                                                                                <span class="text-[10px] font-bold text-slate-400 uppercase">{{ __('Hoặc') }}</span>
-                                                                                <div class="flex-1 h-px bg-slate-100 dark:bg-slate-800"></div>
-                                                                            </div>
+                                                                            <div class="space-y-3">
+                                                                                <div>
+                                                                                    <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 mb-1.5">
+                                                                                        <span class="material-symbols-outlined text-primary text-base">mic</span>
+                                                                                        <span>{{ __('1. Ghi âm giọng nói (nếu có)') }}</span>
+                                                                                    </label>
+                                                                                    <x-audio-recorder name="audio_file" />
+                                                                                </div>
 
-                                                                            <div>
-                                                                                <x-lms.file-uploader
-                                                                                    name="attachments[]"
-                                                                                    :compact="true"
-                                                                                    :maxFiles="5"
-                                                                                    :maxSizeMB="20"
-                                                                                    :label="__('Lựa chọn 2: Tải lên tệp tin')" />
+                                                                                <div class="pt-1">
+                                                                                    <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 mb-1.5">
+                                                                                        <span class="material-symbols-outlined text-primary text-base">attach_file</span>
+                                                                                        <span>{{ __('2. Đính kèm tệp tin / hình ảnh bài làm (nếu có)') }}</span>
+                                                                                    </label>
+                                                                                    <x-lms.file-uploader
+                                                                                        name="attachments[]"
+                                                                                        :compact="true"
+                                                                                        :maxFiles="5"
+                                                                                        :maxSizeMB="20"
+                                                                                        :label="null"
+                                                                                        :helperText="__('Hỗ trợ: PDF, Word, Excel, Ảnh, Audio, Zip... (Có thể gửi kèm cả ghi âm và tệp tin cùng lúc)')" />
+                                                                                </div>
                                                                             </div>
 
                                                                             <button type="submit"

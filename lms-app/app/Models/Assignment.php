@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,31 @@ class Assignment extends Model
         'attachments' => 'array',
         'due_date' => 'datetime',
     ];
+
+    /**
+     * Appended attributes for serialized arrays/JSON.
+     */
+    protected $appends = [
+        'attachments_with_urls',
+    ];
+
+    /**
+     * Return attachments with generated secure presigned URLs (60 minutes TTL).
+     */
+    public function getAttachmentsWithUrlsAttribute(): array
+    {
+        $attachments = $this->attachments ?? [];
+        if (!is_array($attachments)) {
+            return [];
+        }
+
+        return array_map(function ($file) {
+            $path = $file['path'] ?? '';
+            $file['url'] = !empty($path) ? assignmentFileUrl($path, 60) : '';
+            return $file;
+        }, $attachments);
+    }
+
 
     public function course(): BelongsTo
     {

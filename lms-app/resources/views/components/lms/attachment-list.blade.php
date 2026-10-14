@@ -18,7 +18,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 @foreach($attachments as $file)
                     @php
-                        $fileUrl = route('file.viewer', ['path' => $file['path'] ?? '']);
+                        $fileUrl = assignmentFileUrl($file['path'] ?? '');
                         $fileName = $file['name'] ?? 'Tệp đính kèm';
                         $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                         $isImg = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']);
@@ -61,7 +61,7 @@
             <div class="flex flex-wrap gap-2">
                 @foreach($attachments as $file)
                     @php
-                        $fileUrl = route('file.viewer', ['path' => $file['path'] ?? '']);
+                        $fileUrl = assignmentFileUrl($file['path'] ?? '');
                         $fileName = $file['name'] ?? 'Tệp đính kèm';
                         $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                         $isImg = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']);

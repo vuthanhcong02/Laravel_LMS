@@ -2,10 +2,16 @@
 
 namespace App\Services\Admin;
 use App\Models\User;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+
 class UserService
 {
+    public function __construct(
+        protected MediaStorageService $mediaStorageService
+    ) {}
+
     /**
      * Get all user by condition
      * 
@@ -94,11 +100,8 @@ class UserService
         $user = User::findOrFail($id);
 
         if ($avatarFile) {
-            // Delete old local avatar (skip if it's a social URL)
-            if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $data['avatar'] = $avatarFile->store('avatars', 'public');
+            $storageService = $this->mediaStorageService ?? app(MediaStorageService::class);
+            $data['avatar'] = $storageService->uploadUserAvatar($user, $avatarFile);
         } else {
             // Keep existing avatar, don't overwrite with null
             unset($data['avatar']);
