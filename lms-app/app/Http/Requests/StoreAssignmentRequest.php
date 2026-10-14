@@ -29,10 +29,22 @@ class StoreAssignmentRequest extends FormRequest
             'lesson_id' => 'nullable|exists:lessons,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|integer|in:' . Assignment::STATUS_DRAFT . ',' . Assignment::STATUS_PUBLISHED,
+            'status' => 'nullable|integer|in:' . Assignment::STATUS_DRAFT . ',' . Assignment::STATUS_PUBLISHED,
             'due_date' => 'nullable|date|after_or_equal:today',
             'attachments' => 'nullable|array|max:5',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx,zip|max:10240',
         ];
+    }
+
+    /**
+     * Prepare inputs for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (!$this->has('status') || $this->input('status') === null || $this->input('status') === '') {
+            $this->merge([
+                'status' => Assignment::STATUS_PUBLISHED,
+            ]);
+        }
     }
 }

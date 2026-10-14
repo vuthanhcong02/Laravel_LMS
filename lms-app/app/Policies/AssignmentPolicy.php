@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Assignment;
+use App\Models\AssignmentSubmission;
 use App\Models\Enrollment;
 use App\Models\User;
 
@@ -52,10 +53,18 @@ class AssignmentPolicy
 
     /**
      * Determine whether the teacher can grade submissions for this assignment.
+     * Nếu có truyền $submission, kiểm tra luôn submission thuộc assignment này.
      */
-    public function grade(User $user, Assignment $assignment): bool
+    public function grade(User $user, Assignment $assignment, ?AssignmentSubmission $submission = null): bool
     {
-        return $user->role === User::ROLE_TEACHER && $user->id === $assignment->teacher_id;
+        if (!($user->role === User::ROLE_TEACHER && $user->id === $assignment->teacher_id)) {
+            return false;
+        }
+        // Kiểm tra submission thuộc về đúng assignment (tránh IDOR)
+        if ($submission !== null && $submission->assignment_id !== $assignment->id) {
+            return false;
+        }
+        return true;
     }
 
     /**

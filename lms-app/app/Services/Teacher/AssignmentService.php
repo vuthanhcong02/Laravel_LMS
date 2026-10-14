@@ -5,13 +5,21 @@ namespace App\Services\Teacher;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Course;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class AssignmentService
 {
+    /**
+     * Inject MediaStorageService qua constructor thay vì dùng app() Service Locator.
+     */
+    public function __construct(private MediaStorageService $mediaService) {}
+
     /**
      * Get paginated assignments list for a teacher.
      */
@@ -44,10 +52,19 @@ class AssignmentService
      */
     public function create(array $validated, array $uploadedFiles, int $teacherId): Assignment
     {
-        $validated['attachments'] = $this->storeFiles($uploadedFiles, 'assignments');
+        $validated['attachments'] = [];
         $validated['teacher_id'] = $teacherId;
+        $validated['status'] = $validated['status'] ?? Assignment::STATUS_PUBLISHED;
 
-        return Assignment::create($validated);
+        $assignment = Assignment::create($validated);
+
+        if (!empty($uploadedFiles)) {
+            $assignment->update([
+                'attachments' => $this->storeFiles($uploadedFiles, $assignment->id),
+            ]);
+        }
+
+        return $assignment->fresh();
     }
 
     /**
@@ -61,15 +78,15 @@ class AssignmentService
             fn($item) => in_array($item['path'], $keepPaths)
         );
 
-        // Delete discarded attachment files from disk
+        // Delete discarded attachment files from disk / B2
         $currentPaths = collect($assignment->attachments ?? [])->pluck('path')->all();
         $toDelete = array_diff($currentPaths, $keepPaths);
         foreach ($toDelete as $path) {
-            Storage::disk('local')->delete($path);
+            $this->deleteFile($path);
         }
 
         // Add newly uploaded files
-        $newFiles = $this->storeFiles($uploadedFiles, 'assignments');
+        $newFiles = $this->storeFiles($uploadedFiles, $assignment->id);
 
         $validated['attachments'] = array_values(array_merge($kept, $newFiles));
         $assignment->update($validated);
@@ -79,28 +96,77 @@ class AssignmentService
 
     /**
      * Grade a student assignment submission.
+     *
+     * @param  UploadedFile[]  $newAttachments
+     * @param  string[]  $keepExistingAttachmentPaths
      */
-    public function grade(AssignmentSubmission $submission, float $score, ?string $feedback, ?UploadedFile $audioFeedback = null, bool $deleteAudio = false): AssignmentSubmission
-    {
+    /**
+     * Grade a student assignment submission.
+     *
+     * @param  UploadedFile[]  $newAttachments
+     * @param  string[]  $keepExistingAttachmentPaths
+     */
+    public function grade(
+        AssignmentSubmission $submission,
+        float $score,
+        ?string $feedback,
+        ?UploadedFile $audioFeedback = null,
+        bool $deleteAudio = false,
+        array $newAttachments = [],
+        array $keepExistingAttachmentPaths = []
+    ): AssignmentSubmission {
         $data = [
             'score'            => $score,
             'teacher_feedback' => $feedback,
             'status'           => AssignmentSubmission::STATUS_GRADED,
         ];
 
+        // 1. Audio feedback
         if ($audioFeedback) {
-            // Delete old audio file before storing new one
+            // Xóa file audio cũ trước khi lưu mới
             if ($submission->teacher_audio_path) {
-                Storage::disk('local')->delete($submission->teacher_audio_path);
+                $this->deleteFile($submission->teacher_audio_path);
             }
-            $path = $audioFeedback->store('feedback_audio', 'local');
+            $path = $this->mediaService->uploadAssignmentFeedback(
+                $submission->assignment_id,
+                $submission->id,
+                $audioFeedback
+            );
             $data['teacher_audio_path'] = $path;
         } elseif ($deleteAudio) {
             if ($submission->teacher_audio_path) {
-                Storage::disk('local')->delete($submission->teacher_audio_path);
+                $this->deleteFile($submission->teacher_audio_path);
             }
             $data['teacher_audio_path'] = null;
         }
+
+        // 2. Feedback attachments (files/images)
+        $retained = [];
+        foreach ($submission->teacher_attachments ?? [] as $att) {
+            $path = $att['path'] ?? null;
+            if ($path && in_array($path, $keepExistingAttachmentPaths, true)) {
+                $retained[] = $att;
+            } else {
+                $this->deleteFile($path);
+            }
+        }
+
+        $uploaded = [];
+        foreach ($newAttachments as $file) {
+            if ($file instanceof UploadedFile && $file->isValid()) {
+                $path = $this->mediaService->uploadAssignmentFeedbackAttachment(
+                    $submission->assignment_id,
+                    $submission->id,
+                    $file
+                );
+                $uploaded[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                ];
+            }
+        }
+
+        $data['teacher_attachments'] = array_values(array_merge($retained, $uploaded));
 
         $submission->update($data);
 
@@ -108,20 +174,84 @@ class AssignmentService
     }
 
     /**
-     * Store multiple files, returning metadata array {name, path}.
+     * Store multiple files to B2, returning metadata array {name, path}.
      *
      * @param  UploadedFile[]  $files
+     * @param  int  $assignmentId
+     * @return array
      */
-    private function storeFiles(array $files, string $folder): array
+    /**
+     * Store multiple files to B2, returning metadata array {name, path}.
+     *
+     * @param  UploadedFile[]  $files
+     * @param  int  $assignmentId
+     * @return array
+     */
+    private function storeFiles(array $files, int $assignmentId): array
     {
         $result = [];
         foreach ($files as $file) {
-            $path = $file->store($folder, 'local');
+            $path = $this->mediaService->uploadAssignmentMaterial($assignmentId, $file);
             $result[] = [
                 'name' => $file->getClientOriginalName(),
                 'path' => $path,
             ];
         }
         return $result;
+    }
+
+    /**
+     * Delete assignment and all its attached materials & student submission files.
+     */
+    public function delete(Assignment $assignment): void
+    {
+        // Đảm bảo submissions đã được load để tránh N+1 query
+        $assignment->loadMissing('submissions');
+
+        // 1. Xóa file tài liệu bài tập
+        foreach ($assignment->attachments ?? [] as $att) {
+            $this->deleteFile($att['path'] ?? null);
+        }
+
+        // 2. Xóa file submissions + teacher feedback của từng học sinh
+        foreach ($assignment->submissions as $sub) {
+            foreach ($sub->attachments ?? [] as $att) {
+                $this->deleteFile($att['path'] ?? null);
+            }
+            foreach ($sub->teacher_attachments ?? [] as $att) {
+                $this->deleteFile($att['path'] ?? null);
+            }
+            if ($sub->teacher_audio_path) {
+                $this->deleteFile($sub->teacher_audio_path);
+            }
+        }
+
+        $assignment->delete();
+    }
+
+    /**
+     * Xóa file khỏi local storage hoặc B2.
+     * Dùng delete trực tiếp thay vì gọi exists() trước để tiết kiệm network round-trip.
+     *
+     * @param string|null $path
+     * @return void
+     */
+    private function deleteFile(?string $path): void
+    {
+        if (empty($path)) {
+            return;
+        }
+
+        // Xóa trên local disk (silent, không cần check exists)
+        Storage::disk('local')->delete($path);
+
+        // Xóa trên B2 nếu được cấu hình
+        if (config('filesystems.disks.b2.key')) {
+            try {
+                Storage::disk('b2')->delete($path);
+            } catch (Throwable $e) {
+                Log::warning("Failed to delete assignment file from B2: {$path} — " . $e->getMessage());
+            }
+        }
     }
 }
