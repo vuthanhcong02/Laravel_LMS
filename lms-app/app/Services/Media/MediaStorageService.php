@@ -128,16 +128,17 @@ class MediaStorageService
 
         $cleanPath = $this->normalizePath($path);
 
+        // If file exists locally on public disk (legacy avatars, fallback storage, or local dev), serve directly
+        if (Storage::disk('public')->exists($cleanPath)) {
+            return asset('storage/' . $cleanPath);
+        }
+
         try {
             return Storage::disk($this->disk)->temporaryUrl(
                 $cleanPath,
                 now()->addMinutes($expirationMinutes)
             );
         } catch (Throwable $e) {
-            // Fallback to local storage if B2 is temporarily unreachable
-            if (Storage::disk('public')->exists($cleanPath)) {
-                return asset('storage/' . $cleanPath);
-            }
             return $default;
         }
     }
@@ -239,8 +240,32 @@ class MediaStorageService
         $filename = "avatar_" . time() . "_{$user->id}." . $extension;
         $fullPath = "{$directory}/{$filename}";
 
-        $this->deleteDirectory($directory);
-        Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        // Clean up old local avatar files if exist
+        try {
+            if ($user->avatar && !str_starts_with($user->avatar, 'http') && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            if (Storage::disk('public')->exists($directory)) {
+                Storage::disk('public')->deleteDirectory($directory);
+            }
+        } catch (Throwable $e) {
+            Log::warning("Could not clean old local avatar for user {$user->id}: " . $e->getMessage());
+        }
+
+        // Clean up previous avatar directory on B2
+        try {
+            $this->deleteDirectory($directory);
+        } catch (Throwable $e) {
+            Log::warning("Could not clean previous B2 avatar directory for user {$user->id}: " . $e->getMessage());
+        }
+
+        // Upload to B2 storage with automatic fallback to public local storage
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload avatar to B2 for user {$user->id}: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('public')->putFileAs($directory, $file, $filename);
+        }
 
         return $fullPath;
     }
@@ -298,8 +323,26 @@ class MediaStorageService
         $filename = "thumbnail_" . time() . "." . $extension;
         $fullPath = "{$directory}/{$filename}";
 
-        $this->deleteDirectory($directory);
-        Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        // Clean up previous files on local and B2
+        try {
+            if ($blog->thumbnail && !str_starts_with($blog->thumbnail, 'http') && Storage::disk('public')->exists($blog->thumbnail)) {
+                Storage::disk('public')->delete($blog->thumbnail);
+            }
+            if (Storage::disk('public')->exists($directory)) {
+                Storage::disk('public')->deleteDirectory($directory);
+            }
+            $this->deleteDirectory($directory);
+        } catch (Throwable $e) {
+            Log::warning("Could not clean old thumbnail for blog {$blog->id}: " . $e->getMessage());
+        }
+
+        // Upload to B2 with fallback to local storage
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload blog thumbnail to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('public')->putFileAs($directory, $file, $filename);
+        }
 
         return $fullPath;
     }
@@ -315,19 +358,196 @@ class MediaStorageService
         $filename = "thumbnail_" . time() . "." . $extension;
         $fullPath = "{$directory}/{$filename}";
 
-        $this->deleteDirectory($directory);
-        Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        // Clean up previous files on local and B2
+        try {
+            if ($course->thumbnail && !str_starts_with($course->thumbnail, 'http') && Storage::disk('public')->exists($course->thumbnail)) {
+                Storage::disk('public')->delete($course->thumbnail);
+            }
+            if (Storage::disk('public')->exists($directory)) {
+                Storage::disk('public')->deleteDirectory($directory);
+            }
+            $this->deleteDirectory($directory);
+        } catch (Throwable $e) {
+            Log::warning("Could not clean old thumbnail for course {$course->id}: " . $e->getMessage());
+        }
+
+        // Upload to B2 with fallback to local storage
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload course thumbnail to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('public')->putFileAs($directory, $file, $filename);
+        }
 
         return $fullPath;
     }
 
     /**
-     * Upload lesson materials or teacher notes
+     * Upload lesson materials or teacher notes:
+     * courses/course_{courseId}/lessons/lesson_{lessonId}/{type}/file_{timestamp}.{extension}
      */
-    public function uploadLessonFile(int $courseId, int $lessonId, UploadedFile $file, string $type = 'materials'): string
+    public function uploadLessonFile(int $courseId, int $lessonId, UploadedFile $file, string $type = 'pdfs'): string
     {
         $directory = "courses/course_{$courseId}/lessons/lesson_{$lessonId}/{$type}";
-        return $this->upload($file, $directory);
+        $extension = $file->getClientOriginalExtension() ?: 'bin';
+        $filename = $type . "_" . time() . "_" . Str::random(6) . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload lesson {$type} to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('public')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
+    }
+
+    /**
+     * Upload HSK Mock Exam audio or question image:
+     * hsk_mock_exams/exam_{examId}/{subfolder}/media_{timestamp}.{extension}
+     */
+    public function uploadHskExamMedia(int $examId, UploadedFile $file, string $subfolder = 'questions'): string
+    {
+        $directory = "hsk_mock_exams/exam_{$examId}/{$subfolder}";
+        $extension = $file->getClientOriginalExtension() ?: 'bin';
+        $filename = "media_" . time() . "_" . Str::random(8) . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload HSK exam media to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('public')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
+    }
+
+    /**
+     * Upload Teacher Quiz media (question images/audio or global exam audio):
+     * quizzes/quiz_{quizId}/{subfolder}/media_{timestamp}.{extension}
+     */
+    public function uploadQuizMedia(int $quizId, UploadedFile $file, string $subfolder = 'questions'): string
+    {
+        $directory = $quizId > 0 ? "quizzes/quiz_{$quizId}/{$subfolder}" : "quizzes/{$subfolder}";
+        $extension = $file->getClientOriginalExtension() ?: 'bin';
+        $filename = "media_" . time() . "_" . Str::random(8) . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload quiz media to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('public')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
+    }
+
+    /**
+     * Upload student assignment submission:
+     * assignments/assignment_{assignmentId}/submissions/user_{userId}/sub_{timestamp}.{extension}
+     */
+    public function uploadAssignmentSubmission(int $assignmentId, int $userId, UploadedFile $file): string
+    {
+        $directory = "assignments/assignment_{$assignmentId}/submissions/user_{$userId}";
+        $extension = $file->getClientOriginalExtension() ?: 'bin';
+        $filename = "sub_" . time() . "_" . Str::random(6) . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload assignment submission to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('local')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
+    }
+
+    /**
+     * Upload teacher feedback audio:
+     * assignments/assignment_{assignmentId}/feedback/sub_{submissionId}/feedback_{timestamp}.mp3
+     */
+    public function uploadAssignmentFeedback(int $assignmentId, int $submissionId, UploadedFile $file): string
+    {
+        $directory = "assignments/assignment_{$assignmentId}/feedback/sub_{$submissionId}";
+        $extension = $file->getClientOriginalExtension() ?: 'mp3';
+        $filename = "feedback_" . time() . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload assignment feedback audio to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('local')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
+    }
+
+    /**
+     * Upload teacher feedback attachment:
+     * assignments/assignment_{assignmentId}/feedback/sub_{submissionId}/att_{timestamp}_{random}.{extension}
+     */
+    public function uploadAssignmentFeedbackAttachment(int $assignmentId, int $submissionId, UploadedFile $file): string
+    {
+        $directory = "assignments/assignment_{$assignmentId}/feedback/sub_{$submissionId}";
+        $extension = $file->getClientOriginalExtension() ?: 'bin';
+        $filename = "att_" . time() . "_" . Str::random(6) . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload assignment feedback attachment to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('local')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
+    }
+
+    /**
+     * Upload teacher assignment material / attachment:
+     * assignments/assignment_{assignmentId}/materials/mat_{timestamp}_{random}.{extension}
+     */
+    public function uploadAssignmentMaterial(int $assignmentId, UploadedFile $file): string
+    {
+        $directory = "assignments/assignment_{$assignmentId}/materials";
+        $extension = $file->getClientOriginalExtension() ?: 'bin';
+        $filename = "mat_" . time() . "_" . Str::random(6) . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload assignment material to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('local')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
+    }
+
+    /**
+     * Upload support ticket attachment:
+     * support/ticket_{ticketId}/attachment_{timestamp}.{extension}
+     */
+    public function uploadSupportAttachment(int $ticketId, UploadedFile $file): string
+    {
+        $directory = "support/ticket_{$ticketId}";
+        $extension = $file->getClientOriginalExtension() ?: 'png';
+        $filename = "attachment_" . time() . "_" . Str::random(6) . "." . $extension;
+        $fullPath = "{$directory}/{$filename}";
+
+        try {
+            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+        } catch (Throwable $e) {
+            Log::error("Failed to upload support attachment to B2: " . $e->getMessage() . ". Falling back to local storage.");
+            Storage::disk('public')->putFileAs($directory, $file, $filename);
+        }
+
+        return $fullPath;
     }
 
     /**

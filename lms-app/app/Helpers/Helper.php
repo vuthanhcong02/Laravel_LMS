@@ -40,17 +40,17 @@ if (! function_exists('renderHskRubyText')) {
     function renderHskRubyText($html, $pinyinStr = '', $hanziStr = '')
     {
         if (empty(trim($html ?? ''))) return '';
-        
+
         $cacheKey = 'hsk_ruby_' . md5(($html ?? '') . ($pinyinStr ?? '') . ($hanziStr ?? ''));
         return _hsk_cache_remember_forever($cacheKey, function () use ($html, $pinyinStr, $hanziStr) {
             $html = trim($html ?? '');
             // Strip dangerous tags to prevent XSS
             $html = strip_tags($html, '<ruby><rt><rp><br>');
-            
+
             if (!empty($html) && str_contains($html, '<ruby')) {
                 // If already split into multiple 1-to-1 rubies, format them with modern flex styling
                 if (substr_count($html, '<ruby') > 1) {
-                    $styled = preg_replace_callback('/<ruby[^>]*>(.*?)<\/ruby>/is', function($m) {
+                    $styled = preg_replace_callback('/<ruby[^>]*>(.*?)<\/ruby>/is', function ($m) {
                         $inner = $m[1];
                         $rt = '';
                         if (preg_match('/<rt[^>]*>(.*?)<\/rt>/is', $inner, $rtMatch)) {
@@ -58,7 +58,7 @@ if (! function_exists('renderHskRubyText')) {
                         }
                         // Extract hanzi by removing <rt> and stripping other tags
                         $hz = trim(strip_tags(preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $inner)));
-                        
+
                         if (!empty($rt) && !empty($hz)) {
                             return '<ruby class="inline-flex flex-col-reverse items-center justify-end leading-none mx-0.5"><span class="text-sm font-medium zh-text text-slate-800 dark:text-slate-100">' . e($hz) . '</span><rt class="text-[10px] font-normal text-slate-500 dark:text-slate-400 mb-0.5 select-none">' . e($rt) . '</rt></ruby>';
                         }
@@ -67,7 +67,7 @@ if (! function_exists('renderHskRubyText')) {
                     $styled = preg_replace('/<br\s*\/?>/i', '<div class="w-full h-0 basis-full my-1"></div>', $styled);
                     return '<div class="flex flex-wrap items-end gap-x-2 gap-y-1">' . $styled . '</div>';
                 }
-                
+
                 if (preg_match('/<rt[^>]*>(.*?)<\/rt>/is', $html, $pyM)) {
                     $extractedPinyin = trim(strip_tags($pyM[1]));
                     $cleanHtml = preg_replace('/<rt[^>]*>.*?<\/rt>/is', '', $html);
@@ -116,7 +116,7 @@ if (! function_exists('renderHskRubyText')) {
             if (empty($hanziStr) && !empty($html) && function_exists('hsk_render_pinyin')) {
                 return hsk_render_pinyin($html);
             }
-            
+
             $fallbackHtml = '<div><div class="text-xs text-slate-500 mb-1 leading-none">' . e($pinyinStr) . '</div><div class="text-base font-bold text-slate-800 dark:text-slate-100 tracking-widest">' . (!empty($hanziStr) ? e($hanziStr) : e($html)) . '</div></div>';
             return $fallbackHtml;
         });
@@ -125,14 +125,24 @@ if (! function_exists('renderHskRubyText')) {
 
 
 if (! function_exists('hsk_storage_url')) {
+    /**
+     * Generate accessible media URL for HSK Mock Exams (90 minutes presigned TTL for B2, or local storage URL).
+     *
+     * @param string|null $path
+     * @return string
+     */
     function hsk_storage_url(?string $path): string
     {
-        if (empty($path)) return '';
+        if (empty($path)) {
+            return '';
+        }
+
         $path = trim($path);
-        if (str_starts_with($path, '/storage/')) {
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '/storage/')) {
             return $path;
         }
-        return Storage::url($path);
+
+        return app(MediaStorageService::class)->url($path, 90);
     }
 }
 
@@ -149,7 +159,7 @@ if (! function_exists('hsk_render_pinyin')) {
 
             foreach ($lines as $line) {
                 $chars = mb_str_split($line);
-                
+
                 // Extract all Chinese characters to evaluate their pinyin in context (for polyphones)
                 $chineseChars = '';
                 foreach ($chars as $char) {
@@ -164,7 +174,7 @@ if (! function_exists('hsk_render_pinyin')) {
                 $pIdx = 0;
 
                 $html = '<div class="inline-flex flex-wrap items-end gap-x-[1px] gap-y-1 align-bottom">';
-                
+
                 foreach ($chars as $char) {
                     if ($char === "\n") {
                         $html .= '<div class="w-full h-0 basis-full my-1"></div>';
@@ -278,12 +288,18 @@ if (! function_exists('pinyin_tone_to_unicode')) {
         }
 
         $toneMap = [
-            'a' => ['ā', 'á', 'ǎ', 'à'], 'A' => ['Ā', 'Á', 'Ǎ', 'À'],
-            'e' => ['ē', 'é', 'ě', 'è'], 'E' => ['Ē', 'É', 'Ě', 'È'],
-            'i' => ['ī', 'í', 'ǐ', 'ì'], 'I' => ['Ī', 'Í', 'Ǐ', 'Ì'],
-            'o' => ['ō', 'ó', 'ǒ', 'ò'], 'O' => ['Ō', 'Ó', 'Ǒ', 'Ò'],
-            'u' => ['ū', 'ú', 'ǔ', 'ù'], 'U' => ['Ū', 'Ú', 'Ǔ', 'Ù'],
-            'ü' => ['ǖ', 'ǘ', 'ǚ', 'ǜ'], 'Ü' => ['Ǖ', 'Ǘ', 'Ǚ', 'Ǜ'],
+            'a' => ['ā', 'á', 'ǎ', 'à'],
+            'A' => ['Ā', 'Á', 'Ǎ', 'À'],
+            'e' => ['ē', 'é', 'ě', 'è'],
+            'E' => ['Ē', 'É', 'Ě', 'È'],
+            'i' => ['ī', 'í', 'ǐ', 'ì'],
+            'I' => ['Ī', 'Í', 'Ǐ', 'Ì'],
+            'o' => ['ō', 'ó', 'ǒ', 'ò'],
+            'O' => ['Ō', 'Ó', 'Ǒ', 'Ò'],
+            'u' => ['ū', 'ú', 'ǔ', 'ù'],
+            'U' => ['Ū', 'Ú', 'Ǔ', 'Ù'],
+            'ü' => ['ǖ', 'ǘ', 'ǚ', 'ǜ'],
+            'Ü' => ['Ǖ', 'Ǘ', 'Ǚ', 'Ǜ'],
         ];
 
         $str = trim($pinyin);
@@ -355,6 +371,28 @@ if (! function_exists('hskMediaUrl')) {
     function hskMediaUrl(?string $path): string
     {
         return app(MediaStorageService::class)->hskMediaUrl($path);
+    }
+}
+
+if (! function_exists('assignmentFileUrl')) {
+    /**
+     * Helper to generate secure presigned URL for assignment attachments and submissions.
+     */
+    function assignmentFileUrl(?string $path, int $expirationMinutes = 60): string
+    {
+        if (empty($path)) {
+            return '';
+        }
+
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        return app(MediaStorageService::class)->url(
+            $path,
+            $expirationMinutes,
+            route('file.viewer', ['path' => $path])
+        );
     }
 }
 
