@@ -31,7 +31,7 @@ class SupportController extends Controller
     {
         $data = $request->validated();
         if ($request->hasFile('attachment')) {
-            $data['attachment_path'] = $request->file('attachment')->store('support_attachments', 'public');
+            $data['attachment'] = $request->file('attachment');
         }
 
         $this->supportService->createTicket($data);

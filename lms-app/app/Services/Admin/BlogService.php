@@ -40,11 +40,14 @@ class BlogService
         $data['slug'] = $this->generateUniqueSlug($data['title']);
         $data['is_published'] = isset($data['is_published']) && $data['is_published'];
 
+        $blog = Blog::create($data);
+
         if ($thumbnailFile) {
-            $data['thumbnail'] = $thumbnailFile->store('blogs/thumbnails', 'public');
+            $blog->thumbnail = app(MediaStorageService::class)->uploadBlogThumbnail($blog, $thumbnailFile);
+            $blog->save();
         }
 
-        return Blog::create($data);
+        return $blog;
     }
 
     /**
@@ -62,13 +65,8 @@ class BlogService
         }
 
         if ($thumbnailFile) {
-            // Delete old thumbnail if it's a local file
-            if ($blog->thumbnail) {
-                Storage::disk('public')->delete($blog->thumbnail);
-            }
-            $data['thumbnail'] = $thumbnailFile->store('blogs/thumbnails', 'public');
-        }
-        else {
+            $data['thumbnail'] = app(MediaStorageService::class)->uploadBlogThumbnail($blog, $thumbnailFile);
+        } else {
             unset($data['thumbnail']);
         }
 
@@ -85,7 +83,15 @@ class BlogService
         $blog = Blog::findOrFail($id);
 
         if ($blog->thumbnail) {
-            Storage::disk('public')->delete($blog->thumbnail);
+            try {
+                app(MediaStorageService::class)->deleteDirectory("blogs/blog_{$blog->id}");
+            } catch (\Throwable $e) {
+                // Ignore remote delete error
+            }
+
+            if (Storage::disk('public')->exists($blog->thumbnail)) {
+                Storage::disk('public')->delete($blog->thumbnail);
+            }
         }
 
         $blog->delete();

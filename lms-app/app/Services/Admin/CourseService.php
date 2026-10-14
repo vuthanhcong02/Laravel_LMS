@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\User;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -50,11 +51,12 @@ class CourseService
     {
         $data['slug'] = $this->generateUniqueSlug($data['title']);
 
-        if ($thumbnailFile) {
-            $data['thumbnail'] = $thumbnailFile->store('courses/thumbnails', 'public');
-        }
-
         $course = Course::create($data);
+
+        if ($thumbnailFile) {
+            $course->thumbnail = app(MediaStorageService::class)->uploadCourseThumbnail($course, $thumbnailFile);
+            $course->save();
+        }
 
         // Handle schedules
         $this->syncSchedules($course, $data);
@@ -73,10 +75,7 @@ class CourseService
         }
 
         if ($thumbnailFile) {
-            if ($course->thumbnail) {
-                Storage::disk('public')->delete($course->thumbnail);
-            }
-            $data['thumbnail'] = $thumbnailFile->store('courses/thumbnails', 'public');
+            $data['thumbnail'] = app(MediaStorageService::class)->uploadCourseThumbnail($course, $thumbnailFile);
         } else {
             unset($data['thumbnail']);
         }
@@ -116,7 +115,15 @@ class CourseService
     public function destroy(Course $course): void
     {
         if ($course->thumbnail) {
-            Storage::disk('public')->delete($course->thumbnail);
+            try {
+                app(MediaStorageService::class)->deleteDirectory("courses/course_{$course->id}");
+            } catch (\Throwable $e) {
+                // Ignore remote delete error
+            }
+
+            if (Storage::disk('public')->exists($course->thumbnail)) {
+                Storage::disk('public')->delete($course->thumbnail);
+            }
         }
 
         $course->delete();

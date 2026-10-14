@@ -29,6 +29,15 @@ class Course extends Model
         'end_date' => 'date',
     ];
 
+    /**
+     * The accessors to append to the model's array and JSON representation.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'thumbnail_url',
+    ];
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
@@ -41,7 +50,7 @@ class Course extends Model
     {
         return app(MediaStorageService::class)->url(
             $this->thumbnail,
-            1440,
+            10080,
             asset('images/default-course.jpg')
         );
     }

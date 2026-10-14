@@ -75,6 +75,16 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     ];
 
     /**
+     * The accessors to append to the model's array and JSON representation.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'full_name',
+        'avatar_url',
+    ];
+
+    /**
      * Custom send the email verification notification.
      */
     public function sendEmailVerificationNotification()

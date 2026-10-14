@@ -8,6 +8,8 @@ use App\Models\HskMockExamSection;
 use App\Models\HskMockExamQuestionGroup;
 use App\Models\HskMockExamQuestion;
 use App\Models\HskMockExamOption;
+use App\Services\Media\MediaStorageService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use ZipArchive;
@@ -389,11 +391,15 @@ class HskMockExamService
     }
 
     /**
-     * Upload an image from local computer
+     * Upload an image for HSK Mock Exam to cloud storage with local fallback.
+     *
+     * @param UploadedFile $file
+     * @param int $examId
+     * @return string
      */
-    public function uploadImage($file): string
+    public function uploadImage(UploadedFile $file, int $examId = 0): string
     {
-        return $file->store('hsk_mock_exams/uploads', 'public');
+        return app(MediaStorageService::class)->uploadHskExamMedia($examId, $file, 'images');
     }
 
     /**

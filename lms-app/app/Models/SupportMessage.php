@@ -27,7 +27,7 @@ class SupportMessage extends Model
             return null;
         }
 
-        return app(MediaStorageService::class)->url($this->attachment_path);
+        return app(MediaStorageService::class)->url($this->attachment_path, 60);
     }
 
     public function ticket()

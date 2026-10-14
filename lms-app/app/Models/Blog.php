@@ -23,6 +23,15 @@ class Blog extends Model
         'is_published' => 'boolean',
     ];
 
+    /**
+     * The accessors to append to the model's array and JSON representation.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'thumbnail_url',
+    ];
+
     // Scopes
     public function scopePublished($query)
     {
@@ -46,7 +55,7 @@ class Blog extends Model
     public function getThumbnailUrlAttribute(): string
     {
         $defaultThumbnail = 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=800&q=80';
-        return app(MediaStorageService::class)->url($this->thumbnail, 1440, $defaultThumbnail);
+        return app(MediaStorageService::class)->url($this->thumbnail, 10080, $defaultThumbnail);
     }
 
 
