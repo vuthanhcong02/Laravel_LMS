@@ -56,23 +56,27 @@
                     <form action="{{ route('student.assignments.submit', $assignment->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
                         
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">{{ __('Lựa chọn 1: Ghi âm giọng nói') }}</label>
-                            <x-audio-recorder name="audio_file" />
-                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-primary text-base">mic</span>
+                                    <span>{{ __('1. Ghi âm giọng nói (nếu có)') }}</span>
+                                </label>
+                                <x-audio-recorder name="audio_file" />
+                            </div>
 
-                        <div class="relative flex items-center gap-3 py-1">
-                            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ __('Hoặc đính kèm tệp') }}</span>
-                            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
-                        </div>
-
-                        <div>
-                            <x-lms.file-uploader
-                                name="attachments[]"
-                                :maxFiles="5"
-                                :maxSizeMB="20"
-                                :label="__('Lựa chọn 2: Tệp đính kèm (PDF, DOCX, Ảnh, Audio, Zip...)')" />
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-primary text-base">attach_file</span>
+                                    <span>{{ __('2. Đính kèm tệp tin / hình ảnh bài làm (nếu có)') }}</span>
+                                </label>
+                                <x-lms.file-uploader
+                                    name="attachments[]"
+                                    :maxFiles="5"
+                                    :maxSizeMB="20"
+                                    :label="null"
+                                    :helperText="__('Hỗ trợ: PDF, Word, Excel, Ảnh, Audio, Zip... (Có thể gửi kèm cả ghi âm và tệp tin cùng lúc)')" />
+                            </div>
                         </div>
                         
                         <div class="pt-2">

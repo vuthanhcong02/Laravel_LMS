@@ -101,7 +101,7 @@
                                             $isImg = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']);
                                             $isAudio = in_array($ext, ['mp3', 'wav', 'ogg', 'webm', 'm4a']);
                                             $isPdf = ($ext === 'pdf');
-                                            $fileViewerUrl = route('file.viewer', ['path' => $file['path']]);
+                                            $fileViewerUrl = assignmentFileUrl($file['path']);
                                         @endphp
                                         <div class="flex items-center justify-between gap-3 p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-slate-300 transition-colors">
                                             <label class="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer">

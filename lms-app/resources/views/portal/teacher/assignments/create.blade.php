@@ -100,8 +100,8 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">{{ __('Trạng thái phát hành') }}</label>
                             <select name="status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-medium text-slate-900 dark:text-white shadow-xs focus:border-primary focus:ring-primary">
-                                <option value="{{ \App\Models\Assignment::STATUS_DRAFT }}">{{ __('Lưu Nháp (Học sinh chưa thấy)') }}</option>
-                                <option value="{{ \App\Models\Assignment::STATUS_PUBLISHED }}">{{ __('Đăng Bài (Công khai)') }}</option>
+                                <option value="{{ \App\Models\Assignment::STATUS_PUBLISHED }}" {{ old('status', (string) \App\Models\Assignment::STATUS_PUBLISHED) == (string) \App\Models\Assignment::STATUS_PUBLISHED ? 'selected' : '' }}>{{ __('Đăng Bài (Công khai)') }}</option>
+                                <option value="{{ \App\Models\Assignment::STATUS_DRAFT }}" {{ old('status') === (string) \App\Models\Assignment::STATUS_DRAFT ? 'selected' : '' }}>{{ __('Lưu Nháp (Học sinh chưa thấy)') }}</option>
                             </select>
                         </div>
                     </div>

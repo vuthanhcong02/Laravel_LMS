@@ -114,24 +114,47 @@
                                     <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500">{{ __('Bài làm của học viên:') }}</label>
 
                                     <template x-if="selected.attachments && selected.attachments.length > 0">
-                                        <div class="space-y-2">
+                                        <div class="space-y-2.5">
                                             <template x-for="file in selected.attachments" :key="file.path">
-                                                <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-700 rounded-xl border border-slate-100 dark:border-slate-600 group">
-                                                    <div class="flex items-center gap-3 overflow-hidden">
-                                                        <span class="material-symbols-outlined text-slate-400" x-text="isImage(file.name) ? 'image' : (isAudio(file.name) ? 'audio_file' : (isPdf(file.name) ? 'picture_as_pdf' : 'description'))"></span>
-                                                        <span class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate" x-text="file.name"></span>
-                                                    </div>
-                                                    <div class="flex items-center gap-2">
+                                                <div>
+                                                    <template x-if="isAudio(file.name)">
+                                                        <div class="p-3 bg-white dark:bg-slate-700 rounded-xl border border-slate-100 dark:border-slate-600 space-y-2">
+                                                            <div class="flex items-center justify-between gap-2">
+                                                                <div class="flex items-center gap-2 overflow-hidden">
+                                                                    <span class="material-symbols-outlined text-primary text-base">mic</span>
+                                                                    <span class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate" x-text="file.name"></span>
+                                                                </div>
+                                                                <div class="flex items-center gap-1.5 shrink-0">
+                                                                    <button @click="openModal(file)" type="button" class="size-7 rounded-lg bg-slate-50 dark:bg-slate-600 text-slate-400 hover:text-primary flex items-center justify-center transition-all" title="{{ __('Mở rộng') }}">
+                                                                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                                                    </button>
+                                                                    <a :href="file.url || getFileUrl(file.path, file)" target="_blank" class="size-7 rounded-lg bg-slate-50 dark:bg-slate-600 text-slate-400 hover:text-primary flex items-center justify-center transition-all" title="{{ __('Tải về') }}">
+                                                                        <span class="material-symbols-outlined text-[16px]">download</span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            <audio :src="file.url || getFileUrl(file.path, file)" controls class="w-full h-8"></audio>
+                                                        </div>
+                                                    </template>
 
-                                                        <template x-if="isImage(file.name) || isAudio(file.name) || isPdf(file.name)">
-                                                            <button @click="openModal(file)" type="button" class="size-8 rounded-lg bg-slate-50 text-slate-400 hover:text-primary hover:bg-white flex items-center justify-center transition-all shadow-sm border border-slate-100 dark:border-slate-600">
-                                                                <span class="material-symbols-outlined text-[18px]">visibility</span>
-                                                            </button>
-                                                        </template>
-                                                        <a :href="getFileUrl(file.path)" target="_blank" class="size-8 rounded-lg bg-slate-50 text-slate-400 hover:text-primary flex items-center justify-center transition-all">
-                                                            <span class="material-symbols-outlined text-[18px]">download</span>
-                                                        </a>
-                                                    </div>
+                                                    <template x-if="!isAudio(file.name)">
+                                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-700 rounded-xl border border-slate-100 dark:border-slate-600 group">
+                                                            <div class="flex items-center gap-3 overflow-hidden">
+                                                                <span class="material-symbols-outlined text-slate-400" x-text="isImage(file.name) ? 'image' : (isPdf(file.name) ? 'picture_as_pdf' : 'description')"></span>
+                                                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate" x-text="file.name"></span>
+                                                            </div>
+                                                            <div class="flex items-center gap-2 shrink-0">
+                                                                <template x-if="isImage(file.name) || isPdf(file.name)">
+                                                                    <button @click="openModal(file)" type="button" class="size-8 rounded-lg bg-slate-50 text-slate-400 hover:text-primary hover:bg-white flex items-center justify-center transition-all shadow-sm border border-slate-100 dark:border-slate-600" title="{{ __('Xem trước') }}">
+                                                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                                                    </button>
+                                                                </template>
+                                                                <a :href="file.url || getFileUrl(file.path, file)" target="_blank" class="size-8 rounded-lg bg-slate-50 text-slate-400 hover:text-primary flex items-center justify-center transition-all" title="{{ __('Tải về') }}">
+                                                                    <span class="material-symbols-outlined text-[18px]">download</span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </template>
                                                 </div>
                                             </template>
                                         </div>
@@ -144,10 +167,14 @@
                                 <form :action="`{{ url('portal/teacher/assignments') }}/${selected.assignment_id}/grade/${selected.id}`"
                                       method="POST"
                                       enctype="multipart/form-data"
-                                      x-data="{ deleteExistingAudio: false }"
                                       class="space-y-5">
                                     @csrf
                                     <input type="hidden" name="delete_audio" :value="deleteExistingAudio ? 1 : 0">
+
+                                    <!-- Keep existing teacher attachments -->
+                                    <template x-for="(file, idx) in existingTeacherAttachments" :key="idx">
+                                        <input type="hidden" name="existing_teacher_attachments[]" :value="file.path">
+                                    </template>
 
                                     <div>
                                         <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">{{ __('Điểm (0-10)') }}</label>
@@ -155,11 +182,11 @@
                                     </div>
 
                                     <div>
-                                        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">{{ __('Ghi âm nhận xét') }}</label>
+                                        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">{{ __('Ghi âm hoặc tải file audio nhận xét') }}</label>
                                         <template x-if="selected.teacher_audio_path && !deleteExistingAudio">
                                             <div class="mb-2 p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl flex items-center gap-2 border border-emerald-100">
-                                                <audio :src="getFileUrl(selected.teacher_audio_path)" controls class="h-8 flex-1"></audio>
-                                                <button type="button" @click="deleteExistingAudio = true" class="size-8 rounded-lg bg-white dark:bg-slate-800 text-red-500 hover:bg-red-50 flex items-center justify-center transition-all shadow-sm" title="Xóa đoạn ghi âm này">
+                                                <audio :src="selected.teacher_audio_url || getFileUrl(selected.teacher_audio_path)" controls class="h-8 flex-1"></audio>
+                                                <button type="button" @click="deleteExistingAudio = true" class="size-8 rounded-lg bg-white dark:bg-slate-800 text-red-500 hover:bg-red-50 flex items-center justify-center transition-all shadow-sm cursor-pointer" title="{{ __('Xóa đoạn ghi âm này') }}">
                                                     <span class="material-symbols-outlined text-[18px]">delete</span>
                                                 </button>
                                             </div>
@@ -167,10 +194,45 @@
                                         <template x-if="deleteExistingAudio">
                                             <div class="mb-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center justify-between gap-2 border border-red-100">
                                                 <span class="text-[10px] font-bold text-red-500 ml-2 italic">{{ __('Audio cũ sẽ được xóa khi bạn Lưu') }}</span>
-                                                <button type="button" @click="deleteExistingAudio = false" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline px-2">{{ __('Hoàn tác') }}</button>
+                                                <button type="button" @click="deleteExistingAudio = false" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline px-2 cursor-pointer">{{ __('Hoàn tác') }}</button>
                                             </div>
                                         </template>
                                         <x-audio-recorder name="audio_feedback" />
+                                    </div>
+
+                                    <div>
+                                        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">{{ __('Tệp đính kèm / Bài sửa của Giáo viên') }}</label>
+                                        
+                                        <!-- Danh sách tệp đính kèm hiện tại của giáo viên -->
+                                        <template x-if="existingTeacherAttachments && existingTeacherAttachments.length > 0">
+                                            <div class="space-y-1.5 mb-3 max-h-40 overflow-y-auto">
+                                                <template x-for="(file, idx) in existingTeacherAttachments" :key="idx">
+                                                    <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+                                                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                                                            <span class="material-symbols-outlined text-base text-primary shrink-0">attach_file</span>
+                                                            <span class="font-medium truncate text-slate-700 dark:text-slate-200" x-text="file.name"></span>
+                                                            <span class="text-[10px] text-slate-400 shrink-0" x-text="file.size ? (file.size > 1048576 ? (file.size/1048576).toFixed(1) + ' MB' : Math.round(file.size/1024) + ' KB') : ''"></span>
+                                                        </div>
+                                                        <div class="flex items-center gap-1 shrink-0">
+                                                            <button type="button" @click="openModal(file)" class="size-7 rounded-lg text-slate-400 hover:text-primary flex items-center justify-center transition-all cursor-pointer" title="{{ __('Xem trước') }}">
+                                                                <span class="material-symbols-outlined text-base">visibility</span>
+                                                            </button>
+                                                            <button type="button" @click="removeTeacherAttachment(idx)" class="size-7 rounded-lg text-slate-400 hover:text-red-500 flex items-center justify-center transition-all cursor-pointer" title="{{ __('Xóa tệp này') }}">
+                                                                <span class="material-symbols-outlined text-base">delete</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        <x-lms.file-uploader 
+                                            name="teacher_attachments[]" 
+                                            :compact="true" 
+                                            :maxFiles="5" 
+                                            :label="null"
+                                            :helperText="__('Hỗ trợ: PDF, Word, Ảnh, Zip... (Tối đa 5 tệp, 20MB/tệp)')" 
+                                        />
                                     </div>
 
                                     <div>
@@ -222,7 +284,7 @@
 
                 <div class="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800/20">
                     <template x-if="currentFile && isImage(currentFile.name)">
-                        <img :src="getFileUrl(currentFile.path)" class="max-w-full max-h-[70vh] rounded-xl shadow-lg">
+                        <img :src="currentFile.url || getFileUrl(currentFile.path, currentFile)" class="max-w-full max-h-[70vh] rounded-xl shadow-lg">
                     </template>
 
                     <template x-if="currentFile && isAudio(currentFile.name)">
@@ -230,17 +292,17 @@
                             <div class="size-20 bg-primary/10 rounded-full flex items-center justify-center text-primary animate-pulse">
                                 <span class="material-symbols-outlined text-4xl">graphic_eq</span>
                             </div>
-                            <audio :src="getFileUrl(currentFile.path)" controls class="w-full"></audio>
+                            <audio :src="currentFile.url || getFileUrl(currentFile.path, currentFile)" controls class="w-full"></audio>
                         </div>
                     </template>
 
                     <template x-if="currentFile && isPdf(currentFile.name)">
-                        <iframe :src="getFileUrl(currentFile.path) + '#toolbar=0'" class="w-full h-[70vh] rounded-xl border border-slate-200 dark:border-slate-700 bg-white" frameborder="0"></iframe>
+                        <iframe :src="(currentFile.url || getFileUrl(currentFile.path, currentFile)) + '#toolbar=0'" class="w-full h-[70vh] rounded-xl border border-slate-200 dark:border-slate-700 bg-white" frameborder="0"></iframe>
                     </template>
                 </div>
 
                 <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 shrink-0">
-                    <a :href="currentFile ? getFileUrl(currentFile.path) : '#'" target="_blank" class="px-6 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all flex items-center gap-2">
+                    <a :href="currentFile ? (currentFile.url || getFileUrl(currentFile.path, currentFile)) : '#'" target="_blank" class="px-6 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all flex items-center gap-2">
                         <span class="material-symbols-outlined text-[18px]">open_in_new</span>
                         Mở trong tab mới
                     </a>
@@ -256,6 +318,8 @@ function gradingPanel(assignment) {
         selectedId: null,
         modalOpen: false,
         currentFile: null,
+        deleteExistingAudio: false,
+        existingTeacherAttachments: [],
         stats: {
             graded: {{ $submissions->where('status', \App\Models\AssignmentSubmission::STATUS_GRADED)->count() }},
             total: {{ $submissions->count() }}
@@ -263,7 +327,21 @@ function gradingPanel(assignment) {
 
         selectSubmission(sub) {
             this.selected = sub;
+            this.deleteExistingAudio = false;
+            if (sub && sub.formatted_attachments) {
+                this.selected.attachments = sub.formatted_attachments;
+            }
+            if (sub && sub.formatted_teacher_attachments) {
+                this.selected.teacher_attachments = sub.formatted_teacher_attachments;
+            }
+            this.existingTeacherAttachments = (sub && (sub.formatted_teacher_attachments || sub.teacher_attachments))
+                ? JSON.parse(JSON.stringify(sub.formatted_teacher_attachments || sub.teacher_attachments))
+                : [];
             this.selectedId = sub.id;
+        },
+
+        removeTeacherAttachment(index) {
+            this.existingTeacherAttachments.splice(index, 1);
         },
 
         openModal(file) {
@@ -283,21 +361,26 @@ function gradingPanel(assignment) {
             document.body.classList.remove('overflow-hidden');
         },
 
-        getFileUrl(path) {
+        getFileUrl(path, file) {
+            if (file && file.url) return file.url;
+            if (path && (path.startsWith('http://') || path.startsWith('https://'))) return path;
             return `{{ route('file.viewer') }}?path=${path}`;
         },
 
         isImage(name) {
+            if (!name) return false;
             const ext = name.split('.').pop().toLowerCase();
             return ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext);
         },
 
         isAudio(name) {
+            if (!name) return false;
             const ext = name.split('.').pop().toLowerCase();
-            return ['mp3', 'wav', 'ogg', 'webm', 'm4a'].includes(ext);
+            return ['mp3', 'wav', 'ogg', 'webm', 'm4a', 'weba', 'aac'].includes(ext);
         },
 
         isPdf(name) {
+            if (!name) return false;
             const ext = name.split('.').pop().toLowerCase();
             return ext === 'pdf';
         }
