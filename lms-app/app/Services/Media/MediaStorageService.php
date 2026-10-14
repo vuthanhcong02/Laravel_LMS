@@ -4,6 +4,7 @@ namespace App\Services\Media;
 
 use App\Models\Blog;
 use App\Models\Course;
+use App\Models\HskMockExam;
 use App\Models\User;
 use Aws\S3\S3Client;
 use Illuminate\Http\UploadedFile;
@@ -405,11 +406,18 @@ class MediaStorageService
 
     /**
      * Upload HSK Mock Exam audio or question image:
-     * hsk_mock_exams/exam_{examId}/{subfolder}/media_{timestamp}.{extension}
+     * hsk_mock_exams/{hskLevel}/exam_{examId}/{subfolder}/media_{timestamp}.{extension}
      */
-    public function uploadHskExamMedia(int $examId, UploadedFile $file, string $subfolder = 'questions'): string
+    public function uploadHskExamMedia(int $examId, UploadedFile $file, string $subfolder = 'questions', ?string $hskLevel = null): string
     {
-        $directory = "hsk_mock_exams/exam_{$examId}/{$subfolder}";
+        // Automatically resolve HSK level code (e.g. hsk1, hsk3, hsk6) if not provided
+        if (!$hskLevel && $examId > 0) {
+            $exam = HskMockExam::with('hskLevel')->find($examId);
+            $hskLevel = $exam && $exam->hskLevel ? strtolower($exam->hskLevel->level_code) : 'hsk';
+        }
+        $hskLevel = $hskLevel ?: 'hsk';
+
+        $directory = "hsk_mock_exams/{$hskLevel}/exam_{$examId}/{$subfolder}";
         $extension = $file->getClientOriginalExtension() ?: 'bin';
         $filename = "media_" . time() . "_" . Str::random(8) . "." . $extension;
         $fullPath = "{$directory}/{$filename}";

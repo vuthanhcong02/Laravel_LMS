@@ -5,6 +5,9 @@ namespace App\Console\Commands;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\HskMockExam;
+use App\Models\HskMockExamOption;
+use App\Models\HskMockExamQuestion;
+use App\Models\HskMockExamQuestionGroup;
 use App\Models\HskMockExamSection;
 use App\Models\Lesson;
 use App\Models\Question;
@@ -151,84 +154,215 @@ class MigratePhase2MediaToB2 extends Command
     }
 
     /**
-     * Migrate HSK Mock Exam audio files to B2.
+     * Migrate HSK Mock Exam audio & image files to B2.
+     * Folder structure follows standardized HSK level hierarchy:
+     *   hsk_mock_exams/{levelCode}/exam_{id}/audio/
+     *   hsk_mock_exams/{levelCode}/exam_{id}/sections/section_{id}/audio/
+     *   hsk_mock_exams/{levelCode}/exam_{id}/sections/section_{id}/groups/group_{id}/audio|image/
+     *   .../groups/group_{id}/questions/q_{id}/audio|image/
+     *   .../questions/q_{id}/options/opt_{id}.{ext}
      */
     protected function migrateHskExamAudios(bool $isDryRun): void
     {
-        $this->line("\n[2/5] Scanning HSK Mock Exam audio files...");
+        $this->line("\n[2/5] Scanning HSK Mock Exam media (audio + images)...");
 
         $count = 0;
-        // 1. Exam-level global audio
-        HskMockExam::whereNotNull('audio_file')
-            ->where('audio_file', '!=', '')
-            ->chunk(50, function ($exams) use ($isDryRun, &$count) {
-                foreach ($exams as $exam) {
-                    $oldPath = ltrim($exam->audio_file, '/');
-                    if (str_starts_with($oldPath, 'storage/')) {
-                        $oldPath = substr($oldPath, 8);
-                    }
 
-                    if (filter_var($oldPath, FILTER_VALIDATE_URL)) {
-                        continue;
-                    }
+        // Eager load entire relationship tree to obtain level_code and prevent N+1 queries
+        HskMockExam::with([
+            'hskLevel',
+            'sections.questionGroups.questions.options',
+        ])->chunk(20, function ($exams) use ($isDryRun, &$count) {
+            foreach ($exams as $exam) {
+                // E.g.: hsk3, hsk4, hsk6
+                $levelCode = strtolower($exam->hskLevel->level_code ?? 'hsk0');
+                $examPrefix = "hsk_mock_exams/{$levelCode}/exam_{$exam->id}";
 
-                    $localFullPath = storage_path('app/public/' . $oldPath);
-                    if (!File::exists($localFullPath)) {
-                        continue;
-                    }
-
-                    $newPath = $oldPath; // Maintain existing relative directory on B2
-                    $this->line("  - Exam #{$exam->id}: <comment>{$oldPath}</comment> -> <info>{$newPath}</info>");
-
-                    if (!$isDryRun) {
-                        try {
-                            Storage::disk('b2')->put($newPath, File::get($localFullPath));
-                            $count++;
-                        } catch (Throwable $e) {
-                            $this->error("    Upload error for Exam #{$exam->id}: " . $e->getMessage());
-                        }
-                    } else {
+                // --- 1. Exam global audio ---
+                if (!empty($exam->audio_file)) {
+                    $newPath = $this->migrateHskFile(
+                        $exam->audio_file,
+                        "{$examPrefix}/audio/exam_{$exam->id}",
+                        $isDryRun,
+                        "Exam #{$exam->id} [{$levelCode}] audio"
+                    );
+                    if ($newPath) {
+                        if (!$isDryRun) { $exam->audio_file = $newPath; $exam->save(); }
                         $count++;
                     }
                 }
-            });
 
-        // 2. Section-level audios
-        HskMockExamSection::whereNotNull('audio_file')
-            ->where('audio_file', '!=', '')
-            ->chunk(50, function ($sections) use ($isDryRun, &$count) {
-                foreach ($sections as $section) {
-                    $oldPath = ltrim($section->audio_file, '/');
-                    if (str_starts_with($oldPath, 'storage/')) {
-                        $oldPath = substr($oldPath, 8);
-                    }
+                // --- 2. Sections ---
+                foreach ($exam->sections as $section) {
+                    $sectionPrefix = "{$examPrefix}/sections/section_{$section->id}";
 
-                    if (filter_var($oldPath, FILTER_VALIDATE_URL)) {
-                        continue;
-                    }
-
-                    $localFullPath = storage_path('app/public/' . $oldPath);
-                    if (!File::exists($localFullPath)) {
-                        continue;
-                    }
-
-                    $newPath = $oldPath;
-                    $this->line("  - Section #{$section->id}: <comment>{$oldPath}</comment> -> <info>{$newPath}</info>");
-
-                    if (!$isDryRun) {
-                        try {
-                            Storage::disk('b2')->put($newPath, File::get($localFullPath));
+                    if (!empty($section->audio_file)) {
+                        $newPath = $this->migrateHskFile(
+                            $section->audio_file,
+                            "{$sectionPrefix}/audio/section_{$section->id}",
+                            $isDryRun,
+                            "Section #{$section->id} [{$levelCode}] audio"
+                        );
+                        if ($newPath) {
+                            if (!$isDryRun) { $section->audio_file = $newPath; $section->save(); }
                             $count++;
-                        } catch (Throwable $e) {
-                            $this->error("    Upload error for Section #{$section->id}: " . $e->getMessage());
                         }
-                    } else {
-                        $count++;
+                    }
+
+                    // --- 3. QuestionGroups ---
+                    foreach ($section->questionGroups as $group) {
+                        $groupPrefix = "{$sectionPrefix}/groups/group_{$group->id}";
+                        $groupDirty = false;
+
+                        // 3.1 Passage Audio
+                        if (!empty($group->passage_audio)) {
+                            $newPath = $this->migrateHskFile(
+                                $group->passage_audio,
+                                "{$groupPrefix}/audio/group_{$group->id}",
+                                $isDryRun,
+                                "Group #{$group->id} [{$levelCode}] audio"
+                            );
+                            if ($newPath) {
+                                if (!$isDryRun) { $group->passage_audio = $newPath; $groupDirty = true; }
+                                $count++;
+                            }
+                        }
+
+                        // 3.2 Passage Image(s) - supports single string or comma-separated list
+                        if (!empty($group->passage_image)) {
+                            $rawImages = explode(',', $group->passage_image);
+                            $migratedList = [];
+                            $hasChange = false;
+
+                            foreach ($rawImages as $idx => $rawImg) {
+                                $rawImgClean = trim($rawImg, " \t\n\r\0\x0B\"'[]");
+                                if (empty($rawImgClean)) continue;
+
+                                $suffix = count($rawImages) > 1 ? "_{$idx}" : "";
+                                $newPath = $this->migrateHskFile(
+                                    $rawImgClean,
+                                    "{$groupPrefix}/image/group_{$group->id}{$suffix}",
+                                    $isDryRun,
+                                    "Group #{$group->id} [{$levelCode}] image" . (count($rawImages) > 1 ? " #" . ($idx + 1) : "")
+                                );
+
+                                if ($newPath) {
+                                    $migratedList[] = $newPath;
+                                    $hasChange = true;
+                                    $count++;
+                                } else {
+                                    $migratedList[] = $rawImgClean;
+                                }
+                            }
+
+                            if ($hasChange && !$isDryRun) {
+                                $group->passage_image = implode(',', $migratedList);
+                                $groupDirty = true;
+                            }
+                        }
+
+                        if ($groupDirty) $group->save();
+
+                        // --- 4. Questions ---
+                        foreach ($group->questions as $question) {
+                            $questionPrefix = "{$groupPrefix}/questions/q_{$question->id}";
+                            $questionDirty = false;
+
+                            foreach (['image' => 'image', 'audio_file' => 'audio'] as $field => $type) {
+                                if (empty($question->$field)) continue;
+
+                                $newPath = $this->migrateHskFile(
+                                    $question->$field,
+                                    "{$questionPrefix}/{$type}/q_{$question->id}",
+                                    $isDryRun,
+                                    "Question #{$question->id} [{$levelCode}] {$type}"
+                                );
+                                if ($newPath) {
+                                    if (!$isDryRun) { $question->$field = $newPath; $questionDirty = true; }
+                                    $count++;
+                                }
+                            }
+                            if ($questionDirty) $question->save();
+
+                            // --- 5. Options ---
+                            foreach ($question->options as $option) {
+                                if (empty($option->image)) continue;
+
+                                $newPath = $this->migrateHskFile(
+                                    $option->image,
+                                    "{$questionPrefix}/options/opt_{$option->id}",
+                                    $isDryRun,
+                                    "Option #{$option->id} [{$levelCode}] image"
+                                );
+                                if ($newPath) {
+                                    if (!$isDryRun) { $option->image = $newPath; $option->save(); }
+                                    $count++;
+                                }
+                            }
+                        }
                     }
                 }
-            });
+            }
+        });
 
-        $this->info("✓ Processed {$count} HSK exam audio files.");
+        $this->info("✓ Processed {$count} HSK exam media files.");
+    }
+
+    /**
+     * Helper: Migrate an HSK file to B2 using the standardized HSK-level path.
+     * Returns $newPath on upload success (or dry-run), null on skip/error.
+     *
+     * @param string $oldRawPath  Original field value from DB
+     * @param string $newPrefix   Target B2 prefix without extension (e.g. hsk_mock_exams/hsk3/exam_1/audio/exam_1)
+     * @param bool   $isDryRun
+     * @param string $label       Log display label
+     */
+    protected function migrateHskFile(string $oldRawPath, string $newPrefix, bool $isDryRun, string $label): ?string
+    {
+        // Skip external URLs (http/https)
+        if (filter_var($oldRawPath, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+
+        $clean = ltrim($oldRawPath, '/');
+        if (str_starts_with($clean, 'storage/')) {
+            $clean = substr($clean, 8);
+        }
+
+        // Already migrated using standardized pattern (path begins with hsk_mock_exams/hsk[0-9a-z_]*)
+        if (preg_match('#^hsk_mock_exams/hsk[a-z0-9_-]*/#i', $clean)) {
+            return null;
+        }
+
+        // Resolve local file path: check public storage, app storage, then public_path
+        $localFullPath = storage_path('app/public/' . $clean);
+        if (!File::exists($localFullPath)) {
+            $localFullPath = storage_path('app/' . $clean);
+        }
+        if (!File::exists($localFullPath)) {
+            $localFullPath = public_path($clean);
+        }
+        if (!File::exists($localFullPath)) {
+            $this->warn("  ! File not found: {$clean}");
+            return null;
+        }
+
+        $ext = pathinfo($localFullPath, PATHINFO_EXTENSION) ?: 'bin';
+        $newPath = "{$newPrefix}.{$ext}";
+
+        $this->line("  - {$label}: <comment>{$clean}</comment> -> <info>{$newPath}</info>");
+
+        if ($isDryRun) {
+            return $newPath; // Return path for counting, skip upload during dry-run
+        }
+
+        try {
+            Storage::disk('b2')->put($newPath, File::get($localFullPath));
+            return $newPath;
+        } catch (Throwable $e) {
+            $this->error("    Upload error [{$label}]: " . $e->getMessage());
+            return null;
+        }
     }
 
     /**

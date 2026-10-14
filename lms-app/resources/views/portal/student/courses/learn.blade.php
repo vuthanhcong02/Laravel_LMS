@@ -67,17 +67,9 @@
         </div>
 
         @if($currentLesson)
-                        <div x-data="{ 
+            <div x-data="{ 
                     activeVideoIndex: 0, 
-                    videos: {{ json_encode($videoList) }},
-                    previewModal: { open: false, url: '', title: '' },
-                    openPreview(url, title) {
-                        this.previewModal = { open: true, url: url, title: title };
-                    },
-                    closePreview() {
-                        this.previewModal.open = false;
-                        this.previewModal.url = '';
-                    }
+                    videos: @js($videoList)
                  }" 
                  class="space-y-6">
 
@@ -222,14 +214,15 @@
                                 $hasMaterials = false;
                             @endphp
 
-                                                        @if($currentLesson->pdf_path)
+                            @if($currentLesson->pdf_path)
                                 @php 
                                     $hasMaterials = true; 
                                     $isPpt = str_ends_with(strtolower($currentLesson->pdf_path), '.ppt') || str_ends_with(strtolower($currentLesson->pdf_path), '.pptx');
+                                    $pdfFileName = $isPpt ? ($currentLesson->title . '.pptx') : ($currentLesson->title . '.pdf');
                                 @endphp
                                 <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700/60 group">
                                     <div class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
-                                         @click="openPreview('{{ $currentLesson->pdf_url }}', '{{ $isPpt ? __('Slide bài giảng (PowerPoint)') : __('Tài liệu bài giảng (PDF)') }}')">
+                                         @click="$dispatch('open-file-preview', { url: @js($currentLesson->pdf_url), name: @js($pdfFileName) })">
                                         <div class="size-8 rounded-lg {{ $isPpt ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-500 border border-amber-200 dark:border-amber-900/50' : 'bg-rose-50 dark:bg-rose-950/30 text-rose-500 border border-rose-200 dark:border-rose-900/50' }} flex items-center justify-center shrink-0">
                                             <span class="material-symbols-outlined text-base">{{ $isPpt ? 'slideshow' : 'picture_as_pdf' }}</span>
                                         </div>
@@ -242,7 +235,7 @@
                                     </div>
                                     <div class="flex items-center gap-1.5 shrink-0">
                                         <button type="button" 
-                                                @click="openPreview('{{ $currentLesson->pdf_url }}', '{{ __('Tài liệu bài giảng (PDF)') }}')"
+                                                @click="$dispatch('open-file-preview', { url: @js($currentLesson->pdf_url), name: @js($pdfFileName) })"
                                                 class="size-8 inline-flex items-center justify-center rounded-xl text-slate-500 hover:text-primary hover:bg-white dark:hover:bg-slate-700/80 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-xs cursor-pointer"
                                                 title="{{ __('Xem trước') }}">
                                             <span class="material-symbols-outlined text-[18px] leading-none">visibility</span>
@@ -256,11 +249,15 @@
                                 </div>
                             @endif
 
-                                                        @if($currentLesson->note_file_path)
-                                @php $hasMaterials = true; @endphp
+                            @if($currentLesson->note_file_path)
+                                @php 
+                                    $hasMaterials = true; 
+                                    $noteExt = pathinfo($currentLesson->note_file_path, PATHINFO_EXTENSION) ?: 'pdf';
+                                    $noteFileName = $currentLesson->title . ' - ' . __('Ghi chú') . '.' . $noteExt;
+                                @endphp
                                 <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700/60 group">
                                     <div class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
-                                         @click="openPreview('{{ $currentLesson->note_file_url }}', '{{ __('File bài tập / Ghi chú') }}')">
+                                         @click="$dispatch('open-file-preview', { url: @js($currentLesson->note_file_url), name: @js($noteFileName) })">
                                         <div class="size-8 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-primary border border-blue-200 dark:border-blue-900/50 flex items-center justify-center shrink-0">
                                             <span class="material-symbols-outlined text-base">description</span>
                                         </div>
@@ -273,7 +270,7 @@
                                     </div>
                                     <div class="flex items-center gap-1.5 shrink-0">
                                         <button type="button" 
-                                                @click="openPreview('{{ $currentLesson->note_file_url }}', '{{ __('File bài tập / Ghi chú') }}')"
+                                                @click="$dispatch('open-file-preview', { url: @js($currentLesson->note_file_url), name: @js($noteFileName) })"
                                                 class="size-8 inline-flex items-center justify-center rounded-xl text-slate-500 hover:text-primary hover:bg-white dark:hover:bg-slate-700/80 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-xs cursor-pointer"
                                                 title="{{ __('Xem trước') }}">
                                             <span class="material-symbols-outlined text-[18px] leading-none">visibility</span>
@@ -315,62 +312,6 @@
                         </div>
                     </div>
 
-                </div>
-
-                </div>
-
-                                <div x-show="previewModal.open" 
-                     x-cloak 
-                     @keydown.escape.window="closePreview()"
-                     class="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-xs transition-opacity">
-                    <div @click.away="closePreview()" 
-                         class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                        
-                                                <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <span class="material-symbols-outlined text-primary text-xl">visibility</span>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate" x-text="previewModal.title"></h3>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <a :href="previewModal.url" target="_blank" 
-                                   class="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
-                                   title="{{ __('Mở trong tab mới') }}">
-                                    <span class="material-symbols-outlined text-base">open_in_new</span>
-                                </a>
-                                <a :href="previewModal.url" download 
-                                   class="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
-                                   title="{{ __('Tải xuống') }}">
-                                    <span class="material-symbols-outlined text-base">download</span>
-                                </a>
-                                <button type="button" @click="closePreview()" 
-                                        class="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
-                                        title="{{ __('Đóng') }}">
-                                    <span class="material-symbols-outlined text-lg">close</span>
-                                </button>
-                            </div>
-                        </div>
-
-                                                <div class="flex-1 bg-slate-100 dark:bg-slate-950 relative overflow-hidden flex flex-col">
-                            <template x-if="previewModal.open && previewModal.url">
-                                <object :data="previewModal.url" type="application/pdf" class="w-full h-full flex-1">
-                                    <iframe :src="previewModal.url" 
-                                            class="w-full h-full border-0 flex-1" 
-                                            frameborder="0">
-                                        <div class="flex flex-col items-center justify-center h-full p-8 text-center space-y-3">
-                                            <span class="material-symbols-outlined text-4xl text-slate-400">picture_as_pdf</span>
-                                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                                {{ __('Trình duyệt không hỗ trợ xem trực tiếp trong khung này.') }}
-                                            </p>
-                                            <a :href="previewModal.url" target="_blank" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5">
-                                                <span class="material-symbols-outlined text-sm">open_in_new</span>
-                                                <span>{{ __('Mở tài liệu trong tab mới') }}</span>
-                                            </a>
-                                        </div>
-                                    </iframe>
-                                </object>
-                            </template>
-                        </div>
-                    </div>
                 </div>
 
             </div>
