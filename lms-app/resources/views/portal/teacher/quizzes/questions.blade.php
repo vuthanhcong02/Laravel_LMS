@@ -26,6 +26,8 @@
                           'case_sensitive' => (bool) $q->case_sensitive,
                           'image_url' => $q->image_url,
                           'audio_url' => $q->audio_url,
+                          'delete_image' => false,
+                          'delete_audio' => false,
                           'options' => $q->options->map(fn($o) => [
                               'id' => $o->id,
                               'option_text' => $o->option_text,
@@ -46,6 +48,8 @@
                       'case_sensitive' => isset($q['case_sensitive']) ? (bool)$q['case_sensitive'] : ($dbQuestion ? (bool)$dbQuestion->case_sensitive : false),
                       'image_url' => $dbQuestion?->image_url,
                       'audio_url' => $dbQuestion?->audio_url,
+                      'delete_image' => false,
+                      'delete_audio' => false,
                       'options' => $q['options'] ?? []
                   ];
               })) }},
@@ -162,8 +166,9 @@
                                         {{ __('Hình ảnh minh họa') }}
                                     </label>
                                     <div class="relative group/img">
-                                        <input type="file" :name="`questions[${index}][image]`" accept="image/*" @change="previewImage($event, index)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                                        <div class="h-28 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center bg-white dark:bg-slate-800 transition-colors group-hover/img:border-primary">
+                                        <input type="hidden" :name="`questions[${index}][delete_image]`" :value="question.delete_image ? 1 : 0">
+                                        <input type="file" :name="`questions[${index}][image]`" accept="image/*" @change="previewImage($event, index)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" :class="question.image_url ? 'pointer-events-none' : ''">
+                                        <div class="h-28 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center bg-white dark:bg-slate-800 transition-colors group-hover/img:border-primary overflow-hidden">
                                             <template x-if="!question.image_url">
                                                 <div class="text-center">
                                                     <span class="material-symbols-outlined text-2xl text-slate-300">add_photo_alternate</span>
@@ -171,10 +176,10 @@
                                                 </div>
                                             </template>
                                             <template x-if="question.image_url">
-                                                <div class="relative h-full w-full">
+                                                <div class="relative h-full w-full flex items-center justify-center bg-slate-900/5 dark:bg-slate-950/40">
                                                     <img :src="question.image_url" class="h-full w-full object-contain p-2">
-                                                    <button type="button" @click.stop="question.image_url = null; $el.closest('.group/img').querySelector('input').value = ''" class="absolute top-1 right-1 size-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-20">
-                                                        <span class="material-symbols-outlined text-[14px]">close</span>
+                                                    <button type="button" @click.stop="removeImage(index)" class="absolute top-1.5 right-1.5 size-7 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-md transition-all cursor-pointer z-20 pointer-events-auto" title="{{ __('Xóa ảnh') }}">
+                                                        <span class="material-symbols-outlined text-base">close</span>
                                                     </button>
                                                 </div>
                                             </template>
@@ -188,18 +193,26 @@
                                         {{ __('Âm thanh (Audio)') }}
                                     </label>
                                     <div class="relative group/audio">
-                                        <input type="file" :name="`questions[${index}][audio]`" accept="audio/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                                        <div class="h-28 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center bg-white dark:bg-slate-800 transition-colors group-hover/audio:border-primary">
+                                        <input type="hidden" :name="`questions[${index}][delete_audio]`" :value="question.delete_audio ? 1 : 0">
+                                        <input type="file" :name="`questions[${index}][audio]`" accept="audio/*" @change="previewAudio($event, index)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" :class="question.audio_url ? 'pointer-events-none' : ''">
+                                        <div class="h-28 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center bg-white dark:bg-slate-800 transition-colors group-hover/audio:border-primary p-2 overflow-hidden">
                                             <template x-if="!question.audio_url">
                                                 <div class="text-center">
                                                     <span class="material-symbols-outlined text-2xl text-slate-300">audio_file</span>
                                                     <p class="text-[11px] font-semibold text-slate-400 mt-1 uppercase">{{ __('Tải audio') }}</p>
+                                                    <span class="text-[10px] text-slate-400">MP3, WAV, OGG (Tối đa 5MB)</span>
                                                 </div>
                                             </template>
                                             <template x-if="question.audio_url">
-                                                <div class="flex flex-col items-center gap-2">
-                                                    <span class="material-symbols-outlined text-2xl text-emerald-500">check_circle</span>
-                                                    <p class="text-[11px] font-semibold text-emerald-600 uppercase">{{ __('Đã có audio') }}</p>
+                                                <div class="relative h-full w-full flex flex-col items-center justify-center gap-1.5 px-3">
+                                                    <div class="flex items-center gap-2 w-full justify-center">
+                                                        <span class="material-symbols-outlined text-primary text-xl shrink-0">graphic_eq</span>
+                                                        <audio :src="question.audio_url" controls class="h-8 w-full max-w-[240px] pointer-events-auto"></audio>
+                                                    </div>
+                                                    <p class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 truncate max-w-[220px]" x-text="question.audio_name || '{{ __('Đã có audio') }}'"></p>
+                                                    <button type="button" @click.stop="removeAudio(index)" class="absolute top-1.5 right-1.5 size-7 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-md transition-all cursor-pointer z-20 pointer-events-auto" title="{{ __('Xóa audio') }}">
+                                                        <span class="material-symbols-outlined text-base">close</span>
+                                                    </button>
                                                 </div>
                                             </template>
                                         </div>

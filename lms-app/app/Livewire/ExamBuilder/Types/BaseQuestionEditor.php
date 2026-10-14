@@ -2,16 +2,17 @@
 
 namespace App\Livewire\ExamBuilder\Types;
 
-use Livewire\Component;
-use Livewire\Attributes\On;
-use Livewire\WithFileUploads;
-use App\Models\HskMockExamQuestionGroup;
-use App\Models\HskMockExamQuestion;
 use App\Models\HskMockExamOption;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use App\Models\HskMockExamQuestion;
+use App\Models\HskMockExamQuestionGroup;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 abstract class BaseQuestionEditor extends Component
 {
@@ -168,9 +169,8 @@ abstract class BaseQuestionEditor extends Component
         $q = $this->group->questions()->where('id', $questionId)->first();
         if (!$q || !$file) return;
 
-        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
-        $folderPath = "hsk_mock_exams/{$safeExamName}/images";
-        $path = $file->store($folderPath, 'public');
+        $examId = $this->group->section->hsk_mock_exam_id ?? 0;
+        $path = app(MediaStorageService::class)->uploadHskExamMedia($examId, $file, 'images');
 
         $q->update(['image' => $path]);
         
@@ -185,9 +185,8 @@ abstract class BaseQuestionEditor extends Component
         })->where('id', $optionId)->first();
         if (!$opt || !$file) return;
 
-        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
-        $folderPath = "hsk_mock_exams/{$safeExamName}/images";
-        $path = $file->store($folderPath, 'public');
+        $examId = $this->group->section->hsk_mock_exam_id ?? 0;
+        $path = app(MediaStorageService::class)->uploadHskExamMedia($examId, $file, 'images');
 
         $opt->update(['image' => $path]);
         

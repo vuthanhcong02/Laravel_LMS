@@ -2,20 +2,23 @@
 
 namespace App\Services\Teacher;
 
+use App\Enums\QuestionType;
+use App\Models\Course;
+use App\Models\Option;
+use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\QuizAttemptAnswer;
-use App\Models\Question;
-use App\Models\Option;
-use App\Models\Course;
 use App\Models\User;
 use App\Services\GamificationService;
-use App\Enums\QuestionType;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Service to handle Quiz and Question management for Teachers
@@ -63,11 +66,14 @@ class QuizService
      */
     public function createQuiz(array $data, ?UploadedFile $audioFile = null): Quiz
     {
+        $quiz = Quiz::create($data);
+
         if ($audioFile) {
-            $data['audio_path'] = $this->uploadMedia($audioFile, 'quizzes/audio');
+            $quiz->audio_path = $this->uploadMedia($audioFile, 'audio', $quiz->id);
+            $quiz->save();
         }
 
-        return Quiz::create($data);
+        return $quiz;
     }
 
     /**
@@ -87,7 +93,7 @@ class QuizService
 
         if ($audioFile) {
             $this->deleteMedia($quiz->audio_path);
-            $data['audio_path'] = $this->uploadMedia($audioFile, 'quizzes/audio');
+            $data['audio_path'] = $this->uploadMedia($audioFile, 'audio', $quiz->id);
         }
 
         $quiz->update($data);
@@ -123,20 +129,34 @@ class QuizService
                     'case_sensitive'      => !empty($qData['case_sensitive']),
                 ];
 
-                if (isset($qData['image'])) {
+                // Handle image upload or explicit deletion
+                if (!empty($qData['delete_image'])) {
                     if ($questionId) {
                         $old = Question::find($questionId);
                         $this->deleteMedia($old?->image_path);
                     }
-                    $questionFields['image_path'] = $this->uploadMedia($qData['image'], 'quizzes/images');
+                    $questionFields['image_path'] = null;
+                } elseif (isset($qData['image'])) {
+                    if ($questionId) {
+                        $old = Question::find($questionId);
+                        $this->deleteMedia($old?->image_path);
+                    }
+                    $questionFields['image_path'] = $this->uploadMedia($qData['image'], 'images', $quiz->id);
                 }
 
-                if (isset($qData['audio'])) {
+                // Handle audio upload or explicit deletion
+                if (!empty($qData['delete_audio'])) {
                     if ($questionId) {
                         $old = $old ?? Question::find($questionId);
                         $this->deleteMedia($old?->audio_path);
                     }
-                    $questionFields['audio_path'] = $this->uploadMedia($qData['audio'], 'quizzes/audio');
+                    $questionFields['audio_path'] = null;
+                } elseif (isset($qData['audio'])) {
+                    if ($questionId) {
+                        $old = $old ?? Question::find($questionId);
+                        $this->deleteMedia($old?->audio_path);
+                    }
+                    $questionFields['audio_path'] = $this->uploadMedia($qData['audio'], 'audio', $quiz->id);
                 }
 
                 $question = $quiz->questions()->updateOrCreate(['id' => $questionId], $questionFields);
@@ -192,15 +212,16 @@ class QuizService
     }
 
     /**
-     * Upload media file and return path
+     * Upload media file (question images/audio or global exam audio) to cloud storage with local fallback.
      * 
      * @param UploadedFile $file
-     * @param string $folder
+     * @param string $subfolder
+     * @param int $quizId
      * @return string
      */
-    private function uploadMedia(UploadedFile $file, string $folder): string
+    private function uploadMedia(UploadedFile $file, string $subfolder = 'questions', int $quizId = 0): string
     {
-        return $file->store($folder, 'public');
+        return app(MediaStorageService::class)->uploadQuizMedia($quizId, $file, $subfolder);
     }
 
     /**
@@ -393,15 +414,27 @@ class QuizService
     }
 
     /**
-     * Delete media file from storage
+     * Delete media file from storage (both local and cloud B2).
      * 
      * @param string|null $path
      * @return void
      */
     private function deleteMedia(?string $path): void
     {
-        if ($path && Storage::disk('public')->exists($path)) {
+        if (empty($path)) {
+            return;
+        }
+
+        if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
+        }
+
+        try {
+            if (config('filesystems.disks.b2.key') && Storage::disk('b2')->exists($path)) {
+                Storage::disk('b2')->delete($path);
+            }
+        } catch (Throwable $e) {
+            Log::warning("Failed to delete quiz media from B2: " . $e->getMessage());
         }
     }
 

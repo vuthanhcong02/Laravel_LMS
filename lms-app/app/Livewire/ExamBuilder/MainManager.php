@@ -2,11 +2,12 @@
 
 namespace App\Livewire\ExamBuilder;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use App\Models\HskMockExam;
 use App\Models\HskMockExamQuestionGroup;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class MainManager extends Component
 {
@@ -80,14 +81,10 @@ class MainManager extends Component
                 ['order_index' => $this->exam->sections()->count() + 1, 'name' => config('hsk_builder.sections')[$sectionId]['name'] ?? 'Section']
             );
 
-            // 2. Create safe storage path: hsk_mock_exams/{exam_name}/audio
-            $safeExamName = $this->exam->folder_name;
-            $folderPath = "hsk_mock_exams/{$safeExamName}/audio";
-            
-            // 3. Save file to 'public' disk
-            $path = $file->store($folderPath, 'public');
+            // 2. Upload audio using MediaStorageService to B2/public storage
+            $path = app(MediaStorageService::class)->uploadHskExamMedia($this->exam->id, $file, 'audio');
 
-            // 4. Save path to database
+            // 3. Save path to database
             $section->update([
                 'audio_file' => $path
             ]);

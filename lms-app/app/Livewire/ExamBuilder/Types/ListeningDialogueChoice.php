@@ -2,8 +2,9 @@
 
 namespace App\Livewire\ExamBuilder\Types;
 
-use Illuminate\Support\Str;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ListeningDialogueChoice extends BaseQuestionEditor
 {
@@ -38,9 +39,8 @@ class ListeningDialogueChoice extends BaseQuestionEditor
         $this->validate(['groupAudio' => 'nullable|file|mimes:mp3,wav,ogg,m4a|max:51200']);
         if (!$this->groupAudio) return;
 
-        $safeExamName = $this->group->section->mockExam->folder_name ?? 'mock-exam';
-        $folderPath = "hsk_mock_exams/{$safeExamName}/audio";
-        $path = $this->groupAudio->store($folderPath, 'public');
+        $examId = $this->group->section->hsk_mock_exam_id ?? 0;
+        $path = app(MediaStorageService::class)->uploadHskExamMedia($examId, $this->groupAudio, 'audio');
 
         $this->group->passage_audio = $path;
         $this->group->save();

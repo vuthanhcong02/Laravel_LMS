@@ -886,11 +886,31 @@ export default function customFlashcardApp(config = {}) {
                 this.currentAudio.play().catch((err) => {
                     // Suppress abort errors from rapid clicking
                     if (err.name !== 'AbortError') {
-                        console.warn('Edge-TTS playback interrupted:', err);
+                        console.warn('Edge-TTS playback interrupted or failed, using browser fallback:', err);
+                        this.fallbackSpeak(text);
                     }
                 });
             } catch (e) {
-                console.warn('Edge-TTS error:', e);
+                console.warn('Edge-TTS error, falling back to Web Speech API:', e);
+                this.fallbackSpeak(text);
+            }
+        },
+
+        /**
+         * Fallback speech synthesis using browser native Web Speech API.
+         */
+        fallbackSpeak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                const voices = window.speechSynthesis.getVoices();
+                const zhVoice = voices.find(v => v.lang && (v.lang.includes('zh') || v.lang.includes('ZH')));
+                if (zhVoice) {
+                    utterance.voice = zhVoice;
+                }
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
             }
         },
 
