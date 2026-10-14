@@ -57,11 +57,13 @@ class AssignmentController extends Controller
         }
 
         $files = $request->getValidFiles();
+        $retainedPaths = $request->getRetainedAttachmentPaths();
 
         $result = $this->service->submit(
             auth()->id(),
             $assignment,
-            $files
+            $files,
+            $retainedPaths
         );
 
         $msg = __('Nộp bài thành công!');

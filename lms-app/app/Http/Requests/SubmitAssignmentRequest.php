@@ -24,9 +24,11 @@ class SubmitAssignmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachments'   => 'nullable|array|max:5',
-            'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx,zip,rar,webm,mp3,wav,ogg,m4a,weba|max:20480',
-            'audio_file'    => 'nullable|file|mimes:webm,mp3,wav,ogg,m4a,weba|max:20480',
+            'attachments'            => 'nullable|array|max:5',
+            'attachments.*'          => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx,zip,rar,webm,mp3,wav,ogg,m4a,weba|max:20480',
+            'audio_file'             => 'nullable|file|mimes:webm,mp3,wav,ogg,m4a,weba|max:20480',
+            'existing_attachments'   => 'nullable|array',
+            'existing_attachments.*' => 'nullable|string',
         ];
     }
 
@@ -37,10 +39,26 @@ class SubmitAssignmentRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $files = $this->getValidFiles();
-            if (empty($files)) {
+            $existing = $this->getRetainedAttachmentPaths();
+            if (empty($files) && empty($existing)) {
                 $validator->errors()->add('attachments', __('Vui lòng ghi âm giọng nói hoặc chọn ít nhất một tệp tin bài làm.'));
             }
         });
+    }
+
+    /**
+     * Get paths of existing attachments that user chose to retain.
+     *
+     * @return string[]
+     */
+    public function getRetainedAttachmentPaths(): array
+    {
+        $paths = $this->input('existing_attachments', []);
+        if (!is_array($paths)) {
+            return [];
+        }
+
+        return array_values(array_filter($paths, fn($p) => is_string($p) && !empty(trim($p))));
     }
 
     /**
