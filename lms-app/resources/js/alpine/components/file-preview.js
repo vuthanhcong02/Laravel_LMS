@@ -44,12 +44,24 @@ export function filePreviewModal() {
             return ext === 'pdf';
         },
 
+        isOffice(name) {
+            if (!name) return false;
+            const ext = name.split('.').pop().toLowerCase();
+            return ['ppt', 'pptx', 'doc', 'docx', 'xls', 'xlsx'].includes(ext);
+        },
+
+        getOfficeViewerUrl(url) {
+            if (!url) return '';
+            return 'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(url);
+        },
+
         getFileIcon(name) {
             if (!name) return 'description';
             const ext = name.split('.').pop().toLowerCase();
             if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp'].includes(ext)) return 'image';
             if (['mp3', 'wav', 'ogg', 'webm', 'm4a', 'weba', 'aac', 'flac'].includes(ext)) return 'audio_file';
             if (ext === 'pdf') return 'picture_as_pdf';
+            if (['ppt', 'pptx'].includes(ext)) return 'slideshow';
             if (['doc', 'docx'].includes(ext)) return 'article';
             if (['xls', 'xlsx'].includes(ext)) return 'table_view';
             if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return 'folder_zip';
@@ -62,6 +74,7 @@ export function filePreviewModal() {
             if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp'].includes(ext)) return 'Hình ảnh (' + ext.toUpperCase() + ')';
             if (['mp3', 'wav', 'ogg', 'webm', 'm4a', 'weba', 'aac', 'flac'].includes(ext)) return 'Tệp Âm thanh (' + ext.toUpperCase() + ')';
             if (ext === 'pdf') return 'Tài liệu PDF';
+            if (['ppt', 'pptx'].includes(ext)) return 'Slide PowerPoint (' + ext.toUpperCase() + ')';
             if (['doc', 'docx'].includes(ext)) return 'Tài liệu Word (' + ext.toUpperCase() + ')';
             if (['xls', 'xlsx'].includes(ext)) return 'Bảng tính Excel (' + ext.toUpperCase() + ')';
             if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return 'Tệp nén (' + ext.toUpperCase() + ')';

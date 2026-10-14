@@ -78,7 +78,13 @@
                         </div>
                     </template>
 
-                    <template x-if="!isImage(fileName) && !isAudio(fileName) && !isPdf(fileName)">
+                    <template x-if="isOffice(fileName)">
+                        <div class="w-full h-[70vh] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
+                            <iframe :src="getOfficeViewerUrl(fileUrl)" class="w-full h-full border-0" frameborder="0"></iframe>
+                        </div>
+                    </template>
+
+                    <template x-if="!isImage(fileName) && !isAudio(fileName) && !isPdf(fileName) && !isOffice(fileName)">
                         <div class="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md text-center max-w-sm w-full space-y-4">
                             <div class="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
                                 <span class="material-symbols-outlined text-3xl" x-text="getFileIcon(fileName)"></span>
