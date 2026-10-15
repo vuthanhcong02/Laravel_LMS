@@ -47,13 +47,20 @@ class HskMockExamController extends Controller
         $formatResultItem = function ($result, $index = null) {
             if (!$result) return null;
             $levelCode = strtolower($result->mockExam->hskLevel->level_code ?? 'hsk1');
-            $badgeBg = 'bg-slate-100 text-slate-800 border-slate-200';
-            if (str_contains($levelCode, 'hsk1')) $badgeBg = 'bg-amber-100 text-amber-800 border-amber-200';
-            elseif (str_contains($levelCode, 'hsk2')) $badgeBg = 'bg-blue-100 text-blue-800 border-blue-200';
-            elseif (str_contains($levelCode, 'hsk3')) $badgeBg = 'bg-indigo-100 text-indigo-800 border-indigo-200';
-            elseif (str_contains($levelCode, 'hsk4')) $badgeBg = 'bg-purple-100 text-purple-800 border-purple-200';
-            elseif (str_contains($levelCode, 'hsk5')) $badgeBg = 'bg-rose-100 text-rose-800 border-rose-200';
-            elseif (str_contains($levelCode, 'hsk6')) $badgeBg = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+            $badgeBg = 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20';
+            if (str_contains($levelCode, 'hsk1')) {
+                $badgeBg = 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20';
+            } elseif (str_contains($levelCode, 'hsk2')) {
+                $badgeBg = 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20';
+            } elseif (str_contains($levelCode, 'hsk3')) {
+                $badgeBg = 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/20';
+            } elseif (str_contains($levelCode, 'hsk4')) {
+                $badgeBg = 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20';
+            } elseif (str_contains($levelCode, 'hsk5')) {
+                $badgeBg = 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20';
+            } elseif (str_contains($levelCode, 'hsk6')) {
+                $badgeBg = 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/20';
+            }
 
             $fullName = trim(($result->user->last_name ?? '') . ' ' . ($result->user->first_name ?? __('Người dùng')));
             return [

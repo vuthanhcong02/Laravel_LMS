@@ -26,7 +26,9 @@ class MigratePhase2MediaToB2 extends Command
      *
      * @var string
      */
-    protected $signature = 'storage:migrate-lms-media {--dry-run : Scan and display files without uploading or modifying DB}';
+    protected $signature = 'storage:migrate-lms-media 
+                            {--module= : Specify module to migrate (hsk, lessons, quizzes, assignments, support)}
+                            {--dry-run : Scan and display files without uploading or modifying DB}';
 
     /**
      * Console command description.
@@ -41,31 +43,42 @@ class MigratePhase2MediaToB2 extends Command
     public function handle(MediaStorageService $mediaService): int
     {
         $isDryRun = (bool) $this->option('dry-run');
+        $module = strtolower($this->option('module') ?? 'all');
 
         $this->info("==================================================");
-        $this->info("🚀 STARTING PHASE 2 MEDIA MIGRATION TO BACKBLAZE B2");
+        $this->info("🚀 STARTING LMS MEDIA MIGRATION TO BACKBLAZE B2" . ($module !== 'all' ? " [Module: " . strtoupper($module) . "]" : ""));
         if ($isDryRun) {
             $this->warn("⚠️  DRY-RUN MODE: Scanning only, no files will be written.");
         }
         $this->info("==================================================");
 
         // 1. Migrate Lesson PDFs and resource notes
-        $this->migrateLessonFiles($isDryRun);
+        if (in_array($module, ['all', 'lessons', 'lesson'])) {
+            $this->migrateLessonFiles($isDryRun);
+        }
 
-        // 2. Migrate HSK Mock Exam audios
-        $this->migrateHskExamAudios($isDryRun);
+        // 2. Migrate HSK Mock Exam audios & images
+        if (in_array($module, ['all', 'hsk', 'exams', 'mock-exams'])) {
+            $this->migrateHskExamAudios($isDryRun);
+        }
 
         // 3. Migrate Quiz global audios and question media
-        $this->migrateQuizMedia($isDryRun);
+        if (in_array($module, ['all', 'quizzes', 'quiz'])) {
+            $this->migrateQuizMedia($isDryRun);
+        }
 
         // 4. Migrate Student Assignment submissions & Teacher feedback audios
-        $this->migrateAssignmentFiles($isDryRun);
+        if (in_array($module, ['all', 'assignments', 'assignment'])) {
+            $this->migrateAssignmentFiles($isDryRun);
+        }
 
         // 5. Migrate Support ticket attachments
-        $this->migrateSupportAttachments($isDryRun);
+        if (in_array($module, ['all', 'support'])) {
+            $this->migrateSupportAttachments($isDryRun);
+        }
 
         $this->newLine();
-        $this->info("🎉 PHASE 2 MIGRATION FINISHED SUCCESSFULLY!");
+        $this->info("🎉 MIGRATION FINISHED SUCCESSFULLY!");
         return Command::SUCCESS;
     }
 
@@ -155,10 +168,10 @@ class MigratePhase2MediaToB2 extends Command
 
     /**
      * Migrate HSK Mock Exam audio & image files to B2.
-     * Folder structure follows standardized HSK level hierarchy:
-     *   hsk_mock_exams/{levelCode}/exam_{id}/audio/
-     *   hsk_mock_exams/{levelCode}/exam_{id}/sections/section_{id}/audio/
-     *   hsk_mock_exams/{levelCode}/exam_{id}/sections/section_{id}/groups/group_{id}/audio|image/
+     * Folder structure follows standardized HSK level & exam code hierarchy:
+     *   hsk_mock_exams/{HSK_LEVEL}/{EXAM_CODE}/audio/
+     *   hsk_mock_exams/{HSK_LEVEL}/{EXAM_CODE}/sections/section_{id}/audio/
+     *   hsk_mock_exams/{HSK_LEVEL}/{EXAM_CODE}/sections/section_{id}/groups/group_{id}/audio|image/
      *   .../groups/group_{id}/questions/q_{id}/audio|image/
      *   .../questions/q_{id}/options/opt_{id}.{ext}
      */
@@ -174,17 +187,19 @@ class MigratePhase2MediaToB2 extends Command
             'sections.questionGroups.questions.options',
         ])->chunk(20, function ($exams) use ($isDryRun, &$count) {
             foreach ($exams as $exam) {
-                // E.g.: hsk3, hsk4, hsk6
-                $levelCode = strtolower($exam->hskLevel->level_code ?? 'hsk0');
-                $examPrefix = "hsk_mock_exams/{$levelCode}/exam_{$exam->id}";
+                // E.g.: HSK1, HSK2, HSK3
+                $levelCode = strtoupper($exam->hskLevel->level_code ?? 'HSK');
+                // E.g.: H10000, H10901, H11003 (extracted via $exam->folder_name or fallback to exam_{id})
+                $examCode = $exam->folder_name ?: ('exam_' . $exam->id);
+                $examPrefix = "hsk_mock_exams/{$levelCode}/{$examCode}";
 
                 // --- 1. Exam global audio ---
                 if (!empty($exam->audio_file)) {
                     $newPath = $this->migrateHskFile(
                         $exam->audio_file,
-                        "{$examPrefix}/audio/exam_{$exam->id}",
+                        "{$examPrefix}/audio/{$examCode}",
                         $isDryRun,
-                        "Exam #{$exam->id} [{$levelCode}] audio"
+                        "Exam #{$exam->id} [{$levelCode}/{$examCode}] audio"
                     );
                     if ($newPath) {
                         if (!$isDryRun) { $exam->audio_file = $newPath; $exam->save(); }
@@ -329,8 +344,8 @@ class MigratePhase2MediaToB2 extends Command
             $clean = substr($clean, 8);
         }
 
-        // Already migrated using standardized pattern (path begins with hsk_mock_exams/hsk[0-9a-z_]*)
-        if (preg_match('#^hsk_mock_exams/hsk[a-z0-9_-]*/#i', $clean)) {
+        // Already migrated using standardized pattern (path begins with hsk_mock_exams/HSK.../H...)
+        if (preg_match('#^hsk_mock_exams/(hsk|HSK)[a-z0-9_-]*/#i', $clean)) {
             return null;
         }
 
@@ -357,7 +372,10 @@ class MigratePhase2MediaToB2 extends Command
         }
 
         try {
-            Storage::disk('b2')->put($newPath, File::get($localFullPath));
+            // Check if file already exists on B2 to avoid redundant bandwidth & API transactions
+            if (!Storage::disk('b2')->exists($newPath)) {
+                Storage::disk('b2')->put($newPath, File::get($localFullPath));
+            }
             return $newPath;
         } catch (Throwable $e) {
             $this->error("    Upload error [{$label}]: " . $e->getMessage());

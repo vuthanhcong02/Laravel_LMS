@@ -307,7 +307,7 @@
                                                 :title="item.name"
                                                 x-text="item.name"></p>
                                             @if($isHsk)
-                                                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border leading-none shrink-0"
+                                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded border leading-none shrink-0"
                                                     :class="item.badgeBg"
                                                     :title="item.level"
                                                     x-text="item.level"></span>
