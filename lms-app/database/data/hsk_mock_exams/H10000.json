@@ -1,0 +1,633 @@
+{
+  "exam_id": "H10000",
+  "level": 1,
+  "sections": [
+    {
+      "section": "listening",
+      "parts": [
+        {
+          "part": 1,
+          "type": "true_false",
+          "instructions": null,
+          "questions": [
+            {
+              "id": 1,
+              "type": "true_false",
+              "question_text": "",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": "images/page3_img3.jpeg"
+            },
+            {
+              "id": 2,
+              "type": "true_false",
+              "question_text": "",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": "images/page3_img4.jpeg"
+            },
+            {
+              "id": 3,
+              "type": "true_false",
+              "question_text": "",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": "images/page3_img5.jpeg"
+            },
+            {
+              "id": 4,
+              "type": "true_false",
+              "question_text": "",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": "images/page3_img6.jpeg"
+            },
+            {
+              "id": 5,
+              "type": "true_false",
+              "question_text": "",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": "images/page3_img7.jpeg"
+            }
+          ],
+          "images": [
+            "images/page2_img1.jpeg",
+            "images/page2_img2.jpeg"
+          ]
+        },
+        {
+          "part": 2,
+          "type": "multiple_choice",
+          "instructions": null,
+          "questions": [
+            {
+              "id": 6,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                {
+                  "text": "A",
+                  "image": "images/page4_img4.jpeg"
+                },
+                {
+                  "text": "B",
+                  "image": "images/page4_img5.jpeg"
+                },
+                {
+                  "text": "C",
+                  "image": "images/page4_img6.jpeg"
+                }
+              ],
+              "correct_answer": "A",
+              "image": null
+            },
+            {
+              "id": 7,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                {
+                  "text": "A",
+                  "image": "images/page4_img7.jpeg"
+                },
+                {
+                  "text": "B",
+                  "image": "images/page4_img8.jpeg"
+                },
+                {
+                  "text": "C",
+                  "image": "images/page4_img9.jpeg"
+                }
+              ],
+              "correct_answer": "C",
+              "image": null
+            },
+            {
+              "id": 8,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                {
+                  "text": "A",
+                  "image": "images/page4_img10.jpeg"
+                },
+                {
+                  "text": "B",
+                  "image": "images/page4_img11.jpeg"
+                },
+                {
+                  "text": "C",
+                  "image": "images/page4_img12.jpeg"
+                }
+              ],
+              "correct_answer": "B",
+              "image": null
+            },
+            {
+              "id": 9,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                {
+                  "text": "A",
+                  "image": "images/page5_img1.jpeg"
+                },
+                {
+                  "text": "B",
+                  "image": "images/page5_img2.jpeg"
+                },
+                {
+                  "text": "C",
+                  "image": "images/page5_img3.jpeg"
+                }
+              ],
+              "correct_answer": "C",
+              "image": null
+            },
+            {
+              "id": 10,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                {
+                  "text": "A",
+                  "image": "images/page5_img4.jpeg"
+                },
+                {
+                  "text": "B",
+                  "image": "images/page5_img5.jpeg"
+                },
+                {
+                  "text": "C",
+                  "image": "images/page5_img6.jpeg"
+                }
+              ],
+              "correct_answer": "B",
+              "image": null
+            }
+          ],
+          "images": [
+            "images/page4_img1.jpeg",
+            "images/page4_img2.jpeg",
+            "images/page4_img3.jpeg"
+          ]
+        },
+        {
+          "part": 3,
+          "type": "matching",
+          "instructions": null,
+          "questions": [
+            {
+              "id": 11,
+              "type": "matching",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "D",
+              "image": null
+            },
+            {
+              "id": 12,
+              "type": "matching",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "E"
+            },
+            {
+              "id": 13,
+              "type": "matching",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "B"
+            },
+            {
+              "id": 14,
+              "type": "matching",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "A"
+            },
+            {
+              "id": 15,
+              "type": "matching",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "F"
+            }
+          ],
+          "images": [
+            "images/page6_img1.jpeg",
+            "images/page6_img2.jpeg",
+            "images/page6_img3.jpeg",
+            "images/page6_img4.jpeg",
+            "images/page6_img5.jpeg",
+            "images/page6_img6.jpeg"
+          ]
+        },
+        {
+          "part": 4,
+          "type": "multiple_choice",
+          "instructions": null,
+          "questions": [
+            {
+              "id": 16,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                "A <ruby>星期二<rt>xīngqī'èr</rt></ruby>",
+                "B <ruby>星期三<rt>xīngqīsān</rt></ruby>",
+                "C <ruby>星期五<rt>xīngqīwǔ</rt></ruby>"
+              ],
+              "correct_answer": "B"
+            },
+            {
+              "id": 17,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                "A <ruby>开<rt>kāi</rt></ruby><ruby>车<rt>chē</rt></ruby>",
+                "B <ruby>做<rt>zuò</rt></ruby><ruby>饭<rt>fàn</rt></ruby>",
+                "C <ruby>说<rt>shuō</rt></ruby> <ruby>汉<rt>Hàn</rt></ruby><ruby>语<rt>yǔ</rt></ruby>"
+              ],
+              "correct_answer": "C"
+            },
+            {
+              "id": 18,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                "A <ruby>老师<rt>lǎoshī</rt></ruby>",
+                "B <ruby>妈妈<rt>māma</rt></ruby>",
+                "C <ruby>朋友<rt>péngyou</rt></ruby>"
+              ],
+              "correct_answer": "A"
+            },
+            {
+              "id": 19,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                "A 4",
+                "B 7",
+                "C 10"
+              ],
+              "correct_answer": "A"
+            },
+            {
+              "id": 20,
+              "type": "multiple_choice",
+              "question_text": "",
+              "options": [
+                "A <ruby>很<rt>hěn</rt></ruby><ruby>好<rt>hǎo</rt></ruby>",
+                "B <ruby>很<rt>hěn</rt></ruby><ruby>热<rt>rè</rt></ruby>",
+                "C <ruby>很<rt>hěn</rt></ruby><ruby>冷<rt>lěng</rt></ruby>"
+              ],
+              "correct_answer": "C"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "reading",
+      "parts": [
+        {
+          "part": 1,
+          "type": "true_false",
+          "instructions": null,
+          "questions": [
+            {
+              "id": 21,
+              "type": "true_false",
+              "question_text": "<ruby>猫<rt>māo</rt></ruby>",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": "images/page8_img3.jpeg"
+            },
+            {
+              "id": 22,
+              "type": "true_false",
+              "question_text": "<ruby>衣<rt>yī</rt></ruby><ruby>服<rt>fu</rt></ruby>",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": "images/page8_img4.jpeg"
+            },
+            {
+              "id": 23,
+              "type": "true_false",
+              "question_text": "<ruby>水<rt>shuǐ</rt></ruby><ruby>果<rt>guǒ</rt></ruby>",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": "images/page8_img5.jpeg"
+            },
+            {
+              "id": 24,
+              "type": "true_false",
+              "question_text": "<ruby>坐<rt>zuò</rt></ruby>",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": "images/page8_img6.jpeg"
+            },
+            {
+              "id": 25,
+              "type": "true_false",
+              "question_text": "<ruby>米<rt>mǐ</rt></ruby><ruby>饭<rt>fàn</rt></ruby>",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": "images/page8_img7.jpeg"
+            }
+          ],
+          "images": [
+            "images/page6_img1.jpeg",
+            "images/page6_img2.jpeg"
+          ]
+        },
+        {
+          "part": 2,
+          "type": "matching",
+          "instructions": null,
+          "questions": [
+            {
+              "id": 26,
+              "type": "matching",
+              "question_text": "<ruby>他<rt>Tā</rt></ruby> <ruby>在<rt>zài</rt></ruby> <ruby>睡<rt>shuì</rt></ruby><ruby>觉<rt>jiào</rt></ruby> <ruby>呢<rt>ne</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "F"
+              ],
+              "correct_answer": "F",
+              "image": null
+            },
+            {
+              "id": 27,
+              "type": "matching",
+              "question_text": "<ruby>她<rt>Tā</rt></ruby> <ruby>明<rt>míng</rt></ruby><ruby>天<rt>tiān</rt></ruby> <ruby>坐<rt>zuò</rt></ruby> <ruby>火<rt>huǒ</rt></ruby><ruby>车<rt>chē</rt></ruby> <ruby>去<rt>qù</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "F"
+              ],
+              "correct_answer": "C"
+            },
+            {
+              "id": 28,
+              "type": "matching",
+              "question_text": "<ruby>他<rt>Tā</rt></ruby> <ruby>在<rt>zài</rt></ruby> <ruby>医<rt>yī</rt></ruby><ruby>院<rt>yuàn</rt></ruby> <ruby>工<rt>gōng</rt></ruby><ruby>作<rt>zuò</rt></ruby> ， <ruby>是<rt>shì</rt></ruby> <ruby>个<rt>ge</rt></ruby> <ruby>医<rt>yī</rt></ruby><ruby>生<rt>shēng</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "F"
+              ],
+              "correct_answer": "D"
+            },
+            {
+              "id": 29,
+              "type": "matching",
+              "question_text": "<ruby>我<rt>Wǒ</rt></ruby> <ruby>想<rt>xiǎng</rt></ruby> <ruby>喝<rt>hē</rt></ruby> <ruby>一<rt>yì</rt></ruby> <ruby>杯<rt>bēi</rt></ruby> <ruby>茶<rt>chá</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "F"
+              ],
+              "correct_answer": "B"
+            },
+            {
+              "id": 30,
+              "type": "matching",
+              "question_text": "<ruby>他<rt>Tā</rt></ruby><ruby>们<rt>men</rt></ruby> <ruby>是<rt>shì</rt></ruby> <ruby>同<rt>tóng</rt></ruby><ruby>学<rt>xué</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "F"
+              ],
+              "correct_answer": "A"
+            }
+          ],
+          "images": [
+            "images/page9_img1.jpeg",
+            "images/page9_img2.jpeg",
+            "images/page9_img3.jpeg",
+            "images/page9_img4.jpeg",
+            "images/page9_img5.jpeg",
+            "images/page9_img6.jpeg"
+          ]
+        },
+        {
+          "part": 3,
+          "type": "matching",
+          "instructions": "Ví dụ (例如)Đáp án mẫu: F\n<ruby>你<rt>Nǐ</rt></ruby> <ruby>喝<rt>hē</rt></ruby> <ruby>水<rt>shuǐ</rt></ruby> <ruby>吗<rt>ma</rt></ruby> ？ &nbsp;&nbsp;[ F ]\n Danh sách câu trả lời (Options A-F)\nA<ruby>中<rt>Zhōng</rt></ruby><ruby>国<rt>guó</rt></ruby><ruby>人<rt>rén</rt></ruby> 。\nB7 <ruby>点<rt>diǎn</rt></ruby> <ruby>了<rt>le</rt></ruby> 。\nC<ruby>苹<rt>Píng</rt></ruby><ruby>果<rt>guǒ</rt></ruby> 。\nD20 <ruby>块<rt>kuài</rt></ruby> 。\nE<ruby>坐<rt>Zuò</rt></ruby> <ruby>出<rt>chū</rt></ruby><ruby>租<rt>zū</rt></ruby><ruby>车<rt>chē</rt></ruby> 。\nF<ruby>好<rt>Hǎo</rt></ruby> <ruby>的<rt>de</rt></ruby> ， <ruby>谢<rt>xiè</rt></ruby><ruby>谢<rt>xie</rt></ruby> ！(Ví dụ)",
+          "questions": [
+            {
+              "id": 31,
+              "type": "matching",
+              "question_text": "<ruby>你<rt>Nǐ</rt></ruby> <ruby>怎<rt>zěn</rt></ruby><ruby>么<rt>me</rt></ruby> <ruby>去<rt>qù</rt></ruby> <ruby>那<rt>nà</rt></ruby><ruby>个<rt>ge</rt></ruby> <ruby>饭<rt>fàn</rt></ruby><ruby>店<rt>diàn</rt></ruby> ？",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "E"
+            },
+            {
+              "id": 32,
+              "type": "matching",
+              "question_text": "<ruby>现<rt>Xiàn</rt></ruby><ruby>在<rt>zài</rt></ruby> <ruby>几<rt>jǐ</rt></ruby> <ruby>点<rt>diǎn</rt></ruby> <ruby>了<rt>le</rt></ruby> ？",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "B"
+            },
+            {
+              "id": 33,
+              "type": "matching",
+              "question_text": "<ruby>你<rt>Nǐ</rt></ruby> <ruby>爱<rt>ài</rt></ruby> <ruby>吃<rt>chī</rt></ruby> <ruby>什<rt>shén</rt></ruby><ruby>么<rt>me</rt></ruby> <ruby>水<rt>shuǐ</rt></ruby><ruby>果<rt>guǒ</rt></ruby> ？",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "C"
+            },
+            {
+              "id": 34,
+              "type": "matching",
+              "question_text": "<ruby>这<rt>Zhè</rt></ruby><ruby>个<rt>ge</rt></ruby> <ruby>小<rt>xiǎo</rt></ruby> <ruby>杯<rt>bēi</rt></ruby><ruby>子<rt>zi</rt></ruby> <ruby>多<rt>duō</rt></ruby><ruby>少<rt>shao</rt></ruby> <ruby>钱<rt>qián</rt></ruby> ？",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "D"
+            },
+            {
+              "id": 35,
+              "type": "matching",
+              "question_text": "<ruby>你<rt>Nǐ</rt></ruby> <ruby>是<rt>shì</rt></ruby> <ruby>哪<rt>nǎ</rt></ruby> <ruby>国<rt>guó</rt></ruby> <ruby>人<rt>rén</rt></ruby> ？",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "A"
+            }
+          ]
+        },
+        {
+          "part": 4,
+          "type": "fill_blank",
+          "instructions": "Ví dụ (例如)Đáp án mẫu: D\n<ruby>你<rt>Nǐ</rt></ruby> <ruby>叫<rt>jiào</rt></ruby> <ruby>什<rt>shén</rt></ruby><ruby>么<rt>me</rt></ruby> ____ ？ &nbsp;&nbsp;[ D ]\n Danh sách từ vựng (Options A-F)\nA<ruby>家<rt>jiā</rt></ruby>\nB<ruby>火<rt>huǒ</rt></ruby><ruby>车<rt>chē</rt></ruby><ruby>站<rt>zhàn</rt></ruby>\nC<ruby>对<rt>duì</rt></ruby><ruby>不<rt>bu</rt></ruby><ruby>起<rt>qǐ</rt></ruby>\nD<ruby>名<rt>míng</rt></ruby><ruby>字<rt>zi</rt></ruby>(Ví dụ)\nE<ruby>看<rt>kàn</rt></ruby><ruby>见<rt>jiàn</rt></ruby>\nF<ruby>学<rt>xué</rt></ruby><ruby>习<rt>xí</rt></ruby>",
+          "questions": [
+            {
+              "id": 36,
+              "type": "matching",
+              "question_text": "<ruby>她<rt>Tā</rt></ruby> <ruby>上<rt>shàng</rt></ruby><ruby>午<rt>wǔ</rt></ruby> <ruby>在<rt>zài</rt></ruby> <ruby>学<rt>xué</rt></ruby><ruby>校<rt>xiào</rt></ruby>  ____ 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "E",
+                "F"
+              ],
+              "correct_answer": "F"
+            },
+            {
+              "id": 37,
+              "type": "matching",
+              "question_text": "<ruby>我<rt>Wǒ</rt></ruby> 7 <ruby>点<rt>diǎn</rt></ruby> 30 <ruby>分<rt>fēn</rt></ruby> <ruby>去<rt>qù</rt></ruby>  ____ ， 10 <ruby>点<rt>diǎn</rt></ruby> <ruby>前<rt>qián</rt></ruby> <ruby>回<rt>huí</rt></ruby><ruby>来<rt>lai</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "E",
+                "F"
+              ],
+              "correct_answer": "B"
+            },
+            {
+              "id": 38,
+              "type": "matching",
+              "question_text": "<ruby>喂<rt>Wéi</rt></ruby> ， <ruby>张<rt>Zhāng</rt></ruby> <ruby>先<rt>xiān</rt></ruby><ruby>生<rt>sheng</rt></ruby> <ruby>在<rt>zài</rt></ruby>  ____  <ruby>吗<rt>ma</rt></ruby> ？",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "E",
+                "F"
+              ],
+              "correct_answer": "A"
+            },
+            {
+              "id": 39,
+              "type": "matching",
+              "question_text": "<ruby>女<rt>Nǚ</rt></ruby> ：  ____ ， <ruby>我<rt>wǒ</rt></ruby> <ruby>今<rt>jīn</rt></ruby><ruby>天<rt>tiān</rt></ruby> <ruby>不<rt>bù</rt></ruby> <ruby>能<rt>néng</rt></ruby> <ruby>和<rt>hé</rt></ruby> <ruby>你<rt>nǐ</rt></ruby> <ruby>去<rt>qù</rt></ruby> <ruby>看<rt>kàn</rt></ruby> <ruby>医<rt>yī</rt></ruby><ruby>生<rt>shēng</rt></ruby> <ruby>了<rt>le</rt></ruby> 。<br><ruby>男<rt>Nán</rt></ruby> ： <ruby>没<rt>Méi</rt></ruby> <ruby>关<rt>guān</rt></ruby><ruby>系<rt>xi</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "E",
+                "F"
+              ],
+              "correct_answer": "C"
+            },
+            {
+              "id": 40,
+              "type": "matching",
+              "question_text": "<ruby>男<rt>Nán</rt></ruby> ： <ruby>你<rt>Nǐ</rt></ruby>  ____  <ruby>爸<rt>bà</rt></ruby><ruby>爸<rt>ba</rt></ruby> <ruby>的<rt>de</rt></ruby> <ruby>衣<rt>yī</rt></ruby><ruby>服<rt>fu</rt></ruby> <ruby>了<rt>le</rt></ruby> <ruby>吗<rt>ma</rt></ruby> ？<br><ruby>女<rt>Nǚ</rt></ruby> ： <ruby>在<rt>Zài</rt></ruby> <ruby>桌<rt>zhuō</rt></ruby><ruby>子<rt>zi</rt></ruby> <ruby>后<rt>hòu</rt></ruby><ruby>面<rt>mian</rt></ruby> 。",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "E",
+                "F"
+              ],
+              "correct_answer": "E"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

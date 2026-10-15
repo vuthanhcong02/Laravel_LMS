@@ -1,0 +1,1441 @@
+{
+  "exam_id": "H30000",
+  "level": 3,
+  "sections": [
+    {
+      "section": "listening",
+      "parts": [
+        {
+          "part": "1.1",
+          "type": "listening_matching_images",
+          "instructions": "第一部分，一共10个题，每题听两次。请选出与所听内容相符的图片。",
+          "images": [
+            "images/img_p3_1.jpeg",
+            "images/img_p3_2.jpeg",
+            "images/img_p3_3.jpeg",
+            "images/img_p3_4.jpeg",
+            "images/img_p3_5.jpeg",
+            "images/img_p3_6.jpeg"
+          ],
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "D",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 1,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "F",
+              "image": null,
+              "audio": null,
+              "explanation": {
+                "vi": "Người phụ nữ nói rằng cô ấy không tìm thấy bệnh viện, và người đàn ông đề nghị \"再看看地图\" (xem lại bản đồ). Hình ảnh F mô tả hai người đang xem bản đồ, phù hợp với nội dung cuộc hội thoại.",
+                "en": "The woman states she can't find the hospital, and the man suggests \"再看看地图\" (let's look at the map again). Image F depicts two people looking at a map, which matches the dialogue.",
+                "zh": "女士说她找不到医院了，男士建议“再看看地图”。图片F展示了两个人正在看地图，与对话内容相符。"
+              }
+            },
+            {
+              "id": 2,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "E",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 3,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 4,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 5,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": "1.2",
+          "type": "listening_matching_images",
+          "instructions": "第一部分，一共10个题，每题听两次。请选出与所听内容相符的图片。",
+          "images": [
+            "images/img_p4_1.jpeg",
+            "images/img_p4_2.jpeg",
+            "images/img_p4_3.jpeg",
+            "images/img_p4_4.jpeg",
+            "images/img_p4_5.jpeg"
+          ],
+          "questions": [
+            {
+              "id": 6,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "E",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 7,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "D",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 8,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 9,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 10,
+              "is_example": false,
+              "type": "listening_matching_images",
+              "question_text": "",
+              "options": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": 2,
+          "type": "listening_true_false",
+          "instructions": "第二部分，一共10个题，每题听两次。请判断对错。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "listening_true_false",
+              "question_text": "他希望自己很健康。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "listening_true_false",
+              "question_text": "那块儿手表不是他的。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 11,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "他把护照放在办公室了。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 12,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "他来北京6年了。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 13,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "他打算带小狗去外地玩儿。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 14,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "他不喜欢下雪。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 15,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "现在老师帮女儿穿衣服。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 16,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "手机对人们影响很大。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 17,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "中国人喜欢喝茶。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 18,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "明天是晴天。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "×",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 19,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "他听过很多历史故事。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 20,
+              "is_example": false,
+              "type": "listening_true_false",
+              "question_text": "他不想一个人去医院。",
+              "options": [
+                "√",
+                "×"
+              ],
+              "correct_answer": "√",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": 3,
+          "type": "listening_dialogue_choice",
+          "instructions": "第三部分，一共10个题，每题听两次。请选出正确答案。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的想让小王做什么？",
+              "options": [
+                "A 开门",
+                "B 拿东西",
+                "C 去超市买东西"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 21,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的怎么了？",
+              "options": [
+                "A 口渴",
+                "B 生病了",
+                "C 觉得很冷"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 22,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的刚从哪儿来？",
+              "options": [
+                "A 书店",
+                "B 银行",
+                "C 宾馆"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 23,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "现在几点了？",
+              "options": [
+                "A 11:50",
+                "B 12:00",
+                "C 12:10"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 24,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "照片上的人是谁？",
+              "options": [
+                "A 马老师",
+                "B 她丈夫",
+                "C 她女儿"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 25,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的是什么意思？",
+              "options": [
+                "A 儿子没回来",
+                "B 起得太晚了",
+                "C 让儿子多睡会儿"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 26,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "女的要喝什么？",
+              "options": [
+                "A 果汁",
+                "B 咖啡",
+                "C 葡萄酒"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 27,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "他们最可能在什么地方？",
+              "options": [
+                "A 公园",
+                "B 饭店",
+                "C 火车站"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 28,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "小刘为什么要搬家？",
+              "options": [
+                "A 太贵",
+                "B 太远",
+                "C 太旧"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 29,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的花了多少钱？",
+              "options": [
+                "A 30元",
+                "B 70元",
+                "C 100元"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 30,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的最可能是做什么的？",
+              "options": [
+                "A 医生",
+                "B 司机",
+                "C 服务员"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": 4,
+          "type": "listening_dialogue_choice",
+          "instructions": "第四部分，一共10个题，每题听两次。请选出正确答案。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的在做什么？",
+              "options": [
+                "A 洗澡",
+                "B 吃饭",
+                "C 看电视"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 31,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "他们在哪儿？",
+              "options": [
+                "A 教室",
+                "B 书店",
+                "C 图书馆"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 32,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "女的在买什么？",
+              "options": [
+                "A 蛋糕",
+                "B 衣服",
+                "C 水果"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 33,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "关于女的，可以知道什么？",
+              "options": [
+                "A 最近很忙",
+                "B 在学校工作",
+                "C 喜欢打篮球"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 34,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的什么时候结婚？",
+              "options": [
+                "A 5月12号",
+                "B 10月5号",
+                "C 12月5号"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 35,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "他们是什么关系？",
+              "options": [
+                "A 爸爸和女儿",
+                "B 丈夫和妻子",
+                "C 妈妈和儿子"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 36,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "他们在做什么？",
+              "options": [
+                "A 照相",
+                "B 跳舞",
+                "C 做游戏"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 37,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的在找什么？",
+              "options": [
+                "A 电脑",
+                "B 钱包",
+                "C 杯子"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 38,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "中间的那个人是谁？",
+              "options": [
+                "A 校长",
+                "B 男的的妻子",
+                "C 女的的丈夫"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 39,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的怎么了？",
+              "options": [
+                "A 腿疼",
+                "B 哭了",
+                "C 长胖了"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 40,
+              "is_example": false,
+              "type": "listening_dialogue_choice",
+              "question_text": "男的觉得昨天的电影怎么样？",
+              "options": [
+                "A 不好看",
+                "B 很有名",
+                "C 很有意思"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "reading",
+      "parts": [
+        {
+          "part": "1.1",
+          "type": "reading_matching_sentences",
+          "instructions": "第一部分，一共10个题。请选择合适的句子。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "reading_matching_sentences",
+              "question_text": "你知道怎么去那儿吗？",
+              "options": [
+                "A 爷爷教了我很多次。",
+                "B 做作业遇到不会的词语时，你用铅笔在旁边记一下。",
+                "C 我还以为你忘了呢，你真好！",
+                "D 决定了没？去还是不去？",
+                "E 当然。我们先坐公共汽车，然后换地铁。",
+                "F 你先吃个苹果吧，我去给你做面条儿。"
+              ],
+              "correct_answer": "E",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 41,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "生日快乐！这是我给你买的礼物，喜欢不喜欢？",
+              "options": [
+                "A 爷爷教了我很多次。",
+                "B 做作业遇到不会的词语时，你用铅笔在旁边记一下。",
+                "C 我还以为你忘了呢，你真好！",
+                "D 决定了没？去还是不去？",
+                "E 当然。我们先坐公共汽车，然后换地铁。",
+                "F 你先吃个苹果吧，我去给你做面条儿。"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 42,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "天阴了，我怕一会儿要下雨，明天吧？",
+              "options": [
+                "A 爷爷教了我很多次。",
+                "B 做作业遇到不会的词语时，你用铅笔在旁边记一下。",
+                "C 我还以为你忘了呢，你真好！",
+                "D 决定了没？去还是不去？",
+                "E 当然。我们先坐公共汽车，然后换地铁。",
+                "F 你先吃个苹果吧，我去给你做面条儿。"
+              ],
+              "correct_answer": "D",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 43,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "现在去看字典吧，字典里有。",
+              "options": [
+                "A 爷爷教了我很多次。",
+                "B 做作业遇到不会的词语时，你用铅笔在旁边记一下。",
+                "C 我还以为你忘了呢，你真好！",
+                "D 决定了没？去还是不去？",
+                "E 当然。我们先坐公共汽车，然后换地铁。",
+                "F 你先吃个苹果吧，我去给你做面条儿。"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 44,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "你的游泳水平最近提高很快啊。",
+              "options": [
+                "A 爷爷教了我很多次。",
+                "B 做作业遇到不会的词语时，你用铅笔在旁边记一下。",
+                "C 我还以为你忘了呢，你真好！",
+                "D 决定了没？去还是不去？",
+                "E 当然。我们先坐公共汽车，然后换地铁。",
+                "F 你先吃个苹果吧，我去给你做面条儿。"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 45,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "我饿了，冰箱里有什么吃的吗？",
+              "options": [
+                "A 爷爷教了我很多次。",
+                "B 做作业遇到不会的词语时，你用铅笔在旁边记一下。",
+                "C 我还以为你忘了呢，你真好！",
+                "D 决定了没？去还是不去？",
+                "E 当然。我们先坐公共汽车，然后换地铁。",
+                "F 你先吃个苹果吧，我去给你做面条儿。"
+              ],
+              "correct_answer": "F",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": "1.2",
+          "type": "reading_matching_sentences",
+          "instructions": "第一部分，一共10个题。请选择合适的句子。",
+          "images": null,
+          "questions": [
+            {
+              "id": 46,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "安静，你需要换一个眼镜了。",
+              "options": [
+                "A 吃完饭以后，你来洗碗。",
+                "B 他在黑板上写的字太小！我们都看不清楚！",
+                "C 她已经结婚了，孩子都两岁了。",
+                "D 他们很认真、很努力地练习了一个夏天。",
+                "E 他对自己画的画儿总是不满意。"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 47,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "其实，主要是他对自己的要求太高了。",
+              "options": [
+                "A 吃完饭以后，你来洗碗。",
+                "B 他在黑板上写的字太小！我们都看不清楚！",
+                "C 她已经结婚了，孩子都两岁了。",
+                "D 他们很认真、很努力地练习了一个夏天。",
+                "E 他对自己画的画儿总是不满意。"
+              ],
+              "correct_answer": "E",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 48,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "我准备给你妹妹介绍个男朋友。",
+              "options": [
+                "A 吃完饭以后，你来洗碗。",
+                "B 他在黑板上写的字太小！我们都看不清楚！",
+                "C 她已经结婚了，孩子都两岁了。",
+                "D 他们很认真、很努力地练习了一个夏天。",
+                "E 他对自己画的画儿总是不满意。"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 49,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "为什么总是是我啊？",
+              "options": [
+                "A 吃完饭以后，你来洗碗。",
+                "B 他在黑板上写的字太小！我们都看不清楚！",
+                "C 她已经结婚了，孩子都两岁了。",
+                "D 他们很认真、很努力地练习了一个夏天。",
+                "E 他对自己画的画儿总是不满意。"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 50,
+              "is_example": false,
+              "type": "reading_matching_sentences",
+              "question_text": "今天的节目看了吗？那些学生的表演好极了。",
+              "options": [
+                "A 吃完饭以后，你来洗碗。",
+                "B 他在黑板上写的字太小！我们都看不清楚！",
+                "C 她已经结婚了，孩子都两岁了。",
+                "D 他们很认真、很努力地练习了一个夏天。",
+                "E 他对自己画的画儿总是不满意。"
+              ],
+              "correct_answer": "D",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": "2.1",
+          "type": "reading_fill_in_blank",
+          "instructions": "第二部分，一共10个题。请选择正确答案填空。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "reading_fill_in_blank",
+              "question_text": "她说话的（ E ）多好听啊！",
+              "options": [
+                "A 刻",
+                "B 双",
+                "C 音乐",
+                "D 其他",
+                "E 声音",
+                "F 干净"
+              ],
+              "correct_answer": "E",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 51,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "除了数学，弟弟的（  ）成绩都不错。",
+              "options": [
+                "A 刻",
+                "B 双",
+                "C 音乐",
+                "D 其他",
+                "E 声音",
+                "F 干净"
+              ],
+              "correct_answer": "D",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 52,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "我特别想买这（  ）鞋，问题是我的脚太大。",
+              "options": [
+                "A 刻",
+                "B 双",
+                "C 音乐",
+                "D 其他",
+                "E 声音",
+                "F 干净"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 53,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "这条裤子昨天洗过了，是（  ）的。",
+              "options": [
+                "A 刻",
+                "B 双",
+                "C 音乐",
+                "D 其他",
+                "E 声音",
+                "F 干净"
+              ],
+              "correct_answer": "F",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 54,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "现在是三点一（  ），别担心，我们不会迟到。",
+              "options": [
+                "A 刻",
+                "B 双",
+                "C 音乐",
+                "D 其他",
+                "E 声音",
+                "F 干净"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 55,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "姐姐从小就喜欢唱歌，现在她是一位（  ）老师。",
+              "options": [
+                "A 刻",
+                "B 双",
+                "C 音乐",
+                "D 其他",
+                "E 声音",
+                "F 干净"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": "2.2",
+          "type": "reading_fill_in_blank",
+          "instructions": "第二部分，一共10个题。请选择正确答案填空。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "reading_fill_in_blank",
+              "question_text": "A：你有什么（ D ）？\nB：我喜欢体育。",
+              "options": [
+                "A 明白",
+                "B 角",
+                "C 被",
+                "D 爱好",
+                "E 办法",
+                "F 甜"
+              ],
+              "correct_answer": "D",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 56,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "A：这个问题你们准备什么时候解决？\nB：我们正在想（  ），今天应该可以解决。",
+              "options": [
+                "A 明白",
+                "B 角",
+                "C 被",
+                "D 爱好",
+                "E 办法",
+                "F 甜"
+              ],
+              "correct_answer": "E",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 57,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "A：怎么样，听（  ）了吗？\nB：对不起，您读得太快，我没听懂。",
+              "options": [
+                "A 明白",
+                "B 角",
+                "C 被",
+                "D 爱好",
+                "E 办法",
+                "F 甜"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 58,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "A：盘子里的肉（  ）那只黄猫吃了。\nB：那你该给它准备点儿水了。",
+              "options": [
+                "A 明白",
+                "B 角",
+                "C 被",
+                "D 爱好",
+                "E 办法",
+                "F 甜"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 59,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "A：菜有点儿（  ），但很好吃。\nB：我妈妈是上海人，她做菜喜欢放糖。",
+              "options": [
+                "A 明白",
+                "B 角",
+                "C 被",
+                "D 爱好",
+                "E 办法",
+                "F 甜"
+              ],
+              "correct_answer": "F",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 60,
+              "is_example": false,
+              "type": "reading_fill_in_blank",
+              "question_text": "A：你好，香蕉怎么卖？\nB：这种三块五一斤，那种便宜两（  ）五分。",
+              "options": [
+                "A 明白",
+                "B 角",
+                "C 被",
+                "D 爱好",
+                "E 办法",
+                "F 甜"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": 3,
+          "type": "reading_multiple_choice",
+          "instructions": "第三部分，一共10个题。请选择正确答案。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "reading_multiple_choice",
+              "question_text": "您是来参加今天会议的吗？您来早了一点儿，现在才八点半。您先进来坐吧。\n★ 会议最可能几点开始？",
+              "options": [
+                "A 8点",
+                "B 8点半",
+                "C 9点"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 61,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "中国人经常说：早饭要吃好，午饭要吃饱，晚饭要吃少。\n★ 根据这句话，可以知道：",
+              "options": [
+                "A 早饭要少吃",
+                "B 午饭要多吃",
+                "C 不要吃晚饭"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 62,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "公司来了一位新同事，长得跟我有点儿像，而且我们都姓王，很多人总是笑着问我：“新来的同事是不是你哥哥？”\n★ 新来的同事：",
+              "options": [
+                "A 是我哥",
+                "B 长得像我",
+                "C 长得像我弟弟"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 63,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "北京的秋天比较短，但这是北京最好的季节。秋天的北京不冷也不热，下雨的时候不多，这时候去北京旅游最好。北京的春天也很漂亮，只是有时候会刮大风。\n★ 北京的秋天：",
+              "options": [
+                "A 很舒服",
+                "B 非常热",
+                "C 经常刮风"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 64,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "张先生，您到饭店以后，先休息一下。中午我们一起吃午饭，下午4点以前没有什么事，如果您愿意，我可以带您到附近看看。5点，我们经理和您见面，晚上经理请您吃晚饭。\n★ 张先生5点做什么？",
+              "options": [
+                "A 和经理见面",
+                "B 到外面去看看",
+                "C 和经理一起吃饭"
+              ],
+              "correct_answer": "A",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 65,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "小李，洗手间在一楼东边，如果有客人要去，你带他们去。还有，注意洗手间的灯不要关。\n★ 根据这段话，可以知道：",
+              "options": [
+                "A 小李是客人",
+                "B 小李表示同意",
+                "C 别关洗手间的灯"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 66,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "一年级二班的考试已经结束了，我听大家说，虽然题很多，但不难，很简单。\n★ 这次考试：",
+              "options": [
+                "A 很难",
+                "B 题很多",
+                "C 时间不长"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 67,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "我对外面的世界很有兴趣，我希望有机会到别的国家看一看，了解它们不同的文化。\n★ 我希望：",
+              "options": [
+                "A 学习普通话",
+                "B 有很多节日",
+                "C 去国外看看"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 68,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "自行车？没问题，你别客气。就在楼下，就是那辆蓝色的。我这几天不骑，你不用急着还。\n★ 那辆自行车：",
+              "options": [
+                "A 坏了",
+                "B 是蓝色的",
+                "C 是别人的"
+              ],
+              "correct_answer": "B",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 69,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "两年不见，没想到他变化这么大，比以前瘦了很多，但和以前一样的是，他还是那么热情、快乐、关心别人。\n★ 他以前怎么样？",
+              "options": [
+                "A 又矮又瘦",
+                "B 容易生气",
+                "C 热情、快乐"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 70,
+              "is_example": false,
+              "type": "reading_multiple_choice",
+              "question_text": "下了飞机，坐出租车的时候，我把行李箱放在了车箱里。下车时，我忘了拿行李箱，里面有很多重要的东西。但是，我有出租车票，我相信能找到我的行李箱。\n★ 我的行李箱现在最可能在：",
+              "options": [
+                "A 机场",
+                "B 飞机上",
+                "C 出租车上"
+              ],
+              "correct_answer": "C",
+              "image": null,
+              "audio": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "writing",
+      "parts": [
+        {
+          "part": 1,
+          "type": "writing_arrange_words",
+          "instructions": "第一部分，一共5个题。请将词语组合成完整的句子。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "writing_arrange_words",
+              "question_text": "小船 / 上 / 一 / 河 / 条 / 有",
+              "options": null,
+              "correct_answer": "河上有一条小船。",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 71,
+              "is_example": false,
+              "type": "writing_arrange_words",
+              "question_text": "最 / 吃 / 我 / 西瓜 / 爱",
+              "options": null,
+              "correct_answer": "我最爱吃西瓜。",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 72,
+              "is_example": false,
+              "type": "writing_arrange_words",
+              "question_text": "终于 / 同意 / 他 / 了",
+              "options": null,
+              "correct_answer": "他终于同意了。",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 73,
+              "is_example": false,
+              "type": "writing_arrange_words",
+              "question_text": "哪 / 复习 / 一 / 课 / 在 / 他们",
+              "options": null,
+              "correct_answer": "他们在复习哪一课？",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 74,
+              "is_example": false,
+              "type": "writing_arrange_words",
+              "question_text": "菜单 / 汉语 / 是 / 用 / 这个 / 写 / 的",
+              "options": null,
+              "correct_answer": "这个菜单是用汉语写的。",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 75,
+              "is_example": false,
+              "type": "writing_arrange_words",
+              "question_text": "举行 / 会议 / 在 / 这 / 次 / 冬天 / 2010年",
+              "options": null,
+              "correct_answer": "这次会议在2010年冬天举行。",
+              "image": null,
+              "audio": null
+            }
+          ]
+        },
+        {
+          "part": 2,
+          "type": "writing_characters",
+          "instructions": "第二部分，一共5个题。请根据拼音写出汉字。",
+          "images": null,
+          "questions": [
+            {
+              "id": 0,
+              "is_example": true,
+              "type": "writing_characters",
+              "question_text": "没（  guān  ）系，别难过，高兴点儿。",
+              "options": null,
+              "correct_answer": "关",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 76,
+              "is_example": false,
+              "type": "writing_characters",
+              "question_text": "今天的云很多，看不见（  tài  ）阳。",
+              "options": null,
+              "correct_answer": "太",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 77,
+              "is_example": false,
+              "type": "writing_characters",
+              "question_text": "那只熊猫叫什么（  míng  ）字？",
+              "options": null,
+              "correct_answer": "名",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 78,
+              "is_example": false,
+              "type": "writing_characters",
+              "question_text": "你敢跑一万五千（  mǐ  ）吗？",
+              "options": null,
+              "correct_answer": "米",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 79,
+              "is_example": false,
+              "type": "writing_characters",
+              "question_text": "我认为他（  huí  ）答得很好。",
+              "options": null,
+              "correct_answer": "回",
+              "image": null,
+              "audio": null
+            },
+            {
+              "id": 80,
+              "is_example": false,
+              "type": "writing_characters",
+              "question_text": "早饭是（  niú  ）奶、面包和鸡蛋。",
+              "options": null,
+              "correct_answer": "牛",
+              "image": null,
+              "audio": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

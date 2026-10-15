@@ -175,160 +175,449 @@ class MigratePhase2MediaToB2 extends Command
      *   .../groups/group_{id}/questions/q_{id}/audio|image/
      *   .../questions/q_{id}/options/opt_{id}.{ext}
      */
+    /**
+     * Migrate HSK Mock Exam audio & image files directly from local storage folders to B2.
+     * Uploads media and updates DB paths for exam, sections, groups, questions, and options.
+     */
     protected function migrateHskExamAudios(bool $isDryRun): void
     {
         $this->line("\n[2/5] Scanning HSK Mock Exam media (audio + images)...");
 
         $count = 0;
 
-        // Eager load entire relationship tree to obtain level_code and prevent N+1 queries
         HskMockExam::with([
             'hskLevel',
             'sections.questionGroups.questions.options',
         ])->chunk(20, function ($exams) use ($isDryRun, &$count) {
             foreach ($exams as $exam) {
-                // E.g.: HSK1, HSK2, HSK3
                 $levelCode = strtoupper($exam->hskLevel->level_code ?? 'HSK');
-                // E.g.: H10000, H10901, H11003 (extracted via $exam->folder_name or fallback to exam_{id})
-                $examCode = $exam->folder_name ?: ('exam_' . $exam->id);
+
+                // Extract real exam code: prioritize title pattern e.g. H10000, H10901, H20901
+                $extractedCode = null;
+                if (preg_match('/(H\d+)/i', $exam->title, $m)) {
+                    $extractedCode = strtoupper($m[1]);
+                } elseif (!empty($exam->audio_file) && preg_match('#hsk_mock_exams/(?:[A-Za-z0-9_-]+/)?(H\d+)#i', $exam->audio_file, $m)) {
+                    $extractedCode = strtoupper($m[1]);
+                }
+
+                $examCode = $extractedCode ?: ($exam->folder_name ?: ('exam_' . $exam->id));
                 $examPrefix = "hsk_mock_exams/{$levelCode}/{$examCode}";
 
-                // --- 1. Exam global audio ---
-                if (!empty($exam->audio_file)) {
-                    $newPath = $this->migrateHskFile(
-                        $exam->audio_file,
-                        "{$examPrefix}/audio/{$examCode}",
-                        $isDryRun,
-                        "Exam #{$exam->id} [{$levelCode}/{$examCode}] audio"
-                    );
-                    if ($newPath) {
-                        if (!$isDryRun) { $exam->audio_file = $newPath; $exam->save(); }
-                        $count++;
+                // 1. Locate local media directory for this exam using multiple fallback candidates
+                $candidates = array_unique(array_filter([
+                    $examCode,
+                    $extractedCode,
+                    $exam->folder_name,
+                    (string) $exam->id,
+                    'exam_' . $exam->id,
+                ]));
+
+                $localExamDir = null;
+                foreach ($candidates as $cand) {
+                    $p = storage_path("app/public/hsk_mock_exams/{$cand}");
+                    if (File::isDirectory($p)) {
+                        $localExamDir = $p;
+                        $examCode = $cand;
+                        $examPrefix = "hsk_mock_exams/{$levelCode}/{$examCode}";
+                        break;
+                    }
+                    $p = storage_path("app/hsk_mock_exams/{$cand}");
+                    if (File::isDirectory($p)) {
+                        $localExamDir = $p;
+                        $examCode = $cand;
+                        $examPrefix = "hsk_mock_exams/{$levelCode}/{$examCode}";
+                        break;
+                    }
+                    $matches = glob(base_path("mock_exam/*/{$cand}"), GLOB_ONLYDIR);
+                    if (!empty($matches)) {
+                        $localExamDir = $matches[0];
+                        $examCode = basename($matches[0]);
+                        $examPrefix = "hsk_mock_exams/{$levelCode}/{$examCode}";
+                        break;
                     }
                 }
 
-                // --- 2. Sections ---
-                foreach ($exam->sections as $section) {
-                    $sectionPrefix = "{$examPrefix}/sections/section_{$section->id}";
+                $uploadedAudio = [];
+                $uploadedImages = [];
 
-                    if (!empty($section->audio_file)) {
-                        $newPath = $this->migrateHskFile(
-                            $section->audio_file,
-                            "{$sectionPrefix}/audio/section_{$section->id}",
-                            $isDryRun,
-                            "Section #{$section->id} [{$levelCode}] audio"
-                        );
-                        if ($newPath) {
-                            if (!$isDryRun) { $section->audio_file = $newPath; $section->save(); }
+                if ($localExamDir && File::isDirectory($localExamDir)) {
+                    $this->line("  Exam #{$exam->id} [{$levelCode}/{$examCode}]: Scanning local <comment>{$localExamDir}</comment>");
+
+                    // 2. Upload audio files from local audio folder to B2
+                    $localAudioDir = $localExamDir . '/audio';
+                    if (File::isDirectory($localAudioDir)) {
+                        foreach (File::files($localAudioDir) as $af) {
+                            $fn = $af->getFilename();
+                            $targetPath = "{$examPrefix}/audio/{$fn}";
+                            if (!$isDryRun) {
+                                try {
+                                    if (!Storage::disk('b2')->exists($targetPath)) {
+                                        Storage::disk('b2')->put($targetPath, File::get($af->getPathname()));
+                                    }
+                                } catch (Throwable $e) {
+                                    $this->error("    Audio upload error [{$fn}]: " . $e->getMessage());
+                                }
+                            }
+                            $uploadedAudio[$fn] = $targetPath;
                             $count++;
+                            $this->line("    + Audio: <comment>{$fn}</comment> -> <info>{$targetPath}</info>");
                         }
                     }
 
-                    // --- 3. QuestionGroups ---
-                    foreach ($section->questionGroups as $group) {
-                        $groupPrefix = "{$sectionPrefix}/groups/group_{$group->id}";
-                        $groupDirty = false;
-
-                        // 3.1 Passage Audio
-                        if (!empty($group->passage_audio)) {
-                            $newPath = $this->migrateHskFile(
-                                $group->passage_audio,
-                                "{$groupPrefix}/audio/group_{$group->id}",
-                                $isDryRun,
-                                "Group #{$group->id} [{$levelCode}] audio"
-                            );
-                            if ($newPath) {
-                                if (!$isDryRun) { $group->passage_audio = $newPath; $groupDirty = true; }
-                                $count++;
-                            }
-                        }
-
-                        // 3.2 Passage Image(s) - supports single string or comma-separated list
-                        if (!empty($group->passage_image)) {
-                            $rawImages = explode(',', $group->passage_image);
-                            $migratedList = [];
-                            $hasChange = false;
-
-                            foreach ($rawImages as $idx => $rawImg) {
-                                $rawImgClean = trim($rawImg, " \t\n\r\0\x0B\"'[]");
-                                if (empty($rawImgClean)) continue;
-
-                                $suffix = count($rawImages) > 1 ? "_{$idx}" : "";
-                                $newPath = $this->migrateHskFile(
-                                    $rawImgClean,
-                                    "{$groupPrefix}/image/group_{$group->id}{$suffix}",
-                                    $isDryRun,
-                                    "Group #{$group->id} [{$levelCode}] image" . (count($rawImages) > 1 ? " #" . ($idx + 1) : "")
-                                );
-
-                                if ($newPath) {
-                                    $migratedList[] = $newPath;
-                                    $hasChange = true;
-                                    $count++;
-                                } else {
-                                    $migratedList[] = $rawImgClean;
+                    // 3. Upload images from local images folder to B2
+                    $localImagesDir = $localExamDir . '/images';
+                    if (File::isDirectory($localImagesDir)) {
+                        foreach (File::files($localImagesDir) as $img) {
+                            $fn = $img->getFilename();
+                            $targetPath = "{$examPrefix}/images/{$fn}";
+                            if (!$isDryRun) {
+                                try {
+                                    if (!Storage::disk('b2')->exists($targetPath)) {
+                                        Storage::disk('b2')->put($targetPath, File::get($img->getPathname()));
+                                    }
+                                } catch (Throwable $e) {
+                                    $this->error("    Image upload error [{$fn}]: " . $e->getMessage());
                                 }
                             }
-
-                            if ($hasChange && !$isDryRun) {
-                                $group->passage_image = implode(',', $migratedList);
-                                $groupDirty = true;
-                            }
+                            $uploadedImages[$fn] = $targetPath;
+                            $count++;
                         }
+                        if (!empty($uploadedImages)) {
+                            $this->line("    + Images: Discovered " . count($uploadedImages) . " images in <info>{$examPrefix}/images/</info>");
+                        }
+                    }
+                } else {
+                    // Fallback: Check if media was already uploaded to B2 under target prefix
+                    try {
+                        $b2Imgs = Storage::disk('b2')->files("{$examPrefix}/images");
+                        foreach ($b2Imgs as $bp) {
+                            $uploadedImages[basename($bp)] = $bp;
+                        }
+                        $b2Audios = Storage::disk('b2')->files("{$examPrefix}/audio");
+                        foreach ($b2Audios as $bp) {
+                            $uploadedAudio[basename($bp)] = $bp;
+                        }
+                    } catch (Throwable $e) {
+                        // Ignore B2 list failure
+                    }
 
-                        if ($groupDirty) $group->save();
+                    if (!empty($uploadedImages) || !empty($uploadedAudio)) {
+                        $this->line("  Exam #{$exam->id} [{$levelCode}/{$examCode}]: Media found on B2 (<info>" . count($uploadedImages) . " images, " . count($uploadedAudio) . " audios</info>)");
+                    } else {
+                        $this->warn("  ! Local directory not found for Exam #{$exam->id} [{$examCode}] and no files on B2");
+                        continue;
+                    }
+                }
 
-                        // --- 4. Questions ---
-                        foreach ($group->questions as $question) {
-                            $questionPrefix = "{$groupPrefix}/questions/q_{$question->id}";
-                            $questionDirty = false;
+                // 4. Update Database
+                $primaryAudioPath = !empty($uploadedAudio) ? reset($uploadedAudio) : null;
+                if ($primaryAudioPath && !$isDryRun) {
+                    $exam->audio_file = $primaryAudioPath;
+                    $exam->save();
+                }
 
-                            foreach (['image' => 'image', 'audio_file' => 'audio'] as $field => $type) {
-                                if (empty($question->$field)) continue;
+                // Check for exam.json in storage, database/data/hsk_mock_exams, or mock_exam directory
+                $jsonPath = $this->resolveExamJsonPath($localExamDir ?: '', $examCode, $uploadedImages);
 
-                                $newPath = $this->migrateHskFile(
-                                    $question->$field,
-                                    "{$questionPrefix}/{$type}/q_{$question->id}",
-                                    $isDryRun,
-                                    "Question #{$question->id} [{$levelCode}] {$type}"
-                                );
-                                if ($newPath) {
-                                    if (!$isDryRun) { $question->$field = $newPath; $questionDirty = true; }
-                                    $count++;
-                                }
-                            }
-                            if ($questionDirty) $question->save();
+                if ($jsonPath && File::exists($jsonPath)) {
+                    $this->line("    + Mapping entities via JSON spec: <info>" . basename($jsonPath) . "</info>");
+                    $this->syncExamWithJson($exam, $jsonPath, $uploadedAudio, $uploadedImages, $isDryRun);
+                } else {
+                    $this->line("    + Mapping entities via heuristic patterns");
+                    $this->syncExamByPatterns($exam, $primaryAudioPath, $uploadedAudio, $uploadedImages, $isDryRun);
+                }
+            }
+        });
 
-                            // --- 5. Options ---
-                            foreach ($question->options as $option) {
-                                if (empty($option->image)) continue;
+        // 5. Post-migration database audit to verify all paths are clean
+        $staleOptions = HskMockExamOption::where('image', 'like', 'hsk_mock_exams/hsk%')->count();
+        $staleQuestions = HskMockExamQuestion::where('image', 'like', 'hsk_mock_exams/hsk%')->count();
+        $staleGroups = HskMockExamQuestionGroup::where('passage_image', 'like', 'hsk_mock_exams/hsk%')->count();
 
-                                $newPath = $this->migrateHskFile(
-                                    $option->image,
-                                    "{$questionPrefix}/options/opt_{$option->id}",
-                                    $isDryRun,
-                                    "Option #{$option->id} [{$levelCode}] image"
-                                );
-                                if ($newPath) {
-                                    if (!$isDryRun) { $option->image = $newPath; $option->save(); }
-                                    $count++;
+        if ($staleOptions > 0 || $staleQuestions > 0 || $staleGroups > 0) {
+            $this->warn("\n⚠️  Audit: {$staleOptions} options, {$staleQuestions} questions, {$staleGroups} groups still contain old lowercase paths.");
+        } else {
+            $this->info("\n✓ Database audit passed: 0 stale paths remaining across all HSK tables.");
+        }
+
+        $this->info("✓ Processed {$count} HSK exam media files.");
+    }
+
+    /**
+     * Resolve the most suitable exam.json file for mapping based on filename overlap.
+     */
+    protected function resolveExamJsonPath(string $localExamDir, string $examCode, array $uploadedImages): ?string
+    {
+        // 1. Direct exam.json in storage folder
+        $directStorage = $localExamDir . '/exam.json';
+        if (File::exists($directStorage)) {
+            return $directStorage;
+        }
+
+        // 2. Direct code match in database/data/hsk_mock_exams/
+        $directData = database_path("data/hsk_mock_exams/{$examCode}.json");
+        if (File::exists($directData)) {
+            $content = File::get($directData);
+            foreach (array_keys($uploadedImages) as $imgFn) {
+                if (str_contains($content, $imgFn)) {
+                    return $directData;
+                }
+            }
+        }
+
+        // 3. Search all candidate JSON specs for maximum image name intersection
+        $allJsons = glob(database_path('data/hsk_mock_exams/*.json'));
+        if (empty($allJsons)) {
+            $allJsons = glob(base_path('mock_exam/*/*/exam.json'));
+        }
+
+        $bestJson = null;
+        $maxMatches = 0;
+
+        foreach ($allJsons as $jsonFile) {
+            $content = File::get($jsonFile);
+            $matches = 0;
+            foreach (array_keys($uploadedImages) as $imgFn) {
+                if (str_contains($content, $imgFn)) {
+                    $matches++;
+                }
+            }
+            if ($matches > $maxMatches) {
+                $maxMatches = $matches;
+                $bestJson = $jsonFile;
+            }
+        }
+
+        if ($maxMatches > 0) {
+            return $bestJson;
+        }
+
+        return File::exists($directData) ? $directData : null;
+    }
+
+    /**
+     * Map exam DB entities with exact accuracy using original exam.json specification.
+     */
+    protected function syncExamWithJson(HskMockExam $exam, string $jsonPath, array $uploadedAudio, array $uploadedImages, bool $isDryRun): void
+    {
+        $data = json_decode(File::get($jsonPath), true);
+        if (!$data || empty($data['sections'])) return;
+
+        $sections = $exam->sections->sortBy('order_index')->values();
+        $sectionIdx = 0;
+
+        foreach ($data['sections'] as $sData) {
+            $section = $sections->get($sectionIdx++);
+            if (!$section) break;
+
+            $primaryAudio = !empty($uploadedAudio) ? reset($uploadedAudio) : null;
+            if ($primaryAudio && !$isDryRun) {
+                $section->audio_file = $primaryAudio;
+                $section->save();
+            }
+
+            $groups = $section->questionGroups->sortBy('order_index')->values();
+            $groupIdx = 0;
+
+            foreach (($sData['parts'] ?? []) as $pData) {
+                $group = $groups->get($groupIdx++);
+                if (!$group) break;
+
+                // Group passage image (handles single string or array)
+                $passageImgs = [];
+                if (!empty($pData['images']) && is_array($pData['images'])) {
+                    $passageImgs = $pData['images'];
+                } elseif (!empty($pData['image'])) {
+                    $passageImgs = is_array($pData['image']) ? $pData['image'] : explode(',', $pData['image']);
+                }
+
+                if (!empty($passageImgs)) {
+                    $b2Imgs = [];
+                    foreach ($passageImgs as $imgItem) {
+                        $fn = basename(trim($imgItem));
+                        if (isset($uploadedImages[$fn])) {
+                            $b2Imgs[] = $uploadedImages[$fn];
+                        }
+                    }
+                    if (!empty($b2Imgs) && !$isDryRun) {
+                        $group->passage_image = implode(',', $b2Imgs);
+                        $group->save();
+                    }
+                }
+
+                $questions = $group->questions->sortBy('order_index')->values();
+                $qIdx = 0;
+
+                foreach (($pData['questions'] ?? []) as $qData) {
+                    $question = $questions->get($qIdx++);
+                    if (!$question) break;
+
+                    $dirty = false;
+                    if (!empty($qData['image'])) {
+                        $fn = basename($qData['image']);
+                        if (isset($uploadedImages[$fn])) {
+                            $question->image = $uploadedImages[$fn];
+                            $dirty = true;
+                        }
+                    } else {
+                        // Clear question image if question itself does not have an image
+                        if (!empty($question->image)) {
+                            $question->image = null;
+                            $dirty = true;
+                        }
+                    }
+
+                    if (!empty($qData['audio'])) {
+                        $fn = basename($qData['audio']);
+                        if (isset($uploadedAudio[$fn])) {
+                            $question->audio_file = $uploadedAudio[$fn];
+                            $dirty = true;
+                        }
+                    }
+
+                    if ($dirty && !$isDryRun) {
+                        $question->save();
+                    }
+
+                    // Question Options
+                    if (!empty($qData['options'])) {
+                        $options = $question->options->sortBy('order_index')->values();
+                        foreach ($qData['options'] as $oIdx => $optData) {
+                            $optModel = $options->get($oIdx);
+                            if (!$optModel) break;
+                            if (is_array($optData) && !empty($optData['image'])) {
+                                $fn = basename($optData['image']);
+                                if (isset($uploadedImages[$fn]) && !$isDryRun) {
+                                    $optModel->image = $uploadedImages[$fn];
+                                    $optModel->save();
                                 }
                             }
                         }
                     }
                 }
             }
-        });
+        }
+    }
 
-        $this->info("✓ Processed {$count} HSK exam media files.");
+    /**
+     * Map exam DB entities using heuristic filename patterns when exam.json is absent.
+     */
+    protected function syncExamByPatterns(HskMockExam $exam, ?string $primaryAudioPath, array $uploadedAudio, array $uploadedImages, bool $isDryRun): void
+    {
+        // 1. Assign primary audio to listening section
+        if ($primaryAudioPath && !$isDryRun) {
+            $listeningSection = $exam->sections->firstWhere('skill_type', 'listening') ?: $exam->sections->first();
+            if ($listeningSection) {
+                $listeningSection->audio_file = $primaryAudioPath;
+                $listeningSection->save();
+            }
+        }
+
+        $allImgNames = array_keys($uploadedImages);
+
+        // 2. Map group passage images, question images, and option images
+        foreach ($exam->sections as $section) {
+            foreach ($section->questionGroups as $group) {
+                $groupDirty = false;
+                $partNum = $group->order_index;
+                if (preg_match('/(?:Phần|Part)\s*(\d+)/i', $group->title ?? '', $m)) {
+                    $partNum = (int) $m[1];
+                }
+
+                // Match passage images: img_p3_*.jpeg, top_img_p4_*.jpeg, p3_*.jpeg (excluding question images like q1_)
+                $matchedGroupImgs = [];
+                foreach ($allImgNames as $imgName) {
+                    if (preg_match('/^q\d+[\._]/i', $imgName)) {
+                        continue;
+                    }
+                    if (preg_match('/(?:^|_)p' . $partNum . '_\d+/i', $imgName) || preg_match('/^top_img_p' . $partNum . '/i', $imgName)) {
+                        $matchedGroupImgs[] = $uploadedImages[$imgName];
+                    }
+                }
+                if (!empty($matchedGroupImgs)) {
+                    sort($matchedGroupImgs, SORT_NATURAL);
+                    if (!$isDryRun) {
+                        $group->passage_image = implode(',', $matchedGroupImgs);
+                        $groupDirty = true;
+                    }
+                }
+                if ($groupDirty) $group->save();
+
+                // 3. Questions & Options
+                foreach ($group->questions as $question) {
+                    $qDirty = false;
+                    $qNum = $question->order_index;
+
+                    // Match all images for this question: e.g. q7_7.jpeg, q7_8.jpeg, q7.jpeg
+                    $matchedQImgs = [];
+                    foreach ($allImgNames as $imgName) {
+                        if (preg_match('/^q' . $qNum . '\./i', $imgName) || preg_match('/^q' . $qNum . '_\d+/i', $imgName)) {
+                            $matchedQImgs[] = $imgName;
+                        }
+                    }
+                    sort($matchedQImgs, SORT_NATURAL);
+
+                    $options = $question->options->sortBy('order_index')->values();
+
+                    if (count($matchedQImgs) > 1) {
+                        // MULTIPLE IMAGES -> Question's options (Option A, Option B, Option C)
+                        foreach ($matchedQImgs as $idx => $imgFn) {
+                            if ($opt = $options->get($idx)) {
+                                if (!$isDryRun) {
+                                    $opt->image = $uploadedImages[$imgFn];
+                                    $opt->save();
+                                }
+                            }
+                        }
+                        // Question itself does NOT have an image
+                        if (!empty($question->image)) {
+                            if (!$isDryRun) {
+                                $question->image = null;
+                                $qDirty = true;
+                            }
+                        }
+                    } elseif (count($matchedQImgs) === 1) {
+                        // SINGLE IMAGE -> Belong to the question itself (e.g. True/False question)
+                        if (!$isDryRun) {
+                            $question->image = $uploadedImages[$matchedQImgs[0]];
+                            $qDirty = true;
+                        }
+                    } else {
+                        // Handle example question in Part 2 if it has option images like img_p3_1, img_p3_2
+                        if ($question->is_example && $options->count() > 0) {
+                            $exImgs = [];
+                            foreach ($allImgNames as $imgName) {
+                                if (preg_match('/(?:^|_)p' . $partNum . '_\d+/i', $imgName)) {
+                                    $exImgs[] = $imgName;
+                                }
+                            }
+                            sort($exImgs, SORT_NATURAL);
+                            if (count($exImgs) === $options->count()) {
+                                foreach ($exImgs as $idx => $imgFn) {
+                                    if ($opt = $options->get($idx)) {
+                                        if (!$isDryRun) {
+                                            $opt->image = $uploadedImages[$imgFn];
+                                            $opt->save();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($qDirty) $question->save();
+                }
+            }
+        }
     }
 
     /**
      * Helper: Migrate an HSK file to B2 using the standardized HSK-level path.
+     * Supports both local files and B2-to-B2 server-side reorganization.
      * Returns $newPath on upload success (or dry-run), null on skip/error.
      *
      * @param string $oldRawPath  Original field value from DB
-     * @param string $newPrefix   Target B2 prefix without extension (e.g. hsk_mock_exams/hsk3/exam_1/audio/exam_1)
+     * @param string $newPrefix   Target B2 prefix without extension (e.g. hsk_mock_exams/HSK1/H10000/audio/H10000)
      * @param bool   $isDryRun
      * @param string $label       Log display label
      */
@@ -344,12 +633,10 @@ class MigratePhase2MediaToB2 extends Command
             $clean = substr($clean, 8);
         }
 
-        // Already migrated using standardized pattern (path begins with hsk_mock_exams/HSK.../H...)
-        if (preg_match('#^hsk_mock_exams/(hsk|HSK)[a-z0-9_-]*/#i', $clean)) {
-            return null;
-        }
+        // Determine file extension from current path or local file
+        $ext = pathinfo($clean, PATHINFO_EXTENSION);
 
-        // Resolve local file path: check public storage, app storage, then public_path
+        // Resolve local file path if available
         $localFullPath = storage_path('app/public/' . $clean);
         if (!File::exists($localFullPath)) {
             $localFullPath = storage_path('app/' . $clean);
@@ -357,28 +644,73 @@ class MigratePhase2MediaToB2 extends Command
         if (!File::exists($localFullPath)) {
             $localFullPath = public_path($clean);
         }
-        if (!File::exists($localFullPath)) {
-            $this->warn("  ! File not found: {$clean}");
+
+        $hasLocalFile = File::exists($localFullPath);
+        if ($hasLocalFile && empty($ext)) {
+            $ext = pathinfo($localFullPath, PATHINFO_EXTENSION);
+        }
+        $ext = $ext ?: 'bin';
+
+        $newPath = "{$newPrefix}.{$ext}";
+
+        // If DB already points to exact target path, nothing to do
+        if ($clean === $newPath) {
             return null;
         }
 
-        $ext = pathinfo($localFullPath, PATHINFO_EXTENSION) ?: 'bin';
-        $newPath = "{$newPrefix}.{$ext}";
+        // Check if file is available locally OR already present on B2
+        $hasB2Source = false;
+        try {
+            $hasB2Source = Storage::disk('b2')->exists($clean);
+        } catch (Throwable $e) {
+            $hasB2Source = false;
+        }
 
-        $this->line("  - {$label}: <comment>{$clean}</comment> -> <info>{$newPath}</info>");
+        if (!$hasLocalFile && !$hasB2Source) {
+            // Also check if target already exists on B2 (e.g. from previous run)
+            try {
+                if (Storage::disk('b2')->exists($newPath)) {
+                    $this->line("  - {$label} (already on B2): <comment>{$clean}</comment> -> <info>{$newPath}</info>");
+                    return $newPath;
+                }
+            } catch (Throwable $e) {
+                // Ignore B2 check error
+            }
+
+            $this->warn("  ! Source file not found (local or B2): {$clean}");
+            return null;
+        }
+
+        $sourceType = $hasLocalFile ? 'local' : 'B2 copy';
+        $this->line("  - {$label} [{$sourceType}]: <comment>{$clean}</comment> -> <info>{$newPath}</info>");
 
         if ($isDryRun) {
             return $newPath; // Return path for counting, skip upload during dry-run
         }
 
         try {
-            // Check if file already exists on B2 to avoid redundant bandwidth & API transactions
-            if (!Storage::disk('b2')->exists($newPath)) {
-                Storage::disk('b2')->put($newPath, File::get($localFullPath));
+            if ($hasLocalFile) {
+                if (!Storage::disk('b2')->exists($newPath)) {
+                    Storage::disk('b2')->put($newPath, File::get($localFullPath));
+                }
+            } elseif ($hasB2Source) {
+                // Server-side copy on B2 from old path to new standardized path
+                if (!Storage::disk('b2')->exists($newPath)) {
+                    Storage::disk('b2')->copy($clean, $newPath);
+                }
+                // Clean up old B2 path if different
+                if ($clean !== $newPath) {
+                    try {
+                        Storage::disk('b2')->delete($clean);
+                    } catch (Throwable $delEx) {
+                        // Ignore delete failure for old key
+                    }
+                }
             }
+
             return $newPath;
         } catch (Throwable $e) {
-            $this->error("    Upload error [{$label}]: " . $e->getMessage());
+            $this->error("    Upload/copy error [{$label}]: " . $e->getMessage());
             return null;
         }
     }
