@@ -329,7 +329,10 @@ class MigratePhase2MediaToB2 extends Command
             }
         });
 
-        // 5. Post-migration database audit to verify all paths are clean
+        // 5. Final safety sweep: Auto-correct any remaining stale paths directly in DB
+        $this->cleanupRemainingOldPaths($isDryRun);
+
+        // 6. Post-migration database audit to verify all paths are clean
         $staleOptions = HskMockExamOption::where('image', 'like', 'hsk_mock_exams/hsk%')->count();
         $staleQuestions = HskMockExamQuestion::where('image', 'like', 'hsk_mock_exams/hsk%')->count();
         $staleGroups = HskMockExamQuestionGroup::where('passage_image', 'like', 'hsk_mock_exams/hsk%')->count();
@@ -344,158 +347,124 @@ class MigratePhase2MediaToB2 extends Command
     }
 
     /**
-     * Resolve the most suitable exam.json file for mapping based on filename overlap.
+     * Final safety sweep: Find any remaining options, questions, or groups
+     * that still hold legacy/stale paths ('hsk_mock_exams/hsk%') and update them to target B2 paths.
      */
-    protected function resolveExamJsonPath(string $localExamDir, string $examCode, array $uploadedImages): ?string
+    protected function cleanupRemainingOldPaths(bool $isDryRun): void
     {
-        // 1. Direct exam.json in storage folder
-        $directStorage = $localExamDir . '/exam.json';
-        if (File::exists($directStorage)) {
-            return $directStorage;
-        }
+        $this->line("\n  Running final database path sweep for any remaining stale paths...");
 
-        // 2. Direct code match in database/data/hsk_mock_exams/
-        $directData = database_path("data/hsk_mock_exams/{$examCode}.json");
-        if (File::exists($directData)) {
-            $content = File::get($directData);
-            foreach (array_keys($uploadedImages) as $imgFn) {
-                if (str_contains($content, $imgFn)) {
-                    return $directData;
-                }
-            }
-        }
+        $fixedOptions = 0;
+        $fixedQuestions = 0;
+        $fixedGroups = 0;
 
-        // 3. Search all candidate JSON specs for maximum image name intersection
-        $allJsons = glob(database_path('data/hsk_mock_exams/*.json'));
-        if (empty($allJsons)) {
-            $allJsons = glob(base_path('mock_exam/*/*/exam.json'));
-        }
+        // 1. Stale options
+        HskMockExamOption::where('image', 'like', 'hsk_mock_exams/hsk%')
+            ->chunk(100, function ($options) use ($isDryRun, &$fixedOptions) {
+                foreach ($options as $opt) {
+                    $q = $opt->question;
+                    if (!$q) continue;
+                    $group = $q->group;
+                    if (!$group) continue;
+                    $section = $group->hskMockExamSection;
+                    if (!$section) continue;
+                    $exam = $section->exam ?? HskMockExam::find($section->hsk_mock_exam_id);
+                    if (!$exam) continue;
 
-        $bestJson = null;
-        $maxMatches = 0;
-
-        foreach ($allJsons as $jsonFile) {
-            $content = File::get($jsonFile);
-            $matches = 0;
-            foreach (array_keys($uploadedImages) as $imgFn) {
-                if (str_contains($content, $imgFn)) {
-                    $matches++;
-                }
-            }
-            if ($matches > $maxMatches) {
-                $maxMatches = $matches;
-                $bestJson = $jsonFile;
-            }
-        }
-
-        if ($maxMatches > 0) {
-            return $bestJson;
-        }
-
-        return File::exists($directData) ? $directData : null;
-    }
-
-    /**
-     * Map exam DB entities with exact accuracy using original exam.json specification.
-     */
-    protected function syncExamWithJson(HskMockExam $exam, string $jsonPath, array $uploadedAudio, array $uploadedImages, bool $isDryRun): void
-    {
-        $data = json_decode(File::get($jsonPath), true);
-        if (!$data || empty($data['sections'])) return;
-
-        $sections = $exam->sections->sortBy('order_index')->values();
-        $sectionIdx = 0;
-
-        foreach ($data['sections'] as $sData) {
-            $section = $sections->get($sectionIdx++);
-            if (!$section) break;
-
-            $primaryAudio = !empty($uploadedAudio) ? reset($uploadedAudio) : null;
-            if ($primaryAudio && !$isDryRun) {
-                $section->audio_file = $primaryAudio;
-                $section->save();
-            }
-
-            $groups = $section->questionGroups->sortBy('order_index')->values();
-            $groupIdx = 0;
-
-            foreach (($sData['parts'] ?? []) as $pData) {
-                $group = $groups->get($groupIdx++);
-                if (!$group) break;
-
-                // Group passage image (handles single string or array)
-                $passageImgs = [];
-                if (!empty($pData['images']) && is_array($pData['images'])) {
-                    $passageImgs = $pData['images'];
-                } elseif (!empty($pData['image'])) {
-                    $passageImgs = is_array($pData['image']) ? $pData['image'] : explode(',', $pData['image']);
-                }
-
-                if (!empty($passageImgs)) {
-                    $b2Imgs = [];
-                    foreach ($passageImgs as $imgItem) {
-                        $fn = basename(trim($imgItem));
-                        if (isset($uploadedImages[$fn])) {
-                            $b2Imgs[] = $uploadedImages[$fn];
-                        }
+                    $levelCode = strtoupper($exam->hskLevel->level_code ?? 'HSK');
+                    $extractedCode = null;
+                    if (preg_match('/(H\d+)/i', $exam->title, $m)) {
+                        $extractedCode = strtoupper($m[1]);
+                    } elseif (!empty($exam->audio_file) && preg_match('#hsk_mock_exams/(?:[A-Za-z0-9_-]+/)?(H\d+)#i', $exam->audio_file, $m)) {
+                        $extractedCode = strtoupper($m[1]);
                     }
-                    if (!empty($b2Imgs) && !$isDryRun) {
-                        $group->passage_image = implode(',', $b2Imgs);
-                        $group->save();
-                    }
-                }
+                    $examCode = $extractedCode ?: ($exam->folder_name ?: ('exam_' . $exam->id));
 
-                $questions = $group->questions->sortBy('order_index')->values();
-                $qIdx = 0;
-
-                foreach (($pData['questions'] ?? []) as $qData) {
-                    $question = $questions->get($qIdx++);
-                    if (!$question) break;
-
-                    $dirty = false;
-                    if (!empty($qData['image'])) {
-                        $fn = basename($qData['image']);
-                        if (isset($uploadedImages[$fn])) {
-                            $question->image = $uploadedImages[$fn];
-                            $dirty = true;
-                        }
-                    } else {
-                        // Clear question image if question itself does not have an image
-                        if (!empty($question->image)) {
-                            $question->image = null;
-                            $dirty = true;
-                        }
+                    // Get B2 images for this exam
+                    $b2Prefix = "hsk_mock_exams/{$levelCode}/{$examCode}/images";
+                    try {
+                        $b2Files = Storage::disk('b2')->files($b2Prefix);
+                    } catch (Throwable $e) {
+                        $b2Files = [];
                     }
 
-                    if (!empty($qData['audio'])) {
-                        $fn = basename($qData['audio']);
-                        if (isset($uploadedAudio[$fn])) {
-                            $question->audio_file = $uploadedAudio[$fn];
-                            $dirty = true;
-                        }
+                    if (empty($b2Files)) continue;
+                    sort($b2Files, SORT_NATURAL);
+
+                    // Check if group is Part 2 (listening_image_choice)
+                    $partNum = $group->order_index;
+                    if (preg_match('/(?:Phần|Part)\s*(\d+)/i', $group->title ?? '', $m)) {
+                        $partNum = (int) $m[1];
                     }
 
-                    if ($dirty && !$isDryRun) {
-                        $question->save();
+                    $p4Files = array_values(array_filter($b2Files, fn($f) => preg_match('/(?:^|_)p4_\d+/i', basename($f))));
+                    if (empty($p4Files)) {
+                        // Check q{N}_* style
+                        $p4Files = array_values(array_filter($b2Files, fn($f) => preg_match('/^q(6|7|8|9|10)[\._]/i', basename($f))));
                     }
 
-                    // Question Options
-                    if (!empty($qData['options'])) {
-                        $options = $question->options->sortBy('order_index')->values();
-                        foreach ($qData['options'] as $oIdx => $optData) {
-                            $optModel = $options->get($oIdx);
-                            if (!$optModel) break;
-                            if (is_array($optData) && !empty($optData['image'])) {
-                                $fn = basename($optData['image']);
-                                if (isset($uploadedImages[$fn]) && !$isDryRun) {
-                                    $optModel->image = $uploadedImages[$fn];
-                                    $optModel->save();
+                    if (!empty($p4Files)) {
+                        $regQuestions = $group->questions->where('is_example', false)->sortBy('order_index')->values();
+                        $qIdx = $regQuestions->search(fn($item) => $item->id === $q->id);
+                        $opts = $q->options->sortBy('order_index')->values();
+                        $oIdx = $opts->search(fn($item) => $item->id === $opt->id);
+
+                        if ($qIdx !== false && $oIdx !== false) {
+                            $targetImgIdx = $qIdx * 3 + $oIdx;
+                            if (isset($p4Files[$targetImgIdx])) {
+                                if (!$isDryRun) {
+                                    $opt->image = $p4Files[$targetImgIdx];
+                                    $opt->save();
                                 }
+                                $fixedOptions++;
                             }
                         }
                     }
                 }
-            }
+            });
+
+        // 2. Stale questions in listening_image_choice should have image = null
+        HskMockExamQuestion::where('image', 'like', 'hsk_mock_exams/hsk%')
+            ->chunk(100, function ($questions) use ($isDryRun, &$fixedQuestions) {
+                foreach ($questions as $q) {
+                    $group = $q->group;
+                    if (!$group) continue;
+                    $partNum = $group->order_index;
+                    if (preg_match('/(?:Phần|Part)\s*(\d+)/i', $group->title ?? '', $m)) {
+                        $partNum = (int) $m[1];
+                    }
+
+                    if ($partNum === 2 || $group->group_type === 'listening_image_choice') {
+                        if (!$isDryRun) {
+                            $q->image = null;
+                            $q->save();
+                        }
+                        $fixedQuestions++;
+                    }
+                }
+            });
+
+        // 3. Stale groups in listening_image_choice should have passage_image = null
+        HskMockExamQuestionGroup::where('passage_image', 'like', 'hsk_mock_exams/hsk%')
+            ->chunk(100, function ($groups) use ($isDryRun, &$fixedGroups) {
+                foreach ($groups as $g) {
+                    $partNum = $g->order_index;
+                    if (preg_match('/(?:Phần|Part)\s*(\d+)/i', $g->title ?? '', $m)) {
+                        $partNum = (int) $m[1];
+                    }
+
+                    if ($partNum === 2 || $g->group_type === 'listening_image_choice') {
+                        if (!$isDryRun) {
+                            $g->passage_image = null;
+                            $g->save();
+                        }
+                        $fixedGroups++;
+                    }
+                }
+            });
+
+        if ($fixedOptions > 0 || $fixedQuestions > 0 || $fixedGroups > 0) {
+            $this->info("  ✓ Auto-corrected stale DB paths: {$fixedOptions} options, {$fixedQuestions} questions, {$fixedGroups} groups.");
         }
     }
 
@@ -514,99 +483,191 @@ class MigratePhase2MediaToB2 extends Command
         }
 
         $allImgNames = array_keys($uploadedImages);
+        sort($allImgNames, SORT_NATURAL);
+
+        // Helper to find images matching regex patterns
+        $findImgs = function (string $pattern) use ($allImgNames, $uploadedImages): array {
+            $res = [];
+            foreach ($allImgNames as $fn) {
+                if (preg_match($pattern, $fn)) {
+                    $res[] = $uploadedImages[$fn];
+                }
+            }
+            sort($res, SORT_NATURAL);
+            return $res;
+        };
+
+        // Categorize images into common exam page/part groups
+        $part1ListeningImgs = $findImgs('/(?:^|_)p2_\d+/i');
+        $part2ExampleImgs   = $findImgs('/(?:^|_)p3_\d+/i');
+        $part2ListeningImgs = $findImgs('/(?:^|_)p4_\d+/i');
+        $part3ListeningImgs = $findImgs('/(?:^|_)p5_\d+/i');
+        $part1ReadingImgs   = array_merge($findImgs('/(?:^|_)p6_\d+/i'), $findImgs('/(?:^|_)p7_\d+/i'));
+        $part2ReadingImgs   = $findImgs('/(?:^|_)p8_\d+/i');
 
         // 2. Map group passage images, question images, and option images
-        foreach ($exam->sections as $section) {
-            foreach ($section->questionGroups as $group) {
+        foreach ($exam->sections->sortBy('order_index') as $section) {
+            $isListening = ($section->skill_type === 'listening') || str_contains(strtolower($section->name ?? ''), 'nghe') || str_contains(strtolower($section->name ?? ''), 'listening');
+
+            foreach ($section->questionGroups->sortBy('order_index') as $group) {
                 $groupDirty = false;
                 $partNum = $group->order_index;
                 if (preg_match('/(?:Phần|Part)\s*(\d+)/i', $group->title ?? '', $m)) {
                     $partNum = (int) $m[1];
                 }
 
-                // Match passage images: img_p3_*.jpeg, top_img_p4_*.jpeg, p3_*.jpeg (excluding question images like q1_)
-                $matchedGroupImgs = [];
-                foreach ($allImgNames as $imgName) {
-                    if (preg_match('/^q\d+[\._]/i', $imgName)) {
-                        continue;
-                    }
-                    if (preg_match('/(?:^|_)p' . $partNum . '_\d+/i', $imgName) || preg_match('/^top_img_p' . $partNum . '/i', $imgName)) {
-                        $matchedGroupImgs[] = $uploadedImages[$imgName];
-                    }
-                }
-                if (!empty($matchedGroupImgs)) {
-                    sort($matchedGroupImgs, SORT_NATURAL);
-                    if (!$isDryRun) {
-                        $group->passage_image = implode(',', $matchedGroupImgs);
-                        $groupDirty = true;
-                    }
-                }
-                if ($groupDirty) $group->save();
-
-                // 3. Questions & Options
-                foreach ($group->questions as $question) {
-                    $qDirty = false;
-                    $qNum = $question->order_index;
-
-                    // Match all images for this question: e.g. q7_7.jpeg, q7_8.jpeg, q7.jpeg
-                    $matchedQImgs = [];
-                    foreach ($allImgNames as $imgName) {
-                        if (preg_match('/^q' . $qNum . '\./i', $imgName) || preg_match('/^q' . $qNum . '_\d+/i', $imgName)) {
-                            $matchedQImgs[] = $imgName;
+                if ($isListening && $partNum === 2) {
+                    // Part 2: listening_image_choice
+                    if (!empty($group->passage_image)) {
+                        if (!$isDryRun) {
+                            $group->passage_image = null;
+                            $groupDirty = true;
                         }
                     }
-                    sort($matchedQImgs, SORT_NATURAL);
 
-                    $options = $question->options->sortBy('order_index')->values();
+                    $regularQuestions = $group->questions->where('is_example', false)->sortBy('order_index')->values();
+                    $exampleQuestion = $group->questions->where('is_example', true)->first();
 
-                    if (count($matchedQImgs) > 1) {
-                        // MULTIPLE IMAGES -> Question's options (Option A, Option B, Option C)
-                        foreach ($matchedQImgs as $idx => $imgFn) {
-                            if ($opt = $options->get($idx)) {
+                    // Example question options
+                    if ($exampleQuestion && !empty($part2ExampleImgs)) {
+                        $exOptions = $exampleQuestion->options->sortBy('order_index')->values();
+                        foreach ($part2ExampleImgs as $idx => $b2Path) {
+                            if ($opt = $exOptions->get($idx)) {
                                 if (!$isDryRun) {
-                                    $opt->image = $uploadedImages[$imgFn];
+                                    $opt->image = $b2Path;
                                     $opt->save();
                                 }
                             }
                         }
-                        // Question itself does NOT have an image
-                        if (!empty($question->image)) {
+                        if (!empty($exampleQuestion->image)) {
                             if (!$isDryRun) {
-                                $question->image = null;
-                                $qDirty = true;
-                            }
-                        }
-                    } elseif (count($matchedQImgs) === 1) {
-                        // SINGLE IMAGE -> Belong to the question itself (e.g. True/False question)
-                        if (!$isDryRun) {
-                            $question->image = $uploadedImages[$matchedQImgs[0]];
-                            $qDirty = true;
-                        }
-                    } else {
-                        // Handle example question in Part 2 if it has option images like img_p3_1, img_p3_2
-                        if ($question->is_example && $options->count() > 0) {
-                            $exImgs = [];
-                            foreach ($allImgNames as $imgName) {
-                                if (preg_match('/(?:^|_)p' . $partNum . '_\d+/i', $imgName)) {
-                                    $exImgs[] = $imgName;
-                                }
-                            }
-                            sort($exImgs, SORT_NATURAL);
-                            if (count($exImgs) === $options->count()) {
-                                foreach ($exImgs as $idx => $imgFn) {
-                                    if ($opt = $options->get($idx)) {
-                                        if (!$isDryRun) {
-                                            $opt->image = $uploadedImages[$imgFn];
-                                            $opt->save();
-                                        }
-                                    }
-                                }
+                                $exampleQuestion->image = null;
+                                $exampleQuestion->save();
                             }
                         }
                     }
 
-                    if ($qDirty) $question->save();
+                    // Regular questions options (Questions 6 - 10)
+                    if (!empty($part2ListeningImgs)) {
+                        foreach ($regularQuestions as $qIdx => $question) {
+                            $qDirty = false;
+                            $options = $question->options->sortBy('order_index')->values();
+                            for ($oIdx = 0; $oIdx < 3; $oIdx++) {
+                                $imgIndex = $qIdx * 3 + $oIdx;
+                                if (isset($part2ListeningImgs[$imgIndex]) && ($opt = $options->get($oIdx))) {
+                                    if (!$isDryRun) {
+                                        $opt->image = $part2ListeningImgs[$imgIndex];
+                                        $opt->save();
+                                    }
+                                }
+                            }
+                            if (!empty($question->image)) {
+                                if (!$isDryRun) {
+                                    $question->image = null;
+                                    $qDirty = true;
+                                }
+                            }
+                            if ($qDirty) $question->save();
+                        }
+                    } else {
+                        // Fallback: check q{N}_* naming style
+                        foreach ($group->questions as $question) {
+                            $qDirty = false;
+                            $qNum = $question->order_index;
+                            $qImgs = $findImgs('/^q' . $qNum . '[\._]/i');
+                            $options = $question->options->sortBy('order_index')->values();
+                            if (count($qImgs) > 1) {
+                                foreach ($qImgs as $idx => $b2Path) {
+                                    if ($opt = $options->get($idx)) {
+                                        if (!$isDryRun) {
+                                            $opt->image = $b2Path;
+                                            $opt->save();
+                                        }
+                                    }
+                                }
+                                if (!empty($question->image)) {
+                                    if (!$isDryRun) {
+                                        $question->image = null;
+                                        $qDirty = true;
+                                    }
+                                }
+                            }
+                            if ($qDirty) $question->save();
+                        }
+                    }
+                } elseif ($isListening && $partNum === 1) {
+                    // Part 1: listening_true_false (Questions 1 - 5)
+                    if (!empty($group->passage_image)) {
+                        if (!$isDryRun) {
+                            $group->passage_image = null;
+                            $groupDirty = true;
+                        }
+                    }
+                    $regularQuestions = $group->questions->where('is_example', false)->sortBy('order_index')->values();
+                    if (!empty($part1ListeningImgs)) {
+                        foreach ($regularQuestions as $qIdx => $question) {
+                            if (isset($part1ListeningImgs[$qIdx])) {
+                                if (!$isDryRun) {
+                                    $question->image = $part1ListeningImgs[$qIdx];
+                                    $question->save();
+                                }
+                            }
+                        }
+                    } else {
+                        foreach ($regularQuestions as $question) {
+                            $qImgs = $findImgs('/^q' . $question->order_index . '[\._]/i');
+                            if (!empty($qImgs)) {
+                                if (!$isDryRun) {
+                                    $question->image = $qImgs[0];
+                                    $question->save();
+                                }
+                            }
+                        }
+                    }
+                } elseif (!$isListening && $partNum === 1) {
+                    // Reading Part 1: reading_true_false (Questions 21 - 25)
+                    if (!empty($group->passage_image)) {
+                        if (!$isDryRun) {
+                            $group->passage_image = null;
+                            $groupDirty = true;
+                        }
+                    }
+                    $regularQuestions = $group->questions->where('is_example', false)->sortBy('order_index')->values();
+                    if (!empty($part1ReadingImgs)) {
+                        foreach ($regularQuestions as $qIdx => $question) {
+                            if (isset($part1ReadingImgs[$qIdx])) {
+                                if (!$isDryRun) {
+                                    $question->image = $part1ReadingImgs[$qIdx];
+                                    $question->save();
+                                }
+                            }
+                        }
+                    } else {
+                        foreach ($regularQuestions as $question) {
+                            $qImgs = $findImgs('/^q' . $question->order_index . '[\._]/i');
+                            if (!empty($qImgs)) {
+                                if (!$isDryRun) {
+                                    $question->image = $qImgs[0];
+                                    $question->save();
+                                }
+                            }
+                        }
+                    }
+                } elseif (($isListening && $partNum === 3) || (!$isListening && in_array($partNum, [2, 3]))) {
+                    // Matching images groups -> Passage Image (A - F)
+                    $matchingImgs = ($isListening && $partNum === 3) ? $part3ListeningImgs : $part2ReadingImgs;
+                    if (empty($matchingImgs)) {
+                        $matchingImgs = $findImgs('/(?:^|_)p' . $partNum . '_\d+/i');
+                    }
+                    if (!empty($matchingImgs)) {
+                        if (!$isDryRun) {
+                            $group->passage_image = implode(',', $matchingImgs);
+                            $groupDirty = true;
+                        }
+                    }
                 }
+
+                if ($groupDirty) $group->save();
             }
         }
     }
