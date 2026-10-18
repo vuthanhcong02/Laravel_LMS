@@ -9,63 +9,190 @@ use App\Models\HskMockExamQuestionGroup;
 use App\Models\HskMockExamQuestion;
 use App\Models\HskMockExamOption;
 use App\Services\Media\MediaStorageService;
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use ZipArchive;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class HskMockExamService
 {
     /**
-     * Import exam from JSON data
+     * Import exam from JSON data and automatically upload media files to Backblaze B2
+     *
+     * @param array $data Exam JSON data structure
+     * @param array $mediaFiles Uploaded media files (UploadedFile instances)
+     * @return array
      */
-    public function importExam(array $data, ?string $zipRealPath): array
+    public function importExam(array $data, array $mediaFiles = []): array
     {
+        // Prevent PHP execution timeout on large batch uploads
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(300);
+        }
+
         $examId = $data['exam_id'] ?? $data['exam_code'] ?? null;
         if (!$examId) {
-            throw new \Exception('Invalid JSON file or missing exam_id/exam_code.');
+            throw new Exception('Invalid JSON file or missing exam_id/exam_code.');
         }
+
+        // Sanitize exam code to alphanumeric/hyphen/underscore only to prevent directory traversal
+        $examCode = strtoupper(preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $examId));
+        if (empty($examCode)) {
+            throw new Exception('Invalid exam_id or exam_code format.');
+        }
+
         $levelCode = 'hsk' . ($data['level'] ?? 1);
 
         $hskLevel = HskLevel::where('level_code', $levelCode)->first();
         if (!$hskLevel) {
-            throw new \Exception("HSK level '{$levelCode}' does not exist in the system.");
+            throw new Exception("HSK level '{$levelCode}' does not exist in the system.");
         }
 
-        $storagePath = storage_path('app/public/hsk_mock_exams/' . $examId);
-        if (!File::isDirectory($storagePath)) {
-            File::makeDirectory($storagePath, 0755, true);
-        }
+        $levelFolder = strtoupper($hskLevel->level_code); // e.g. HSK1, HSK2
+        $b2BasePath = "hsk_mock_exams/{$levelFolder}/{$examCode}";
 
-        // Extract media ZIP file (images/audio) if available
-        if ($zipRealPath) {
-            $zip = new ZipArchive();
-            if ($zip->open($zipRealPath) === true) {
-                for ($i = 0; $i < $zip->numFiles; $i++) {
-                    $filename = $zip->getNameIndex($i);
-                    // Prevent Zip Slip / Path Traversal
-                    if (strpos($filename, '..') !== false || strpos($filename, '/') === 0 || strpos($filename, '\\') === 0) {
-                        continue;
-                    }
-                    $zip->extractTo($storagePath, $filename);
+        $uploadedMediaMap = [];
+
+        // Pre-index existing files already in B2 for this exam to allow seamless re-imports and re-use
+        try {
+            $existingB2Files = Storage::disk('b2')->allFiles($b2BasePath);
+            foreach ($existingB2Files as $existingPath) {
+                $existingName = basename($existingPath);
+                $uploadedMediaMap[$existingName] = $existingPath;
+                $uploadedMediaMap["images/{$existingName}"] = $existingPath;
+                $uploadedMediaMap["audio/{$existingName}"] = $existingPath;
+
+                // Register bidirectional aliases for page vs img_p formats
+                if (preg_match('/^img_p(\d+)_(\d+)\.(.+)$/i', $existingName, $m)) {
+                    $altName = "page{$m[1]}_img{$m[2]}.{$m[3]}";
+                    $uploadedMediaMap[$altName] = $existingPath;
+                    $uploadedMediaMap["images/{$altName}"] = $existingPath;
+                } elseif (preg_match('/^page(\d+)_img(\d+)\.(.+)$/i', $existingName, $m)) {
+                    $altName = "img_p{$m[1]}_{$m[2]}.{$m[3]}";
+                    $uploadedMediaMap[$altName] = $existingPath;
+                    $uploadedMediaMap["images/{$altName}"] = $existingPath;
                 }
-                $zip->close();
+            }
+        } catch (Throwable $e) {
+            Log::warning("Could not pre-list B2 files for {$b2BasePath}: " . $e->getMessage());
+        }
+
+        // Upload media files directly to B2 under standardized path
+        foreach ($mediaFiles as $file) {
+            if (!$file instanceof UploadedFile) {
+                continue;
+            }
+
+            // Sanitize file name against directory traversal
+            $fileName = basename(str_replace(['\\', '/', "\0", '..'], '', $file->getClientOriginalName()));
+            $ext = strtolower($file->getClientOriginalExtension());
+
+            // Skip OS metadata files
+            if (str_contains($fileName, 'Zone.Identifier') || in_array($ext, ['ds_store'])) {
+                continue;
+            }
+
+            $isAudio = in_array($ext, ['mp3', 'wav', 'ogg', 'm4a']);
+            $targetFolder = $isAudio ? 'audio' : 'images';
+            $b2Dest = "{$b2BasePath}/{$targetFolder}/{$fileName}";
+
+            try {
+                Storage::disk('b2')->putFileAs("{$b2BasePath}/{$targetFolder}", $file, $fileName);
+            } catch (Throwable $e) {
+                Log::error("Failed to upload HSK imported media {$fileName} to B2: " . $e->getMessage() . ". Falling back to local storage.");
+                Storage::disk('public')->putFileAs("{$b2BasePath}/{$targetFolder}", $file, $fileName);
+            }
+
+            // Register in lookup map
+            $uploadedMediaMap[$fileName] = $b2Dest;
+            $uploadedMediaMap["{$targetFolder}/{$fileName}"] = $b2Dest;
+            $uploadedMediaMap["images/{$fileName}"] = $b2Dest;
+            $uploadedMediaMap["audio/{$fileName}"] = $b2Dest;
+
+            // Register bidirectional aliases for page vs img_p formats
+            if (preg_match('/^img_p(\d+)_(\d+)\.(.+)$/i', $fileName, $m)) {
+                $altName = "page{$m[1]}_img{$m[2]}.{$m[3]}";
+                $uploadedMediaMap[$altName] = $b2Dest;
+                $uploadedMediaMap["images/{$altName}"] = $b2Dest;
+            } elseif (preg_match('/^page(\d+)_img(\d+)\.(.+)$/i', $fileName, $m)) {
+                $altName = "img_p{$m[1]}_{$m[2]}.{$m[3]}";
+                $uploadedMediaMap[$altName] = $b2Dest;
+                $uploadedMediaMap["images/{$altName}"] = $b2Dest;
             }
         }
 
-        DB::beginTransaction();
-        try {
-            // Delete exam with the same code if it already exists to re-import
+        // Media path resolver helper closure
+        $resolveMediaPath = function (?string $rawPath, string $defaultFolder = 'images') use (&$uploadedMediaMap, $b2BasePath): ?string {
+            if (empty($rawPath)) {
+                return null;
+            }
+            $clean = trim($rawPath);
+            if (isset($uploadedMediaMap[$clean])) {
+                return $uploadedMediaMap[$clean];
+            }
+            $base = basename($clean);
+            if (isset($uploadedMediaMap[$base])) {
+                return $uploadedMediaMap[$base];
+            }
+
+            // Check alias transformations
+            if (preg_match('/^page(\d+)_img(\d+)\.(.+)$/i', $base, $m)) {
+                $alt = "img_p{$m[1]}_{$m[2]}.{$m[3]}";
+                if (isset($uploadedMediaMap[$alt])) {
+                    return $uploadedMediaMap[$alt];
+                }
+            } elseif (preg_match('/^img_p(\d+)_(\d+)\.(.+)$/i', $base, $m)) {
+                $alt = "page{$m[1]}_img{$m[2]}.{$m[3]}";
+                if (isset($uploadedMediaMap[$alt])) {
+                    return $uploadedMediaMap[$alt];
+                }
+            }
+
+            $ext = strtolower(pathinfo($base, PATHINFO_EXTENSION));
+            if (str_starts_with($clean, 'audio/') || in_array($ext, ['mp3', 'wav', 'ogg', 'm4a'])) {
+                return "{$b2BasePath}/audio/{$base}";
+            }
+
+            return "{$b2BasePath}/{$defaultFolder}/{$base}";
+        };
+
+            DB::beginTransaction();
+            try {
+
+            // Delete old exam records in DB if re-importing (without wiping B2 directory)
             $existingExam = HskMockExam::where('title', 'LIKE', "%({$examId})%")->first();
             if ($existingExam) {
-                $existingExam->delete();
+                foreach ($existingExam->sections as $sec) {
+                    foreach ($sec->questionGroups as $grp) {
+                        foreach ($grp->questions as $q) {
+                            $q->options()->delete();
+                            $q->delete();
+                        }
+                        $grp->delete();
+                    }
+                    $sec->delete();
+                }
+                $existingExam->deleteQuietly();
             }
 
             $durationMap = [1 => 40, 2 => 55, 3 => 90, 4 => 105, 5 => 125, 6 => 140];
             $duration = $durationMap[$data['level'] ?? 1] ?? 60;
 
-            $audioFiles = glob($storagePath . '/audio/*.mp3');
-            $audioFile = !empty($audioFiles) ? "hsk_mock_exams/{$examId}/audio/" . basename($audioFiles[0]) : null;
+            // Resolve global exam listening audio
+            $audioFile = null;
+            foreach ($uploadedMediaMap as $name => $b2Path) {
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                if (in_array($ext, ['mp3', 'wav', 'ogg', 'm4a'])) {
+                    $audioFile = $b2Path;
+                    break;
+                }
+            }
+            if (!$audioFile && !empty($data['audio_file'])) {
+                $audioFile = $resolveMediaPath($data['audio_file'], 'audio');
+            }
 
             $exam = HskMockExam::create([
                 'hsk_level_id' => $hskLevel->id,
@@ -102,11 +229,11 @@ class HskMockExamService
                 foreach ($sectionData['parts'] as $partData) {
                     $passageImage = null;
                     if (!empty($partData['images']) && is_array($partData['images'])) {
-                        $passageImage = implode(',', array_map(function ($img) use ($examId) {
-                            return "hsk_mock_exams/{$examId}/" . $img;
+                        $passageImage = implode(',', array_map(function ($img) use ($resolveMediaPath) {
+                            return $resolveMediaPath($img, 'images');
                         }, $partData['images']));
                     } elseif (!empty($partData['image'])) {
-                        $passageImage = "hsk_mock_exams/{$examId}/" . $partData['image'];
+                        $passageImage = $resolveMediaPath($partData['image'], 'images');
                     }
 
                     $instructions = $partData['instructions'] ?? null;
@@ -191,8 +318,8 @@ class HskMockExamService
                             $totalQuestions++;
                         }
 
-                        $imagePath = !empty($qData['image']) ? "hsk_mock_exams/{$examId}/" . $qData['image'] : null;
-                        $audioPath = !empty($qData['audio']) ? "hsk_mock_exams/{$examId}/" . $qData['audio'] : null;
+                        $imagePath = !empty($qData['image']) ? $resolveMediaPath($qData['image'], 'images') : null;
+                        $audioPath = !empty($qData['audio']) ? $resolveMediaPath($qData['audio'], 'audio') : null;
                         
                         $qType = $qData['type'] ?? null;
                         if (!$qType && isset($qData['options']) && count($qData['options']) == 2 && in_array('√', $qData['options'])) {
@@ -224,7 +351,7 @@ class HskMockExamService
                             foreach ($qData['options'] as $idx => $opt) {
                                 if (is_array($opt)) {
                                     $optText = $opt['text'] ?? $opt['option_code'] ?? '';
-                                    $optImage = !empty($opt['image']) ? "hsk_mock_exams/{$examId}/" . $opt['image'] : null;
+                                    $optImage = !empty($opt['image']) ? $resolveMediaPath($opt['image'], 'images') : null;
                                 } else {
                                     $optText = $opt;
                                     $optImage = null;
@@ -282,7 +409,7 @@ class HskMockExamService
                 'total_questions' => $totalQuestions
             ];
 
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
         }
@@ -394,12 +521,12 @@ class HskMockExamService
      * Upload an image for HSK Mock Exam to cloud storage with local fallback.
      *
      * @param UploadedFile $file
-     * @param int $examId
+     * @param HskMockExam|int|string $exam
      * @return string
      */
-    public function uploadImage(UploadedFile $file, int $examId = 0): string
+    public function uploadImage(UploadedFile $file, HskMockExam|int|string $exam = 0): string
     {
-        return app(MediaStorageService::class)->uploadHskExamMedia($examId, $file, 'images');
+        return app(MediaStorageService::class)->uploadHskExamMedia($exam, $file, 'images');
     }
 
     /**

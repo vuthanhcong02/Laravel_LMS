@@ -42,25 +42,25 @@
 
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-slate-900 dark:text-white">
-                        File Cấu trúc Đề thi <span class="text-rose-500">*</span>
+                        {{ __('File Cấu trúc Đề thi') }} <span class="text-rose-500">*</span>
                     </label>
                     <div class="flex gap-4 items-start">
                         <input type="file" name="data_file" accept=".json,.csv" required
                             class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 border border-slate-200 dark:border-slate-800 rounded-xl p-2 bg-slate-50 dark:bg-slate-800">
                         <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.download-template') }}" class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-all whitespace-nowrap">
                             <span class="material-symbols-outlined text-lg">download</span>
-                            Tải file CSV Mẫu
+                            {{ __('Tải file CSV Mẫu') }}
                         </a>
                     </div>
-                    <p class="text-xs text-slate-400 mt-2">Hỗ trợ file `exam.json` từ công cụ AI, hoặc file `template.csv` điền tay.</p>
+                    <p class="text-xs text-slate-400 mt-2">{{ __('Hỗ trợ file exam.json từ công cụ AI, hoặc file template.csv điền tay.') }}</p>
                 </div>
 
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-slate-900 dark:text-white">
-                        Kéo thả toàn bộ Phương tiện (Hình ảnh & Audio) <span class="text-rose-500">*</span>
+                        {{ __('Kéo thả toàn bộ Phương tiện (Hình ảnh & Audio)') }}
                     </label>
                     <div class="relative border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group text-center cursor-pointer overflow-hidden">
-                        <input type="file" name="media_files[]" accept="image/*,audio/*" multiple required
+                        <input type="file" name="media_files[]" accept="image/*,audio/*" multiple
                             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" id="mediaInput">
                         
                         <div class="flex flex-col items-center justify-center space-y-3 pointer-events-none">
@@ -68,8 +68,8 @@
                                 <span class="material-symbols-outlined text-2xl">cloud_upload</span>
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Click hoặc Kéo thả nhiều file vào đây</p>
-                                <p class="text-xs text-slate-400 mt-1">Hỗ trợ các định dạng .mp3, .png, .jpg (Không cần nén ZIP)</p>
+                                <p class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Click hoặc Kéo thả nhiều file vào đây') }}</p>
+                                <p class="text-xs text-slate-400 mt-1">{{ __('Hỗ trợ các định dạng .mp3, .png, .jpg (Không cần nén ZIP)') }}</p>
                             </div>
                             <p id="mediaCount" class="text-xs font-bold text-primary hidden bg-primary/10 px-3 py-1 rounded-full"></p>
                         </div>
@@ -79,10 +79,10 @@
 
                 <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
                     <a href="{{ route((auth()->user()->role === \App\Models\User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold text-sm text-slate-600 dark:text-slate-300">
-                        Hủy
+                        {{ __('Hủy') }}
                     </a>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary/90">
-                        Bắt đầu Import
+                        {{ __('Bắt đầu Import') }}
                     </button>
                 </div>
             </form>

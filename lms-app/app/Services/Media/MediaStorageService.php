@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
@@ -405,19 +406,62 @@ class MediaStorageService
     }
 
     /**
-     * Upload HSK Mock Exam audio or question image:
-     * hsk_mock_exams/{hskLevel}/exam_{examId}/{subfolder}/media_{timestamp}.{extension}
+     * Upload HSK Mock Exam audio or question image to Backblaze B2:
+     * hsk_mock_exams/{HSK_LEVEL}/{EXAM_CODE}/{subfolder}/media_{timestamp}_{random}.{extension}
+     *
+     * @param HskMockExam|int|string $exam Exam instance, exam database ID, or exam code (e.g. 'H10000')
+     * @param UploadedFile $file Uploaded media file
+     * @param string $subfolder Subfolder name ('images' or 'audio')
+     * @param string|null $hskLevel Optional HSK level override (e.g. 'HSK1')
+     * @return string Relative stored path
      */
-    public function uploadHskExamMedia(int $examId, UploadedFile $file, string $subfolder = 'questions', ?string $hskLevel = null): string
+    public function uploadHskExamMedia(HskMockExam|int|string $exam, UploadedFile $file, string $subfolder = 'images', ?string $hskLevel = null): string
     {
-        // Automatically resolve HSK level code (e.g. hsk1, hsk3, hsk6) if not provided
-        if (!$hskLevel && $examId > 0) {
-            $exam = HskMockExam::with('hskLevel')->find($examId);
-            $hskLevel = $exam && $exam->hskLevel ? strtolower($exam->hskLevel->level_code) : 'hsk';
-        }
-        $hskLevel = $hskLevel ?: 'hsk';
+        $examModel = null;
+        $examCode = null;
 
-        $directory = "hsk_mock_exams/{$hskLevel}/exam_{$examId}/{$subfolder}";
+        if ($exam instanceof HskMockExam) {
+            $examModel = $exam;
+        } elseif (is_numeric($exam) && (int) $exam > 0) {
+            $examModel = HskMockExam::with('hskLevel')->find((int) $exam);
+        } elseif (is_string($exam) && !empty(trim($exam))) {
+            $examCode = strtoupper(trim($exam));
+        }
+
+        // Resolve exam code from model if available
+        if ($examModel) {
+            if (preg_match('/(H\d+)/i', $examModel->title, $matches)) {
+                $examCode = strtoupper($matches[1]);
+            } elseif (!empty($examModel->audio_file) && preg_match('#hsk_mock_exams/(?:[A-Za-z0-9_-]+/)?(H\d+)#i', $examModel->audio_file, $matches)) {
+                $examCode = strtoupper($matches[1]);
+            } else {
+                $examCode = strtoupper($examModel->folder_name ?: ('exam_' . $examModel->id));
+            }
+
+            if (!$hskLevel && $examModel->hskLevel) {
+                $hskLevel = strtoupper($examModel->hskLevel->level_code);
+            }
+        } elseif (!$examCode && is_numeric($exam)) {
+            $examCode = 'EXAM_' . $exam;
+        }
+
+        if (!$examCode) {
+            throw new InvalidArgumentException("Unable to determine exam code for media upload.");
+        }
+
+        // Standardize HSK level (e.g. HSK1, HSK2)
+        if ($hskLevel) {
+            $hskLevel = strtoupper($hskLevel);
+        } elseif (preg_match('/^H(\d)/i', $examCode, $m)) {
+            $hskLevel = 'HSK' . $m[1];
+        } else {
+            $hskLevel = 'HSK1';
+        }
+
+        // Normalize subfolder (default to 'images' if 'questions' was passed)
+        $cleanSubfolder = ($subfolder === 'questions') ? 'images' : trim($subfolder, '/');
+
+        $directory = "hsk_mock_exams/{$hskLevel}/{$examCode}/{$cleanSubfolder}";
         $extension = $file->getClientOriginalExtension() ?: 'bin';
         $filename = "media_" . time() . "_" . Str::random(8) . "." . $extension;
         $fullPath = "{$directory}/{$filename}";
@@ -746,15 +790,74 @@ class MediaStorageService
     }
 
     /**
-     * Delete an entire directory on B2
+     * Delete an entire directory on B2 (permanently purging all versions and delete markers)
      */
     public function deleteDirectory(string $directory): bool
     {
         $cleanDir = $this->normalizePath($directory);
+        if (empty($cleanDir) || $cleanDir === '.' || $cleanDir === '/') {
+            Log::warning("Refusing to delete root or empty directory on {$this->disk}.");
+            return false;
+        }
+
         try {
+            // For B2 / S3 versioned buckets: purge all object versions and delete markers
+            // to prevent leaving hidden versions and asterisk (*) in B2 console
+            if (in_array($this->disk, ['b2', 's3'])) {
+                $client = $this->getS3Client();
+                $bucket = $this->bucket();
+                $prefix = rtrim($cleanDir, '/') . '/';
+
+                $keyMarker = null;
+                $versionIdMarker = null;
+
+                do {
+                    $params = [
+                        'Bucket' => $bucket,
+                        'Prefix' => $prefix,
+                    ];
+                    if ($keyMarker) {
+                        $params['KeyMarker'] = $keyMarker;
+                    }
+                    if ($versionIdMarker) {
+                        $params['VersionIdMarker'] = $versionIdMarker;
+                    }
+
+                    $res = $client->listObjectVersions($params);
+
+                    $objectsToDelete = [];
+                    if (!empty($res->get('Versions'))) {
+                        foreach ($res->get('Versions') as $v) {
+                            $objectsToDelete[] = ['Key' => $v['Key'], 'VersionId' => $v['VersionId']];
+                        }
+                    }
+                    if (!empty($res->get('DeleteMarkers'))) {
+                        foreach ($res->get('DeleteMarkers') as $dm) {
+                            $objectsToDelete[] = ['Key' => $dm['Key'], 'VersionId' => $dm['VersionId']];
+                        }
+                    }
+
+                    if (!empty($objectsToDelete)) {
+                        $client->deleteObjects([
+                            'Bucket' => $bucket,
+                            'Delete' => ['Objects' => $objectsToDelete],
+                        ]);
+                    }
+
+                    $isTruncated = $res->get('IsTruncated');
+                    $keyMarker = $res->get('NextKeyMarker');
+                    $versionIdMarker = $res->get('NextVersionIdMarker');
+                } while ($isTruncated);
+            }
+
             return Storage::disk($this->disk)->deleteDirectory($cleanDir);
         } catch (Throwable $e) {
-            return false;
+            Log::error("Failed to purge directory {$cleanDir} on {$this->disk}: " . $e->getMessage());
+            try {
+                return Storage::disk($this->disk)->deleteDirectory($cleanDir);
+            } catch (Throwable $ex) {
+                return false;
+            }
         }
     }
 

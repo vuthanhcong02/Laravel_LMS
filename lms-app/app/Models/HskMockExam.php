@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Throwable;
 
 class HskMockExam extends Model
 {
@@ -69,12 +71,28 @@ class HskMockExam extends Model
         parent::boot();
 
         static::deleting(function ($exam) {
+            $extractedCode = null;
             if (preg_match('/\((\w+)\)$/', $exam->title, $matches)) {
-                $examId = $matches[1];
-                $storagePath = storage_path('app/public/hsk_mock_exams/' . $examId);
+                $extractedCode = $matches[1];
+            } elseif (!empty($exam->audio_file) && preg_match('#hsk_mock_exams/(?:[A-Za-z0-9_-]+/)?(H\d+)#i', $exam->audio_file, $matches)) {
+                $extractedCode = $matches[1];
+            }
+
+            // Clean up legacy local directory if exists
+            if ($extractedCode) {
+                $storagePath = storage_path('app/public/hsk_mock_exams/' . $extractedCode);
                 if (File::isDirectory($storagePath)) {
                     File::deleteDirectory($storagePath);
                 }
+            }
+
+            // Clean up Backblaze B2 directory
+            try {
+                $levelCode = strtoupper($exam->hskLevel->level_code ?? 'HSK');
+                $examFolder = strtoupper($extractedCode ?: ('exam_' . $exam->id));
+                app(MediaStorageService::class)->deleteDirectory("hsk_mock_exams/{$levelCode}/{$examFolder}");
+            } catch (Throwable $e) {
+                // Ignore cleanup errors on delete
             }
         });
     }

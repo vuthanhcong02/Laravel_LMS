@@ -22,9 +22,9 @@ class StoreHskMockExamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'data_file' => 'required|file|mimes:json,txt,csv',
-            'media_files' => 'required|array',
-            'media_files.*' => 'required|file|mimes:jpeg,png,jpg,mp3,wav'
+            'data_file' => 'required|file|mimes:json,txt,csv|max:10240',
+            'media_files' => 'nullable|array',
+            'media_files.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp3,wav,ogg,m4a|max:102400'
         ];
     }
 }

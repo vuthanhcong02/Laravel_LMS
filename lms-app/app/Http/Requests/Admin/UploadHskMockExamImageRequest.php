@@ -23,6 +23,7 @@ class UploadHskMockExamImageRequest extends FormRequest
     {
         return [
             'image' => 'required|image|mimes:jpeg,jpg,png,gif,webp|max:10240',
+            'exam_id' => 'nullable|integer',
         ];
     }
 }
