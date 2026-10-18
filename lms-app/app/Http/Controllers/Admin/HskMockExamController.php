@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\StoreHskMockExamRequest;
 use App\Http\Requests\Admin\UpdateHskMockExamEditorRequest;
 use App\Http\Requests\Admin\UploadHskMockExamImageRequest;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -71,33 +72,9 @@ class HskMockExamController extends Controller
                 $data = json_decode($jsonContent, true);
             }
 
-            $zipRealPath = null;
+            $mediaFiles = $request->file('media_files', []);
 
-            // Handle multiple media files by zipping them on the fly
-            if ($request->hasFile('media_files')) {
-                $zip = new \ZipArchive();
-                $zipFileName = tempnam(sys_get_temp_dir(), 'media_') . '.zip';
-                if ($zip->open($zipFileName, \ZipArchive::CREATE) === TRUE) {
-                    foreach ($request->file('media_files') as $file) {
-                        $originalName = $file->getClientOriginalName();
-                        // Put audio files in audio/, images in images/ if needed by importExam
-                        // But importExam extracts everything to the same directory and checks `glob`
-                        // Actually, importExam just extracts to `$storagePath`. It looks for `audio/*.mp3`.
-                        $ext = strtolower($file->getClientOriginalExtension());
-                        $folder = in_array($ext, ['mp3', 'wav']) ? 'audio/' : 'images/';
-                        $zip->addFile($file->getRealPath(), $folder . $originalName);
-                    }
-                    $zip->close();
-                    $zipRealPath = $zipFileName;
-                }
-            }
-
-            $result = $this->hskMockExamService->importExam($data, $zipRealPath);
-
-            // Clean up temp zip
-            if ($zipRealPath && file_exists($zipRealPath)) {
-                @unlink($zipRealPath);
-            }
+            $result = $this->hskMockExamService->importExam($data, $mediaFiles);
 
             return redirect()->route((auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index')->with(
                 'success',
@@ -261,7 +238,8 @@ class HskMockExamController extends Controller
     public function uploadImage(UploadHskMockExamImageRequest $request)
     {
         if ($request->hasFile('image')) {
-            $path = $this->hskMockExamService->uploadImage($request->file('image'));
+            $examId = (int) $request->input('exam_id', 0);
+            $path = $this->hskMockExamService->uploadImage($request->file('image'), $examId);
 
             return response()->json([
                 'status' => 'success',
