@@ -2,6 +2,7 @@
 
 namespace App\Services\Teacher;
 
+use App\Jobs\PurgeCloudMediaDirectoryJob;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Course;
@@ -205,27 +206,15 @@ class AssignmentService
      */
     public function delete(Assignment $assignment): void
     {
-        // Đảm bảo submissions đã được load để tránh N+1 query
-        $assignment->loadMissing('submissions');
+        $assignmentDir = "assignments/assignment_{$assignment->id}";
 
-        // 1. Xóa file tài liệu bài tập
-        foreach ($assignment->attachments ?? [] as $att) {
-            $this->deleteFile($att['path'] ?? null);
-        }
+        // 1. Delete local directory if exists
+        Storage::disk('local')->deleteDirectory($assignmentDir);
 
-        // 2. Xóa file submissions + teacher feedback của từng học sinh
-        foreach ($assignment->submissions as $sub) {
-            foreach ($sub->attachments ?? [] as $att) {
-                $this->deleteFile($att['path'] ?? null);
-            }
-            foreach ($sub->teacher_attachments ?? [] as $att) {
-                $this->deleteFile($att['path'] ?? null);
-            }
-            if ($sub->teacher_audio_path) {
-                $this->deleteFile($sub->teacher_audio_path);
-            }
-        }
+        // 2. Dispatch background job to purge all cloud files (materials, submissions, feedback)
+        PurgeCloudMediaDirectoryJob::dispatch($assignmentDir);
 
+        // 3. Delete database record (MySQL foreign key cascades submissions)
         $assignment->delete();
     }
 

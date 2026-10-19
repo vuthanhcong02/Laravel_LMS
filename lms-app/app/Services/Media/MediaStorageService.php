@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\HskMockExam;
 use App\Models\User;
 use Aws\S3\S3Client;
+use Illuminate\Http\File as HttpFile;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -388,18 +389,29 @@ class MediaStorageService
      * Upload lesson materials or teacher notes:
      * courses/course_{courseId}/lessons/lesson_{lessonId}/{type}/file_{timestamp}.{extension}
      */
-    public function uploadLessonFile(int $courseId, int $lessonId, UploadedFile $file, string $type = 'pdfs'): string
+    public function uploadLessonFile(int $courseId, int $lessonId, UploadedFile|HttpFile|string $file, string $type = 'pdfs'): string
     {
         $directory = "courses/course_{$courseId}/lessons/lesson_{$lessonId}/{$type}";
-        $extension = $file->getClientOriginalExtension() ?: 'bin';
+
+        if ($file instanceof UploadedFile) {
+            $extension = $file->getClientOriginalExtension() ?: 'bin';
+            $fileToStore = $file;
+        } elseif ($file instanceof HttpFile) {
+            $extension = $file->guessExtension() ?: 'bin';
+            $fileToStore = $file;
+        } else {
+            $extension = pathinfo($file, PATHINFO_EXTENSION) ?: 'bin';
+            $fileToStore = new HttpFile($file);
+        }
+
         $filename = $type . "_" . time() . "_" . Str::random(6) . "." . $extension;
         $fullPath = "{$directory}/{$filename}";
 
         try {
-            Storage::disk($this->disk)->putFileAs($directory, $file, $filename);
+            Storage::disk($this->disk)->putFileAs($directory, $fileToStore, $filename);
         } catch (Throwable $e) {
             Log::error("Failed to upload lesson {$type} to B2: " . $e->getMessage() . ". Falling back to local storage.");
-            Storage::disk('public')->putFileAs($directory, $file, $filename);
+            Storage::disk('public')->putFileAs($directory, $fileToStore, $filename);
         }
 
         return $fullPath;

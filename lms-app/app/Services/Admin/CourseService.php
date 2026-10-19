@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Jobs\PurgeCloudMediaDirectoryJob;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\User;
@@ -115,11 +116,8 @@ class CourseService
     public function destroy(Course $course): void
     {
         if ($course->thumbnail) {
-            try {
-                app(MediaStorageService::class)->deleteDirectory("courses/course_{$course->id}");
-            } catch (\Throwable $e) {
-                // Ignore remote delete error
-            }
+            // Dispatch background job to purge cloud media directory
+            PurgeCloudMediaDirectoryJob::dispatch("courses/course_{$course->id}");
 
             if (Storage::disk('public')->exists($course->thumbnail)) {
                 Storage::disk('public')->delete($course->thumbnail);
