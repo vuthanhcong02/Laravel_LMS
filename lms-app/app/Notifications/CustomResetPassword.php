@@ -3,12 +3,23 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CustomResetPassword extends Notification
+class CustomResetPassword extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    /**
+     * The number of times the notification may be attempted.
+     */
+    public int $tries = 3;
+
+    /**
+     * The maximum number of seconds the notification can run.
+     */
+    public int $timeout = 30;
 
     public string $token;
 
