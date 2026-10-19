@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\HskLevel;
-use App\Models\HskMockExam;
-use App\Services\Admin\HskMockExamService;
 use App\Http\Requests\Admin\StoreHskMockExamRequest;
 use App\Http\Requests\Admin\UpdateHskMockExamEditorRequest;
 use App\Http\Requests\Admin\UploadHskMockExamImageRequest;
+use App\Jobs\ImportHskMockExamJob;
+use App\Models\HskLevel;
+use App\Models\HskMockExam;
 use App\Models\User;
+use App\Services\Admin\HskMockExamService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class HskMockExamController extends Controller
 {
@@ -63,25 +66,36 @@ class HskMockExamController extends Controller
     {
         try {
             $dataFile = $request->file('data_file');
-            $extension = $dataFile->getClientOriginalExtension();
+            $extension = strtolower($dataFile->getClientOriginalExtension());
 
-            if (in_array($extension, ['csv'])) {
-                $data = $this->hskMockExamService->parseCsvToData($dataFile->getRealPath());
-            } else {
-                $jsonContent = File::get($dataFile->getRealPath());
-                $data = json_decode($jsonContent, true);
+            $importBatchId = (string) Str::uuid();
+            $tempDir = storage_path("app/temp_imports/{$importBatchId}");
+            File::makeDirectory("{$tempDir}/media", 0775, true, true);
+
+            // Save JSON/CSV data file to temporary local directory
+            $dataFile->move($tempDir, "exam_data.{$extension}");
+
+            // Save media files (images, audio) to temporary directory
+            if ($request->hasFile('media_files')) {
+                foreach ($request->file('media_files') as $file) {
+                    if ($file->isValid()) {
+                        $fileName = basename(str_replace(['\\', '/', "\0", '..'], '', $file->getClientOriginalName()));
+                        $file->move("{$tempDir}/media", $fileName);
+                    }
+                }
             }
 
-            $mediaFiles = $request->file('media_files', []);
+            // Dispatch import and media processing to background queue
+            ImportHskMockExamJob::dispatch($importBatchId, $extension, (int) auth()->id());
 
-            $result = $this->hskMockExamService->importExam($data, $mediaFiles);
+            $targetRoute = (auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index';
 
-            return redirect()->route((auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index')->with(
+            return redirect()->route($targetRoute)->with(
                 'success',
-                "Imported exam {$result['exam_id']} successfully with {$result['total_questions']} questions!"
+                __('Đề thi đang được xử lý trong nền. Bạn sẽ nhận được thông báo khi hoàn tất.')
             );
         } catch (\Exception $e) {
-            return back()->with('error', 'Error importing exam: ' . $e->getMessage());
+            return back()->with('error', __('Có lỗi xảy ra khi xử lý đề thi. Vui lòng thử lại sau.'));
         }
     }
 
@@ -148,6 +162,10 @@ class HskMockExamController extends Controller
             $hskLevel = HskLevel::where('level_code', $request->level_code)->firstOrFail();
             $exam = $this->hskMockExamService->createEmptyExam($request->validated(), $hskLevel);
 
+            // Invalidate exam categories cache
+            Cache::forget('hsk_levels_with_counts');
+            Cache::forget('hsk_total_exams_count');
+
             return redirect()->route((auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.edit', $exam->id)->with('success', 'Đã tạo đề thi trống thành công!');
         } catch (\Exception $e) {
             return back()->with('error', 'Lỗi khi tạo đề thi: ' . $e->getMessage());
@@ -162,6 +180,10 @@ class HskMockExamController extends Controller
         $hskMockExam->update([
             'is_published' => !$hskMockExam->is_published
         ]);
+
+        // Invalidate exam categories cache on status toggle
+        Cache::forget('hsk_levels_with_counts');
+        Cache::forget('hsk_total_exams_count');
 
         $statusStr = $hskMockExam->is_published ? 'xuất bản' : 'chuyển về bản nháp';
         return back()->with('success', "Đã {$statusStr} đề thi thành công!");
@@ -229,6 +251,13 @@ class HskMockExamController extends Controller
     public function destroy(HskMockExam $hskMockExam)
     {
         $hskMockExam->delete();
+
+        // Invalidate stats cache on exam deletion
+        Cache::forget('hsk_levels_with_counts');
+        Cache::forget('hsk_total_exams_count');
+        Cache::forget('hsk_total_attempts');
+        Cache::forget('hsk_global_pass_rate');
+
         return redirect()->route((auth()->user()->role === User::ROLE_TEACHER ? 'teacher.' : 'admin.') . 'hsk-mock-exams.index')->with('success', 'Exam deleted successfully!');
     }
 

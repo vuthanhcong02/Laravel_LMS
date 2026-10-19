@@ -8,6 +8,7 @@ use App\Models\HskMockExam;
 use App\Models\HskMockExamResult;
 use App\Models\HskMockExamUserAnswer;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class HskMockExamService
@@ -17,11 +18,13 @@ class HskMockExamService
      */
     public function getHskLevels()
     {
-        return HskLevel::withCount(['mockExams' => function ($q) {
-            $q->where('is_published', true);
-        }])->withSum(['mockExams' => function ($q) {
-            $q->where('is_published', true);
-        }], 'attempt_count')->orderBy('level_code')->get();
+        return Cache::remember('hsk_levels_with_counts', 3600, function () {
+            return HskLevel::withCount(['mockExams' => function ($q) {
+                $q->where('is_published', true);
+            }])->withSum(['mockExams' => function ($q) {
+                $q->where('is_published', true);
+            }], 'attempt_count')->orderBy('level_code')->get();
+        });
     }
 
     /**
@@ -29,7 +32,9 @@ class HskMockExamService
      */
     public function getTotalExamsCount()
     {
-        return HskMockExam::where('is_published', true)->count();
+        return Cache::remember('hsk_total_exams_count', 3600, function () {
+            return HskMockExam::where('is_published', true)->count();
+        });
     }
 
     /**
@@ -37,7 +42,9 @@ class HskMockExamService
      */
     public function getTotalAttempts()
     {
-        return HskMockExam::sum('attempt_count');
+        return Cache::remember('hsk_total_attempts', 600, function () {
+            return HskMockExam::sum('attempt_count');
+        });
     }
 
     /**
@@ -277,6 +284,10 @@ class HskMockExamService
                 event(new UserEarnedExp($user, 'hsk_mock_exam', (int) $exam->id));
             }
 
+            // Invalidate attempts and pass rate stats cache on new submission
+            Cache::forget('hsk_total_attempts');
+            Cache::forget('hsk_global_pass_rate');
+
             return $result;
         });
     }
@@ -350,24 +361,26 @@ class HskMockExamService
      */
     public function getGlobalPassRate()
     {
-        $total = HskMockExamResult::where('status', 'completed')->count();
-        if ($total === 0) {
-            return '78.5%';
-        }
+        return Cache::remember('hsk_global_pass_rate', 900, function () {
+            $total = HskMockExamResult::where('status', 'completed')->count();
+            if ($total === 0) {
+                return '78.5%';
+            }
 
-        $passed = HskMockExamResult::where('status', 'completed')
-            ->where(function ($q) {
-                $q->whereHas('mockExam.hskLevel', function ($lq) {
-                    $lq->whereIn('level_code', ['hsk1', 'hsk2']);
-                })->where('total_score', '>=', 120)
-                    ->orWhere(function ($q2) {
-                        $q2->whereHas('mockExam.hskLevel', function ($lq) {
-                            $lq->whereNotIn('level_code', ['hsk1', 'hsk2']);
-                        })->where('total_score', '>=', 180);
-                    });
-            })->count();
+            $passed = HskMockExamResult::where('status', 'completed')
+                ->where(function ($q) {
+                    $q->whereHas('mockExam.hskLevel', function ($lq) {
+                        $lq->whereIn('level_code', ['hsk1', 'hsk2']);
+                    })->where('total_score', '>=', 120)
+                        ->orWhere(function ($q2) {
+                            $q2->whereHas('mockExam.hskLevel', function ($lq) {
+                                $lq->whereNotIn('level_code', ['hsk1', 'hsk2']);
+                            })->where('total_score', '>=', 180);
+                        });
+                })->count();
 
-        return round(($passed / $total) * 100, 1) . '%';
+            return round(($passed / $total) * 100, 1) . '%';
+        });
     }
 
     /**
@@ -375,43 +388,55 @@ class HskMockExamService
      */
     public function getLeaderboard($levelCode = null, $limit = 10, $currentUserId = null, $timeframe = 'all_time')
     {
-        $subQuery = DB::table('hsk_mock_exam_results as r')
-            ->selectRaw(
-                'r.id, r.user_id, r.total_score, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) as duration_seconds,
-                ROW_NUMBER() OVER (PARTITION BY r.user_id ORDER BY r.total_score DESC, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) ASC) as rn'
-            )
-            ->where('r.status', 'completed')
-            ->where('r.total_score', '>=', 50);
+        $cacheKey = 'hsk_lb_' . ($levelCode ?: 'all') . '_' . $timeframe . '_' . $limit;
 
-        if ($timeframe === 'month') {
-            $subQuery->where('r.completed_at', '>=', now()->startOfMonth());
-        } elseif ($timeframe === 'week') {
-            $subQuery->where('r.completed_at', '>=', now()->startOfWeek());
-        }
+        $cachedData = Cache::remember($cacheKey, 180, function () use ($levelCode, $limit, $timeframe) {
+            $subQuery = DB::table('hsk_mock_exam_results as r')
+                ->selectRaw(
+                    'r.id, r.user_id, r.total_score, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) as duration_seconds,
+                    ROW_NUMBER() OVER (PARTITION BY r.user_id ORDER BY r.total_score DESC, TIMESTAMPDIFF(SECOND, r.started_at, r.completed_at) ASC) as rn'
+                )
+                ->where('r.status', 'completed')
+                ->where('r.total_score', '>=', 50);
 
-        if ($levelCode && $levelCode !== 'all') {
-            $subQuery->join('hsk_mock_exams as e', 'r.hsk_mock_exam_id', '=', 'e.id')
-                ->join('hsk_levels as l', 'e.hsk_level_id', '=', 'l.id')
-                ->where('l.level_code', $levelCode);
-        }
+            if ($timeframe === 'month') {
+                $subQuery->where('r.completed_at', '>=', now()->startOfMonth());
+            } elseif ($timeframe === 'week') {
+                $subQuery->where('r.completed_at', '>=', now()->startOfWeek());
+            }
 
-        // Get ranked result IDs and user IDs
-        $rankedResults = DB::table(DB::raw("({$subQuery->toSql()}) as ranked"))
-            ->mergeBindings($subQuery)
-            ->where('rn', 1)
-            ->orderByDesc('total_score')
-            ->orderBy('duration_seconds')
-            ->get(['id', 'user_id']);
+            if ($levelCode && $levelCode !== 'all') {
+                $subQuery->join('hsk_mock_exams as e', 'r.hsk_mock_exam_id', '=', 'e.id')
+                    ->join('hsk_levels as l', 'e.hsk_level_id', '=', 'l.id')
+                    ->where('l.level_code', $levelCode);
+            }
 
-        $topIds = $rankedResults->take($limit)->pluck('id');
+            // Get ranked result IDs and user IDs
+            $rankedResults = DB::table(DB::raw("({$subQuery->toSql()}) as ranked"))
+                ->mergeBindings($subQuery)
+                ->where('rn', 1)
+                ->orderByDesc('total_score')
+                ->orderBy('duration_seconds')
+                ->get(['id', 'user_id']);
 
-        // Eager load only top list results to prevent memory bloat and N+1 queries
-        $topList = HskMockExamResult::with(['user', 'mockExam.hskLevel'])
-            ->selectRaw('*, TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds')
-            ->whereIn('id', $topIds)
-            ->orderByDesc('total_score')
-            ->orderByRaw('TIMESTAMPDIFF(SECOND, started_at, completed_at) ASC')
-            ->get();
+            $topIds = $rankedResults->take($limit)->pluck('id');
+
+            // Eager load only top list results to prevent memory bloat and N+1 queries
+            $topList = HskMockExamResult::with(['user', 'mockExam.hskLevel'])
+                ->selectRaw('*, TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds')
+                ->whereIn('id', $topIds)
+                ->orderByDesc('total_score')
+                ->orderByRaw('TIMESTAMPDIFF(SECOND, started_at, completed_at) ASC')
+                ->get();
+
+            return [
+                'rankedResults' => $rankedResults,
+                'topList' => $topList,
+            ];
+        });
+
+        $rankedResults = $cachedData['rankedResults'];
+        $topList = $cachedData['topList'];
 
         $currentUserRank = null;
         $currentUserResult = null;

@@ -418,78 +418,82 @@ class GamificationService
      */
     public function getGamificationLeaderboard(string $timeframe = 'all_time', int $limit = 5): array
     {
-        $timezone = config('gamification.timezone', 'Asia/Ho_Chi_Minh');
-        $now = Carbon::now($timezone);
+        $cacheKey = "gamification_lb_{$timeframe}_{$limit}";
 
-        $baseQuery = User::where(function ($q) {
-            $q->where('role', '!=', User::ROLE_ADMIN)
-                ->orWhereNull('role');
-        });
+        return Cache::remember($cacheKey, 180, function () use ($timeframe, $limit) {
+            $timezone = config('gamification.timezone', 'Asia/Ho_Chi_Minh');
+            $now = Carbon::now($timezone);
 
-        if ($timeframe === 'week') {
-            $startOfWeek = $now->copy()->startOfWeek();
-            $endOfWeek = $now->copy()->endOfWeek();
+            $baseQuery = User::where(function ($q) {
+                $q->where('role', '!=', User::ROLE_ADMIN)
+                    ->orWhereNull('role');
+            });
 
-            // Calculate total EXP within the week from user_exp_transactions
-            $topUsers = (clone $baseQuery)
-                ->withSum(['expTransactions as period_exp' => function ($q) use ($startOfWeek, $endOfWeek) {
-                    $q->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
-                }], 'exp_gained')
-                ->having('period_exp', '>', 0)
-                ->orderByDesc('period_exp')
-                ->orderByDesc('current_streak')
-                ->orderByDesc('exp_total')
-                ->take($limit)
-                ->get();
-        } elseif ($timeframe === 'month') {
-            $startOfMonth = $now->copy()->startOfMonth();
-            $endOfMonth = $now->copy()->endOfMonth();
+            if ($timeframe === 'week') {
+                $startOfWeek = $now->copy()->startOfWeek();
+                $endOfWeek = $now->copy()->endOfWeek();
 
-            // Calculate total EXP within the month from user_exp_transactions
-            $topUsers = (clone $baseQuery)
-                ->withSum(['expTransactions as period_exp' => function ($q) use ($startOfMonth, $endOfMonth) {
-                    $q->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
-                }], 'exp_gained')
-                ->having('period_exp', '>', 0)
-                ->orderByDesc('period_exp')
-                ->orderByDesc('current_streak')
-                ->orderByDesc('exp_total')
-                ->take($limit)
-                ->get();
-        } else {
-            // All time: Based on total EXP and streak
-            $topUsers = (clone $baseQuery)
-                ->where('exp_total', '>', 0)
-                ->orderByDesc('exp_total')
-                ->orderByDesc('current_streak')
-                ->orderByDesc('id')
-                ->take($limit)
-                ->get();
-        }
+                // Calculate total EXP within the week from user_exp_transactions
+                $topUsers = (clone $baseQuery)
+                    ->withSum(['expTransactions as period_exp' => function ($q) use ($startOfWeek, $endOfWeek) {
+                        $q->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+                    }], 'exp_gained')
+                    ->having('period_exp', '>', 0)
+                    ->orderByDesc('period_exp')
+                    ->orderByDesc('current_streak')
+                    ->orderByDesc('exp_total')
+                    ->take($limit)
+                    ->get();
+            } elseif ($timeframe === 'month') {
+                $startOfMonth = $now->copy()->startOfMonth();
+                $endOfMonth = $now->copy()->endOfMonth();
 
-        $leaderboard = $topUsers->map(function ($u, $index) use ($timeframe) {
-            $fullName = $u->full_name;
-            $expValue = ($timeframe === 'all_time') ? (int) ($u->exp_total ?? 0) : (int) ($u->period_exp ?? 0);
-            $levelInfo = $this->calculateLevelInfo((int) ($u->exp_total ?? 0));
+                // Calculate total EXP within the month from user_exp_transactions
+                $topUsers = (clone $baseQuery)
+                    ->withSum(['expTransactions as period_exp' => function ($q) use ($startOfMonth, $endOfMonth) {
+                        $q->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+                    }], 'exp_gained')
+                    ->having('period_exp', '>', 0)
+                    ->orderByDesc('period_exp')
+                    ->orderByDesc('current_streak')
+                    ->orderByDesc('exp_total')
+                    ->take($limit)
+                    ->get();
+            } else {
+                // All time: Based on total EXP and streak
+                $topUsers = (clone $baseQuery)
+                    ->where('exp_total', '>', 0)
+                    ->orderByDesc('exp_total')
+                    ->orderByDesc('current_streak')
+                    ->orderByDesc('id')
+                    ->take($limit)
+                    ->get();
+            }
+
+            $leaderboard = $topUsers->map(function ($u, $index) use ($timeframe) {
+                $fullName = $u->full_name;
+                $expValue = ($timeframe === 'all_time') ? (int) ($u->exp_total ?? 0) : (int) ($u->period_exp ?? 0);
+                $levelInfo = $this->calculateLevelInfo((int) ($u->exp_total ?? 0));
+
+                return [
+                    'rank'           => $index + 1,
+                    'user_id'        => $u->id,
+                    'name'           => $fullName,
+                    'avatar'         => $u->avatar_url,
+                    'exp'            => number_format($expValue) . ' EXP',
+                    'raw_exp'        => $expValue,
+                    'streak'         => (int) ($u->current_streak ?? 0),
+                    'longest_streak' => (int) ($u->longest_streak ?? 0),
+                    'level'          => $levelInfo['level'],
+                    'level_badge'    => $levelInfo['level_badge'],
+                    'badge'          => $levelInfo['level_badge'],
+                ];
+            })->values()->toArray();
 
             return [
-                'rank'           => $index + 1,
-                'user_id'        => $u->id,
-                'name'           => $fullName,
-                'avatar'         => $u->avatar_url,
-                'exp'            => number_format($expValue) . ' EXP',
-                'raw_exp'        => $expValue,
-                'streak'         => (int) ($u->current_streak ?? 0),
-                'longest_streak' => (int) ($u->longest_streak ?? 0),
-                'level'          => $levelInfo['level'],
-                'level_badge'    => $levelInfo['level_badge'],
-                'badge'          => $levelInfo['level_badge'],
+                'timeframe' => $timeframe,
+                'leaderboard' => $leaderboard,
             ];
-        })->values()->toArray();
-
-        return [
-            'timeframe' => $timeframe,
-            'leaderboard' => $leaderboard,
-        ];
+        });
     }
 }

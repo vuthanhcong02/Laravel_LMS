@@ -10,11 +10,13 @@ use App\Models\HskMockExamQuestion;
 use App\Models\HskMockExamOption;
 use App\Services\Media\MediaStorageService;
 use Exception;
+use Illuminate\Http\File as HttpFile;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use SplFileInfo;
 use Throwable;
 
 class HskMockExamService
@@ -82,13 +84,28 @@ class HskMockExamService
 
         // Upload media files directly to B2 under standardized path
         foreach ($mediaFiles as $file) {
-            if (!$file instanceof UploadedFile) {
+            $realPath = null;
+            $rawOriginalName = null;
+            $ext = null;
+
+            if ($file instanceof UploadedFile) {
+                $realPath = $file->getRealPath();
+                $rawOriginalName = $file->getClientOriginalName();
+                $ext = strtolower($file->getClientOriginalExtension());
+            } elseif ($file instanceof SplFileInfo) {
+                $realPath = $file->getRealPath();
+                $rawOriginalName = $file->getFilename();
+                $ext = strtolower($file->getExtension());
+            } elseif (is_string($file) && File::exists($file)) {
+                $realPath = $file;
+                $rawOriginalName = basename($file);
+                $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            } else {
                 continue;
             }
 
             // Sanitize file name against directory traversal
-            $fileName = basename(str_replace(['\\', '/', "\0", '..'], '', $file->getClientOriginalName()));
-            $ext = strtolower($file->getClientOriginalExtension());
+            $fileName = basename(str_replace(['\\', '/', "\0", '..'], '', (string) $rawOriginalName));
 
             // Skip OS metadata files
             if (str_contains($fileName, 'Zone.Identifier') || in_array($ext, ['ds_store'])) {
@@ -99,11 +116,13 @@ class HskMockExamService
             $targetFolder = $isAudio ? 'audio' : 'images';
             $b2Dest = "{$b2BasePath}/{$targetFolder}/{$fileName}";
 
+            $fileToStore = ($file instanceof UploadedFile) ? $file : new HttpFile($realPath);
+
             try {
-                Storage::disk('b2')->putFileAs("{$b2BasePath}/{$targetFolder}", $file, $fileName);
+                Storage::disk('b2')->putFileAs("{$b2BasePath}/{$targetFolder}", $fileToStore, $fileName);
             } catch (Throwable $e) {
                 Log::error("Failed to upload HSK imported media {$fileName} to B2: " . $e->getMessage() . ". Falling back to local storage.");
-                Storage::disk('public')->putFileAs("{$b2BasePath}/{$targetFolder}", $file, $fileName);
+                Storage::disk('public')->putFileAs("{$b2BasePath}/{$targetFolder}", $fileToStore, $fileName);
             }
 
             // Register in lookup map

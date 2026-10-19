@@ -2,11 +2,14 @@
 
 namespace App\Services\Teacher;
 
+use App\Jobs\UploadLessonMaterialsJob;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Services\Media\MediaStorageService;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Throwable;
 
 class TeacherLessonService
@@ -32,18 +35,28 @@ class TeacherLessonService
 
         $lesson = $course->lessons()->create($data);
 
-        // Process PDF file upload to B2
+        // Dispatch PDF slide upload to background queue
         if ($pdfFile instanceof UploadedFile) {
-            $lesson->pdf_path = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $pdfFile, 'pdfs');
+            $tempDir = storage_path("app/temp_lessons/{$lesson->id}");
+            File::makeDirectory($tempDir, 0775, true, true);
+            $ext = $pdfFile->getClientOriginalExtension() ?: 'pdf';
+            $tempFileName = "pdf_" . time() . "_" . Str::random(6) . ".{$ext}";
+            $pdfFile->move($tempDir, $tempFileName);
+            $tempFilePath = "{$tempDir}/{$tempFileName}";
+
+            UploadLessonMaterialsJob::dispatch($course->id, $lesson->id, $tempFilePath, 'pdfs');
         }
 
-        // Process note/attachment file upload to B2
+        // Dispatch note attachment upload to background queue
         if ($noteFile instanceof UploadedFile) {
-            $lesson->note_file_path = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $noteFile, 'notes');
-        }
+            $tempDir = storage_path("app/temp_lessons/{$lesson->id}");
+            File::makeDirectory($tempDir, 0775, true, true);
+            $ext = $noteFile->getClientOriginalExtension() ?: 'bin';
+            $tempFileName = "note_" . time() . "_" . Str::random(6) . ".{$ext}";
+            $noteFile->move($tempDir, $tempFileName);
+            $tempFilePath = "{$tempDir}/{$tempFileName}";
 
-        if ($pdfFile instanceof UploadedFile || $noteFile instanceof UploadedFile) {
-            $lesson->save();
+            UploadLessonMaterialsJob::dispatch($course->id, $lesson->id, $tempFilePath, 'notes');
         }
 
         return $lesson;
@@ -66,13 +79,20 @@ class TeacherLessonService
             $data['pdf_path'] = null;
         }
 
-        // Handle new PDF file upload
+        // Dispatch updated PDF slide upload to background queue
         if (isset($data['pdf_file']) && $data['pdf_file'] instanceof UploadedFile) {
-            if ($lesson->pdf_path) {
-                $this->deleteResourceFile($lesson->pdf_path);
-            }
-            $data['pdf_path'] = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $data['pdf_file'], 'pdfs');
+            $pdfUpload = $data['pdf_file'];
             unset($data['pdf_file']);
+
+            $oldPdfPath = $lesson->pdf_path;
+            $tempDir = storage_path("app/temp_lessons/{$lesson->id}");
+            File::makeDirectory($tempDir, 0775, true, true);
+            $ext = $pdfUpload->getClientOriginalExtension() ?: 'pdf';
+            $tempFileName = "pdf_" . time() . "_" . Str::random(6) . ".{$ext}";
+            $pdfUpload->move($tempDir, $tempFileName);
+            $tempFilePath = "{$tempDir}/{$tempFileName}";
+
+            UploadLessonMaterialsJob::dispatch($course->id, $lesson->id, $tempFilePath, 'pdfs', $oldPdfPath);
         }
 
         // Handle note file removal request
@@ -83,13 +103,20 @@ class TeacherLessonService
             $data['note_file_path'] = null;
         }
 
-        // Handle new note file upload
+        // Dispatch updated note file upload to background queue
         if (isset($data['note_file']) && $data['note_file'] instanceof UploadedFile) {
-            if ($lesson->note_file_path) {
-                $this->deleteResourceFile($lesson->note_file_path);
-            }
-            $data['note_file_path'] = app(MediaStorageService::class)->uploadLessonFile($course->id, $lesson->id, $data['note_file'], 'notes');
+            $noteUpload = $data['note_file'];
             unset($data['note_file']);
+
+            $oldNotePath = $lesson->note_file_path;
+            $tempDir = storage_path("app/temp_lessons/{$lesson->id}");
+            File::makeDirectory($tempDir, 0775, true, true);
+            $ext = $noteUpload->getClientOriginalExtension() ?: 'bin';
+            $tempFileName = "note_" . time() . "_" . Str::random(6) . ".{$ext}";
+            $noteUpload->move($tempDir, $tempFileName);
+            $tempFilePath = "{$tempDir}/{$tempFileName}";
+
+            UploadLessonMaterialsJob::dispatch($course->id, $lesson->id, $tempFilePath, 'notes', $oldNotePath);
         }
 
         // Synchronize video_url and record_url if only one is provided
